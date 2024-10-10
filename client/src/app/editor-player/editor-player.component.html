@@ -1,0 +1,26 @@
+<p-dialog
+  [header]="title"
+  [visible]="editorVisible"
+  (visibleChange)="closeEditor.emit()"
+  [modal]="true"
+  [style]="{ width: '650px', 'min-width': '300px' }"
+  [draggable]="false"
+  position="bottom">
+  <div *ngIf="formGroup && player" class="form">
+    <form [formGroup]="formGroup" (ngSubmit)="submit()">
+      <app-textinput formControlName="Name" label="Player Name" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
+
+      <p-checkbox formControlName="IsRealPerson" label="Is Real Person" [binary]="true"></p-checkbox>
+
+      <div class="dialog-footer">
+        <div>
+          <p-button label="Delete" [outlined]="true" severity="danger" (click)="toDeleteEntity()"></p-button>
+        </div>
+        <div>
+          <p-button label="Cancel" [outlined]="true" severity="secondary" (click)="closeEditor.emit()"></p-button>
+          <p-button label="Ok" [outlined]="true" (click)="submit()"></p-button>
+        </div>
+      </div>
+    </form>
+  </div>
+</p-dialog>

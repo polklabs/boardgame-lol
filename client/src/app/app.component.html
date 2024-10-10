@@ -1,0 +1,8 @@
+<div *ngIf="showSpinner$ | async" class="progress-spinner-wrapper">
+  <p-progressSpinner></p-progressSpinner>
+</div>
+<div class="main-content">
+  <router-outlet></router-outlet>
+</div>
+<p-toast></p-toast>
+<p-confirmDialog [styleClass]="'confirm-dialog'"></p-confirmDialog>

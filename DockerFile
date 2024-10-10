@@ -1,0 +1,23 @@
+FROM node:20
+ENV IS_DOCKER 'true'
+
+ENV CLIENT_PATH '/app/client/'
+ENV JWT_SECRET 'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.'
+ENV EMAIL_HOST 'mail.privateemail.com'
+ENV EMAIL_PORT '465'
+ENV EMAIL_SECURE 'true'
+ENV DB_PATH '/app/data/Boardgame.db'
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm i -g npm-platform-dependencies
+RUN npm ci --omit=dev
+
+COPY . .
+
+RUN ln -s /app/data /data
+VOLUME /data
+
+EXPOSE 3000
+CMD ["node", "./api/api/src/main.js"]

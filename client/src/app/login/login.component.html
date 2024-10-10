@@ -1,0 +1,119 @@
+<p-dialog
+  [header]="headerText"
+  [visible]="true"
+  (visibleChange)="closeLogin.emit()"
+  [modal]="true"
+  [style]="{ width: '650px', 'min-width': '300px' }"
+  [draggable]="false"
+  position="bottom">
+  <!-- LOGIN -->
+  <div *ngIf="view === 'login'">
+    <div class="flex-column">
+      <form [formGroup]="loginFormGroup" (ngSubmit)="login()">
+        <app-textinput formControlName="Username" label="Email/Username"></app-textinput>
+        <app-password formControlName="Password" label="Password"></app-password>
+        <p-checkbox label="Keep Me Logged In" [binary]="true" formControlName="RememberMe"></p-checkbox>
+        <p-button label="Login" [outlined]="true" (click)="login()"></p-button>
+      </form>
+
+      <span class="sign-up">
+        Not registered?
+        <span class="sign-up-button" (click)="changeView('signup')">Create an account</span>
+      </span>
+
+      <span class="forgot-pass">
+        <span class="sign-up-button" (click)="changeView('forgot_pass')">Forgot Password?</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- SIGNUP -->
+  <div *ngIf="view === 'signup'">
+    <div class="flex-column">
+      <form [formGroup]="signupFormGroup" (ngSubmit)="signup()">
+        <app-textinput formControlName="Email"></app-textinput>
+        <app-textinput formControlName="Username" [icon]="usernameIcon" [entityType]="entityType"></app-textinput>
+        <app-password formControlName="Password" [feedback]="true" [entityType]="entityType"></app-password>
+        <app-password formControlName="PasswordRetry" label="Confirm Password"></app-password>
+        <p-button label="Signup" [outlined]="true" (click)="signup()"></p-button>
+      </form>
+
+      <span class="sign-up">
+        Already have an account?
+        <span class="sign-up-button" (click)="view = 'login'">Login</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- VERIFY EMAIL -->
+  <div *ngIf="view === 'email_verify'">
+    <ng-container
+      *ngTemplateOutlet="
+        emojiVerify;
+        context: { emojiList: emailEmojis, emojiVerified: emailEmojisVerified }
+      "></ng-container>
+    <p-button label="Submit" [outlined]="true" (click)="loginWithVerify()" [disabled]="countdownDone"></p-button>
+    <countdown #cd [config]="countdownConfig" (event)="countdownEvent($event)" />
+  </div>
+
+  <!-- PASSWORD RESET REQUEST -->
+  <div *ngIf="view === 'forgot_pass'">
+    <div class="flex-column">
+      <form [formGroup]="passResetFormGroup" (ngSubmit)="resetPasswordRequest()">
+        <app-textinput formControlName="Username" label="Username/Email"></app-textinput>
+        <p-button label="Request Password Reset" [outlined]="true" (click)="resetPasswordRequest()"></p-button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PASSWORD RESET VERIFY -->
+  <div *ngIf="view === 'forgot_pass_verify'">
+    <ng-container
+      *ngTemplateOutlet="
+        emojiVerify;
+        context: { emojiList: passEmojis, emojiVerified: passEmojisVerified }
+      "></ng-container>
+    <p-button label="Submit" [outlined]="true" (click)="resetPasswordCheck()" [disabled]="countdownDone"></p-button>
+    <p class="countdown-label">Expires In:</p>
+    <countdown #cd [config]="countdownConfig" (event)="countdownEvent($event)" />
+  </div>
+
+  <!-- PASSWORD RESET -->
+  <div *ngIf="view === 'forgot_pass_new'">
+    <div class="flex-column">
+      <form [formGroup]="passResetFormGroup" (ngSubmit)="resetPassword()">
+        <app-password formControlName="Password" [feedback]="true" [entityType]="entityType"></app-password>
+        <app-password formControlName="PasswordRetry" label="Confirm Password" [entityType]="entityType"></app-password>
+        <p-button label="Request Password Reset" [outlined]="true" (click)="resetPassword()"></p-button>
+      </form>
+    </div>
+  </div>
+
+  <ng-template #emojiVerify let-emojiList="emojiList" let-emojiVerified="emojiVerified">
+    <div class="flex-column">
+      <p>Enter the emojis we sent to your email below in the same order.</p>
+
+      <div class="emoji_group">
+        <div *ngFor="let emoji of emojiVerified; let i = index">
+          <p-button
+            [label]="emoji"
+            [outlined]="true"
+            severity="secondary"
+            (click)="clearEmoji(i, emojiVerified)"></p-button>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <div class="emoji_group">
+        <div *ngFor="let emoji of emojiList">
+          <p-button
+            [label]="emoji"
+            [outlined]="true"
+            severity="secondary"
+            (click)="enterEmoji(emoji, emojiVerified)"></p-button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>

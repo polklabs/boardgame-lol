@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        /* Truncated compiler options to list only relevant options */
+        "declaration": true,
+        "declarationMap": true,
+        "rootDir": ".",
+        "composite": true,
+        "lib": ["dom", "ES2021"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "types": ["reflect-metadata"],
+        "outDir": "./dist",
+    },
+    "references": [] // * Any project that is referenced must itself have a `references` array (which may be empty).
+}

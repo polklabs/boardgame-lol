@@ -1,0 +1,17 @@
+<app-control-wrapper
+  #ControlWrapper
+  [label]="label"
+  [controlName]="formControlName"
+  [formGroup]="formGroup"
+  [entityType]="entityType"
+  [hiddenFields]="hiddenFields"
+  [textInputType]="inputType"
+  [iconPosition]="icon ? iconPosition : ''">
+  <i class="{{ icon }}"></i>
+  <input
+    id="{{ formControlName }}"
+    type="{{ inputType }}"
+    pInputText
+    formControlName="{{ formControlName }}"
+    [ngClass]="{ 'ng-invalid ng-dirty': ControlWrapper.isFieldInvalid() }" />
+</app-control-wrapper>

@@ -1,0 +1,15 @@
+<app-control-wrapper
+  #ControlWrapper
+  [label]="label"
+  [controlName]="formControlName"
+  [formGroup]="formGroup"
+  [entityType]="entityType"
+  [hiddenFields]="hiddenFields">
+  <textarea
+    id="{{ formControlName }}"
+    [rows]="rows"
+    [cols]="cols"
+    pInputTextarea
+    formControlName="{{ formControlName }}"
+    [ngClass]="{ 'ng-invalid ng-dirty': ControlWrapper.isFieldInvalid() }"></textarea>
+</app-control-wrapper>

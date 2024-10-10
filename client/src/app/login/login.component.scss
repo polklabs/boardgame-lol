@@ -1,0 +1,86 @@
+:host ::ng-deep {
+  .p-float-label input:not(:focus):not(.p-filled) ~ label {
+    top: 1.4rem;
+  }
+  // .p-float-label .p-password input:not(:focus):not(.p-filled) ~ label {
+  //   top: 1.4rem
+  // }
+
+  span.p-float-label {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .p-dialog {
+    max-width: 400px;
+    margin: 64px auto 0px;
+
+    .p-card-title {
+      text-align: center;
+    }
+
+    .p-dialog-content {
+      padding-top: 0;
+
+      .p-inputtext,
+      .p-password,
+      .p-button {
+        width: 100%;
+      }
+
+      p-checkbox {
+        margin-top: 24px;
+        margin-bottom: 4px;
+      }
+
+      .p-button {
+        margin: 24px 0;
+      }
+
+      .sign-up {
+        text-align: center;
+        .sign-up-button {
+          text-decoration: underline;
+          cursor: pointer;
+        }
+      }
+
+      .forgot-pass {
+        margin-top: 16px;
+        text-align: center;
+        .sign-up-button {
+          text-decoration: underline;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  .emoji_group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 2px;
+    button {
+      margin: 0 !important;
+      font-size: xx-large;
+      height: 65px;
+      width: 75px !important;
+      text-align: center;
+      justify-content: center;
+    }
+  }
+
+  .countdown-label {
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  .count-down {
+    margin: auto;
+    display: block;
+    width: fit-content;
+  }
+}

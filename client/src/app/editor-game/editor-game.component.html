@@ -1,0 +1,53 @@
+<app-editor-player
+  [editorVisible]="playerEditorVisible"
+  [player]="playerEdit"
+  (closeEditor)="savePlayer($event)"
+  (deleteEntity)="deletePlayer($event)"></app-editor-player>
+<app-editor-board-game
+  [editorVisible]="boardGameEditorVisible"
+  [boardGame]="boardGameEdit"
+  (closeEditor)="saveBoardGame($event)"
+  (deleteEntity)="deleteBoardGame($event)"></app-editor-board-game>
+
+<p-dialog
+  [header]="title"
+  [visible]="editorVisible"
+  (visibleChange)="closeEditor.emit()"
+  [modal]="true"
+  [style]="{ width: '650px', 'min-width': '300px', 'max-height': '69%' }"
+  [draggable]="false"
+  position="bottom">
+  <div *ngIf="formGroup && editorVisible" class="form">
+    <form [formGroup]="formGroup" (ngSubmit)="submit()">
+      <!-- Name -->
+      <app-textinput formControlName="Name" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
+
+      <p-orderList
+        [value]="playerGames"
+        [dragdrop]="true"
+        [responsive]="true"
+        [metaKeySelection]="true"
+        (onReorder)="updateSortOrder()">
+        <ng-template pTemplate="header">
+          <div class="order-list-header">
+            <div class="p-orderlist-title">Winners</div>
+          </div>
+        </ng-template>
+        <ng-template let-playerGame pTemplate="item">
+          <div class="list-items">
+            <div class="flex-column">
+              <span class="font-bold">{{ playerGame.Points }}</span>
+            </div>
+          </div>
+        </ng-template>
+      </p-orderList>
+    </form>
+    <div class="flex dialog-footer">
+      <div></div>
+      <div>
+        <p-button label="Cancel" [outlined]="true" severity="secondary" (click)="closeEditor.emit()"></p-button>
+        <p-button label="Save & Close" [outlined]="true" (click)="submit()"></p-button>
+      </div>
+    </div>
+  </div>
+</p-dialog>

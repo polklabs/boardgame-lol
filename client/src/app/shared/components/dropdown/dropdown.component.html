@@ -1,0 +1,20 @@
+<app-control-wrapper
+  #ControlWrapper
+  [label]="label"
+  [controlName]="formControlName"
+  [formGroup]="formGroup"
+  [entityType]="entityType"
+  [hiddenFields]="hiddenFields"
+  textInputType="dropdown">
+  <p-dropdown
+    inputId="{{ formControlName }}"
+    formControlName="{{ formControlName }}"
+    [options]="options"
+    [showClear]="showClear"
+    (onChange)="onModelChange($event.value)"
+    [optionLabel]="optionLabel"
+    [optionValue]="optionValue"
+    appendTo="body"
+    placeholder="{{ placeholder ?? label ?? '' }}"
+    [ngClass]="{ 'ng-invalid ng-dirty': false }"></p-dropdown>
+</app-control-wrapper>

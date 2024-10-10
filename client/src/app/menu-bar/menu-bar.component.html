@@ -1,0 +1,121 @@
+<div class="placeholder"></div>
+<div class="header show-gt-700px">
+  <h2 (click)="navigateHome()" (keyup)="navigateHome()">BoardGame.lol</h2>
+
+  <ng-container *ngIf="canEdit">
+    <ng-container [ngSwitch]="page">
+      <ng-container *ngSwitchCase="'club'">
+        <p-button label="Club" (click)="editClub.emit()" icon="pi pi-pencil" [outlined]="true"></p-button>
+        <p-button label="Game" (click)="newGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+        <p-button label="BoardGame" (click)="newBoardGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+        <p-button label="Player" (click)="newPlayer.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'board-game'">
+        <p-splitButton
+          label="BoardGame"
+          (onClick)="editBoardGame.emit()"
+          icon="pi pi-pencil"
+          styleClass="p-button-outlined mr-2 mb-2"
+          [model]="items"></p-splitButton>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'player'">
+        <p-splitButton
+          label="Player"
+          (onClick)="editPlayer.emit()"
+          icon="pi pi-pencil"
+          styleClass="p-button-outlined mr-2 mb-2"
+          [model]="items"></p-splitButton>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'home'">
+        <p-button label="Club" (click)="newClub.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+  <div class="flex-fill"></div>
+
+  <ng-container *ngIf="loggedIn$ | async; else notLoggedIn">
+    <p-menu #menu [model]="userItems" [popup]="true"></p-menu>
+    <p-button
+      class="user-button"
+      (click)="menu.toggle($event)"
+      [label]="username()"
+      [link]="true"
+      icon="pi pi-chevron-down"
+      iconPos="right"></p-button>
+  </ng-container>
+
+  <ng-template #notLoggedIn>
+    <p-button (click)="showLogin = true" label="Login/Signup" icon="pi pi-sign-in" [link]="true"></p-button>
+  </ng-template>
+</div>
+
+<div class="header show-lt-700px">
+  <h2 (click)="navigateHome()" (keyup)="navigateHome()">BoardGame.lol</h2>
+
+  <ng-container *ngIf="canEdit">
+    <ng-container [ngSwitch]="page">
+      <ng-container *ngSwitchCase="'club'">
+        <p-menu #menu [model]="editClubItems" [popup]="true"></p-menu>
+        <p-button
+          label="Edit"
+          (click)="menu.toggle($event)"
+          icon="pi pi-chevron-down"
+          iconPos="right"
+          [outlined]="true"></p-button>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'player'">
+        <p-menu #menu [model]="editPlayerItems" [popup]="true"></p-menu>
+        <p-button
+          label="Edit"
+          (click)="menu.toggle($event)"
+          icon="pi pi-chevron-down"
+          iconPos="right"
+          [outlined]="true"></p-button>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'board-game'">
+        <p-menu #menu [model]="editBoardGameItems" [popup]="true"></p-menu>
+        <p-button
+          label="Edit"
+          (click)="menu.toggle($event)"
+          icon="pi pi-chevron-down"
+          iconPos="right"
+          [outlined]="true"></p-button>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'home'">
+        <p-menu #menu [model]="editHomeItems" [popup]="true"></p-menu>
+        <p-button
+          label="Edit"
+          (click)="menu.toggle($event)"
+          icon="pi pi-chevron-down"
+          iconPos="right"
+          [outlined]="true"></p-button>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+  <div class="flex-fill"></div>
+
+  <ng-container *ngIf="loggedIn$ | async; else notLoggedIn">
+    <p-menu #menu [model]="userItems" [popup]="true"></p-menu>
+    <p-button
+      class="user-button"
+      (click)="menu.toggle($event)"
+      [link]="true"
+      icon="pi pi-user"
+      iconPos="right"></p-button>
+  </ng-container>
+
+  <ng-template #notLoggedIn>
+    <p-button (click)="showLogin = true" label="Login/Signup" icon="pi pi-sign-in" [link]="true"></p-button>
+  </ng-template>
+</div>
+
+<app-login *ngIf="showLogin" (closeLogin)="showLogin = false"></app-login>
+<app-password-update *ngIf="showPassword" (closeForm)="showPassword = false"></app-password-update>

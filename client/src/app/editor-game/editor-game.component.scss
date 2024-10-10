@@ -1,0 +1,65 @@
+:host ::ng-deep {
+  form {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  img {
+    width: var(--poster-width);
+    border-radius: var(--border-radius);
+  }
+
+  .image-section {
+    margin-top: 8px;
+  }
+
+  .image-buttons {
+    .p-fileupload-basic .p-button {
+      width: 100%;
+    }
+  }
+
+  span.p-float-label {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .p-dropdown {
+    width: 100%;
+  }
+
+  .media-sub-spread {
+    justify-content: space-between;
+    :nth-child(1) {
+      flex-grow: 1;
+    }
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    gap: 16px;
+    > div {
+      display: flex;
+      justify-content: start;
+      gap: 16px;
+    }
+  }
+
+  .order-list-header,
+  .pick-list-header,
+  .list-items {
+    display: flex;
+    position: relative;
+
+    p-button {
+      position: absolute;
+      top: -0.75rem;
+      right: -1rem;
+    }
+  }
+}

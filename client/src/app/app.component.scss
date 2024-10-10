@@ -1,0 +1,23 @@
+:host ::ng-deep {
+    .progress-spinner-wrapper {
+        display: block;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background-color: var(--maskbg);
+        z-index: 99999;
+        .p-progress-spinner {
+            transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 50%));
+        }
+    }
+
+    .main-content {
+        margin: auto;
+        max-width: var(--content-width);
+        padding: 4px;
+    }
+
+    .confirm-dialog {
+        max-width: 550px;
+    }
+}

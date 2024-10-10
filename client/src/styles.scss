@@ -1,0 +1,95 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'primeng/resources/themes/lara-dark-blue/theme.css';
+@import 'primeng/resources/primeng.css';
+@import 'primeicons/primeicons.css';
+
+:root {
+  --poster-width: 186px;
+  --poster-height: 279px;
+  --giant-text: 42px;
+  --font-size: 14px;
+  --content-width: 1728px;
+  --wiki-content-width: 1142px;
+  --mask-color: rgba(0, 0, 0, 0.8);
+}
+
+// 500px breaking point
+@media only screen and (max-width: 500px) {
+  // .show-lt-500px {
+  //   display: initial !important;
+  // }
+  .show-gt-500px {
+    display: none !important;
+  }
+}
+@media only screen and (min-width: 500px) {
+  .show-lt-500px {
+    display: none !important;
+  }
+  // .show-gt-500px {
+  //   display: initial !important;
+  // }
+}
+
+// 700px breaking point
+@media only screen and (max-width: 700px) {
+  // .show-lt-700px {
+  //   display: initial !important;
+  // }
+  .show-gt-700px {
+    display: none !important;
+  }
+}
+@media only screen and (min-width: 700px) {
+  .show-lt-700px {
+    display: none !important;
+  }
+  // .show-gt-700px {
+  //   display: initial !important;
+  // }
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(rgba(28, 27, 34, 0.7), rgba(28, 27, 34, 0.7)), url('assets/escheresque_ste.webp');
+}
+
+.flex {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap-4 {
+  gap: 4px;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-start {
+  justify-content: start;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-space-between {
+  justify-content: space-between;
+}
+
+.p-dialog .p-dialog-header {
+  padding-bottom: 4px;
+}
+
+.p-picklist-item:not(.cdk-drag-disabled) {
+  cursor: move;
+  z-index: 99999 !important;
+}

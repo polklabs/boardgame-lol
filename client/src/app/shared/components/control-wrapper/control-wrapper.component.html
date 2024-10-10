@@ -1,0 +1,6 @@
+<span class="p-float-label p-input-icon-{{ iconPosition }}" *ngIf="isShown()">
+  <ng-content></ng-content>
+  <label for="{{ controlName }}">{{ getFieldLabel() }} {{ isRequired() ? '*' : '' }}</label>
+  <small class="p-error block" *ngIf="isFieldInvalid()">{{ getErrorText() }}</small>
+  <small class="block" *ngIf="!isFieldInvalid()">{{ getLengthText() }}</small>
+</span>
