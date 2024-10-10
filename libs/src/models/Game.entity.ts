@@ -38,6 +38,8 @@ export class GameEntity extends BaseEntity {
   @MinMax(1, 99999, 'number')
   Players: number = 0;
 
+  DidNotFinish: boolean = false;
+
   constructor(partial: Partial<GameEntity> = {}) {
     super(partial);
     this.assign(partial);
