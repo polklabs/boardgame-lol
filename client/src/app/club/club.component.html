@@ -1,1 +1,15 @@
-<p>club works!</p>
+<app-menu-bar page="club" (newGame)="newGame()" (newBoardGame)="newBoardGame()"></app-menu-bar>
+
+<app-editor-game
+  *ngIf="editorGameVisible"
+  [editorVisible]="editorGameVisible"
+  [game]="editGame"
+  (closeEditor)="editorGameVisible = false"></app-editor-game>
+
+<app-editor-board-game
+  *ngIf="editorBoardGameVisible"
+  [editorVisible]="editorBoardGameVisible"
+  [boardGame]="editBoardGame"
+  (closeEditor)="editorBoardGameVisible = false"></app-editor-board-game>
+
+<!-- Display Game List -->

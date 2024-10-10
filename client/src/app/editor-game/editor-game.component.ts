@@ -7,10 +7,10 @@ import { buildForm } from '../shared/form.utils';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { OrderListModule } from 'primeng/orderlist';
-import { TextInputComponent } from '../shared/components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
+import { DropdownComponent } from '../shared/components/dropdown/dropdown.component';
 
 type EntityType = GameEntity;
 
@@ -20,7 +20,7 @@ type EntityType = GameEntity;
   imports: [
     CommonModule,
     DialogModule,
-    TextInputComponent,
+    DropdownComponent,
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -33,14 +33,13 @@ type EntityType = GameEntity;
 })
 export class EditorGameComponent implements OnChanges {
   @Input() editorVisible = false;
+  @Input() game?: GameEntity;
   @Output() closeEditor = new EventEmitter<void>();
 
   title = 'Edit Game';
   isNew = false;
 
   entityType = GameEntity;
-
-  game?: GameEntity;
 
   players: PlayerEntity[] = [];
   boardGames: BoardGameEntity[] = [];

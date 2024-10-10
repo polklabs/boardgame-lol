@@ -10,7 +10,13 @@
     <form [formGroup]="formGroup" (ngSubmit)="submit()">
       <app-textinput formControlName="Name" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
 
-      <p-checkbox formControlName="HasScore" label="Has Score" [binary]="true"></p-checkbox>
+      <app-dropdown
+        formControlName="ScoreType"
+        label="Score Type"
+        [entityType]="entityType"
+        [hiddenFields]="hideFields"
+        [options]="scoreTypes"
+        [showClear]="false"></app-dropdown>
 
       <div class="dialog-footer">
         <div>

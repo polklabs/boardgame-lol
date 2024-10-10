@@ -19,8 +19,17 @@
   position="bottom">
   <div *ngIf="formGroup && editorVisible" class="form">
     <form [formGroup]="formGroup" (ngSubmit)="submit()">
-      <!-- Name -->
-      <app-textinput formControlName="Name" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
+      <!-- BoardGame -->
+      <app-dropdown
+        formControlName="BoardGameId"
+        label="BoardGame"
+        [entityType]="entityType"
+        [hiddenFields]="hideFields"
+        [options]="boardGames"
+        [showClear]="false"
+        optionLabel="Name"
+        optionValue="BoardGameId"
+        ></app-dropdown>
 
       <p-orderList
         [value]="playerGames"

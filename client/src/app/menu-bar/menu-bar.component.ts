@@ -157,7 +157,7 @@ export class MenuBarComponent implements OnInit, OnDestroy {
     } else {
       this.subscriptions.add(
         combineLatest([this.apiService.club$, this.userService.accessIds$]).subscribe(([club, access]) => {
-          this.canEdit = access.find((x) => x.id === club?.ClubId ?? '') !== undefined;
+          this.canEdit = access.find((x) => x.id === club?.ClubId) !== undefined;
         }),
       );
     }

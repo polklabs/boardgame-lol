@@ -6,7 +6,7 @@ import { BoardGameComponent } from './board-game/board-game.component';
 import { PlayerComponent } from './player/player.component';
 
 export const routes: Routes = [
-  { path: 'club', component: ClubComponent },
+  { path: 'club/:id', component: ClubComponent },
   { path: 'club/board-game', component: BoardGameComponent },
   { path: 'club/player', component: PlayerComponent },
   { path: 'home', component: HomeComponent },

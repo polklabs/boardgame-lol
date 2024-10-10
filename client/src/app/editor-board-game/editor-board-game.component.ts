@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { BoardGameEntity } from 'libs/index';
+import { BoardGameEntity, getEnum } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -47,6 +47,8 @@ export class EditorBoardGameComponent implements OnChanges {
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
+  scoreTypes: string[] = [];
+
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
@@ -58,10 +60,6 @@ export class EditorBoardGameComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('boardGame' in changes && this.boardGame) {
-      this.hideFields = new Set();
-      this.formGroup = buildForm(this.fb, this.entityType, new BoardGameEntity());
-      this.formGroup.patchValue(this.boardGame);
-
       if (this.boardGame.BoardGameId === null) {
         this.title = 'New BoardGame';
         this.isNew = true;
@@ -69,6 +67,12 @@ export class EditorBoardGameComponent implements OnChanges {
         this.title = 'Edit BoardGame';
         this.isNew = false;
       }
+      
+      this.hideFields = new Set();
+      this.formGroup = buildForm(this.fb, this.entityType, new BoardGameEntity());
+      this.formGroup.patchValue(this.boardGame);
+
+      this.grabLists();
     } else {
       // No Changes
     }
@@ -77,6 +81,10 @@ export class EditorBoardGameComponent implements OnChanges {
 
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
+  }
+
+  grabLists() {
+    this.scoreTypes = getEnum(this.entityType)['ScoreType'];
   }
 
   async submit() {
