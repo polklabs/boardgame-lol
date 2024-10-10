@@ -13,7 +13,7 @@ export class HttpService {
   private baseUrl = environment.baseUrl;
   private loadingSpinner = 0;
 
-  readonly loadingSpinner$ = new BehaviorSubject(true);
+  readonly loadingSpinner$ = new BehaviorSubject(false);
 
   constructor(
     private httpClient: HttpClient,
