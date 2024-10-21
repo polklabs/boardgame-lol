@@ -16,7 +16,11 @@
         [entityType]="entityType"
         [hiddenFields]="hideFields"
         [options]="scoreTypes"
+        optionLabel="label"
+        optionValue="value"
         [showClear]="false"></app-dropdown>
+
+      <app-textinput formControlName="BoardGameGeekId" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
 
       <div class="dialog-footer">
         <div>

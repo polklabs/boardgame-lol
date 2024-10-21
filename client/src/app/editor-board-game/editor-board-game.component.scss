@@ -3,21 +3,6 @@
     min-height: 200px;
   }
 
-  img {
-    width: var(--poster-width);
-    border-radius: var(--border-radius);
-  }
-
-  .image-section {
-    margin-top: 8px;
-  }
-
-  .image-buttons {
-    .p-fileupload-basic .p-button {
-      width: 100%;
-    }
-  }
-
   span.p-float-label {
     margin-top: 32px;
     display: flex;
@@ -28,13 +13,6 @@
     max-width: calc(100vw - 75px);
     .p-dropdown {
       width: 100%;
-    }
-  }
-
-  .media-sub-spread {
-    justify-content: space-between;
-    :nth-child(1) {
-      flex-grow: 1;
     }
   }
 

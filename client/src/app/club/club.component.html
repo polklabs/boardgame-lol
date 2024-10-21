@@ -1,4 +1,4 @@
-<app-menu-bar page="club" (newGame)="newGame()" (newBoardGame)="newBoardGame()"></app-menu-bar>
+<app-menu-bar page="club" (newGame)="newGame()" (newBoardGame)="newBoardGame()" (newPlayer)="newPlayer()"></app-menu-bar>
 
 <app-editor-game
   *ngIf="editorGameVisible"
@@ -12,4 +12,24 @@
   [boardGame]="editBoardGame"
   (closeEditor)="editorBoardGameVisible = false"></app-editor-board-game>
 
+<app-editor-player
+  *ngIf="editorPlayerVisible"
+  [editorVisible]="editorPlayerVisible"
+  [player]="editPlayer"
+  (closeEditor)="editorPlayerVisible = false"></app-editor-player>
+
 <!-- Display Game List -->
+<p>Games</p>
+<ul>
+  <li *ngFor="let game of games$ | async">{{ game.Date }}</li>
+</ul>
+
+<p>BoardGames</p>
+<ul>
+  <li *ngFor="let boardGame of boardGames$ | async">{{ boardGame.Name }}</li>
+</ul>
+
+<p>Players</p>
+<ul>
+  <li *ngFor="let player of players$ | async">{{ player.Name }}</li>
+</ul>
