@@ -42,7 +42,7 @@ export abstract class BaseManager<T extends BaseEntity> {
   private getBaseSelect() {
     return `
       SELECT 
-        ${this.tableName}.*,
+        *,
         User1.Username AS CreatedBy,
         User2.Username AS LastModifiedBy
       FROM ${this.tableName}

@@ -18,7 +18,6 @@ import { UserManager } from 'src/managers/User.manager';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { ClubUserManager } from 'src/managers/ClubUser.manager';
-import { UserEntity } from 'libs/index';
 import { ValidationError } from 'src/errors/validation.error';
 import { AuthorizationError } from 'src/errors/authorization.error';
 
@@ -164,7 +163,7 @@ export class AuthController {
   @Get('club_access_admin')
   getClubAccessAdmin(@Request() req: any) {
     try {
-      return this.clubUserManager.loadMany(UserEntity, this.getUserId(req), 'Admin', '1').map((x) => x.ClubId);
+      return this.clubUserManager.loadManyWithAdmin(this.getUserId(req)).map((x) => x.ClubId);
     } catch (e) {
       this.handleErrors(e);
     }

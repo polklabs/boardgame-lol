@@ -188,7 +188,7 @@ export class AppController {
   @Put('board-game')
   addBoardGame(@Request() req: any, @Body() entity: BoardGameEntity) {
     try {
-      return this.boardGameManager.put(this.getUserId(req), entity)();
+      return this.boardGameManager.put(this.getUserId(req), entity);
     } catch (e) {
       this.handleErrors(e);
     }
