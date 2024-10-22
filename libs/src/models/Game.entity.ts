@@ -7,6 +7,7 @@ import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { BoardGameEntity } from './BoardGame.entity';
 import { PlayerGameEntity } from './PlayerGame.entity';
 import { PlayerEntity } from './Player.entity';
+import { Ignore } from '../decorators/ignore.decorator';
 
 export type GameWrapper = {
   Game: GameEntity;
@@ -17,7 +18,7 @@ export type GameWrapper = {
 
 export type GameReturn = {
   Game: GameEntity,
-  BoardGame: BoardGameEntity[],
+  BoardGames: BoardGameEntity[],
   PlayerGames: PlayerGameEntity[],
   Players: PlayerEntity[],
 };
@@ -33,12 +34,18 @@ export class GameEntity extends BaseEntity {
   @ForeignKey(BoardGameEntity)
   BoardGameId: string | null = null;
 
-  Date = new Date().toISOString();
+  Date: Date | string = new Date().toISOString();
 
   @MinMax(1, 99999, 'number')
   Players: number = 0;
 
   DidNotFinish: boolean = false;
+
+  @Ignore()
+  BoardGame?: BoardGameEntity;
+
+  @Ignore()
+  Winners: PlayerGameEntity[] = [];
 
   constructor(partial: Partial<GameEntity> = {}) {
     super(partial);

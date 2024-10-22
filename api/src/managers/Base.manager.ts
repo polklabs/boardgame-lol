@@ -11,6 +11,7 @@ import { getSecondaryKey } from 'libs/decorators/secondary-key.decorator';
 import { ValidationError } from 'src/errors/validation.error';
 import { SanitizeTags, getSanitize } from 'libs/decorators/sanitize.decorator';
 import sanitizeHtml from 'sanitize-html';
+import { getIgnore } from 'libs/decorators/ignore.decorator';
 
 export abstract class BaseManager<T extends BaseEntity> {
   protected abstract db: DbService;
@@ -22,6 +23,7 @@ export abstract class BaseManager<T extends BaseEntity> {
   protected tableName: string;
   protected foreignKeys: (keyof T)[];
   protected nullable: (keyof T)[];
+  protected ignore: (keyof T)[];
   protected minMaxes: MinMax;
   protected enums: EnumValue;
   protected sanitize: SanitizeTags;
@@ -34,6 +36,7 @@ export abstract class BaseManager<T extends BaseEntity> {
     this.tableName = getTableName(entityType) as string;
     this.foreignKeys = getForeignKeys(entityType) as (keyof T)[];
     this.nullable = getNullable(entityType) as (keyof T)[];
+    this.ignore = getIgnore(entityType) as (keyof T)[];
     this.minMaxes = getMinMax(entityType) as MinMax;
     this.enums = getEnum(entityType) as EnumValue;
     this.sanitize = getSanitize(entityType) as SanitizeTags;
@@ -142,6 +145,10 @@ export abstract class BaseManager<T extends BaseEntity> {
       // Continue
     }
 
+    this.ignore.forEach((key) => {
+      delete entity[key];
+    });
+
     entity.CreatedBy = userId;
     entity.CreatedDate = new Date().toISOString();
     entity.LastModifiedBy = userId;
@@ -156,6 +163,10 @@ export abstract class BaseManager<T extends BaseEntity> {
     } else {
       // Continue
     }
+
+    this.ignore.forEach((key) => {
+      delete entity[key];
+    });
 
     // Delete these values since they must already exist
     delete entity['CreatedDate'];

@@ -1,5 +1,4 @@
 import { Exclude } from "class-transformer";
-import { Ignore } from "../decorators/ignore.decorator";
 import 'reflect-metadata'; // This must be imported here for the prod build to work
 
 export abstract class BaseEntity {
@@ -7,16 +6,12 @@ export abstract class BaseEntity {
   // User should never have control over these values
 
   @Exclude()
-  @Ignore()  
   CreatedDate?: string = new Date().toISOString();
   @Exclude()
-  @Ignore()
   CreatedBy?: string = 'ANON';
   @Exclude()
-  @Ignore()
   LastModifiedDate?: string = new Date().toISOString();
   @Exclude()
-  @Ignore()
   LastModifiedBy?: string = 'ANON';
 
   constructor(partial: Partial<BaseEntity>) {

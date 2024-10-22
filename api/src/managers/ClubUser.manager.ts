@@ -63,7 +63,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
 
   loadManyWithAdmin(userId: string): (ClubUserEntity & ClubEntity)[] {
     return this.db.AllRaw<ClubUserEntity & ClubEntity>(
-      `SELECT ${TP(ClubEntity, 'ClubId')}
+      `SELECT ${TP(ClubUserEntity, 'ClubId')}
         FROM ${T(ClubUserEntity)}
         WHERE ${TP(ClubUserEntity, 'UserId')} = ? AND ${TP(ClubUserEntity, 'Admin')} = ?`,
       [userId, '1'],

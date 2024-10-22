@@ -8,6 +8,6 @@ export function Ignore() {
   };
 }
 
-export function getNullable(target: any): string[] {
+export function getIgnore(target: any): string[] {
   return Reflect.getMetadata(ignoreKey, target) ?? [];
 }

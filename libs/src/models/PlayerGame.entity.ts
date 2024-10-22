@@ -7,6 +7,7 @@ import { Nullable } from '../decorators/nullable.decorator';
 import { ForeignKey } from '../decorators/foreign-key.decorator';
 import { PlayerEntity } from './Player.entity';
 import { GameEntity } from './Game.entity';
+import { Ignore } from '../decorators/ignore.decorator';
 
 @TableName('PlayerGame')
 export class PlayerGameEntity extends BaseEntity {
@@ -25,6 +26,12 @@ export class PlayerGameEntity extends BaseEntity {
   @MinMax(-99999, 99999, 'number')
   @Nullable()
   Points: number | null = null;
+
+  @Ignore()
+  Player?: PlayerEntity;
+
+  @Ignore()
+  Game?: GameEntity;
 
   constructor(partial: Partial<PlayerGameEntity> = {}) {
     super(partial);

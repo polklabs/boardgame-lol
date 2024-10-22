@@ -69,7 +69,7 @@ export class GameManager extends BaseManager<GameEntity> {
 
     return {
       Game: this.loadOne(entity.GameId),
-      BoardGame: this.boardGameManager.loadMany('ClubId', entity.ClubId),
+      BoardGames: this.boardGameManager.loadMany('ClubId', entity.ClubId),
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId, 'ClubId', entity.ClubId),
       Players: this.playerManager.loadMany('ClubId', entity.ClubId),
     };
@@ -111,6 +111,7 @@ export class GameManager extends BaseManager<GameEntity> {
     const oldPlayerGames = new Set(this.playerGameManager.loadMany('GameId', entity.GameId).map((x) => x.PlayerGameId));
     const newPlayerGames = new Set<string>();
     wrapper.PlayerGames.forEach((pg) => {
+      pg.GameId = entity.GameId;
       if (pg.PlayerGameId && oldPlayerGames.has(pg.PlayerGameId)) {
         transactions.push(this.playerGameManager.patch(userId, pg));
         newPlayerGames.add(pg.PlayerGameId);
