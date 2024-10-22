@@ -182,9 +182,11 @@ export class ApiService {
       const index = this.playerList.findIndex((x) => x.PlayerId === result!.PlayerId);
       if (index >= 0) {
         this.playerList[index] = result;
+        this.playerList = this._playerList;
       } else {
-        this.playerList.push(result);
+        this.playerList = [...this._playerList, result];
       }
+      this.updateReferences();
       return true;
     } else {
       return false;
@@ -203,9 +205,11 @@ export class ApiService {
       const index = this.boardGameList.findIndex((x) => x.BoardGameId === result!.BoardGameId);
       if (index >= 0) {
         this.boardGameList[index] = result;
+        this.boardGameList = this._boardGameList;
       } else {
-        this.boardGameList.push(result);
+        this.boardGameList = [...this._boardGameList, result];
       }
+      this.updateReferences();
       return true;
     } else {
       return false;
@@ -225,6 +229,7 @@ export class ApiService {
     if (result) {
       this.gameList = this.gameList.filter((x) => x.GameId !== gameId);
       this.playerGameList = this.playerGameList.filter((x) => x.GameId !== gameId);
+      this.updateReferences();
       return true;
     } else {
       return false;
