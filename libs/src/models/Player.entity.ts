@@ -5,6 +5,9 @@ import { MinMax } from '../decorators/min-max.decorator';
 import { CHARACTER_LIMIT_SHORT } from '../constants';
 import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { Sanitize } from '../decorators/sanitize.decorator';
+import { Nullable } from '../decorators/nullable.decorator';
+import { Ignore } from '../decorators/ignore.decorator';
+import { PlayerGameEntity } from './PlayerGame.entity';
 
 @TableName('Player')
 export class PlayerEntity extends BaseEntity {
@@ -20,8 +23,17 @@ export class PlayerEntity extends BaseEntity {
 
   IsRealPerson: boolean = true;
 
+  @Nullable()
+  @Ignore()
+  PlayerGames: PlayerGameEntity[] = [];
+
+  // TODO: Not working
+  get Wins() {
+    return this.PlayerGames.length;
+  }
+
   constructor(partial: Partial<PlayerEntity> = {}) {
-    super(partial);
-    this.assign(partial);
+    super(partial, PlayerEntity);
+    this.assign(partial, PlayerEntity, false);
   }
 }

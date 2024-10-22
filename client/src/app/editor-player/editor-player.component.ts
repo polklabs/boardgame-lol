@@ -66,7 +66,7 @@ export class EditorPlayerComponent implements OnChanges {
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerEntity());
-      this.formGroup.patchValue(this.player);
+      this.formGroup.patchValue(new PlayerEntity(this.player));
     } else {
       // No Changes
     }

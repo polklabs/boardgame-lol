@@ -3,7 +3,7 @@
   [player]="playerEdit"
   [standalone]="false"
   (closeEditor)="savePlayer($event); playerGameEditor.playerSaved($event)"
-  (deleteEntity)="deletePlayer($event)"></app-editor-player>
+  (deleteEntity)="deletePlayer($event); playerGameEditor.playerDeleted($event)"></app-editor-player>
 <app-editor-board-game
   [editorVisible]="boardGameEditorVisible"
   [boardGame]="boardGameEdit"
@@ -61,10 +61,25 @@
         <ng-template let-playerGame pTemplate="item">
           <div class="list-items">
             <div class="flex-column">
-              <span class="font-bold flex">
-                <span>{{ playerGame.Player.Name }}</span>
-                <span>{{ playerGame.Points }}</span>
-              </span>
+              <div class="flex gap-8 justify-content-space-between">
+                <span class="font-bold flex gap-8">
+                  <span>{{ playerGame.Player?.Name }}:</span>
+                  <span>{{ playerGame.Points }}</span>
+                </span>
+                <div class="flex gap-8">
+                  <p-button
+                    (click)="editPlayerGame(playerGame)"
+                    [rounded]="true"
+                    [text]="true"
+                    icon="pi pi-pencil"></p-button>
+                  <p-button
+                    (click)="deletePlayerGame(playerGame)"
+                    icon="pi pi-trash"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="danger"></p-button>
+                </div>
+              </div>
             </div>
           </div>
         </ng-template>

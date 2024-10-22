@@ -1,5 +1,6 @@
-import { Exclude } from "class-transformer";
+import { Exclude } from 'class-transformer';
 import 'reflect-metadata'; // This must be imported here for the prod build to work
+import { getIgnore } from '../decorators/ignore.decorator';
 
 export abstract class BaseEntity {
   // These fields are all required but will be assigned by the Base.Manager
@@ -14,11 +15,12 @@ export abstract class BaseEntity {
   @Exclude()
   LastModifiedBy?: string = 'ANON';
 
-  constructor(partial: Partial<BaseEntity>) {
-    this.assign(partial);
+  constructor(partial: Partial<BaseEntity>, entityType: { new (partial: Partial<BaseEntity>): BaseEntity }) {
+    this.assign(partial, entityType, false);
   }
 
-  protected assign<T>(partial: Partial<T>) {
+  protected assign<T>(partial: Partial<T>, entityType: { new (partial: Partial<T>): T }, copyIgnored: boolean) {
+    const ignored = getIgnore(entityType);
     for (const key in partial) {
       if (partial.hasOwnProperty(key) && key in this) {
         const temp = this as { [k in typeof key]: any };
@@ -39,6 +41,10 @@ export abstract class BaseEntity {
           partial[key] = (partial[key] as string).replaceAll('&amp;', '&') as T[Extract<keyof T, string>];
         } else {
           // continue
+        }
+
+        if (copyIgnored === false && ignored.includes(key)) {
+          continue;
         }
 
         try {

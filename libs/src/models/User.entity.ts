@@ -41,7 +41,7 @@ export class UserEntity extends BaseEntity {
   Deleted: boolean = false;
 
   constructor(partial: Partial<UserEntity> = {}) {
-    super(partial);
-    this.assign(partial);
+    super(partial, UserEntity);
+    this.assign(partial, UserEntity, false);
   }
 }

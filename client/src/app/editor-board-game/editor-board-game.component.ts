@@ -75,7 +75,7 @@ export class EditorBoardGameComponent implements OnChanges {
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new BoardGameEntity());
-      this.formGroup.patchValue(this.boardGame);
+      this.formGroup.patchValue(new BoardGameEntity(this.boardGame));
     } else {
       // No Changes
     }

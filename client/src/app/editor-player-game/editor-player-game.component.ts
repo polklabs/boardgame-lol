@@ -41,7 +41,7 @@ export class EditorPlayerGameComponent implements OnChanges {
   @Output() editPlayer = new EventEmitter<PlayerEntity | undefined>();
 
   get selectedPlayer() {
-    const id = this.formGroup.controls['PlayerId'].getRawValue();
+    const id = this.formGroup.controls['PlayerId'].value;
     return this.players.find((x) => x.PlayerId === id);
   }
 
@@ -72,7 +72,7 @@ export class EditorPlayerGameComponent implements OnChanges {
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerGameEntity());
-      this.formGroup.patchValue(this.playerGame);
+      this.formGroup.patchValue(new PlayerGameEntity(this.playerGame));
     } else {
       // No Changes
     }
@@ -90,7 +90,7 @@ export class EditorPlayerGameComponent implements OnChanges {
       return;
     } else {
       Object.assign(this.playerGame, this.formGroup.getRawValue());
-      this.playerGame.Player = this.players.find((x) => x.PlayerId === this.playerGame?.PlayerId);
+      this.playerGame.Player = this.players.find((x) => x.PlayerId === this.playerGame?.PlayerId) ?? null;
       this.closeEditor.emit(this.playerGame);
     }
   }
@@ -126,6 +126,15 @@ export class EditorPlayerGameComponent implements OnChanges {
     this.formGroup.controls['PlayerId'].setValue(null);
     if (player) {
       this.formGroup.controls['PlayerId'].setValue(player.PlayerId);
+    } else {
+      // continue
+    }
+  }
+
+  playerDeleted(player?: PlayerEntity) {
+    const id = this.formGroup.controls['PlayerId'].value;
+    if (player?.PlayerId === id) {
+      this.formGroup.controls['PlayerId'].setValue(this.players[0]?.PlayerId ?? null);
     } else {
       // continue
     }

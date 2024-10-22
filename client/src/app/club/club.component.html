@@ -1,4 +1,8 @@
-<app-menu-bar page="club" (newGame)="newGame()" (newBoardGame)="newBoardGame()" (newPlayer)="newPlayer()"></app-menu-bar>
+<app-menu-bar
+  page="club"
+  (newGame)="newGame()"
+  (newBoardGame)="newBoardGame()"
+  (newPlayer)="newPlayer()"></app-menu-bar>
 
 <app-editor-game
   *ngIf="editorGameVisible"
@@ -18,35 +22,93 @@
   [player]="editPlayer"
   (closeEditor)="editorPlayerVisible = false"></app-editor-player>
 
-<p>BoardGames</p>
-<ul>
-  <li *ngFor="let boardGame of boardGames$ | async">{{ boardGame.Name }}</li>
-</ul>
-
-<p>Players</p>
-<ul>
-  <li *ngFor="let player of players$ | async">{{ player.Name }}</li>
-</ul>
-
-<p-table [value]="(games$ | async) ?? []" [tableStyle]="{ 'min-width': '50rem' }">
+<h1>Board Games</h1>
+<p-table [value]="(boardGames$ | async) ?? []" sortField="Name" [sortOrder]="1" [tableStyle]="{ 'min-width': '50rem' }">
   <ng-template pTemplate="header">
-      <tr>
-          <th>Date</th>
-          <th>Game</th>
-          <th>Players</th>
-          <th>Winner</th>
-          <th>Points</th>
-          <th>Did Not Finish</th>
-      </tr>
+    <tr>
+      <th pSortableColumn="Name">
+        Game
+        <p-sortIcon field="Name" />
+      </th>
+      <th>Times Played</th>
+      <th>Champion</th>
+      <th>Most Players Per Game</th>
+      <th>Average Players Per Game</th>
+      <th>Highest Score</th>
+      <th>Average Score</th>
+      <th *ngIf="canEdit">Edit</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-boardGame>
+    <tr>
+      <td>{{ boardGame.Name }}</td>
+      <td>{{ boardGame.Games.length }}</td>
+      <td>{{ 0 }}</td>
+      <td>{{ 0 }}</td>
+      <td>{{ 0 }}</td>
+      <td>{{ 0 }}</td>
+      <td>{{ 0 }}</td>
+      <td *ngIf="canEdit">
+        <p-button (click)="boardGameEdit(boardGame)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<h1>Players</h1>
+<p-table [value]="(players$ | async) ?? []" sortField="Name" [sortOrder]="1" [tableStyle]="{ 'min-width': '50rem' }">
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="Name">
+        Name
+        <p-sortIcon field="Name" />
+      </th>
+      <th>Wins</th>
+      <th>Best Game</th>
+      <th>Best Game Wins</th>
+      <th *ngIf="canEdit">Edit</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-player>
+    <tr>
+      <td>{{ player.Name }}</td>
+      <td>{{ player.PlayerGames.length }}</td>
+      <td>{{ 0 }}</td>
+      <td>{{ 0 }}</td>
+      <td *ngIf="canEdit">
+        <p-button (click)="playerEdit(player)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<h1>Games</h1>
+<p-table [value]="(games$ | async) ?? []" sortField="Date" [sortOrder]="1" [tableStyle]="{ 'min-width': '50rem' }">
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="Date">
+        Date
+        <p-sortIcon field="Date" />
+      </th>
+      <th>Game</th>
+      <th>Players</th>
+      <th>Winner</th>
+      <th>Points</th>
+      <th>Did Not Finish</th>
+      <th *ngIf="canEdit">Edit</th>
+    </tr>
   </ng-template>
   <ng-template pTemplate="body" let-game>
-      <tr>
-          <td>{{ game.Date | date: 'fullDate' }}</td>
-          <td>{{ game.BoardGame.Name }}</td>
-          <td>{{ game.Players }}</td>
-          <td>{{ game.Winners[0].Player.Name }}</td>
-          <td>{{ game.Winners[0].Points }}</td>
-          <td>{{ game.DidNotFinish }}</td>
-      </tr>
+    <tr>
+      <td>{{ game.Date | date: 'fullDate' }}</td>
+      <td>{{ game.BoardGame.Name }}</td>
+      <td>{{ game.Players }}</td>
+      <td>{{ game.Winners[0]?.Player?.Name }}</td>
+      <td>{{ game.Winners[0]?.Points }}</td>
+      <td>{{ game.DidNotFinish }}</td>
+      <td *ngIf="canEdit">
+        <p-button (click)="gameEdit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
+      </td>
+    </tr>
   </ng-template>
 </p-table>

@@ -56,7 +56,12 @@
     display: flex;
     position: relative;
 
-    p-button {
+    p-button:first-child {
+      position: absolute;
+      top: -0.75rem;
+      right: 1.5rem;
+    }
+    p-button:nth-child(2) {
       position: absolute;
       top: -0.75rem;
       right: -1rem;

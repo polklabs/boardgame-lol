@@ -8,6 +8,7 @@ import { BoardGameEntity } from './BoardGame.entity';
 import { PlayerGameEntity } from './PlayerGame.entity';
 import { PlayerEntity } from './Player.entity';
 import { Ignore } from '../decorators/ignore.decorator';
+import { Nullable } from '../decorators/nullable.decorator';
 
 export type GameWrapper = {
   Game: GameEntity;
@@ -17,10 +18,10 @@ export type GameWrapper = {
 };
 
 export type GameReturn = {
-  Game: GameEntity,
-  BoardGames: BoardGameEntity[],
-  PlayerGames: PlayerGameEntity[],
-  Players: PlayerEntity[],
+  Game: GameEntity;
+  BoardGames: BoardGameEntity[];
+  PlayerGames: PlayerGameEntity[];
+  Players: PlayerEntity[];
 };
 
 @TableName('Game')
@@ -42,13 +43,15 @@ export class GameEntity extends BaseEntity {
   DidNotFinish: boolean = false;
 
   @Ignore()
-  BoardGame?: BoardGameEntity;
+  @Nullable()
+  BoardGame: BoardGameEntity | null = null;
 
   @Ignore()
+  @Nullable()
   Winners: PlayerGameEntity[] = [];
 
-  constructor(partial: Partial<GameEntity> = {}) {
-    super(partial);
-    this.assign(partial);
+  constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
+    super(partial, GameEntity);
+    this.assign(partial, GameEntity, copyIgnored);
   }
 }

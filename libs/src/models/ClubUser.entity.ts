@@ -19,7 +19,7 @@ export class ClubUserEntity extends BaseEntity {
   Admin: boolean = false;
 
   constructor(partial: Partial<ClubUserEntity> = {}) {
-    super(partial);
-    this.assign(partial);
+    super(partial, ClubUserEntity);
+    this.assign(partial, ClubUserEntity, false);
   }
 }

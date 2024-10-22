@@ -147,11 +147,20 @@ export class ApiService {
       const gameIndex = this.gameList.findIndex((x) => x.GameId === result!.Game.GameId);
       if (gameIndex >= 0) {
         this.gameList[gameIndex] = result.Game;
+        this.gameList = this._gameList;
       } else {
-        this.gameList.push(result.Game);
+        this.gameList = [...this.gameList, result.Game];
       }
 
-      this.playerGameList.push(...result.PlayerGames);
+      result.PlayerGames.forEach((pg) => {
+        const pgIndex = this.playerGameList.findIndex((x) => x.PlayerGameId === pg.PlayerGameId);
+        if (pgIndex >= 0) {
+          this.playerGameList[pgIndex] = pg;
+          this.playerGameList = this._playerGameList;
+        } else {
+          this.playerGameList = [...this.playerGameList, pg];
+        }
+      });
       this.boardGameList = result.BoardGames;
       this.playerList = result.Players;
       this.updateReferences();
@@ -262,13 +271,21 @@ export class ApiService {
 
   private updateReferences() {
     this.gameList.forEach((game) => {
-      game.BoardGame = this.boardGameList.find((x) => x.BoardGameId === game.BoardGameId);
+      game.BoardGame = this.boardGameList.find((x) => x.BoardGameId === game.BoardGameId) ?? null;
       game.Winners = this.playerGameList.filter((x) => x.GameId === game.GameId);
     });
 
     this.playerGameList.forEach((pg) => {
-      pg.Player = this.playerList.find((x) => x.PlayerId === pg.PlayerId);
-      pg.Game = this.gameList.find((x) => x.GameId === pg.GameId);
+      pg.Player = this.playerList.find((x) => x.PlayerId === pg.PlayerId) ?? null;
+      pg.Game = this.gameList.find((x) => x.GameId === pg.GameId) ?? null;
+    });
+
+    this.boardGameList.forEach((bg) => {
+      bg.Games = this.gameList.filter((x) => x.BoardGameId === bg.BoardGameId);
+    });
+
+    this.playerList.forEach((p) => {
+      p.PlayerGames = this.playerGameList.filter((x) => x.PlayerId === p.PlayerId);
     });
   }
 }

@@ -57,8 +57,8 @@ export class EditorGameComponent implements OnChanges {
   }
 
   get selectedBoardGame() {
-    const id = this.formGroup.controls['BoardGameId'].getRawValue();
-    return this.boardGames.find(x => x.BoardGameId === id);
+    const id = this.formGroup.controls['BoardGameId'].value;
+    return this.boardGames.find((x) => x.BoardGameId === id);
   }
 
   get players() {
@@ -109,7 +109,7 @@ export class EditorGameComponent implements OnChanges {
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
-      this.formGroup.patchValue(this.game);
+      this.formGroup.patchValue(new GameEntity(this.game));
     } else {
       // No Changes
     }
@@ -122,7 +122,7 @@ export class EditorGameComponent implements OnChanges {
 
     this.playerGames = this.apiService.playerGameList
       .filter((x) => x.GameId === this.game?.GameId)
-      .map((m) => new PlayerGameEntity(m));
+      .map((m) => new PlayerGameEntity(m, true));
     this.playerGames.sort((a, b) => (a.Points ?? 0) - (b.Points ?? 0));
   }
 
@@ -273,6 +273,13 @@ export class EditorGameComponent implements OnChanges {
       // continue
     }
 
+    const id = this.formGroup.controls['BoardGameId'].value;
+    if (boardGame?.BoardGameId === id) {
+      this.formGroup.controls['BoardGameId'].setValue(this.boardGames[0]?.BoardGameId ?? null);
+    } else {
+      // Continue
+    }
+
     this.boardGameEdit = undefined;
     this.boardGameEditorVisible = false;
   }
@@ -282,17 +289,12 @@ export class EditorGameComponent implements OnChanges {
     if (this.formGroup.invalid || !this.game) {
       return;
     } else {
-      const result = false;
-      console.log(this.formGroup.getRawValue());
-      console.log(this.playerGames);
-      console.log(this.newPlayers);
-      console.log(this.newBoardGames);
-      // const result = await this.apiService.postGame(this.game.GameId === null, {
-      //   Game: this.formGroup.getRawValue(),
-      //   PlayerGames: this.playerGames,
-      //   BoardGames: this.newBoardGames,
-      //   Players: this.newPlayers,
-      // });
+      const result = await this.apiService.postGame(this.game.GameId === null, {
+        Game: this.formGroup.getRawValue(),
+        PlayerGames: this.playerGames.map((x) => new PlayerGameEntity(x)),
+        BoardGames: this.newBoardGames,
+        Players: this.newPlayers,
+      });
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Game' });
         this.closeEditor.emit();

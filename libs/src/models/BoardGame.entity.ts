@@ -8,6 +8,8 @@ import { Nullable } from '../decorators/nullable.decorator';
 import { Expose } from 'class-transformer';
 import { Sanitize } from '../decorators/sanitize.decorator';
 import { Enum } from '../decorators/enum.decorator';
+import { Ignore } from '../decorators/ignore.decorator';
+import { GameEntity } from './Game.entity';
 
 export const ScoreTypes = ['points', 'rank', 'win-lose'] as const;
 export type ScoreType = (typeof ScoreTypes)[number];
@@ -37,8 +39,12 @@ export class BoardGameEntity extends BaseEntity {
     return `https://boardgamegeek.com/boardgame/${this.BoardGameGeekId}`;
   }
 
+  @Nullable()
+  @Ignore()
+  Games: GameEntity[] = [];
+
   constructor(partial: Partial<BoardGameEntity> = {}) {
-    super(partial);
-    this.assign(partial);
+    super(partial, BoardGameEntity);
+    this.assign(partial, BoardGameEntity, false);
   }
 }

@@ -134,7 +134,7 @@ export class GameManager extends BaseManager<GameEntity> {
 
     return {
       Game: this.loadOne(entity.GameId),
-      BoardGame: this.boardGameManager.loadMany('ClubId', entity.ClubId),
+      BoardGames: this.boardGameManager.loadMany('ClubId', entity.ClubId),
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId, 'ClubId', entity.ClubId),
       Players: this.playerManager.loadMany('ClubId', entity.ClubId),
     };

@@ -17,7 +17,7 @@ export class ClubEntity extends BaseEntity {
   Name: string = '';
 
   constructor(partial: Partial<ClubEntity> = {}) {
-    super(partial);
-    this.assign(partial);
+    super(partial, ClubEntity);
+    this.assign(partial, ClubEntity, false);
   }
 }
