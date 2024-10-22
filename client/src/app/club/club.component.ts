@@ -8,11 +8,19 @@ import { BoardGameEntity, GameEntity, PlayerEntity } from 'libs/index';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
 import { Observable } from 'rxjs';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-club',
   standalone: true,
-  imports: [MenuBarComponent, EditorGameComponent, EditorBoardGameComponent, EditorPlayerComponent, CommonModule],
+  imports: [
+    MenuBarComponent,
+    EditorGameComponent,
+    EditorBoardGameComponent,
+    EditorPlayerComponent,
+    CommonModule,
+    TableModule,
+  ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })

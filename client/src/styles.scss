@@ -69,8 +69,20 @@ body {
   gap: 4px;
 }
 
+.gap-8 {
+  gap: 8px;
+}
+
+.width-100 {
+  width: 100%;
+}
+
 .align-items-center {
   align-items: center;
+}
+
+.align-items-end {
+  align-items: end;
 }
 
 .justify-content-start {

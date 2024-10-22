@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BoardGameEntity, GameEntity, PlayerEntity, PlayerGameEntity } from 'libs/index';
+import { BoardGameEntity, GameEntity, isGuid, PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { ApiService } from '../shared/services/api.service';
 import { MessageService } from 'primeng/api';
 import { buildForm } from '../shared/form.utils';
@@ -11,6 +11,10 @@ import { ButtonModule } from 'primeng/button';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
 import { DropdownComponent } from '../shared/components/dropdown/dropdown.component';
+import { TextInputComponent } from '../shared/components/textinput/textinput.component';
+import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-game.component';
+import { CalendarComponent } from '../shared/components/calendar/calendar.component';
+import { CheckboxModule } from 'primeng/checkbox';
 
 type EntityType = GameEntity;
 
@@ -21,11 +25,15 @@ type EntityType = GameEntity;
     CommonModule,
     DialogModule,
     DropdownComponent,
+    TextInputComponent,
+    CalendarComponent,
+    CheckboxModule,
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
     EditorPlayerComponent,
     EditorBoardGameComponent,
+    EditorPlayerGameComponent,
     OrderListModule,
   ],
   templateUrl: './editor-game.component.html',
@@ -41,8 +49,21 @@ export class EditorGameComponent implements OnChanges {
 
   entityType = GameEntity;
 
-  players: PlayerEntity[] = [];
-  boardGames: BoardGameEntity[] = [];
+  private playerList: PlayerEntity[] = [];
+  private boardGameList: BoardGameEntity[] = [];
+
+  get boardGames() {
+    return [...this.boardGameList, ...this.newBoardGames].sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
+  }
+
+  get selectedBoardGame() {
+    const id = this.formGroup.controls['BoardGameId'].getRawValue();
+    return this.boardGames.find(x => x.BoardGameId === id);
+  }
+
+  get players() {
+    return [...this.playerList, ...this.newPlayers].sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
+  }
 
   playerGames: PlayerGameEntity[] = [];
   newPlayers: PlayerEntity[] = [];
@@ -50,6 +71,9 @@ export class EditorGameComponent implements OnChanges {
 
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
+
+  playerGameEditorVisible = false;
+  playerGameEdit?: PlayerGameEntity;
 
   playerEditorVisible = false;
   playerEdit?: PlayerEntity;
@@ -76,6 +100,13 @@ export class EditorGameComponent implements OnChanges {
 
       this.grabLists();
 
+      if (this.isNew) {
+        this.game.BoardGameId = this.boardGames[0]?.BoardGameId ?? null;
+        this.game.Date = new Date();
+      } else {
+        this.game.Date = new Date(this.game.Date);
+      }
+
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
       this.formGroup.patchValue(this.game);
@@ -86,11 +117,8 @@ export class EditorGameComponent implements OnChanges {
   }
 
   grabLists() {
-    this.players = this.apiService.playerList;
-    this.players.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
-
-    this.boardGames = this.apiService.boardGameList;
-    this.boardGames.sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
+    this.playerList = this.apiService.playerList;
+    this.boardGameList = this.apiService.boardGameList;
 
     this.playerGames = this.apiService.playerGameList
       .filter((x) => x.GameId === this.game?.GameId)
@@ -106,9 +134,54 @@ export class EditorGameComponent implements OnChanges {
     // TODO
   }
 
+  editPlayerGame(playerGame?: PlayerGameEntity) {
+    if (!playerGame) {
+      this.playerGameEdit = new PlayerGameEntity({ ClubId: this.game?.ClubId, GameId: '-1' });
+    } else {
+      this.playerGameEdit = playerGame;
+    }
+    this.playerGameEditorVisible = true;
+  }
+
+  savePlayerGame(playerGame?: PlayerGameEntity) {
+    if (playerGame) {
+      const index = this.playerGames.indexOf(playerGame);
+      if (index === -1) {
+        this.playerGames = [...this.playerGames, playerGame];
+      } else {
+        // continue
+      }
+    } else {
+      // continue
+    }
+    this.playerGameEdit = undefined;
+    this.playerGameEditorVisible = false;
+  }
+
+  deletePlayerGame(playerGame?: PlayerGameEntity) {
+    if (playerGame) {
+      const index = this.playerGames.indexOf(playerGame);
+      if (index !== -1) {
+        this.playerGames.splice(index, 1);
+        this.playerGames = [...this.playerGames];
+      } else {
+        // continue
+      }
+    } else {
+      // continue
+    }
+
+    this.playerGameEdit = undefined;
+    this.playerGameEditorVisible = false;
+  }
+
   editPlayer(player?: PlayerEntity) {
     if (!player) {
-      this.playerEdit = new PlayerEntity();
+      let nextId = 0;
+      while (this.newPlayers.find((x) => x.PlayerId === `${nextId}`)) {
+        nextId++;
+      }
+      this.playerEdit = new PlayerEntity({ PlayerId: `${nextId}`, ClubId: this.game?.ClubId });
     } else {
       this.playerEdit = player;
     }
@@ -147,9 +220,22 @@ export class EditorGameComponent implements OnChanges {
     this.playerEditorVisible = false;
   }
 
+  canEditBoardGame() {
+    const value = this.formGroup.controls['BoardGameId'].value;
+    if (isGuid(value) || value === null || value === undefined) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   editBoardGame(boardGame?: BoardGameEntity) {
     if (!boardGame) {
-      this.boardGameEdit = new BoardGameEntity();
+      let nextId = 0;
+      while (this.newBoardGames.find((x) => x.BoardGameId === `${nextId}`)) {
+        nextId++;
+      }
+      this.boardGameEdit = new BoardGameEntity({ BoardGameId: `${nextId}`, ClubId: this.game?.ClubId });
     } else {
       this.boardGameEdit = boardGame;
     }
@@ -157,6 +243,7 @@ export class EditorGameComponent implements OnChanges {
   }
 
   saveBoardGame(boardGame?: BoardGameEntity) {
+    this.formGroup.controls['BoardGameId'].setValue(null);
     if (boardGame) {
       const index = this.newBoardGames.indexOf(boardGame);
       if (index === -1) {
@@ -164,11 +251,13 @@ export class EditorGameComponent implements OnChanges {
       } else {
         // continue
       }
+      this.formGroup.controls['BoardGameId'].setValue(boardGame.BoardGameId);
     } else {
       // continue
     }
     this.boardGameEdit = undefined;
     this.boardGameEditorVisible = false;
+    this.cdr.detectChanges();
   }
 
   deleteBoardGame(boardGame?: BoardGameEntity) {
@@ -193,12 +282,17 @@ export class EditorGameComponent implements OnChanges {
     if (this.formGroup.invalid || !this.game) {
       return;
     } else {
-      const result = await this.apiService.postGame(this.game.GameId === null, {
-        Game: this.formGroup.getRawValue(),
-        PlayerGames: this.playerGames,
-        BoardGames: this.newBoardGames,
-        Players: this.newPlayers,
-      });
+      const result = false;
+      console.log(this.formGroup.getRawValue());
+      console.log(this.playerGames);
+      console.log(this.newPlayers);
+      console.log(this.newBoardGames);
+      // const result = await this.apiService.postGame(this.game.GameId === null, {
+      //   Game: this.formGroup.getRawValue(),
+      //   PlayerGames: this.playerGames,
+      //   BoardGames: this.newBoardGames,
+      //   Players: this.newPlayers,
+      // });
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Game' });
         this.closeEditor.emit();

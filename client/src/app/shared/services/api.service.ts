@@ -10,6 +10,7 @@ import {
   PlayerEntity,
   PlayerGameEntity,
 } from 'libs/index';
+import { format } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
@@ -112,6 +113,7 @@ export class ApiService {
     this.playerList = data.Players;
     this.gameList = data.Games;
     this.playerGameList = data.PlayerGames;
+    this.updateReferences();
   }
 
   async postClub(isNew: boolean, data: ClubEntity) {
@@ -132,6 +134,8 @@ export class ApiService {
   }
 
   async postGame(isNew: boolean, data: GameWrapper) {
+    data.Game.Date = format(data.Game.Date, 'yyyy-MM-dd');
+
     let result: GameReturn | null = null;
     if (isNew) {
       result = await this.httpService.put(['api', 'game'], data);
@@ -148,8 +152,9 @@ export class ApiService {
       }
 
       this.playerGameList.push(...result.PlayerGames);
-      this.boardGameList = result.BoardGame;
+      this.boardGameList = result.BoardGames;
       this.playerList = result.Players;
+      this.updateReferences();
       return true;
     } else {
       return false;
@@ -229,6 +234,7 @@ export class ApiService {
 
     if (result) {
       this.playerList = this.playerList.filter((x) => x.PlayerId !== playerId);
+      this.updateReferences();
       return true;
     } else {
       return false;
@@ -247,9 +253,22 @@ export class ApiService {
 
     if (result) {
       this.boardGameList = this.boardGameList.filter((x) => x.BoardGameId !== boardGameId);
+      this.updateReferences();
       return true;
     } else {
       return false;
     }
+  }
+
+  private updateReferences() {
+    this.gameList.forEach((game) => {
+      game.BoardGame = this.boardGameList.find((x) => x.BoardGameId === game.BoardGameId);
+      game.Winners = this.playerGameList.filter((x) => x.GameId === game.GameId);
+    });
+
+    this.playerGameList.forEach((pg) => {
+      pg.Player = this.playerList.find((x) => x.PlayerId === pg.PlayerId);
+      pg.Game = this.gameList.find((x) => x.GameId === pg.GameId);
+    });
   }
 }

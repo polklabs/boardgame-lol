@@ -23,6 +23,7 @@
     "@angular/router": "^17.1.0",
     "@auth0/angular-jwt": "^5.2.0",
     "class-transformer": "^0.5.1",
+    "date-fns": "^4.1.0",
     "ngx-countdown": "^17.1.1",
     "primeicons": "^6.0.1",
     "primeng": "^17.4.0",

@@ -18,12 +18,6 @@
   [player]="editPlayer"
   (closeEditor)="editorPlayerVisible = false"></app-editor-player>
 
-<!-- Display Game List -->
-<p>Games</p>
-<ul>
-  <li *ngFor="let game of games$ | async">{{ game.Date }}</li>
-</ul>
-
 <p>BoardGames</p>
 <ul>
   <li *ngFor="let boardGame of boardGames$ | async">{{ boardGame.Name }}</li>
@@ -33,3 +27,26 @@
 <ul>
   <li *ngFor="let player of players$ | async">{{ player.Name }}</li>
 </ul>
+
+<p-table [value]="(games$ | async) ?? []" [tableStyle]="{ 'min-width': '50rem' }">
+  <ng-template pTemplate="header">
+      <tr>
+          <th>Date</th>
+          <th>Game</th>
+          <th>Players</th>
+          <th>Winner</th>
+          <th>Points</th>
+          <th>Did Not Finish</th>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-game>
+      <tr>
+          <td>{{ game.Date | date: 'fullDate' }}</td>
+          <td>{{ game.BoardGame.Name }}</td>
+          <td>{{ game.Players }}</td>
+          <td>{{ game.Winners[0].Player.Name }}</td>
+          <td>{{ game.Winners[0].Points }}</td>
+          <td>{{ game.DidNotFinish }}</td>
+      </tr>
+  </ng-template>
+</p-table>

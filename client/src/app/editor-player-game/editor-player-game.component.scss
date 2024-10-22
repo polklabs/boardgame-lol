@@ -1,0 +1,30 @@
+:host ::ng-deep {
+  .form {
+    min-height: 200px;
+  }
+
+  span.p-float-label {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  p-dropdown {
+    max-width: calc(100vw - 75px);
+    .p-dropdown {
+      width: 100%;
+    }
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    gap: 16px;
+    > div {
+      display: flex;
+      justify-content: start;
+      gap: 16px;
+    }
+  }
+}

@@ -1,0 +1,16 @@
+<app-control-wrapper
+  #ControlWrapper
+  [label]="label"
+  [controlName]="formControlName"
+  [formGroup]="formGroup"
+  [entityType]="entityType"
+  [hiddenFields]="hiddenFields"
+  [iconPosition]="icon ? iconPosition : ''">
+  <i class="{{ icon }}"></i>
+  <p-calendar
+    id="{{ formControlName }}"
+    formControlName="{{ formControlName }}"
+    [iconDisplay]="'input'"
+    [showIcon]="true"
+    [ngClass]="{ 'ng-invalid ng-dirty': ControlWrapper.isFieldInvalid() }" />
+</app-control-wrapper>

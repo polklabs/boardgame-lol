@@ -1,0 +1,44 @@
+<p-dialog
+  [header]="title"
+  [visible]="editorVisible"
+  (visibleChange)="closeEditor.emit()"
+  [modal]="true"
+  [style]="{ width: '650px', 'min-width': '300px' }"
+  [draggable]="false"
+  position="bottom">
+  <div *ngIf="formGroup && playerGame" class="form">
+    <form [formGroup]="formGroup" (ngSubmit)="submit()">
+      <div class="flex gap-4 align-items-end justify-content-space-between">
+        <app-dropdown
+          style="width: calc(100% - 104px)"
+          formControlName="PlayerId"
+          label="Player"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"
+          [options]="players"
+          optionLabel="Name"
+          optionValue="PlayerId"
+          [showClear]="false"></app-dropdown>
+        <p-button *ngIf="canEditPlayer()" (click)="editPlayer.emit(selectedPlayer)" icon="pi pi-pencil"></p-button>
+        <p-button (click)="editPlayer.emit()" icon="pi pi-plus"></p-button>
+      </div>
+
+      <app-textinput
+        formControlName="Points"
+        label="Points"
+        [entityType]="entityType"
+        [hiddenFields]="hideFields"
+        inputType="number"></app-textinput>
+
+      <div class="dialog-footer">
+        <div>
+          <p-button label="Delete" [outlined]="true" severity="danger" (click)="toDeleteEntity()"></p-button>
+        </div>
+        <div>
+          <p-button label="Cancel" [outlined]="true" severity="secondary" (click)="closeEditor.emit()"></p-button>
+          <p-button label="Save & Close" [outlined]="true" (click)="submit()"></p-button>
+        </div>
+      </div>
+    </form>
+  </div>
+</p-dialog>

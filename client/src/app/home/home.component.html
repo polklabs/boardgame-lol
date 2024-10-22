@@ -6,3 +6,7 @@
   (closeEditor)="editorClubVisible = false"></app-editor-club> -->
 
 <!-- Display Game List -->
+
+<p-card *ngFor="let club of clubList$ | async" [header]="club.name" [routerLink]="'/club/' + club.id">
+  
+</p-card>
