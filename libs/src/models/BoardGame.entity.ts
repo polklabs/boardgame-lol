@@ -10,6 +10,8 @@ import { Sanitize } from '../decorators/sanitize.decorator';
 import { Enum } from '../decorators/enum.decorator';
 import { Ignore } from '../decorators/ignore.decorator';
 import { GameEntity } from './Game.entity';
+import { PlayerEntity } from './Player.entity';
+import { Mode } from '../utils/helper-utils';
 
 export const ScoreTypes = ['points', 'rank', 'win-lose'] as const;
 export type ScoreType = (typeof ScoreTypes)[number];
@@ -39,12 +41,81 @@ export class BoardGameEntity extends BaseEntity {
     return `https://boardgamegeek.com/boardgame/${this.BoardGameGeekId}`;
   }
 
-  @Nullable()
   @Ignore()
   Games: GameEntity[] = [];
 
-  constructor(partial: Partial<BoardGameEntity> = {}) {
+  @Ignore()
+  Champions: PlayerEntity[] = [];
+
+  @Ignore()
+  MaxPlayers = 0;
+
+  @Ignore()
+  AveragePlayers = 0;
+
+  @Ignore()
+  MaxScore = 0;
+
+  @Ignore()
+  AverageScore = 0;
+
+  @Ignore()
+  AverageWinningScore = 0;
+
+  constructor(partial: Partial<BoardGameEntity> = {}, copyIgnored = false) {
     super(partial, BoardGameEntity);
-    this.assign(partial, BoardGameEntity, false);
+    this.assign(partial, BoardGameEntity, copyIgnored);
+  }
+
+  calculateFields() {
+    this.calculateChampion();
+    this.calculatePlayers();
+    this.calculateScore();
+  }
+
+  calculateChampion() {
+    this.Champions = Mode(
+      this.Games.map((x) => x.calculateWinner())
+        .flat()
+        .map((x) => x.Player!),
+      (x) => x.PlayerId ?? ''
+    );
+  }
+
+  calculatePlayers() {
+    this.MaxPlayers = Math.max(...this.Games.map((g) => g.Players), 0);
+    if (this.Games.length > 0) {
+      this.AveragePlayers = this.Games.reduce((sum, game) => sum + game.Players, 0) / this.Games.length;
+    } else {
+      this.AveragePlayers = 0;
+    }
+  }
+
+  calculateScore() {
+    const scores = this.Games.map((g) => g.Scores)
+      .flat()
+      .filter((x) => !!x.Points);
+    if (this.ScoreType === 'points') {
+      this.MaxScore = Math.max(...scores.map((pg) => pg.Points ?? 0), 0);
+
+      if (scores.length > 0) {
+        this.AverageScore = scores.reduce((sum, score) => sum + score.Points!, 0) / scores.length;
+      } else {
+        this.AverageScore = 0;
+      }
+
+      const winners = this.Games.map((g) => g.calculateWinner())
+        .flat()
+        .filter((x) => !!x.Points);
+      if (winners.length > 0) {
+        this.AverageWinningScore = winners.reduce((sum, score) => sum + score.Points!, 0) / winners.length;
+      } else {
+        this.AverageWinningScore = 0;
+      }
+    } else {
+      this.MaxScore = 0;
+      this.AverageScore = 0;
+      this.AverageWinningScore = 0;
+    }
   }
 }

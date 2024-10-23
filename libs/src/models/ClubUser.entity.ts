@@ -18,8 +18,10 @@ export class ClubUserEntity extends BaseEntity {
 
   Admin: boolean = false;
 
-  constructor(partial: Partial<ClubUserEntity> = {}) {
+  constructor(partial: Partial<ClubUserEntity> = {}, copyIgnored = false) {
     super(partial, ClubUserEntity);
-    this.assign(partial, ClubUserEntity, false);
+    this.assign(partial, ClubUserEntity, copyIgnored);
   }
+
+  calculateFields() {}
 }

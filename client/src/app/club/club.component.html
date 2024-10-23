@@ -31,23 +31,25 @@
         <p-sortIcon field="Name" />
       </th>
       <th>Times Played</th>
-      <th>Champion</th>
+      <th>Champion(s)</th>
       <th>Most Players Per Game</th>
       <th>Average Players Per Game</th>
       <th>Highest Score</th>
       <th>Average Score</th>
+      <th>Average Winning Score</th>
       <th *ngIf="canEdit">Edit</th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-boardGame>
     <tr>
       <td>{{ boardGame.Name }}</td>
-      <td>{{ boardGame.Games.length }}</td>
-      <td>{{ 0 }}</td>
-      <td>{{ 0 }}</td>
-      <td>{{ 0 }}</td>
-      <td>{{ 0 }}</td>
-      <td>{{ 0 }}</td>
+      <td>{{ boardGame.Games.length | number:'1.0-0' }}</td>
+      <td>{{ boardGame.Champions | array:'Name' }}</td>
+      <td>{{ boardGame.MaxPlayers | number:'1.0-0' }}</td>
+      <td>{{ boardGame.AveragePlayers | number:'1.0-3' }}</td>
+      <td>{{ boardGame.MaxScore | number:'1.0-3' }}</td>
+      <td>{{ boardGame.AverageScore | number:'1.0-3' }}</td>
+      <td>{{ boardGame.AverageWinningScore | number:'1.0-3' }}</td>
       <td *ngIf="canEdit">
         <p-button (click)="boardGameEdit(boardGame)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
       </td>
@@ -64,17 +66,17 @@
         <p-sortIcon field="Name" />
       </th>
       <th>Wins</th>
-      <th>Best Game</th>
-      <th>Best Game Wins</th>
+      <th>Best Game(s)</th>
+      <th>Best Game(s) Wins</th>
       <th *ngIf="canEdit">Edit</th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-player>
     <tr>
       <td>{{ player.Name }}</td>
-      <td>{{ player.PlayerGames.length }}</td>
-      <td>{{ 0 }}</td>
-      <td>{{ 0 }}</td>
+      <td>{{ player.Wins.length | number:'1.0-0' }}</td>
+      <td>{{ player.BestGames | array:'Name' }}</td>
+      <td>{{ player.BestGameWins | number:'1.0-0' }}</td>
       <td *ngIf="canEdit">
         <p-button (click)="playerEdit(player)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
       </td>
@@ -92,7 +94,7 @@
       </th>
       <th>Game</th>
       <th>Players</th>
-      <th>Winner</th>
+      <th>Winner(s)</th>
       <th>Points</th>
       <th>Did Not Finish</th>
       <th *ngIf="canEdit">Edit</th>
@@ -102,9 +104,9 @@
     <tr>
       <td>{{ game.Date | date: 'fullDate' }}</td>
       <td>{{ game.BoardGame.Name }}</td>
-      <td>{{ game.Players }}</td>
-      <td>{{ game.Winners[0]?.Player?.Name }}</td>
-      <td>{{ game.Winners[0]?.Points }}</td>
+      <td>{{ game.Players | number:'1.0-0' }}</td>
+      <td>{{ game.Scores | array:'Player.Name' }}</td>
+      <td>{{ game.Scores[0]?.Points | number:'1.0-3' }}</td>
       <td>{{ game.DidNotFinish }}</td>
       <td *ngIf="canEdit">
         <p-button (click)="gameEdit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>

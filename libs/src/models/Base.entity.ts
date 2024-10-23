@@ -19,6 +19,8 @@ export abstract class BaseEntity {
     this.assign(partial, entityType, false);
   }
 
+  public abstract calculateFields(): void;
+
   protected assign<T>(partial: Partial<T>, entityType: { new (partial: Partial<T>): T }, copyIgnored: boolean) {
     const ignored = getIgnore(entityType);
     for (const key in partial) {

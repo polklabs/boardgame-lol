@@ -43,15 +43,60 @@ export class GameEntity extends BaseEntity {
   DidNotFinish: boolean = false;
 
   @Ignore()
-  @Nullable()
   BoardGame: BoardGameEntity | null = null;
 
   @Ignore()
-  @Nullable()
-  Winners: PlayerGameEntity[] = [];
+  Scores: PlayerGameEntity[] = [];
 
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
     super(partial, GameEntity);
     this.assign(partial, GameEntity, copyIgnored);
+  }
+
+  calculateFields() {}
+
+  calculateWinner(): PlayerGameEntity[] {
+    switch (this.BoardGame?.ScoreType) {
+      case 'points':
+        if (this.Scores.length > 0) {
+          return this.Scores.reduce(
+            (max, playerGame) => {
+              if ((playerGame.Points ?? 0) > (max[0].Points ?? 0)) {
+                return [playerGame];
+              } else if ((playerGame.Points ?? 0) === (max[0].Points ?? 0)) {
+                max.push(playerGame);
+                return max;
+              } else {
+                return max;
+              }
+            },
+            [this.Scores[0]]
+          );
+        } else {
+          return [];
+        }
+      case 'rank':
+        if (this.Scores.length > 0) {
+          return this.Scores.reduce(
+            (max, playerGame) => {
+              if ((playerGame.Points ?? Infinity) < (max[0].Points ?? Infinity)) {
+                return [playerGame];
+              } else if ((playerGame.Points ?? Infinity) === (max[0].Points ?? Infinity)) {
+                max.push(playerGame);
+                return max;
+              } else {
+                return max;
+              }
+            },
+            [this.Scores[0]]
+          );
+        } else {
+          return [];
+        }
+      case 'win-lose':
+        return this.Scores.filter((x) => x.Points === 1);
+      default:
+        return [];
+    }
   }
 }

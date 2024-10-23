@@ -38,23 +38,23 @@ export class ApiService {
     return this._club?.ClubId;
   }
   private set club(club: ClubEntity | undefined) {
-    this._club = club;
+    this._club = new ClubEntity(club, true);
     this.club$.next(club);
   }
 
   get boardGameList() {
     return this._boardGameList;
   }
-  private set boardGameList(mediaList: BoardGameEntity[]) {
-    this._boardGameList = mediaList;
+  private set boardGameList(boardGameList: BoardGameEntity[]) {
+    this._boardGameList = boardGameList.map((x) => new BoardGameEntity(x, true));
     this.boardGameList$.next(this._boardGameList);
   }
 
   get playerList() {
     return this._playerList;
   }
-  private set playerList(mediaList: PlayerEntity[]) {
-    this._playerList = mediaList;
+  private set playerList(playerList: PlayerEntity[]) {
+    this._playerList = playerList.map((x) => new PlayerEntity(x, true));
     this.playerList$.next(this._playerList);
   }
 
@@ -62,7 +62,7 @@ export class ApiService {
     return this._gameList;
   }
   private set gameList(gameList: GameEntity[]) {
-    this._gameList = gameList;
+    this._gameList = gameList.map((x) => new GameEntity(x, true));
     this.gameList$.next(this._gameList);
   }
 
@@ -70,7 +70,7 @@ export class ApiService {
     return this._playerGameList;
   }
   private set playerGameList(playerGameList: PlayerGameEntity[]) {
-    this._playerGameList = playerGameList;
+    this._playerGameList = playerGameList.map((x) => new PlayerGameEntity(x, true));
     this.playerGameList$.next(this._playerGameList);
   }
 
@@ -277,7 +277,7 @@ export class ApiService {
   private updateReferences() {
     this.gameList.forEach((game) => {
       game.BoardGame = this.boardGameList.find((x) => x.BoardGameId === game.BoardGameId) ?? null;
-      game.Winners = this.playerGameList.filter((x) => x.GameId === game.GameId);
+      game.Scores = this.playerGameList.filter((x) => x.GameId === game.GameId);
     });
 
     this.playerGameList.forEach((pg) => {
@@ -292,5 +292,10 @@ export class ApiService {
     this.playerList.forEach((p) => {
       p.PlayerGames = this.playerGameList.filter((x) => x.PlayerId === p.PlayerId);
     });
+
+    this.gameList.forEach((x) => x.calculateFields());
+    this.playerGameList.forEach((x) => x.calculateFields());
+    this.boardGameList.forEach((x) => x.calculateFields());
+    this.playerList.forEach((x) => x.calculateFields());
   }
 }

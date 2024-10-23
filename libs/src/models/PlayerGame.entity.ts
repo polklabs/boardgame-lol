@@ -28,15 +28,15 @@ export class PlayerGameEntity extends BaseEntity {
   Points: number | null = null;
 
   @Ignore()
-  @Nullable()
   Player: PlayerEntity | null = null;
 
   @Ignore()
-  @Nullable()
   Game: GameEntity | null = null;
 
   constructor(partial: Partial<PlayerGameEntity> = {}, copyIgnored = false) {
     super(partial, PlayerGameEntity);
     this.assign(partial, PlayerGameEntity, copyIgnored);
   }
+
+  calculateFields() {}
 }

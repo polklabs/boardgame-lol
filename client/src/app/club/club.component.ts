@@ -11,6 +11,7 @@ import { EditorPlayerComponent } from '../editor-player/editor-player.component'
 import { TableModule } from 'primeng/table';
 import { UserService } from '../shared/services/user.service';
 import { ButtonModule } from 'primeng/button';
+import { PipeModule } from '../shared/pipes/pipe.module';
 
 @Component({
   selector: 'app-club',
@@ -23,6 +24,7 @@ import { ButtonModule } from 'primeng/button';
     CommonModule,
     TableModule,
     ButtonModule,
+    PipeModule,
   ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',

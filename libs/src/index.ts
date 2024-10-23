@@ -26,3 +26,4 @@ export * from './constants';
 // Utils
 export * from './utils/guid-utils';
 export * from './utils/entity-utils';
+export * from './utils/helper-utils';

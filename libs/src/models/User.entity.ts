@@ -40,8 +40,10 @@ export class UserEntity extends BaseEntity {
 
   Deleted: boolean = false;
 
-  constructor(partial: Partial<UserEntity> = {}) {
+  constructor(partial: Partial<UserEntity> = {}, copyIgnored = false) {
     super(partial, UserEntity);
-    this.assign(partial, UserEntity, false);
+    this.assign(partial, UserEntity, copyIgnored);
   }
+
+  calculateFields() {}
 }

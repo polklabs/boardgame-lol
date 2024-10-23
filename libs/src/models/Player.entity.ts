@@ -8,6 +8,8 @@ import { Sanitize } from '../decorators/sanitize.decorator';
 import { Nullable } from '../decorators/nullable.decorator';
 import { Ignore } from '../decorators/ignore.decorator';
 import { PlayerGameEntity } from './PlayerGame.entity';
+import { BoardGameEntity } from './BoardGame.entity';
+import { Mode } from '../utils/helper-utils';
 
 @TableName('Player')
 export class PlayerEntity extends BaseEntity {
@@ -23,17 +25,47 @@ export class PlayerEntity extends BaseEntity {
 
   IsRealPerson: boolean = true;
 
-  @Nullable()
   @Ignore()
   PlayerGames: PlayerGameEntity[] = [];
 
-  // TODO: Not working
-  get Wins() {
-    return this.PlayerGames.length;
+  @Ignore()
+  Wins: PlayerGameEntity[] = [];
+
+  @Ignore()
+  BestGames: BoardGameEntity[] = [];
+
+  @Ignore()
+  BestGameWins: number = 0;
+
+  constructor(partial: Partial<PlayerEntity> = {}, copyIgnored = false) {
+    super(partial, PlayerEntity);
+    this.assign(partial, PlayerEntity, copyIgnored);
   }
 
-  constructor(partial: Partial<PlayerEntity> = {}) {
-    super(partial, PlayerEntity);
-    this.assign(partial, PlayerEntity, false);
+  calculateFields() {
+    this.calculateWins();
+    this.calculateBestGames();
+    this.calculateBestGameWins();
+  }
+
+  calculateWins() {
+    this.Wins = this.PlayerGames.filter((pg) => pg.Game?.calculateWinner().includes(pg));
+  }
+
+  calculateBestGames() {
+    this.BestGames = Mode(
+      this.Wins.filter((x) => x.Game).map((x) => x.Game!.BoardGame!),
+      (x) => x.BoardGameId ?? ''
+    ).filter((x) => x);
+  }
+
+  calculateBestGameWins() {
+    if(this.BestGames.length > 0) {
+      this.BestGameWins = this.Wins.reduce((count, win) => {
+        return win.Game?.BoardGameId === this.BestGames[0].BoardGameId ? count + 1 : count;
+      }, 0);
+    } else {
+      this.BestGameWins = 0;
+    }
   }
 }

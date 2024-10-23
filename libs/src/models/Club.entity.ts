@@ -16,8 +16,10 @@ export class ClubEntity extends BaseEntity {
   @Sanitize()
   Name: string = '';
 
-  constructor(partial: Partial<ClubEntity> = {}) {
+  constructor(partial: Partial<ClubEntity> = {}, copyIgnored = false) {
     super(partial, ClubEntity);
-    this.assign(partial, ClubEntity, false);
+    this.assign(partial, ClubEntity, copyIgnored);
   }
+
+  calculateFields() {}
 }
