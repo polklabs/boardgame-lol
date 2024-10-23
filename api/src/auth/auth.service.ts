@@ -203,6 +203,27 @@ export class AuthService {
     return true;
   }
 
+  async changePassword(userId: string, currentPassword: string, password: string): Promise<boolean> {
+    const user = this.userManager.loadOne(userId);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    } else {
+      // Continue
+    }
+
+    const match = await this.comparePasswords(currentPassword, user.Password);
+    if (match === false) {
+      throw new HttpException('Password Incorrect', HttpStatus.UNAUTHORIZED);
+    } else {
+      // continue
+    }
+
+    user.Password = await this.hashPassword(password);
+    await this.userManager.runUpdate(userId, user);
+
+    return true;
+  }
+
   async hashPassword(password: string): Promise<string> {
     const salt = await genSalt(saltRounds);
     return await hash(password, salt);

@@ -123,6 +123,13 @@ export class AuthController {
     }
   }
 
+  @Throttle(secureThrottle)
+  @UseGuards(AuthGuard)
+  @Post('change_password')
+  changePassword(@Request() req: any, @Body() passChangeDto: Record<string, any>) {
+    return this.authService.changePassword(this.getUserId(req), passChangeDto.CurrentPassword, passChangeDto.Password);
+  }
+
   @Throttle(longThrottle)
   @Get('username_check/:username')
   checkUsername(@Param() params: { username: string }) {
