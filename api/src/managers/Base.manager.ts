@@ -273,7 +273,7 @@ export abstract class BaseManager<T extends BaseEntity> {
       const keyString = String(key);
       const value = entity[key];
       // Make sure non-nullable keys have values
-      if (!this.nullable.includes(key)) {
+      if (!this.nullable.includes(key) && !this.ignore.includes(key)) {
         if (value === null || value === undefined) {
           errors.push(`${keyString}: not nullable`);
         } else {

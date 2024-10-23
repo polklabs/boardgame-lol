@@ -90,6 +90,7 @@ export class EditorGameComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('game' in changes && this.game) {
+      this.game = new GameEntity(this.game, true);
       if (this.game.GameId === null) {
         this.title = 'New Game';
         this.isNew = true;
@@ -104,7 +105,9 @@ export class EditorGameComponent implements OnChanges {
         this.game.BoardGameId = this.boardGames[0]?.BoardGameId ?? null;
         this.game.Date = new Date();
       } else {
-        this.game.Date = new Date(this.game.Date);
+        const date = new Date(this.game.Date);
+        const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+        this.game.Date = new Date(date.getTime() + userTimezoneOffset);
       }
 
       this.hideFields = new Set();

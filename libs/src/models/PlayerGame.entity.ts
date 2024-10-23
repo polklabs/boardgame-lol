@@ -23,7 +23,7 @@ export class PlayerGameEntity extends BaseEntity {
   @ForeignKey(GameEntity)
   GameId: string | null = null;
 
-  @MinMax(-99999, 99999, 'number')
+  @MinMax(-999999999, 999999999, 'number')
   @Nullable()
   Points: number | null = null;
 

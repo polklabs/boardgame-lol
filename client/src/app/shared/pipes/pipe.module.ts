@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
 import { ArrayPipe } from './array.pipe';
+import { HidePipe } from './hide.pipe';
 
-@NgModule({ declarations: [ArrayPipe], exports: [ArrayPipe] })
+const PIPES = [ArrayPipe, HidePipe];
+
+@NgModule({ declarations: [...PIPES], exports: [...PIPES] })
 export class PipeModule {}

@@ -5,7 +5,6 @@ import { MinMax } from '../decorators/min-max.decorator';
 import { CHARACTER_LIMIT_SHORT } from '../constants';
 import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { Sanitize } from '../decorators/sanitize.decorator';
-import { Nullable } from '../decorators/nullable.decorator';
 import { Ignore } from '../decorators/ignore.decorator';
 import { PlayerGameEntity } from './PlayerGame.entity';
 import { BoardGameEntity } from './BoardGame.entity';

@@ -11,6 +11,7 @@ import { EditorPlayerComponent } from '../editor-player/editor-player.component'
 import { TableModule } from 'primeng/table';
 import { UserService } from '../shared/services/user.service';
 import { ButtonModule } from 'primeng/button';
+import { TabViewModule } from 'primeng/tabview';
 import { PipeModule } from '../shared/pipes/pipe.module';
 
 @Component({
@@ -24,6 +25,7 @@ import { PipeModule } from '../shared/pipes/pipe.module';
     CommonModule,
     TableModule,
     ButtonModule,
+    TabViewModule,
     PipeModule,
   ],
   templateUrl: './club.component.html',
@@ -46,6 +48,24 @@ export class ClubComponent implements OnInit, OnDestroy {
   players$?: Observable<PlayerEntity[]>;
 
   subscriptions = new Subscription();
+
+  boardGameColumns = [
+    { field: 'Name', name: 'Game', sort: true },
+    { field: 'Games.length', name: 'Plays', sort: true },
+    { field: '', name: 'Champion(s)', sort: false },
+    { field: 'MaxPlayers', name: 'Max Player Count', sort: true },
+    { field: 'AveragePlayers', name: 'Average Player Count', sort: true },
+    { field: 'MaxScore', name: 'High Score', sort: true },
+    { field: 'AverageScore', name: 'Average Score', sort: true },
+    { field: 'AverageWinningScore', name: 'Average Winning Score', sort: true },
+  ];
+
+  playerColumns = [
+    { field: 'Name', name: 'Game', sort: true },
+    { field: 'Wins.length', name: 'Wins', sort: true },
+    { field: '', name: 'Best Game(s)', sort: false },
+    { field: 'BestGameWins', name: 'Best Game(s) Wins', sort: true },
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -105,5 +125,9 @@ export class ClubComponent implements OnInit, OnDestroy {
   playerEdit(player: PlayerEntity) {
     this.editPlayer = player;
     this.editorPlayerVisible = true;
+  }
+
+  showScore(game: GameEntity) {
+    return game.BoardGame?.ScoreType === 'points';
   }
 }

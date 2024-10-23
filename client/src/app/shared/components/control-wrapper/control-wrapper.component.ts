@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
+import { getIgnore } from 'libs/decorators/ignore.decorator';
 import { getMinMax, getNullable } from 'libs/index';
 
 @Component({
@@ -41,7 +42,10 @@ export class ControlWrapperComponent {
       // continue
     }
 
-    if (!getNullable(this.entityType).includes(this.controlName)) {
+    if (
+      !getNullable(this.entityType).includes(this.controlName) &&
+      !getIgnore(this.entityType).includes(this.controlName)
+    ) {
       return true;
     } else {
       // continue
