@@ -86,7 +86,7 @@ export class HttpService {
   }
 
   private buildUrl(url: string) {
-    return `${environment.https ? 'https://' : 'http://'}${environment.baseUrl}/${url}`;
+    return `${this.baseUrl}/${url}`;
   }
 
   private addSpinner(showSpinner: boolean) {

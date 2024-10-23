@@ -11,7 +11,6 @@ ENV DB_PATH '/app/data/Boardgame.db'
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm i -g npm-platform-dependencies
 RUN npm ci --omit=dev
 
 COPY . .

@@ -83,7 +83,7 @@ function copyPackageLockJson() {
 function buildDockerImage(cb) {
     log("building docker image");
     return exec(
-        "cd prod-build && docker build . -t polklabs/plot-guard-wiki",
+        "cd prod-build && docker build . -t polklabs/boardgame-lol",
         function (err, stdout, stderr) {
             log(stdout);
             log(stderr);

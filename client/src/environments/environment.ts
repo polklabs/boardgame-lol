@@ -1,4 +1,4 @@
 export const environment = {
-  https: true,
-  baseUrl: 'boardgame.lol',
+  baseUrl: '',
+  allowedDomains: ['boardgame.lol', '192.168.1.9:3143']
 };
