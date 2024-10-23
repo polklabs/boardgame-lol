@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, S
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BoardGameEntity, GameEntity, isGuid, PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { ApiService } from '../shared/services/api.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { buildForm } from '../shared/form.utils';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
@@ -85,6 +85,7 @@ export class EditorGameComponent implements OnChanges {
     private fb: FormBuilder,
     private apiService: ApiService,
     private messageService: MessageService,
+    private confirmationService: ConfirmationService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -305,5 +306,25 @@ export class EditorGameComponent implements OnChanges {
         // Do nothing
       }
     }
+  }
+
+  toDeleteEntity() {
+    this.confirmationService.confirm({
+      message: 'Are you sure that you want to proceed?',
+      header: 'Deleting Game',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon: 'none',
+      rejectIcon: 'none',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: async () => {
+        const result = await this.apiService.deleteGame(this.game!.GameId);
+        if (result) {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Game' });
+          this.closeEditor.emit();
+        } else {
+          // Do nothing
+        }
+      },
+    });
   }
 }

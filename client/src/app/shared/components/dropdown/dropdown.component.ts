@@ -34,6 +34,7 @@ export class DropdownComponent implements ControlValueAccessor {
   @Input() optionValue?: string;
   @Input() placeholder?: string;
   @Input() showClear = false;
+  @Input() showFilter = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();

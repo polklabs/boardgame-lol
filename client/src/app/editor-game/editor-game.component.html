@@ -40,6 +40,7 @@
           [hiddenFields]="hideFields"
           [options]="boardGames"
           [showClear]="false"
+          [showFilter]="true"
           optionLabel="Name"
           optionValue="BoardGameId"></app-dropdown>
         <p-button *ngIf="canEditBoardGame()" (click)="editBoardGame(selectedBoardGame)" icon="pi pi-pencil"></p-button>
@@ -103,7 +104,9 @@
       <p-checkbox formControlName="DidNotFinish" label="Did Not Finish Game" [binary]="true"></p-checkbox>
     </form>
     <div class="flex dialog-footer">
-      <div></div>
+      <div>
+        <p-button *ngIf="isNew === false" label="Delete" [outlined]="true" severity="danger" (click)="toDeleteEntity()"></p-button>
+      </div>
       <div>
         <p-button label="Cancel" [outlined]="true" severity="secondary" (click)="closeEditor.emit()"></p-button>
         <p-button label="Save & Close" [outlined]="true" (click)="submit()"></p-button>

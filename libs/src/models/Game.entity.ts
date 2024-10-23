@@ -48,12 +48,21 @@ export class GameEntity extends BaseEntity {
   @Ignore()
   Scores: PlayerGameEntity[] = [];
 
+  @Ignore()
+  Winners: PlayerEntity[] = [];
+
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
     super(partial, GameEntity);
     this.assign(partial, GameEntity, copyIgnored);
   }
 
-  calculateFields() {}
+  calculateFields() {
+    this.calculateWinners();
+  }
+
+  calculateWinners() {
+    this.Winners = this.calculateWinner().map(x => x.Player!);
+  }
 
   calculateWinner(): PlayerGameEntity[] {
     switch (this.BoardGame?.ScoreType) {
@@ -61,16 +70,16 @@ export class GameEntity extends BaseEntity {
         if (this.Scores.length > 0) {
           return this.Scores.reduce(
             (max, playerGame) => {
-              if ((playerGame.Points ?? 0) > (max[0].Points ?? 0)) {
+              if ((playerGame.Points ?? 0) > (max[0]?.Points ?? 0)) {
                 return [playerGame];
-              } else if ((playerGame.Points ?? 0) === (max[0].Points ?? 0)) {
+              } else if ((playerGame.Points ?? 0) === (max[0]?.Points ?? 0)) {
                 max.push(playerGame);
                 return max;
               } else {
                 return max;
               }
             },
-            [this.Scores[0]]
+            [] as PlayerGameEntity[]
           );
         } else {
           return [];
@@ -79,16 +88,16 @@ export class GameEntity extends BaseEntity {
         if (this.Scores.length > 0) {
           return this.Scores.reduce(
             (max, playerGame) => {
-              if ((playerGame.Points ?? Infinity) < (max[0].Points ?? Infinity)) {
+              if ((playerGame.Points ?? 0) < (max[0]?.Points ?? Infinity)) {
                 return [playerGame];
-              } else if ((playerGame.Points ?? Infinity) === (max[0].Points ?? Infinity)) {
+              } else if ((playerGame.Points ?? 0) === (max[0]?.Points ?? Infinity)) {
                 max.push(playerGame);
                 return max;
               } else {
                 return max;
               }
             },
-            [this.Scores[0]]
+            [] as PlayerGameEntity[]
           );
         } else {
           return [];

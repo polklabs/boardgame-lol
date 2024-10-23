@@ -142,7 +142,7 @@ export class GameManager extends BaseManager<GameEntity> {
 
   delete(userId: string, primaryId: string, secondaryId: string) {
     this.clubUserManager.hasAccess(userId, secondaryId);
-    return this.runDelete(primaryId, secondaryId, true);
+    return this.runDelete(primaryId, secondaryId, false);
   }
 
   public Validate(entity: GameEntity): string[] {

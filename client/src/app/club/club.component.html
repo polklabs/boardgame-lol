@@ -44,7 +44,7 @@
           <td>{{ game.Date | date: 'yyyy/MM/dd' }}</td>
           <td>{{ game.BoardGame.Name }}</td>
           <td>{{ game.Players | number: '1.0-0' }}</td>
-          <td>{{ game.Scores | array: 'Player.Name' }}</td>
+          <td>{{ game.Winners | array: 'Name' }}</td>
           <td>
             <ng-container *ngIf="showScore(game)">{{ game.Scores[0]?.Points | number: '1.0-3' }}</ng-container>
           </td>
