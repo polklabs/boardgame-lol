@@ -8,11 +8,12 @@ import { BoardGameEntity, GameEntity, PlayerEntity } from 'libs/index';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { UserService } from '../shared/services/user.service';
 import { ButtonModule } from 'primeng/button';
 import { TabViewModule } from 'primeng/tabview';
 import { PipeModule } from '../shared/pipes/pipe.module';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-club',
@@ -26,6 +27,7 @@ import { PipeModule } from '../shared/pipes/pipe.module';
     TableModule,
     ButtonModule,
     TabViewModule,
+    InputTextModule,
     PipeModule,
   ],
   templateUrl: './club.component.html',
@@ -67,6 +69,15 @@ export class ClubComponent implements OnInit, OnDestroy {
     { field: 'BestGameWins', name: 'Best Game(s) Wins', sort: true },
   ];
 
+  gameColumns = [
+    { field: 'Date', name: 'Date', sort: true },
+    { field: 'BoardGame.Name', name: 'Game', sort: true },
+    { field: 'Players', name: 'Players', sort: true },
+    { field: 'Winners', name: 'Winner(s)', sort: false },
+    { field: 'HighScore', name: 'Points', sort: true },
+    { field: 'DidNotFinish', name: 'Did Not Finish', sort: true },
+  ];
+
   constructor(
     private route: ActivatedRoute,
     private apiService: ApiService,
@@ -96,6 +107,10 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  filterTable(table: Table, filter: Event) {
+    table.filterGlobal((filter.target as HTMLInputElement).value, 'contains')
   }
 
   newGame() {

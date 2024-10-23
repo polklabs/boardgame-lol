@@ -23,19 +23,35 @@
   (closeEditor)="editorPlayerVisible = false"></app-editor-player>
 
 <p-tabView>
-  <p-tabPanel header="Plays ({{((games$ | async) ?? []).length}})">
-    <p-table [value]="(games$ | async) ?? []" sortField="Date" [sortOrder]="1" [tableStyle]="{ 'min-width': '50rem' }">
+  <p-tabPanel header="Plays ({{ ((games$ | async) ?? []).length }})">
+    <p-table
+      #gameTable
+      [value]="(games$ | async) ?? []"
+      sortField="Date"
+      [sortOrder]="1"
+      [globalFilterFields]="['Date', 'BoardGame.Name']"
+      [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template pTemplate="caption">
+        <div class="flex justify-content-space-between">
+          <div></div>
+          <span class="p-input-icon-left ml-auto">
+            <i class="pi pi-search"></i>
+            <input
+              #gameTableFilter
+              pInputText
+              type="text"
+              (input)="filterTable(gameTable, $event)"
+              placeholder="Search keyword" />
+          </span>
+        </div>
+      </ng-template>
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="Date">
-            Date
-            <p-sortIcon field="Date" />
+          <th *ngFor="let column of gameColumns" [pSortableColumn]="column.sort ? column.field : undefined">
+            {{ column.name }}
+            <p-sortIcon *ngIf="column.sort" [field]="column.field" />
+            <!-- <p-columnFilter type="text" [field]="column.field" display="menu" /> -->
           </th>
-          <th>Game</th>
-          <th>Players</th>
-          <th>Winner(s)</th>
-          <th>Points</th>
-          <th>Did Not Finish</th>
           <th *ngIf="canEdit">Edit</th>
         </tr>
       </ng-template>
@@ -46,7 +62,7 @@
           <td>{{ game.Players | number: '1.0-0' }}</td>
           <td>{{ game.Winners | array: 'Name' }}</td>
           <td>
-            <ng-container *ngIf="showScore(game)">{{ game.Scores[0]?.Points | number: '1.0-3' }}</ng-container>
+            <ng-container *ngIf="showScore(game)">{{ game.HighScore | number: '1.0-3' }}</ng-container>
           </td>
           <td>{{ game.DidNotFinish | hide: 'false' }}</td>
           <td *ngIf="canEdit">
@@ -56,7 +72,7 @@
       </ng-template>
     </p-table>
   </p-tabPanel>
-  <p-tabPanel header="Players ({{((players$ | async) ?? []).length}})">
+  <p-tabPanel header="Players ({{ ((players$ | async) ?? []).length }})">
     <p-table
       [value]="(players$ | async) ?? []"
       sortField="Wins.length"
@@ -64,7 +80,7 @@
       [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template pTemplate="header">
         <tr>
-          <th *ngFor="let column of playerColumns" [pSortableColumn]="column.field">
+          <th *ngFor="let column of playerColumns" [pSortableColumn]="column.sort ? column.field : undefined">
             {{ column.name }}
             <p-sortIcon *ngIf="column.sort" [field]="column.field" />
           </th>
@@ -84,7 +100,7 @@
       </ng-template>
     </p-table>
   </p-tabPanel>
-  <p-tabPanel header="Games ({{((boardGames$ | async) ?? []).length}})">
+  <p-tabPanel header="Games ({{ ((boardGames$ | async) ?? []).length }})">
     <p-table
       [value]="(boardGames$ | async) ?? []"
       sortField="Games.length"
@@ -92,7 +108,7 @@
       [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template pTemplate="header">
         <tr>
-          <th *ngFor="let column of boardGameColumns" [pSortableColumn]="column.field">
+          <th *ngFor="let column of boardGameColumns" [pSortableColumn]="column.sort ? column.field : undefined">
             {{ column.name }}
             <p-sortIcon *ngIf="column.sort" [field]="column.field" />
           </th>

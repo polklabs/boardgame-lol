@@ -8,7 +8,6 @@ import { BoardGameEntity } from './BoardGame.entity';
 import { PlayerGameEntity } from './PlayerGame.entity';
 import { PlayerEntity } from './Player.entity';
 import { Ignore } from '../decorators/ignore.decorator';
-import { Nullable } from '../decorators/nullable.decorator';
 
 export type GameWrapper = {
   Game: GameEntity;
@@ -49,6 +48,9 @@ export class GameEntity extends BaseEntity {
   Scores: PlayerGameEntity[] = [];
 
   @Ignore()
+  HighScore: number | null = null;
+
+  @Ignore()
   Winners: PlayerEntity[] = [];
 
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
@@ -58,10 +60,15 @@ export class GameEntity extends BaseEntity {
 
   calculateFields() {
     this.calculateWinners();
+    this.calculateHighScore();
   }
 
   calculateWinners() {
     this.Winners = this.calculateWinner().map(x => x.Player!);
+  }
+
+  calculateHighScore() {
+    this.HighScore = this.calculateWinner()?.[0]?.Points ?? null;
   }
 
   calculateWinner(): PlayerGameEntity[] {
