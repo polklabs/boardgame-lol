@@ -1,4 +1,13 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BoardGameEntity, GameEntity, isGuid, PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { ApiService } from '../shared/services/api.service';
@@ -15,6 +24,7 @@ import { TextInputComponent } from '../shared/components/textinput/textinput.com
 import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-game.component';
 import { CalendarComponent } from '../shared/components/calendar/calendar.component';
 import { CheckboxModule } from 'primeng/checkbox';
+import { Subscription } from 'rxjs';
 
 type EntityType = GameEntity;
 
@@ -39,7 +49,7 @@ type EntityType = GameEntity;
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
 })
-export class EditorGameComponent implements OnChanges {
+export class EditorGameComponent implements OnChanges, OnDestroy {
   @Input() editorVisible = false;
   @Input() game?: GameEntity;
   @Output() closeEditor = new EventEmitter<void>();
@@ -81,6 +91,8 @@ export class EditorGameComponent implements OnChanges {
   boardGameEditorVisible = false;
   boardGameEdit?: BoardGameEntity;
 
+  subscriptions = new Subscription();
+
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
@@ -114,10 +126,22 @@ export class EditorGameComponent implements OnChanges {
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
       this.formGroup.patchValue(new GameEntity(this.game));
+
+      this.subscriptions.add(
+        this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
+          console.log(value);
+          this.game!.BoardGame = this.boardGames.find((x) => x.BoardGameId === value) ?? null;
+          this.updateScoring();
+        }),
+      );
     } else {
       // No Changes
     }
     this.cdr.detectChanges();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   grabLists() {
@@ -127,20 +151,65 @@ export class EditorGameComponent implements OnChanges {
     this.playerGames = this.apiService.playerGameList
       .filter((x) => x.GameId === this.game?.GameId)
       .map((m) => new PlayerGameEntity(m, true));
-    this.playerGames.sort((a, b) => (a.Points ?? 0) - (b.Points ?? 0));
+    this.updateOrdering();
   }
 
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
   }
 
-  updateSortOrder() {
-    // TODO
+  updateOrdering() {
+    if (this.game?.BoardGame?.ScoreType === 'rank') {
+      this.playerGames.forEach((pg, index) => (pg.Points = index));
+    } else {
+      this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
+    }
+  }
+
+  updateScoring() {
+    switch (this.game?.BoardGame?.ScoreType) {
+      case 'rank':
+        this.playerGames.sort((a, b) => (a.Points ?? 0) - (b.Points ?? 0));
+        this.playerGames.forEach((pg, index) => (pg.Points = index));
+        break;
+      case 'win-lose':
+        this.playerGames.forEach((pg) => {
+          if ((pg.Points ?? 0) > 0) {
+            pg.Points = 1;
+          } else {
+            pg.Points = 0;
+          }
+        });
+        this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
+        break;
+      case 'points':
+        this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
+        break;
+      default:
+        break;
+    }
+    this.playerGames = [...this.playerGames];
+  }
+
+  getTrophyColor(playerGame: PlayerGameEntity): string {
+    console.log('color');
+    if (playerGame.Game?.BoardGame?.ScoreType === 'rank') {
+      if (playerGame.Points === 0) {
+        return 'gold';
+      } else if (playerGame.Points === 1) {
+        return 'silver';
+      } else {
+        return 'chocolate';
+      }
+    } else {
+      return 'gold';
+    }
   }
 
   editPlayerGame(playerGame?: PlayerGameEntity) {
     if (!playerGame) {
       this.playerGameEdit = new PlayerGameEntity({ ClubId: this.game?.ClubId, GameId: '-1' });
+      this.playerGameEdit.PlayerId = this.players[0].PlayerId;
     } else {
       this.playerGameEdit = playerGame;
     }
@@ -152,9 +221,16 @@ export class EditorGameComponent implements OnChanges {
       const index = this.playerGames.indexOf(playerGame);
       if (index === -1) {
         this.playerGames = [...this.playerGames, playerGame];
+        if (this.game?.BoardGame?.ScoreType === 'rank') {
+          playerGame.Points = this.playerGames.length;
+        } else {
+          // Continue
+        }
       } else {
         // continue
       }
+
+      this.updateScoring();
     } else {
       // continue
     }
@@ -225,7 +301,7 @@ export class EditorGameComponent implements OnChanges {
   }
 
   canEditBoardGame() {
-    const value = this.formGroup.controls['BoardGameId'].value;
+    const value = this.getControl('BoardGameId')?.value;
     if (isGuid(value) || value === null || value === undefined) {
       return false;
     } else {
@@ -247,7 +323,7 @@ export class EditorGameComponent implements OnChanges {
   }
 
   saveBoardGame(boardGame?: BoardGameEntity) {
-    this.formGroup.controls['BoardGameId'].setValue(null);
+    this.getControl('BoardGameId')?.setValue(null);
     if (boardGame) {
       const index = this.newBoardGames.indexOf(boardGame);
       if (index === -1) {
@@ -255,7 +331,9 @@ export class EditorGameComponent implements OnChanges {
       } else {
         // continue
       }
-      this.formGroup.controls['BoardGameId'].setValue(boardGame.BoardGameId);
+      this.getControl('BoardGameId')?.setValue(boardGame.BoardGameId);
+      this.game!.BoardGame = boardGame;
+      this.updateScoring();
     } else {
       // continue
     }
@@ -277,9 +355,10 @@ export class EditorGameComponent implements OnChanges {
       // continue
     }
 
-    const id = this.formGroup.controls['BoardGameId'].value;
+    const id = this.getControl('BoardGameId')?.value;
     if (boardGame?.BoardGameId === id) {
-      this.formGroup.controls['BoardGameId'].setValue(this.boardGames[0]?.BoardGameId ?? null);
+      this.getControl('BoardGameId')?.setValue(this.boardGames[0]?.BoardGameId ?? null);
+      this.updateScoring();
     } else {
       // Continue
     }

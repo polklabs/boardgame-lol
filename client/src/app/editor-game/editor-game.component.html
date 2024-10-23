@@ -16,6 +16,7 @@
   [editorVisible]="playerGameEditorVisible"
   [playerGame]="playerGameEdit"
   [players]="players"
+  [scoreType]="game?.BoardGame?.ScoreType"
   (closeEditor)="savePlayerGame($event)"
   (deleteEntity)="deletePlayerGame($event)"
   (editPlayer)="editPlayer($event)"></app-editor-player-game>
@@ -52,7 +53,7 @@
         [dragdrop]="true"
         [responsive]="true"
         [metaKeySelection]="true"
-        (onReorder)="updateSortOrder()">
+        (onReorder)="updateOrdering()">
         <ng-template pTemplate="header">
           <div class="order-list-header flex justify-content-space-between">
             <div class="p-orderlist-title">Winners</div>
@@ -63,9 +64,24 @@
           <div class="list-items">
             <div class="flex-column">
               <div class="flex gap-8 justify-content-space-between">
-                <span class="font-bold flex gap-8">
-                  <span>{{ playerGame.Player?.Name }}:</span>
-                  <span>{{ playerGame.Points }}</span>
+                <span class="font-bold flex gap-8" [ngSwitch]="game?.BoardGame?.ScoreType">
+                  <ng-container *ngSwitchCase="'points'">
+                    <span>{{ playerGame.Player?.Name }}</span>
+                    <span *ngIf="playerGame.Points !== null">: {{ playerGame.Points }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'rank'">
+                    <i
+                      *ngIf="playerGame.Points < 3"
+                      class="pi pi-trophy"
+                      [ngStyle]="{ color: getTrophyColor(playerGame) }"></i>
+                    <div *ngIf="playerGame.Points >= 3" class="empty-trophy"></div>
+                    <span>{{ playerGame.Player?.Name }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'win-lose'">
+                    <i *ngIf="playerGame.Points === 1" class="pi pi-trophy" style="color: gold"></i>
+                    <div *ngIf="playerGame.Points !== 1" class="empty-trophy"></div>
+                    <span>{{ playerGame.Player?.Name }}</span>
+                  </ng-container>
                 </span>
                 <div class="flex gap-8">
                   <p-button
@@ -105,7 +121,12 @@
     </form>
     <div class="flex dialog-footer">
       <div>
-        <p-button *ngIf="isNew === false" label="Delete" [outlined]="true" severity="danger" (click)="toDeleteEntity()"></p-button>
+        <p-button
+          *ngIf="isNew === false"
+          label="Delete"
+          [outlined]="true"
+          severity="danger"
+          (click)="toDeleteEntity()"></p-button>
       </div>
       <div>
         <p-button label="Cancel" [outlined]="true" severity="secondary" (click)="closeEditor.emit()"></p-button>

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { isGuid, PlayerEntity, PlayerGameEntity } from 'libs/index';
+import { isGuid, PlayerEntity, PlayerGameEntity, ScoreType } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { buildForm } from '../shared/form.utils';
@@ -34,6 +34,7 @@ export class EditorPlayerGameComponent implements OnChanges {
   @Input() editorVisible = false;
   @Input() playerGame?: PlayerGameEntity;
   @Input() players: PlayerEntity[] = [];
+  @Input() scoreType?: ScoreType;
 
   @Output() closeEditor = new EventEmitter<PlayerGameEntity>();
   @Output() deleteEntity = new EventEmitter<PlayerGameEntity>();
@@ -64,7 +65,6 @@ export class EditorPlayerGameComponent implements OnChanges {
       if (this.playerGame.PlayerGameId === null) {
         this.title = 'New Winner';
         this.isNew = true;
-        this.playerGame.PlayerId = this.players[0].PlayerId;
       } else {
         this.title = 'Edit Winner';
         this.isNew = false;
@@ -73,6 +73,12 @@ export class EditorPlayerGameComponent implements OnChanges {
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerGameEntity());
       this.formGroup.patchValue(new PlayerGameEntity(this.playerGame));
+
+      if(this.scoreType === 'win-lose') {
+        this.getControl('Points')?.setValue(this.playerGame.Points === null ? true : this.playerGame.Points === 1);
+      } else {
+        // Continue
+      }
     } else {
       // No Changes
     }
@@ -84,6 +90,14 @@ export class EditorPlayerGameComponent implements OnChanges {
   }
 
   async submit() {
+    if(this.scoreType === 'win-lose') {
+      const won = this.getControl('Points')?.value ?? false;
+      this.getControl('Points')?.setValue(won ? 1 : 0);
+    } else {
+      // Continue
+    }
+    
+
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.playerGame) {
       console.log(this.formGroup.controls);

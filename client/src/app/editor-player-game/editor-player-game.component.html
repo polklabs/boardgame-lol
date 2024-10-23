@@ -18,17 +18,25 @@
           [options]="players"
           optionLabel="Name"
           optionValue="PlayerId"
+          [showFilter]="true"
           [showClear]="false"></app-dropdown>
         <p-button *ngIf="canEditPlayer()" (click)="editPlayer.emit(selectedPlayer)" icon="pi pi-pencil"></p-button>
         <p-button (click)="editPlayer.emit()" icon="pi pi-plus"></p-button>
       </div>
 
       <app-textinput
+        *ngIf="scoreType === 'points'"
         formControlName="Points"
         label="Points"
         [entityType]="entityType"
         [hiddenFields]="hideFields"
         inputType="number"></app-textinput>
+
+      <p-checkbox
+        *ngIf="scoreType === 'win-lose'"
+        formControlName="Points"
+        label="Won Game"
+        [binary]="true"></p-checkbox>
 
       <div class="dialog-footer">
         <div>
