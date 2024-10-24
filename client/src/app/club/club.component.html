@@ -27,14 +27,15 @@
     <p-table
       #gameTable
       [value]="(games$ | async) ?? []"
+      styleClass="p-datatable-striped" 
       sortField="Date"
       [sortOrder]="1"
       [globalFilterFields]="['Date', 'BoardGame.Name']"
       [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template pTemplate="caption">
-        <div class="flex justify-content-space-between">
+        <div class="flex justify-content-center">
           <div></div>
-          <span class="p-input-icon-left ml-auto">
+          <span class="p-input-icon-left ml-auto filter-box">
             <i class="pi pi-search"></i>
             <input
               #gameTableFilter
@@ -75,6 +76,7 @@
   <p-tabPanel header="Players ({{ ((players$ | async) ?? []).length }})">
     <p-table
       [value]="(players$ | async) ?? []"
+      styleClass="p-datatable-striped" 
       sortField="Wins.length"
       [sortOrder]="-1"
       [tableStyle]="{ 'min-width': '50rem' }">
@@ -103,6 +105,7 @@
   <p-tabPanel header="Games ({{ ((boardGames$ | async) ?? []).length }})">
     <p-table
       [value]="(boardGames$ | async) ?? []"
+      styleClass="p-datatable-striped" 
       sortField="Games.length"
       [sortOrder]="-1"
       [tableStyle]="{ 'min-width': '50rem' }">
@@ -120,6 +123,7 @@
           <td>{{ boardGame.Name }}</td>
           <td>{{ boardGame.Games.length | hide: '0' | number: '1.0-0' }}</td>
           <td>{{ boardGame.Champions | array: 'Name' }}</td>
+          <td>{{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }}</td>
           <td>{{ boardGame.MaxPlayers | hide: '0' | number: '1.0-0' }}</td>
           <td>{{ boardGame.AveragePlayers | hide: '0' | number: '1.0-3' }}</td>
           <td>{{ boardGame.MaxScore | hide: '0' | number: '1.0-3' }}</td>

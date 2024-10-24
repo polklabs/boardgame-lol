@@ -55,6 +55,7 @@ export class ClubComponent implements OnInit, OnDestroy {
     { field: 'Name', name: 'Game', sort: true },
     { field: 'Games.length', name: 'Plays', sort: true },
     { field: '', name: 'Champion(s)', sort: false },
+    { field: 'ChampionWins', name: 'Champion Wins', sort: true },
     { field: 'MaxPlayers', name: 'Max Player Count', sort: true },
     { field: 'AveragePlayers', name: 'Average Player Count', sort: true },
     { field: 'MaxScore', name: 'High Score', sort: true },

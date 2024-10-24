@@ -48,6 +48,9 @@ export class BoardGameEntity extends BaseEntity {
   Champions: PlayerEntity[] = [];
 
   @Ignore()
+  ChampionWins = 0;
+
+  @Ignore()
   MaxPlayers = 0;
 
   @Ignore()
@@ -74,12 +77,15 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   calculateChampion() {
-    this.Champions = Mode(
-      this.Games.map((x) => x.calculateWinner())
-        .flat()
-        .map((x) => x.Player!),
-      (x) => x.PlayerId ?? ''
-    );
+    const winners = this.Games.map((x) => x.calculateWinner())
+      .flat()
+      .map((x) => x.Player!);
+    this.Champions = Mode(winners, (x) => x.PlayerId ?? '');
+    if (this.Champions.length > 0) {
+      this.ChampionWins = winners.reduce((wins, winner) => wins + (winner.PlayerId === this.Champions[0].PlayerId ? 1 : 0), 0);
+    } else {
+      this.ChampionWins = 0;
+    }
   }
 
   calculatePlayers() {
