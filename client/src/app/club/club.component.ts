@@ -15,7 +15,10 @@ import { TabViewModule } from 'primeng/tabview';
 import { PipeModule } from '../shared/pipes/pipe.module';
 import { InputTextModule } from 'primeng/inputtext';
 import { StatsModel } from '../shared/models/stats.model';
-import { GamesTableComponent } from "./games-table/games-table.component";
+import { GamesTableComponent } from './games-table/games-table.component';
+import { PlayerTableComponent } from './player-table/player-table.component';
+import { BoardGameTableComponent } from './board-game-table/board-game-table.component';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-club',
@@ -30,9 +33,12 @@ import { GamesTableComponent } from "./games-table/games-table.component";
     ButtonModule,
     TabViewModule,
     InputTextModule,
+    CardModule,
     PipeModule,
-    GamesTableComponent
-],
+    GamesTableComponent,
+    PlayerTableComponent,
+    BoardGameTableComponent,
+  ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })
@@ -55,25 +61,6 @@ export class ClubComponent implements OnInit, OnDestroy {
   stats?: StatsModel;
 
   subscriptions = new Subscription();
-
-  boardGameColumns = [
-    { field: 'Name', name: 'Game', sort: true },
-    { field: 'Games.length', name: 'Plays', sort: true },
-    { field: 'ChampionWins', name: 'Champion(s)', sort: true },
-    { field: 'ChampionWins', name: 'Wins', sort: true },
-    { field: 'MaxPlayers', name: 'Max Player Count', sort: true },
-    { field: 'AveragePlayers', name: 'Average Player Count', sort: true },
-    { field: 'MaxScore', name: 'High Score', sort: true },
-    { field: 'AverageScore', name: 'Average Score', sort: true },
-    { field: 'AverageWinningScore', name: 'Average Winning Score', sort: true },
-  ];
-
-  playerColumns = [
-    { field: 'Name', name: 'Name', sort: true },
-    { field: 'Wins.length', name: 'Wins', sort: true },
-    { field: '', name: 'Best Game(s)', sort: false },
-    { field: 'BestGameWins', name: 'Best Game(s) Wins', sort: true },
-  ];
 
   constructor(
     private route: ActivatedRoute,

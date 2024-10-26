@@ -48,7 +48,9 @@ export class PlayerEntity extends BaseEntity {
   }
 
   calculateWins() {
-    this.Wins = this.PlayerGames.filter((pg) => pg.Game?.calculateWinner().includes(pg));
+    this.Wins = this.PlayerGames.filter((pg) => pg.Game?.calculateWinner().includes(pg)).sort((a, b) =>
+      a.Game?.Date.toString().localeCompare(b.Game?.Date.toString() ?? '') ?? 0
+    );
   }
 
   calculateBestGames() {
@@ -59,7 +61,7 @@ export class PlayerEntity extends BaseEntity {
   }
 
   calculateBestGameWins() {
-    if(this.BestGames.length > 0) {
+    if (this.BestGames.length > 0) {
       this.BestGameWins = this.Wins.reduce((count, win) => {
         return win.Game?.BoardGameId === this.BestGames[0].BoardGameId ? count + 1 : count;
       }, 0);

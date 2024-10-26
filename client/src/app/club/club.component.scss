@@ -7,9 +7,9 @@
     }
   }
 
-  // .p-datatable-wrapper {
-  //   max-height: calc(100vh - 143px);
-  // }
+  thead {
+    z-index: 3;
+  }
 
   .p-datatable .p-datatable-tbody > tr > td {
     &:has(.bar-percent) {
@@ -46,5 +46,10 @@
 
   i {
     font-size: inherit;
+  }
+
+  .edit-header {
+    width: 0;
+    text-align: center;
   }
 }

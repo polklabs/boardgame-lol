@@ -4,8 +4,8 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'array',
 })
 export class ArrayPipe implements PipeTransform {
-  transform(value: never[], key: string): string {
-    if (!Array.isArray(value)) {
+  transform<T>(value: T[] | undefined, key: string): string {
+    if (value === undefined || !Array.isArray(value)) {
       return '';
     } else if (!key) {
       return value.join(', ');
@@ -17,11 +17,12 @@ export class ArrayPipe implements PipeTransform {
     return value
       .map((item) => {
         keys.forEach((k) => {
-          item = item[k];
+          item = (item as never)[k];
         });
         return item;
       })
       .filter((val) => val !== undefined && val !== null)
+      .sort((a, b) => `${a}`.localeCompare(`${b}`))
       .join(', ');
   }
 }

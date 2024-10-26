@@ -23,97 +23,30 @@
   (closeEditor)="editorPlayerVisible = false"></app-editor-player>
 
 <p-tabView>
+  <p-tabPanel header="Overview">
+    <!-- Overview goes here -->
+    <p-card header="Champions">
+      <h1>{{ stats?.Champions | array: 'Name' }}</h1>
+    </p-card>
+  </p-tabPanel>
   <p-tabPanel header="Plays ({{ ((games$ | async) ?? []).length }})">
     <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
     <app-games-table [games$]="games$" [canEdit]="canEdit" (gameEdit)="gameEdit($event)"></app-games-table>
   </p-tabPanel>
   <p-tabPanel header="Players ({{ ((players$ | async) ?? []).length }})">
     <!-- Players ----------------------------------------------------------------------------------------- -->
-    <p-table
-      [value]="(players$ | async) ?? []"
-      styleClass="p-datatable-striped p-datatable-sm"
-      sortField="Wins.length"
-      [sortOrder]="-1"
-      [tableStyle]="{ 'min-width': '50rem' }">
-      <ng-template pTemplate="header">
-        <tr>
-          <th *ngFor="let column of playerColumns" [pSortableColumn]="column.sort ? column.field : undefined">
-            {{ column.name }}
-            <p-sortIcon *ngIf="column.sort" [field]="column.field" />
-          </th>
-          <th *ngIf="canEdit">Edit</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-player>
-        <tr>
-          <td>
-            {{ player.Name }}
-            <i *ngIf="stats?.Champions?.includes(player)" class="pi pi-crown" style="color: gold"></i>
-          </td>
-          <td>
-            <span>{{ player.Wins.length | hide: '0' | number: '1.0-0' }}</span>
-            <div
-              *ngIf="player.Wins.length > 0"
-              class="bar-percent"
-              [ngStyle]="{ width: (player.Wins.length / (stats?.MaxPlayerWins ?? 1)) * 100 + '%' }"></div>
-          </td>
-          <td>{{ player.BestGames | array: 'Name' }}</td>
-          <td>{{ player.BestGameWins | hide: '0' | number: '1.0-0' }}</td>
-          <td *ngIf="canEdit">
-            <p-button (click)="playerEdit(player)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+    <app-player-table
+      [players$]="players$"
+      [stats]="stats"
+      [canEdit]="canEdit"
+      (playerEdit)="playerEdit($event)"></app-player-table>
   </p-tabPanel>
   <p-tabPanel header="Games ({{ ((boardGames$ | async) ?? []).length }})">
     <!-- BoardGames ----------------------------------------------------------------------------------------- -->
-    <p-table
-      [value]="(boardGames$ | async) ?? []"
-      styleClass="p-datatable-striped p-datatable-sm"
-      sortField="Games.length"
-      [sortOrder]="-1"
-      [tableStyle]="{ 'min-width': '50rem' }">
-      <ng-template pTemplate="header">
-        <tr>
-          <th *ngFor="let column of boardGameColumns" [pSortableColumn]="column.sort ? column.field : undefined">
-            {{ column.name }}
-            <p-sortIcon *ngIf="column.sort" [field]="column.field" />
-          </th>
-          <th *ngIf="canEdit">Edit</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-boardGame>
-        <tr>
-          <td>
-            <a *ngIf="boardGame.boardGameGeekUrl" [href]="boardGame.boardGameGeekUrl" target="_blank">
-              {{ boardGame.Name }}
-              <i class="pi pi-external-link"></i>
-            </a>
-            <span *ngIf="!boardGame.boardGameGeekUrl">
-              {{ boardGame.Name }}
-            </span>
-          </td>
-
-          <td>
-            <span>{{ boardGame.Games.length | hide: '0' | number: '1.0-0' }}</span>
-            <div
-              *ngIf="boardGame.Games.length > 0"
-              class="bar-percent"
-              [ngStyle]="{ width: (boardGame.Games.length / (stats?.MaxGamePlays ?? 1)) * 100 + '%' }"></div>
-          </td>
-          <td>{{ boardGame.Champions | array: 'Name' }}</td>
-          <td>{{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }}</td>
-          <td>{{ boardGame.MaxPlayers | hide: '0' | number: '1.0-0' }}</td>
-          <td>{{ boardGame.AveragePlayers | hide: '0' | number: '1.0-1' }}</td>
-          <td>{{ boardGame.MaxScore | hide: '0' | number: '1.0-1' }}</td>
-          <td>{{ boardGame.AverageScore | hide: '0' | number: '1.0-1' }}</td>
-          <td>{{ boardGame.AverageWinningScore | hide: '0' | number: '1.0-1' }}</td>
-          <td *ngIf="canEdit">
-            <p-button (click)="boardGameEdit(boardGame)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+    <app-board-game-table
+      [boardGames$]="boardGames$"
+      [stats]="stats"
+      [canEdit]="canEdit"
+      (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
   </p-tabPanel>
 </p-tabView>
