@@ -151,7 +151,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     this.playerGames = this.apiService.playerGameList
       .filter((x) => x.GameId === this.game?.GameId)
       .map((m) => new PlayerGameEntity(m, true));
-    this.updateOrdering();
+    this.updateScoring();
   }
 
   getControl(key: keyof EntityType) {
