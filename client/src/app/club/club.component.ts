@@ -8,12 +8,14 @@ import { BoardGameEntity, GameEntity, PlayerEntity } from 'libs/index';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
-import { Table, TableModule } from 'primeng/table';
+import { TableModule } from 'primeng/table';
 import { UserService } from '../shared/services/user.service';
 import { ButtonModule } from 'primeng/button';
 import { TabViewModule } from 'primeng/tabview';
 import { PipeModule } from '../shared/pipes/pipe.module';
 import { InputTextModule } from 'primeng/inputtext';
+import { StatsModel } from '../shared/models/stats.model';
+import { GamesTableComponent } from "./games-table/games-table.component";
 
 @Component({
   selector: 'app-club',
@@ -29,7 +31,8 @@ import { InputTextModule } from 'primeng/inputtext';
     TabViewModule,
     InputTextModule,
     PipeModule,
-  ],
+    GamesTableComponent
+],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })
@@ -49,13 +52,15 @@ export class ClubComponent implements OnInit, OnDestroy {
   boardGames$?: Observable<BoardGameEntity[]>;
   players$?: Observable<PlayerEntity[]>;
 
+  stats?: StatsModel;
+
   subscriptions = new Subscription();
 
   boardGameColumns = [
     { field: 'Name', name: 'Game', sort: true },
     { field: 'Games.length', name: 'Plays', sort: true },
-    { field: '', name: 'Champion(s)', sort: false },
-    { field: 'ChampionWins', name: 'Champion Wins', sort: true },
+    { field: 'ChampionWins', name: 'Champion(s)', sort: true },
+    { field: 'ChampionWins', name: 'Wins', sort: true },
     { field: 'MaxPlayers', name: 'Max Player Count', sort: true },
     { field: 'AveragePlayers', name: 'Average Player Count', sort: true },
     { field: 'MaxScore', name: 'High Score', sort: true },
@@ -64,19 +69,10 @@ export class ClubComponent implements OnInit, OnDestroy {
   ];
 
   playerColumns = [
-    { field: 'Name', name: 'Game', sort: true },
+    { field: 'Name', name: 'Name', sort: true },
     { field: 'Wins.length', name: 'Wins', sort: true },
     { field: '', name: 'Best Game(s)', sort: false },
     { field: 'BestGameWins', name: 'Best Game(s) Wins', sort: true },
-  ];
-
-  gameColumns = [
-    { field: 'Date', name: 'Date', sort: true },
-    { field: 'BoardGame.Name', name: 'Game', sort: true },
-    { field: 'Players', name: 'Players', sort: true },
-    { field: 'Winners', name: 'Winner(s)', sort: false },
-    { field: 'HighScore', name: 'Points', sort: true },
-    { field: 'DidNotFinish', name: 'Did Not Finish', sort: true },
   ];
 
   constructor(
@@ -104,14 +100,17 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.games$ = this.apiService.gameList$;
     this.boardGames$ = this.apiService.boardGameList$;
     this.players$ = this.apiService.playerList$;
+
+    this.subscriptions.add(
+      this.apiService.stats$.subscribe((stats) => {
+        this.stats = stats;
+        console.log(stats);
+      }),
+    );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-  }
-
-  filterTable(table: Table, filter: Event) {
-    table.filterGlobal((filter.target as HTMLInputElement).value, 'contains')
   }
 
   newGame() {
@@ -141,9 +140,5 @@ export class ClubComponent implements OnInit, OnDestroy {
   playerEdit(player: PlayerEntity) {
     this.editPlayer = player;
     this.editorPlayerVisible = true;
-  }
-
-  showScore(game: GameEntity) {
-    return game.BoardGame?.ScoreType === 'points';
   }
 }

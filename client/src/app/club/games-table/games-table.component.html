@@ -1,0 +1,91 @@
+<p-table
+  #gameTable
+  [value]="(games$ | async) ?? []"
+  dataKey="GameId"
+  [scrollable]="true"
+  scrollHeight="calc(100vh - 150px)"
+  [virtualScroll]="true"
+  [virtualScrollItemSize]="41"
+  styleClass="p-datatable-striped p-datatable-sm"
+  sortField="Date"
+  [sortOrder]="1"
+  [globalFilterFields]="['Date', 'BoardGame.Name']"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  [expandedRowKeys]="expandedRows">
+  <ng-template pTemplate="caption">
+    <div class="flex justify-content-center">
+      <div></div>
+      <span class="p-input-icon-left ml-auto filter-box">
+        <i class="pi pi-search"></i>
+        <input
+          #gameTableFilter
+          pInputText
+          type="text"
+          (input)="filterTable(gameTable, $event)"
+          placeholder="Search keyword" />
+      </span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 5rem"></th>
+      <th *ngFor="let column of gameColumns" [pSortableColumn]="column.sort ? column.field : undefined">
+        {{ column.name }}
+        <p-sortIcon *ngIf="column.sort" [field]="column.field" />
+      </th>
+      <th *ngIf="canEdit">Edit</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-game let-expanded="expanded">
+    <tr>
+      <td>
+        <p-button
+          *ngIf="game.Scores.length > game.Winners.length"
+          type="button"
+          pRipple
+          [pRowToggler]="game"
+          [text]="true"
+          [rounded]="true"
+          [plain]="true"
+          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+      </td>
+      <td>{{ game.Date | date: 'dd/MM/yy' }}</td>
+      <td>{{ game.BoardGame.Name }}</td>
+      <td>{{ game.Players | number: '1.0-0' }}</td>
+      <td>{{ game.Winners | array: 'Name' }}</td>
+      <td>
+        <ng-container *ngIf="showScore(game)">{{ game.HighScore | number: '1.0-3' }}</ng-container>
+      </td>
+      <td>{{ game.DidNotFinish | hide: 'false' }}</td>
+      <td *ngIf="canEdit">
+        <p-button (click)="gameEdit.emit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="rowexpansion" let-game>
+    <tr *ngFor="let score of game.Scores; let index = index" class="expansion-row">
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td class="flex gap-8">
+        <ng-container [ngSwitch]="game?.BoardGame?.ScoreType">
+          <ng-container *ngSwitchCase="'points'">
+            <i *ngIf="index === 0" class="pi pi-trophy" style="color: gold"></i>
+            <div *ngIf="index !== 0" class="empty-trophy"></div>
+          </ng-container>
+          <ng-container *ngSwitchCase="'rank'">
+            <i *ngIf="score.Points < 3" class="pi pi-trophy" [ngStyle]="{ color: getTrophyColor(score) }"></i>
+            <div *ngIf="score.Points >= 3" class="empty-trophy"></div>
+          </ng-container>
+          <ng-container *ngSwitchCase="'win-lose'">
+            <i *ngIf="score.Points === 1" class="pi pi-trophy" style="color: gold"></i>
+            <div *ngIf="score.Points !== 1" class="empty-trophy"></div>
+          </ng-container>
+        </ng-container>
+        <span>{{ score.Player?.Name }}</span>
+      </td>
+      <td *ngIf="showScore(game)">{{ score.Points | number: '1.0-3' }}</td>
+    </tr>
+  </ng-template>
+</p-table>

@@ -192,7 +192,6 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   }
 
   getTrophyColor(playerGame: PlayerGameEntity): string {
-    console.log('color');
     if (playerGame.Game?.BoardGame?.ScoreType === 'rank') {
       if (playerGame.Points === 0) {
         return 'gold';

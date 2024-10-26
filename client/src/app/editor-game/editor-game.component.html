@@ -60,14 +60,16 @@
             <p-button (click)="editPlayerGame()" icon="pi pi-plus"></p-button>
           </div>
         </ng-template>
-        <ng-template let-playerGame pTemplate="item">
+        <ng-template let-playerGame let-index="index" pTemplate="item">
           <div class="list-items">
             <div class="flex-column">
               <div class="flex gap-8 justify-content-space-between">
                 <span class="font-bold flex gap-8" [ngSwitch]="game?.BoardGame?.ScoreType">
                   <ng-container *ngSwitchCase="'points'">
+                    <i *ngIf="index === 0" class="pi pi-trophy" style="color: gold"></i>
+                    <div *ngIf="index !== 0" class="empty-trophy"></div>
                     <span>{{ playerGame.Player?.Name }}</span>
-                    <span *ngIf="playerGame.Points !== null">: {{ playerGame.Points }}</span>
+                    <span *ngIf="playerGame.Points !== null">: {{ playerGame.Points | number: '1.0-3' }}</span>
                   </ng-container>
                   <ng-container *ngSwitchCase="'rank'">
                     <i

@@ -38,7 +38,11 @@ export class BoardGameEntity extends BaseEntity {
 
   @Expose()
   get boardGameGeekUrl() {
-    return `https://boardgamegeek.com/boardgame/${this.BoardGameGeekId}`;
+    if (this.BoardGameGeekId) {
+      return `https://boardgamegeek.com/boardgame/${this.BoardGameGeekId}`;
+    } else {
+      return null;
+    }
   }
 
   @Ignore()
@@ -82,7 +86,10 @@ export class BoardGameEntity extends BaseEntity {
       .map((x) => x.Player!);
     this.Champions = Mode(winners, (x) => x.PlayerId ?? '');
     if (this.Champions.length > 0) {
-      this.ChampionWins = winners.reduce((wins, winner) => wins + (winner.PlayerId === this.Champions[0].PlayerId ? 1 : 0), 0);
+      this.ChampionWins = winners.reduce(
+        (wins, winner) => wins + (winner.PlayerId === this.Champions[0].PlayerId ? 1 : 0),
+        0
+      );
     } else {
       this.ChampionWins = 0;
     }
