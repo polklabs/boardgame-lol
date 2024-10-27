@@ -19,6 +19,7 @@ import { GamesTableComponent } from './games-table/games-table.component';
 import { PlayerTableComponent } from './player-table/player-table.component';
 import { BoardGameTableComponent } from './board-game-table/board-game-table.component';
 import { CardModule } from 'primeng/card';
+import { StatsComponent } from "./stats/stats.component";
 
 @Component({
   selector: 'app-club',
@@ -38,7 +39,8 @@ import { CardModule } from 'primeng/card';
     GamesTableComponent,
     PlayerTableComponent,
     BoardGameTableComponent,
-  ],
+    StatsComponent
+],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })

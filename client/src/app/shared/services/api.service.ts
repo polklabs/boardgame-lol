@@ -10,7 +10,6 @@ import {
   PlayerEntity,
   PlayerGameEntity,
 } from 'libs/index';
-import { format } from 'date-fns';
 import { StatsModel } from '../models/stats.model';
 
 @Injectable({
@@ -142,8 +141,6 @@ export class ApiService {
   }
 
   async postGame(isNew: boolean, data: GameWrapper) {
-    data.Game.Date = format(data.Game.Date, 'yyyy-MM-dd');
-
     let result: GameReturn | null = null;
     if (isNew) {
       result = await this.httpService.put(['api', 'game'], data);
@@ -283,6 +280,9 @@ export class ApiService {
   }
 
   private updateReferences() {
+    this.gameList.sort(
+      (a, b) => a.Date.toString().localeCompare(b.Date.toString()) || (a.SortIndex ?? 0) - (b.SortIndex ?? 0),
+    );
     this.gameList.forEach((game) => {
       game.BoardGame = this.boardGameList.find((x) => x.BoardGameId === game.BoardGameId) ?? null;
       game.Scores = this.playerGameList

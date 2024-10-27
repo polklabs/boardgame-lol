@@ -24,13 +24,7 @@
     <ng-template pTemplate="body" let-boardGame>
       <tr>
         <td>
-          <a *ngIf="boardGame.boardGameGeekUrl" [href]="boardGame.boardGameGeekUrl" target="_blank">
-            {{ boardGame.Name }}
-            <i class="pi pi-external-link"></i>
-          </a>
-          <span *ngIf="!boardGame.boardGameGeekUrl">
-            {{ boardGame.Name }}
-          </span>
+          {{ boardGame.Name }}
         </td>
 
         <td>
@@ -38,7 +32,7 @@
           <div
             *ngIf="boardGame.Games.length > 0"
             class="bar-percent"
-            [ngStyle]="{ width: (boardGame.Games.length / (stats?.MaxGamePlays ?? 1)) * 100 + '%' }"></div>
+            [ngStyle]="{ width: (boardGame.Games.length / (stats?.MostPlays ?? 1)) * 100 + '%' }"></div>
         </td>
         <td>{{ boardGame.Champions | array: 'Name' }}</td>
         <td>{{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }}</td>

@@ -33,14 +33,14 @@
         </td>
         <td>
           {{ player.Name }}
-          <i *ngIf="stats?.Champions?.includes(player)" class="pi pi-crown" style="color: gold"></i>
+          <i *ngIf="stats?.MostWinsPlayers?.includes(player)" class="pi pi-crown" style="color: gold"></i>
         </td>
         <td>
           <span>{{ player.Wins.length | hide: '0' | number: '1.0-0' }}</span>
           <div
             *ngIf="player.Wins.length > 0"
             class="bar-percent"
-            [ngStyle]="{ width: (player.Wins.length / (stats?.MaxPlayerWins ?? 1)) * 100 + '%' }"></div>
+            [ngStyle]="{ width: (player.Wins.length / (stats?.MostWins ?? 1)) * 100 + '%' }"></div>
         </td>
         <td>{{ player.BestGames | array: 'Name' }}</td>
         <td>{{ player.BestGameWins | hide: '0' | number: '1.0-0' }}</td>

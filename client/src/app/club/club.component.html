@@ -25,23 +25,21 @@
 <p-tabView>
   <p-tabPanel header="Overview">
     <!-- Overview goes here -->
-    <p-card header="Champions">
-      <h1>{{ stats?.Champions | array: 'Name' }}</h1>
-    </p-card>
+    <app-stats [stats]="stats"></app-stats>
   </p-tabPanel>
-  <p-tabPanel header="Plays ({{ ((games$ | async) ?? []).length }})">
+  <p-tabPanel header="Plays: {{ ((games$ | async) ?? []).length }}">
     <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
     <app-games-table [games$]="games$" [canEdit]="canEdit" (gameEdit)="gameEdit($event)"></app-games-table>
   </p-tabPanel>
-  <p-tabPanel header="Players ({{ ((players$ | async) ?? []).length }})">
-    <!-- Players ----------------------------------------------------------------------------------------- -->
+  <p-tabPanel header="Players: {{ ((players$ | async) ?? []).length }}">
+    <!-- Players --------------------------------------------------------------------------------------------- -->
     <app-player-table
       [players$]="players$"
       [stats]="stats"
       [canEdit]="canEdit"
       (playerEdit)="playerEdit($event)"></app-player-table>
   </p-tabPanel>
-  <p-tabPanel header="Games ({{ ((boardGames$ | async) ?? []).length }})">
+  <p-tabPanel header="Games: {{ ((boardGames$ | async) ?? []).length }}">
     <!-- BoardGames ----------------------------------------------------------------------------------------- -->
     <app-board-game-table
       [boardGames$]="boardGames$"

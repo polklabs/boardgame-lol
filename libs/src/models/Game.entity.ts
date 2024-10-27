@@ -8,6 +8,7 @@ import { BoardGameEntity } from './BoardGame.entity';
 import { PlayerGameEntity } from './PlayerGame.entity';
 import { PlayerEntity } from './Player.entity';
 import { Ignore } from '../decorators/ignore.decorator';
+import { Nullable } from '../decorators/nullable.decorator';
 
 export type GameWrapper = {
   Game: GameEntity;
@@ -35,6 +36,10 @@ export class GameEntity extends BaseEntity {
   BoardGameId: string | null = null;
 
   Date: Date | string = new Date().toISOString();
+
+  @Nullable()
+  @MinMax(0, 99999, 'number')
+  SortIndex: number | null = null;
 
   @MinMax(1, 99999, 'number')
   Players: number = 0;

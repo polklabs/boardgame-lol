@@ -1,0 +1,70 @@
+.trophy-list {
+  max-width: 600px;
+  width: 100%;
+  background-color: #1c2532;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  margin: auto;
+  margin-top: 16px;
+}
+
+.trophy-header {
+  background-color: var(--surface-a);
+  color: var(--primary-500);
+  padding: 15px;
+  text-align: center;
+  font-size: 1.7em;
+  font-weight: bold;
+}
+
+.trophy {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #333;
+}
+
+.trophy:last-child {
+  border-bottom: none;
+}
+
+.trophy-icon {
+  font-size: 1.5em;
+  margin-right: 10px;
+}
+
+.trophy-details {
+  display: flex;
+}
+
+.trophy-content {
+  display: flex;
+  flex-direction: row;
+}
+
+.trophy-title {
+  font-weight: bold;
+  color: var(--primary-500);
+  margin-right: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.trophy-info {
+  small {
+    color: #b0bec5;
+  }
+}
+
+.trophy-winner {
+  color: white;
+  font-style: italic;
+}
+
+.trophy-count {
+  color: #80cbc4;
+  font-weight: bold;
+  font-size: 1.1em;
+}
