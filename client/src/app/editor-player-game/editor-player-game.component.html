@@ -18,7 +18,6 @@
           [options]="players"
           optionLabel="Name"
           optionValue="PlayerId"
-          [showFilter]="true"
           [showClear]="false"></app-dropdown>
         <p-button *ngIf="canEditPlayer()" (click)="editPlayer.emit(selectedPlayer)" icon="pi pi-pencil"></p-button>
         <p-button (click)="editPlayer.emit()" icon="pi pi-plus"></p-button>
@@ -44,7 +43,7 @@
         </div>
         <div>
           <p-button label="Cancel" [outlined]="true" severity="secondary" (click)="closeEditor.emit()"></p-button>
-          <p-button label="Save & Close" [outlined]="true" (click)="submit()"></p-button>
+          <p-button label="Save" [outlined]="true" (click)="submit()"></p-button>
         </div>
       </div>
     </form>

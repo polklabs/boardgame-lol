@@ -41,7 +41,6 @@
           [hiddenFields]="hideFields"
           [options]="boardGames"
           [showClear]="false"
-          [showFilter]="true"
           optionLabel="Name"
           optionValue="BoardGameId"></app-dropdown>
         <p-button *ngIf="canEditBoardGame()" (click)="editBoardGame(selectedBoardGame)" icon="pi pi-pencil"></p-button>
@@ -132,7 +131,7 @@
       </div>
       <div>
         <p-button label="Cancel" [outlined]="true" severity="secondary" (click)="closeEditor.emit()"></p-button>
-        <p-button label="Save & Close" [outlined]="true" (click)="submit()"></p-button>
+        <p-button label="Save" [outlined]="true" (click)="submit()"></p-button>
       </div>
     </div>
   </div>

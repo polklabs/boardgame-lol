@@ -46,6 +46,10 @@ export class GameEntity extends BaseEntity {
 
   DidNotFinish: boolean = false;
 
+  get dateSortOrder() {
+    return `${this.Date}T${String(this.SortIndex).padStart(6, '0')}`
+  }
+
   @Ignore()
   BoardGame: BoardGameEntity | null = null;
 

@@ -25,6 +25,7 @@ import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-g
 import { CalendarComponent } from '../shared/components/calendar/calendar.component';
 import { CheckboxModule } from 'primeng/checkbox';
 import { Subscription } from 'rxjs';
+import { format } from 'date-fns';
 
 type EntityType = GameEntity;
 
@@ -371,8 +372,15 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     if (this.formGroup.invalid || !this.game) {
       return;
     } else {
+      const gameData = this.formGroup.getRawValue();
+      gameData.Date = format(gameData.Date, 'yyyy-MM-dd');
+      gameData.SortIndex = this.apiService.gameList.filter(x => x.Date === gameData.Date && x.GameId !== gameData.GameId).reduce(
+        (index, game) => Math.max(index, (game.SortIndex ?? 0) + 1),
+        0,
+      );
+
       const result = await this.apiService.postGame(this.game.GameId === null, {
-        Game: this.formGroup.getRawValue(),
+        Game: gameData,
         PlayerGames: this.playerGames.map((x) => new PlayerGameEntity(x)),
         BoardGames: this.newBoardGames,
         Players: this.newPlayers,

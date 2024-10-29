@@ -22,7 +22,7 @@ export class GamesTableComponent {
 
   expandedRows = {};
   gameColumns = [
-    { field: 'Date', name: 'Date', sort: true },
+    { field: 'dateSortOrder', name: 'Date', sort: true },
     { field: 'BoardGame.Name', name: 'Game', sort: true },
     { field: 'Players', name: 'Players', sort: true },
     { field: 'Winners', name: 'Winner(s)', sort: false },
