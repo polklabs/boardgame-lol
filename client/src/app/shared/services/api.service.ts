@@ -241,6 +241,29 @@ export class ApiService {
     }
   }
 
+  async updateGameIndex(gameId: string | null, direction: number) {
+    const result = await this.httpService.patch<null, GameEntity[]>(
+      ['api', 'game', this.clubId, gameId, direction],
+      null,
+    );
+
+    if (result) {
+      result.forEach((g) => {
+        const index = this.gameList.findIndex((x) => x.GameId === g.GameId);
+        if (index !== -1) {
+          this.gameList[index] = g;
+        } else {
+          this.gameList.push(g);
+        }
+      });
+      this.gameList = [...this.gameList];
+      this.updateReferences();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async deletePlayer(playerId: string | null) {
     if (playerId === null) {
       console.log('playerId is null');

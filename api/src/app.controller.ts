@@ -139,6 +139,18 @@ export class AppController {
     return HttpStatus.OK;
   }
 
+  @Throttle(authThrottle)
+  @UseGuards(AuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch('game/:clubId/:gameId/:direction')
+  updateSortIndex(@Request() req: any, @Param() params: { clubId: string; gameId: string; direction: number }) {
+    try {
+      return this.gameManager.updateSortIndex(this.getUserId(req), params.gameId, params.clubId, +params.direction);
+    } catch (e) {
+      this.handleErrors(e);
+    }
+  }
+
   /// --------------------------------------------------------------------------------
   /// Player
   /// --------------------------------------------------------------------------------

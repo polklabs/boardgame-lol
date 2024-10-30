@@ -9,6 +9,7 @@ import { PlayerGameEntity } from './PlayerGame.entity';
 import { PlayerEntity } from './Player.entity';
 import { Ignore } from '../decorators/ignore.decorator';
 import { Nullable } from '../decorators/nullable.decorator';
+import { CHARACTER_LIMIT_LONG } from '../constants';
 
 export type GameWrapper = {
   Game: GameEntity;
@@ -45,6 +46,10 @@ export class GameEntity extends BaseEntity {
   Players: number = 0;
 
   DidNotFinish: boolean = false;
+
+  @Nullable()
+  @MinMax(0, CHARACTER_LIMIT_LONG, 'string')
+  Notes: string | null = null;
 
   get dateSortOrder() {
     return `${this.Date}T${String(this.SortIndex).padStart(6, '0')}`

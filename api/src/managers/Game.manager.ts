@@ -140,6 +140,39 @@ export class GameManager extends BaseManager<GameEntity> {
     };
   }
 
+  updateSortIndex(userId: string, primaryId: string, secondaryId: string, direction: number) {
+    this.clubUserManager.hasAccess(userId, secondaryId);
+
+    const games = this.loadMany('ClubId', secondaryId);
+    const primary = games.find((x) => x.GameId === primaryId);
+
+    if (primary) {
+      const toUpdate = games
+        .filter((x) => x.Date === primary?.Date)
+        .sort((a, b) => (a.SortIndex ?? 0) - (b.SortIndex ?? 0));
+
+      const index = toUpdate.indexOf(primary);
+      const index2 = index + (direction > 0 ? 1 : -1);
+      if ((index2 < index && index > 0) || (index2 > index && index < toUpdate.length - 1)) {
+        [toUpdate[index], toUpdate[index2]] = [toUpdate[index2], toUpdate[index]];
+
+        const transaction: unknown[] = [];
+        toUpdate.forEach((item, index) => {
+          item.SortIndex = index;
+          transaction.push(this.runUpdate(userId, item, true));
+        });
+
+        this.db.Transact(transaction);
+        return toUpdate;
+      } else {
+        // Nothing
+      }
+    } else {
+      // Nothing
+    }
+    return [];
+  }
+
   delete(userId: string, primaryId: string, secondaryId: string) {
     this.clubUserManager.hasAccess(userId, secondaryId);
     return this.runDelete(primaryId, secondaryId, false);

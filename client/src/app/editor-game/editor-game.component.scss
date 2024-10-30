@@ -67,4 +67,11 @@
       right: -1rem;
     }
   }
+
+  .p-orderlist>.p-orderlist-controls {
+    display: none;
+  }
+  .can-order .p-orderlist>.p-orderlist-controls {
+    display: flex;
+  }
 }

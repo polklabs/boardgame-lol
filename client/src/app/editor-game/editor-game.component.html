@@ -52,7 +52,8 @@
         [dragdrop]="true"
         [responsive]="true"
         [metaKeySelection]="true"
-        (onReorder)="updateOrdering()">
+        (onReorder)="updateOrdering()"
+        [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
         <ng-template pTemplate="header">
           <div class="order-list-header flex justify-content-space-between">
             <div class="p-orderlist-title">Winners</div>
@@ -119,6 +120,8 @@
       </div>
 
       <p-checkbox formControlName="DidNotFinish" label="Did Not Finish Game" [binary]="true"></p-checkbox>
+
+      <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
     </form>
     <div class="flex dialog-footer">
       <div>

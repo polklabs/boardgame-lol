@@ -29,7 +29,12 @@
   </p-tabPanel>
   <p-tabPanel header="Plays: {{ ((games$ | async) ?? []).length }}">
     <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
-    <app-games-table [games$]="games$" [canEdit]="canEdit" (gameEdit)="gameEdit($event)"></app-games-table>
+    <app-games-table
+      [games$]="games$"
+      [canEdit]="canEdit"
+      (gameEdit)="gameEdit($event)"
+      (moveUp)="moveUp($event)"
+      (moveDown)="moveDown($event)"></app-games-table>
   </p-tabPanel>
   <p-tabPanel header="Players: {{ ((players$ | async) ?? []).length }}">
     <!-- Players --------------------------------------------------------------------------------------------- -->

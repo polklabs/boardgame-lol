@@ -26,6 +26,7 @@ import { CalendarComponent } from '../shared/components/calendar/calendar.compon
 import { CheckboxModule } from 'primeng/checkbox';
 import { Subscription } from 'rxjs';
 import { format } from 'date-fns';
+import { TextareaComponent } from '../shared/components/textarea/textarea.component';
 
 type EntityType = GameEntity;
 
@@ -36,6 +37,7 @@ type EntityType = GameEntity;
     CommonModule,
     DialogModule,
     DropdownComponent,
+    TextareaComponent,
     TextInputComponent,
     CalendarComponent,
     CheckboxModule,
@@ -374,10 +376,15 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     } else {
       const gameData = this.formGroup.getRawValue();
       gameData.Date = format(gameData.Date, 'yyyy-MM-dd');
-      gameData.SortIndex = this.apiService.gameList.filter(x => x.Date === gameData.Date && x.GameId !== gameData.GameId).reduce(
-        (index, game) => Math.max(index, (game.SortIndex ?? 0) + 1),
-        0,
-      );
+      const oldDate = format(this.game.Date, 'yyyy-MM-dd');
+
+      if (this.isNew || oldDate !== gameData.Date) {
+        gameData.SortIndex = this.apiService.gameList
+          .filter((x) => x.Date === gameData.Date && x.GameId !== gameData.GameId)
+          .reduce((index, game) => Math.max(index, (game.SortIndex ?? 0) + 1), 0);
+      } else {
+        // Continue
+      }
 
       const result = await this.apiService.postGame(this.game.GameId === null, {
         Game: gameData,

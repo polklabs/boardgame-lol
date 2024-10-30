@@ -130,4 +130,12 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.editPlayer = player;
     this.editorPlayerVisible = true;
   }
+
+  moveUp(game: GameEntity) {
+    this.apiService.updateGameIndex(game.GameId, -1);
+  }
+
+  moveDown(game: GameEntity) {
+    this.apiService.updateGameIndex(game.GameId, 1);
+  }
 }

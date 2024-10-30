@@ -52,15 +52,38 @@
 
     <!-- Row Expansion -->
     <ng-template pTemplate="rowexpansion" let-player>
-      <tr *ngFor="let playerGame of player.Wins; let index = index" class="expansion-row">
+      <tr>
         <td></td>
-        <td></td>
-        <td></td>
-        <td>
-          <div class="flex gap-8 justify-content-space-between">
-            <span>{{ playerGame.Game.BoardGame.Name }}</span>
-            <span *ngIf="showScore(playerGame.Game)">{{ playerGame.Points | number: '1.0-3' }}</span>
-          </div>
+        <td [attr.colspan]="playerColumns.length">
+          <p-table
+            [value]="player.Wins"
+            styleClass="p-datatable-sm"
+            sortField="dateSortOrder"
+            [sortOrder]="1"
+            [tableStyle]="{ 'min-width': '50rem' }">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Date</th>
+                <th>Game</th>
+                <th>Points</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-playerGame>
+              <tr>
+                <td>
+                  {{ playerGame.Game.Date | date: 'MM/dd/yy' }}
+                </td>
+                <td>
+                  {{ playerGame.Game.BoardGame.Name }}
+                </td>
+                <td>
+                  <ng-container *ngIf="showScore(playerGame.Game)">
+                    {{ playerGame.Points | number: '1.0-3' }}
+                  </ng-container>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
         </td>
       </tr>
     </ng-template>

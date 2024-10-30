@@ -48,16 +48,24 @@
             [plain]="true"
             [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
         </td>
-        <td>{{ game.Date | date: 'dd/MM/yy' }}</td>
+        <td>{{ game.Date | date: 'MM/dd/yy' }}</td>
         <td>{{ game.BoardGame.Name }}</td>
         <td>{{ game.Players | number: '1.0-0' }}</td>
         <td>{{ game.Winners | array: 'Name' }}</td>
         <td>
           <ng-container *ngIf="showScore(game)">{{ game.HighScore | number: '1.0-3' }}</ng-container>
         </td>
-        <td>{{ game.DidNotFinish | hide: 'false' }}</td>
+        <td>
+          <p-tag *ngIf="game.DidNotFinish" value="Did Not Finish" severity="danger" />
+        </td>
         <td *ngIf="canEdit">
-          <p-button (click)="gameEdit.emit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
+          <div class="flex flex-row">
+            <p-button (click)="moveUp.emit(game)" icon="pi pi-arrow-up" [rounded]="true" [text]="true"></p-button>
+
+            <p-button (click)="moveDown.emit(game)" icon="pi pi-arrow-down" [rounded]="true" [text]="true"></p-button>
+
+            <p-button (click)="gameEdit.emit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
+          </div>
         </td>
       </tr>
     </ng-template>
