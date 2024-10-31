@@ -204,7 +204,7 @@ export class AuthService {
   }
 
   async changePassword(userId: string, currentPassword: string, password: string): Promise<boolean> {
-    const user = this.userManager.loadOne(userId);
+    const user = this.userManager.getUser(userId);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     } else {

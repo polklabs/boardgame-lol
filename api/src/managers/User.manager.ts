@@ -42,6 +42,10 @@ export class UserManager extends BaseManager<UserEntity> {
     }
   }
 
+  public getUser(userId: string) {
+    return this.db.GetRaw<UserEntity>(`SELECT * FROM  User WHERE UserId = ? LIMIT 1`, [userId]);
+  }
+
   public findUser(username: string) {
     username = username.toLowerCase().trim();
     return this.db.GetRaw<UserEntity>(
