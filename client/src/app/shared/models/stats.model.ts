@@ -22,12 +22,14 @@ export class StatsModel {
   BestComeback = 0;
   BestComebackPlayers: PlayerEntity[] = [];
 
+  OnlyWon1Game: PlayerEntity[] = [];
+
   private players: PlayerEntity[] = [];
   private games: GameEntity[] = [];
   private boardGames: BoardGameEntity[] = [];
 
   constructor(players: PlayerEntity[], games: GameEntity[], boardGames: BoardGameEntity[]) {
-    this.players = players;
+    this.players = players.filter((x) => x.IsRealPerson);
     this.games = games;
     this.boardGames = boardGames;
 
@@ -38,6 +40,7 @@ export class StatsModel {
     this.calculateLongestStreak();
     this.calculateBestComeback();
     this.calculateMostTies();
+    this.calculateOnlyWonOneGame();
   }
 
   calculateMostPlays() {
@@ -159,5 +162,9 @@ export class StatsModel {
     }));
     this.MostTies = tiedWins.reduce((max, x) => Math.max(max, x.count), 0);
     this.MostTiesPlayers = tiedWins.filter((x) => x.count === this.MostTies).map((x) => x.player);
+  }
+
+  calculateOnlyWonOneGame() {
+    this.OnlyWon1Game = this.players.filter((x) => x.Wins.length === 1);
   }
 }

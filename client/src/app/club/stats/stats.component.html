@@ -63,6 +63,18 @@
       }
     "></ng-container>
 
+  <ng-container
+    *ngTemplateOutlet="
+      trophy;
+      context: {
+        emoji: '1️⃣',
+        title: 'The One Hit Wonder',
+        info: 'Only Win 1 Game',
+        array: stats?.OnlyWon1Game,
+        value: stats?.OnlyWon1Game?.length
+      }
+    "></ng-container>
+
   <!-- Game Trophies -->
 
   <ng-container
@@ -119,7 +131,7 @@
       <span>Fri</span>
     </div>
     <div class="flex-column gap-1 week" *ngFor="let week of heatmap">
-      <div class="month-text">{{week.month}}</div>
+      <div class="month-text">{{ week.month }}</div>
       <div
         class="box"
         *ngFor="let day of week.days"
