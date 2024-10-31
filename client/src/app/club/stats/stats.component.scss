@@ -68,3 +68,48 @@
   font-weight: bold;
   font-size: 1.1em;
 }
+
+// Heatmap
+.heatmap-wrapper {
+  margin: auto;
+  width: fit-content;
+  max-width: calc(100vw - 8px);
+  padding: 4px;
+  background-color: #1f2937;
+  border-radius: 8px;
+}
+
+.heatmap {
+  flex-wrap: nowrap;
+  overflow: auto;
+  width: fit-content;
+  max-width: 100%;
+  padding-bottom: 16px;
+  margin-top: 1.2rem;
+
+  .dow {
+    margin-right: 4px;
+    margin-top: 1.2rem;
+    span {
+      margin-top: 1rem;
+    }
+  }
+
+  .month-text {
+    top: -1.2rem;
+    position: absolute;
+  }
+
+  .box {
+    width: 1rem;
+    height: 1rem;
+    background-color: green;
+    text-align: center;
+    border-radius: 4px;
+  }
+
+  .week {
+    position: relative;
+    margin-top: 1.2rem;
+  }
+}

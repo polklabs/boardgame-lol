@@ -107,3 +107,24 @@
     <span class="trophy-count">{{ value }}</span>
   </div>
 </ng-template>
+
+<br />
+<br />
+
+<div class="heatmap-wrapper">
+  <div class="flex gap-1 heatmap">
+    <div class="flex-column dow">
+      <span>Mon</span>
+      <span>Wed</span>
+      <span>Fri</span>
+    </div>
+    <div class="flex-column gap-1 week" *ngFor="let week of heatmap">
+      <div class="month-text">{{week.month}}</div>
+      <div
+        class="box"
+        *ngFor="let day of week.days"
+        [pTooltip]="day.tooltip"
+        [ngStyle]="{ 'background-color': day.color }"></div>
+    </div>
+  </div>
+</div>
