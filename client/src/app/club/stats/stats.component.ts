@@ -86,6 +86,11 @@ export class StatsComponent implements OnChanges {
       section += division;
       index++;
     }
+    if (count > 0 && index === 0) {
+      index++;
+    } else {
+      // Continue
+    }
 
     return this.colors[index];
   }
