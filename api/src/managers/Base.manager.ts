@@ -122,7 +122,7 @@ export abstract class BaseManager<T extends BaseEntity> {
       return this.db.Get(
         `${this.getBaseSelect()}
       ${this.getBaseJoin()}
-      WHERE ${String(this.primaryKey)} = ? LIMIT 1`,
+      WHERE ${this.tableName}.${String(this.primaryKey)} = ? LIMIT 1`,
         id,
         this.new,
       );
