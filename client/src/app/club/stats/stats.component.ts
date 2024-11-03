@@ -24,14 +24,21 @@ export class StatsComponent implements OnChanges {
 
   ShowCharts = false;
   // Chart.js
-  data: any;
-  options: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  winsOverTimeData: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  winsOverTimeOptions: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rankOverTimeData: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rankOverTimeOptions: any;
 
   constructor(private apiService: ApiService) {}
 
   ngOnChanges(): void {
     this.updateHeatmap();
     this.generateWinsOverTimeChart();
+    this.generateRankOverTimeChart();
     this.ShowCharts = true;
   }
 
@@ -152,13 +159,13 @@ export class StatsComponent implements OnChanges {
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-    this.data = {
+    this.winsOverTimeData = {
       labels: winDates,
       datasets: [],
     };
 
     Object.keys(wins).forEach((pId) => {
-      this.data.datasets.push({
+      this.winsOverTimeData.datasets.push({
         label: players.find((x) => x.PlayerId === pId)?.Name ?? 'Unknown',
         data: wins[pId],
         fill: false,
@@ -167,7 +174,7 @@ export class StatsComponent implements OnChanges {
       });
     });
 
-    this.options = {
+    this.winsOverTimeOptions = {
       maintainAspectRatio: false,
       aspectRatio: 0.6,
       plugins: {
@@ -190,6 +197,124 @@ export class StatsComponent implements OnChanges {
         y: {
           ticks: {
             color: textColorSecondary,
+          },
+          grid: {
+            color: surfaceBorder,
+            drawBorder: false,
+          },
+        },
+      },
+      elements: {
+        point: {
+          pointStyle: false,
+        },
+      },
+    };
+  }
+
+  generateRankOverTimeChart() {
+    const wins: { [playerId: string]: number[] } = {};
+    const rankDates: string[] = [];
+
+    if (this.apiService.gameList.length === 0) {
+      return;
+    } else {
+      // Continue
+    }
+
+    const gameList = this.apiService.gameList;
+    const players = this.apiService.playerList.filter((x) => x.IsRealPerson);
+
+    players.forEach((p) => {
+      wins[p.PlayerId ?? ''] = [];
+    });
+
+    const dates = [...new Set(gameList.map((x) => `${x.Date}`))].sort((a, b) => a.localeCompare(b));
+
+    dates.forEach((dateStr) => {
+      const winners = gameList
+        .filter((x) => x.Date === dateStr)
+        .map((x) => x.Winners)
+        .flat()
+        .map((x) => x.PlayerId);
+
+      players.forEach((p) => {
+        wins[p.PlayerId ?? ''].push(
+          (wins[p.PlayerId ?? ''][wins[p.PlayerId ?? ''].length - 1] ?? 0) +
+            winners.reduce((count, w) => count + (w === p.PlayerId ? 1 : 0), 0),
+        );
+      });
+
+      rankDates.push(dateStr);
+    });
+
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    this.rankOverTimeData = {
+      labels: rankDates,
+      datasets: [],
+    };
+
+    const playerIds = Object.keys(wins);
+
+    for (let i = 0; i < rankDates.length; i++) {
+      const order = playerIds.map((pId) => ({ id: pId, count: wins[pId][i] })).sort((a, b) => b.count - a.count);
+      playerIds.forEach((pId) => {
+        wins[pId][i] = order.findIndex((x) => x.id === pId);
+        wins[pId][i] = wins[pId][i] >= 3 ? 3 : wins[pId][i];
+      });
+    }
+
+    playerIds.forEach((pId) => {
+      this.rankOverTimeData.datasets.push({
+        label: players.find((x) => x.PlayerId === pId)?.Name ?? 'Unknown',
+        data: wins[pId],
+        fill: false,
+        // borderColor: documentStyle.getPropertyValue('--blue-500'),
+        tension: 0.4,
+      });
+    });
+
+    console.log(this.rankOverTimeData);
+
+    this.rankOverTimeOptions = {
+      maintainAspectRatio: false,
+      aspectRatio: 0.6,
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor,
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: textColorSecondary,
+          },
+          grid: {
+            color: surfaceBorder,
+            drawBorder: false,
+          },
+        },
+        y: {
+          ticks: {
+            color: textColorSecondary,
+            stepSize: 1,
+            callback: (label: number) => {
+              if (label === 0) {
+                return '1st';
+              } else if (label === 1) {
+                return '2nd';
+              } else if (label === 2) {
+                return '3rd';
+              } else {
+                return '4th+';
+              }
+            },
           },
           grid: {
             color: surfaceBorder,
