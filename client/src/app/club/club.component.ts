@@ -73,7 +73,6 @@ export class ClubComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.add(
       this.route.params.subscribe((x) => {
-        console.log(x);
         this.apiService.fetchClub(x['id']);
       }),
     );
@@ -93,7 +92,6 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.apiService.stats$.subscribe((stats) => {
         this.stats = stats;
-        console.log(stats);
       }),
     );
   }

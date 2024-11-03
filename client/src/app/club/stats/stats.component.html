@@ -1,142 +1,152 @@
-<div class="trophy-list">
-  <div class="trophy-header">🏆 Board Game Trophies</div>
+<div style="max-height: calc(100dvh - 103px); overflow: auto">
+  <div class="trophy-list">
+    <div class="trophy-header">🏆 Board Game Trophies</div>
 
-  <!-- Player Trophies -->
+    <!-- Player Trophies -->
 
-  <ng-container
-    *ngTemplateOutlet="
-      trophy;
-      context: {
-        emoji: '👑',
-        title: 'The Game Master',
-        info: 'Most Wins',
-        array: stats?.MostWinsPlayers,
-        value: stats?.MostWins
-      }
-    "></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        trophy;
+        context: {
+          emoji: '👑',
+          title: 'The Game Master',
+          info: 'Most Wins',
+          array: stats?.MostWinsPlayers,
+          value: stats?.MostWins
+        }
+      "></ng-container>
 
-  <ng-container
-    *ngTemplateOutlet="
-      trophy;
-      context: {
-        emoji: '🧩',
-        title: 'Jack Of All Trades',
-        info: 'Most Unique BoardGame Wins',
-        array: stats?.MaxUniqueWinsPlayers,
-        value: stats?.MaxUniqueWins
-      }
-    "></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        trophy;
+        context: {
+          emoji: '🧩',
+          title: 'Jack Of All Trades',
+          info: 'Most Unique BoardGame Wins',
+          array: stats?.MaxUniqueWinsPlayers,
+          value: stats?.MaxUniqueWins
+        }
+      "></ng-container>
 
-  <ng-container
-    *ngTemplateOutlet="
-      trophy;
-      context: {
-        emoji: '🔥',
-        title: 'The Hot Streak',
-        info: 'Longest Win Streak',
-        array: stats?.LongestWinStreakPlayers,
-        value: stats?.LongestWinStreak
-      }
-    "></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        trophy;
+        context: {
+          emoji: '🔥',
+          title: 'The Hot Streak',
+          info: 'Longest Win Streak',
+          array: stats?.LongestWinStreakPlayers,
+          value: stats?.LongestWinStreak
+        }
+      "></ng-container>
 
-  <ng-container
-    *ngTemplateOutlet="
-      trophy;
-      context: {
-        emoji: '🕺',
-        title: 'The Comeback Kid',
-        info: 'Longest Streak Between Wins',
-        array: stats?.BestComebackPlayers,
-        value: stats?.BestComeback
-      }
-    "></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        trophy;
+        context: {
+          emoji: '🕺',
+          title: 'The Comeback Kid',
+          info: 'Longest Streak Between Wins',
+          array: stats?.BestComebackPlayers,
+          value: stats?.BestComeback
+        }
+      "></ng-container>
 
-  <ng-container
-    *ngTemplateOutlet="
-      trophy;
-      context: {
-        emoji: '🤝',
-        title: 'The Great Compromiser',
-        info: 'Most Ties',
-        array: stats?.MostTiesPlayers,
-        value: stats?.MostTies
-      }
-    "></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        trophy;
+        context: {
+          emoji: '🤝',
+          title: 'The Great Compromiser',
+          info: 'Most Ties',
+          array: stats?.MostTiesPlayers,
+          value: stats?.MostTies
+        }
+      "></ng-container>
 
-  <ng-container
-    *ngTemplateOutlet="
-      trophy;
-      context: {
-        emoji: '1️⃣',
-        title: 'The One Hit Wonder',
-        info: 'Only Win 1 Game',
-        array: stats?.OnlyWon1Game,
-        value: stats?.OnlyWon1Game?.length
-      }
-    "></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        trophy;
+        context: {
+          emoji: '1️⃣',
+          title: 'The One Hit Wonder',
+          info: 'Only Win 1 Game',
+          array: stats?.OnlyWon1Game,
+          value: stats?.OnlyWon1Game?.length
+        }
+      "></ng-container>
 
-  <!-- Game Trophies -->
+    <!-- Game Trophies -->
 
-  <ng-container
-    *ngTemplateOutlet="
-      trophy;
-      context: {
-        emoji: '🥇',
-        title: 'The Fan Favorite',
-        info: 'Most Played Game',
-        array: stats?.MostPlaysGames,
-        value: stats?.MostPlays
-      }
-    "></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        trophy;
+        context: {
+          emoji: '🥇',
+          title: 'The Fan Favorite',
+          info: 'Most Played Game',
+          array: stats?.MostPlaysGames,
+          value: stats?.MostPlays
+        }
+      "></ng-container>
 
-  <ng-container
-    *ngTemplateOutlet="
-      trophy;
-      context: {
-        emoji: '🕹️',
-        title: 'Just One More Game',
-        info: 'Most Games Played In One Day',
-        array: stats?.MostPlaysOneDayDate,
-        value: stats?.MostPlaysOneDay
-      }
-    "></ng-container>
-</div>
+    <ng-container
+      *ngTemplateOutlet="
+        trophy;
+        context: {
+          emoji: '🕹️',
+          title: 'Just One More Game',
+          info: 'Most Games Played In One Day',
+          array: stats?.MostPlaysOneDayDate,
+          value: stats?.MostPlaysOneDay
+        }
+      "></ng-container>
+  </div>
 
-<ng-template #trophy let-emoji="emoji" let-title="title" let-info="info" let-array="array" let-value="value">
-  <div class="trophy">
-    <div class="trophy-details">
-      <span class="trophy-icon">{{ emoji }}</span>
-      <div>
-        <div class="trophy-content">
-          <span class="trophy-title">{{ title }}</span>
-          <span class="trophy-winner">{{ array | array: 'Name' }}</span>
-        </div>
-        <div class="trophy-info">
-          <small>{{ info }}</small>
+  <ng-template #trophy let-emoji="emoji" let-title="title" let-info="info" let-array="array" let-value="value">
+    <div class="trophy">
+      <div class="trophy-details">
+        <span class="trophy-icon">{{ emoji }}</span>
+        <div>
+          <div class="trophy-content">
+            <span class="trophy-title">{{ title }}</span>
+            <span class="trophy-winner">{{ array | array: 'Name' }}</span>
+          </div>
+          <div class="trophy-info">
+            <small>{{ info }}</small>
+          </div>
         </div>
       </div>
+      <span class="trophy-count">{{ value }}</span>
     </div>
-    <span class="trophy-count">{{ value }}</span>
+  </ng-template>
+
+  <br />
+  <br />
+
+  <div class="heatmap-wrapper">
+    <div class="flex gap-1 heatmap">
+      <div class="flex-column dow">
+        <span>Mon</span>
+        <span>Wed</span>
+        <span>Fri</span>
+      </div>
+      <div class="flex-column gap-1 week" *ngFor="let week of heatmap">
+        <div class="month-text">{{ week.month }}</div>
+        <div
+          class="box"
+          *ngFor="let day of week.days"
+          [pTooltip]="day.tooltip"
+          [ngStyle]="{ 'background-color': day.color }"></div>
+      </div>
+    </div>
   </div>
-</ng-template>
 
-<br />
-<br />
+  <br />
+  <br />
 
-<div class="heatmap-wrapper">
-  <div class="flex gap-1 heatmap">
-    <div class="flex-column dow">
-      <span>Mon</span>
-      <span>Wed</span>
-      <span>Fri</span>
-    </div>
-    <div class="flex-column gap-1 week" *ngFor="let week of heatmap">
-      <div class="month-text">{{ week.month }}</div>
-      <div
-        class="box"
-        *ngFor="let day of week.days"
-        [pTooltip]="day.tooltip"
-        [ngStyle]="{ 'background-color': day.color }"></div>
-    </div>
+  <div class="card">
+    <h3 style="text-align: center;">Wins Over Time</h3>
+    <p-chart type="line" [data]="data" [options]="options" />
   </div>
 </div>
