@@ -64,6 +64,13 @@ export class AppController {
   /// --------------------------------------------------------------------------------
   @Throttle(publicThrottle)
   @UseInterceptors(ClassSerializerInterceptor)
+  @Get('clubs')
+  getPublicClubs() {
+    return this.clubManager.loadMany('Public', '1');
+  }
+
+  @Throttle(publicThrottle)
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get('club/:clubId')
   getClub(@Param() params: { clubId: string }) {
     return {

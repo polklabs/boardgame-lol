@@ -17,6 +17,7 @@ import { StatsModel } from '../models/stats.model';
 })
 export class ApiService {
   // Instances
+  private _publicClubs: ClubEntity[] = [];
   private _club?: ClubEntity;
   private _stats?: StatsModel;
   private _boardGameList: BoardGameEntity[] = [];
@@ -25,6 +26,7 @@ export class ApiService {
   private _playerGameList: PlayerGameEntity[] = [];
 
   // Observables
+  readonly publicClubs$ = new BehaviorSubject<typeof this._publicClubs>([]);
   readonly club$ = new BehaviorSubject<typeof this._club>(undefined);
   readonly stats$ = new BehaviorSubject<typeof this._stats>(undefined);
   readonly boardGameList$ = new BehaviorSubject<typeof this._boardGameList>([]);
@@ -32,7 +34,7 @@ export class ApiService {
   readonly gameList$ = new BehaviorSubject<typeof this._gameList>([]);
   readonly playerGameList$ = new BehaviorSubject<typeof this._playerGameList>([]);
 
-  // Getters
+  // Club
   get club() {
     return this._club;
   }
@@ -44,11 +46,13 @@ export class ApiService {
     this.club$.next(this._club);
   }
 
+  // Stats
   private set stats(stats: StatsModel | undefined) {
     this._stats = stats;
     this.stats$.next(stats);
   }
 
+  // Board Games
   get boardGameList() {
     return this._boardGameList;
   }
@@ -57,6 +61,7 @@ export class ApiService {
     this.boardGameList$.next(this._boardGameList);
   }
 
+  // Players
   get playerList() {
     return this._playerList;
   }
@@ -65,6 +70,7 @@ export class ApiService {
     this.playerList$.next(this._playerList);
   }
 
+  // Games
   get gameList() {
     return this._gameList;
   }
@@ -73,12 +79,22 @@ export class ApiService {
     this.gameList$.next(this._gameList);
   }
 
+  // Player Games
   get playerGameList() {
     return this._playerGameList;
   }
   private set playerGameList(playerGameList: PlayerGameEntity[]) {
     this._playerGameList = playerGameList.map((x) => new PlayerGameEntity(x, true));
     this.playerGameList$.next(this._playerGameList);
+  }
+
+  // Public Clubs
+  get publicClubs() {
+    return this._publicClubs;
+  }
+  private set publicClubs(publicClubs: ClubEntity[]) {
+    this._publicClubs = publicClubs.map((x) => new ClubEntity(x, true));
+    this.publicClubs$.next(this._publicClubs);
   }
 
   constructor(private httpService: HttpService) {}
@@ -89,6 +105,18 @@ export class ApiService {
     this.playerList = [];
     this.gameList = [];
     this.playerGameList = [];
+  }
+
+  async fetchPublicClubs() {
+    const data = await this.httpService.get<ClubEntity[]>(['api', 'clubs']);
+
+    if (!data) {
+      return;
+    } else {
+      // continue
+    }
+
+    this.publicClubs = data;
   }
 
   async fetchClub(clubId: string) {

@@ -8,7 +8,7 @@ export abstract class BaseEntity {
 
   @Exclude()
   CreatedDate?: string = new Date().toISOString();
-  @Exclude()
+  // @Exclude()
   CreatedBy?: string = 'ANON';
   @Exclude()
   LastModifiedDate?: string = new Date().toISOString();

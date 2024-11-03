@@ -160,7 +160,9 @@ export class AuthController {
   @Get('club_access')
   getClubAccess(@Request() req: any) {
     try {
-      return this.clubUserManager.loadManyWithName(this.getUserId(req)).map((x) => ({ id: x.ClubId, name: x.Name }));
+      return this.clubUserManager
+        .loadManyWithName(this.getUserId(req))
+        .map((x) => ({ id: x.ClubId, name: x.Name, summary: x.Summary, username: x.Username }));
     } catch (e) {
       this.handleErrors(e);
     }

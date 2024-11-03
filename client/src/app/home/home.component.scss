@@ -1,3 +1,8 @@
 :host ::ng-deep {
-  
+  .p-card .p-card-content {
+    padding: 0;
+  }
+  .p-card-body {
+    cursor: pointer;
+  }
 }

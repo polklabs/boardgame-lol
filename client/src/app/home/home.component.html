@@ -1,12 +1,39 @@
 <app-menu-bar page="home" (newClub)="editorClubVisible = true"></app-menu-bar>
 
-<!-- <app-editor-club
-  *ngIf="editorClubVisible"
-  [editorVisible]="editorClubVisible"
-  (closeEditor)="editorClubVisible = false"></app-editor-club> -->
+<!-- <app-editor-game
+  *ngIf="editorGameVisible"
+  [editorVisible]="editorGameVisible"
+  [game]="editGame"
+  (closeEditor)="editorGameVisible = false"></app-editor-game> -->
 
-<!-- Display Game List -->
+<h1 *ngIf="((clubList$ | async)?.length ?? 0) > 0">Groups You Manage</h1>
+<div *ngFor="let club of clubList$ | async">
+  <p-card
+    [header]="club.name"
+    subheader="Created By: {{ club.username }}"
+    [style]="{ width: '360px' }"
+    [routerLink]="'/club/' + club.id">
+    <p>{{ club.summary }}</p>
+    <ng-template pTemplate="footer">
+      <div class="flex gap-3 mt-1">
+        <p-button label="View" class="w-full" styleClass="w-full" />
+      </div>
+    </ng-template>
+  </p-card>
+</div>
 
-<p-card *ngFor="let club of clubList$ | async" [header]="club.name" [routerLink]="'/club/' + club.id">
-  
-</p-card>
+<h1>Public Groups</h1>
+<div *ngFor="let club of publicClubList$ | async">
+  <p-card
+    [header]="club.Name"
+    subheader="Created By: {{ club.CreatedBy }}"
+    [style]="{ width: '360px' }"
+    [routerLink]="'/club/' + club.ClubId">
+    <p>{{ club.Summary }}</p>
+    <ng-template pTemplate="footer">
+      <div class="flex gap-3 mt-1">
+        <p-button label="View" class="w-full" styleClass="w-full" />
+      </div>
+    </ng-template>
+  </p-card>
+</div>

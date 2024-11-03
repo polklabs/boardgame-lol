@@ -5,12 +5,14 @@ import { BehaviorSubject } from 'rxjs';
 import { JwtModel } from 'libs/index';
 import { HttpService } from './http.service';
 
+export type AccessIds = { id: string; name: string; summary: string; username: string };
+
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   loggedIn$ = new BehaviorSubject<boolean>(false);
-  accessIds$ = new BehaviorSubject<{ id: string; name: string }[]>([]);
+  accessIds$ = new BehaviorSubject<AccessIds[]>([]);
   adminIds$ = new BehaviorSubject<string[]>([]);
 
   private jwt: JwtModel | null = null;
