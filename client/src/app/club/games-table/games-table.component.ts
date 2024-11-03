@@ -27,9 +27,9 @@ export class GamesTableComponent {
   gameColumns = [
     { field: 'dateSortOrder', name: 'Date', sort: true },
     { field: 'BoardGame.Name', name: 'Game', sort: true },
-    { field: 'Players', name: 'Players', sort: true },
     { field: 'Winners', name: 'Winner(s)', sort: false },
     { field: 'HighScore', name: 'Points', sort: true },
+    { field: 'Players', name: 'Players', sort: true },
     { field: 'DidNotFinish', name: 'Did Not Finish', sort: true },
   ];
 

@@ -1,4 +1,4 @@
-<div style="height: calc(100vh - 103px)">
+<div style="height: calc(100dvh - 103px)">
   <p-table
     #gameTable
     [value]="(games$ | async) ?? []"
@@ -10,6 +10,7 @@
     [sortOrder]="1"
     [globalFilterFields]="['Date', 'BoardGame.Name']"
     [tableStyle]="{ 'min-width': '50rem' }"
+    [autoLayout]="true"
     [expandedRowKeys]="expandedRows">
     <ng-template pTemplate="caption">
       <div class="flex justify-content-center">
@@ -29,8 +30,10 @@
       <tr>
         <th style="width: 0"></th>
         <th *ngFor="let column of gameColumns" [pSortableColumn]="column.sort ? column.field : undefined">
-          {{ column.name }}
-          <p-sortIcon *ngIf="column.sort" [field]="column.field" />
+          <span>
+            {{ column.name }}
+            <p-sortIcon *ngIf="column.sort" [field]="column.field" />
+          </span>
         </th>
         <th *ngIf="canEdit" class="edit-header">Edit</th>
       </tr>
@@ -50,11 +53,11 @@
         </td>
         <td>{{ game.Date | date: 'MM/dd/yy' }}</td>
         <td>{{ game.BoardGame.Name }}</td>
-        <td>{{ game.Players | number: '1.0-0' }}</td>
         <td>{{ game.Winners | array: 'Name' }}</td>
         <td>
           <ng-container *ngIf="showScore(game)">{{ game.HighScore | number: '1.0-3' }}</ng-container>
         </td>
+        <td>{{ game.Players | number: '1.0-0' }}</td>
         <td>
           <p-tag *ngIf="game.DidNotFinish" value="Did Not Finish" severity="danger" />
         </td>
