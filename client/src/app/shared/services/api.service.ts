@@ -330,6 +330,24 @@ export class ApiService {
     }
   }
 
+  async deleteClub(clubId: string | null) {
+    if (clubId === null) {
+      console.log('clubId');
+      return false;
+    } else {
+      // continue
+    }
+
+    const result = await this.httpService.delete(['api', 'club', clubId]);
+
+    if (result) {
+      this.unloadClub();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   private updateReferences() {
     this.gameList.sort(
       (a, b) => a.Date.toString().localeCompare(b.Date.toString()) || (a.SortIndex ?? 0) - (b.SortIndex ?? 0),

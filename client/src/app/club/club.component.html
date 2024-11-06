@@ -1,8 +1,15 @@
 <app-menu-bar
   page="club"
+  (editClub)="clubEdit()"
   (newGame)="newGame()"
   (newBoardGame)="newBoardGame()"
   (newPlayer)="newPlayer()"></app-menu-bar>
+
+<app-editor-club
+  *ngIf="editorClubVisible"
+  [editorVisible]="editorClubVisible"
+  [club]="editClub"
+  (closeEditor)="editorClubVisible = false"></app-editor-club>
 
 <app-editor-game
   *ngIf="editorGameVisible"
