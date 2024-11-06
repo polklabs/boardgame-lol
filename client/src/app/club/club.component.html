@@ -55,6 +55,7 @@
     <!-- BoardGames ----------------------------------------------------------------------------------------- -->
     <app-board-game-table
       [boardGames$]="boardGames$"
+      [players]="players$ | async"
       [stats]="stats"
       [canEdit]="canEdit"
       (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
