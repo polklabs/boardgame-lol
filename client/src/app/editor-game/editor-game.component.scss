@@ -6,21 +6,6 @@
     gap: 8px;
   }
 
-  img {
-    width: var(--poster-width);
-    border-radius: var(--border-radius);
-  }
-
-  .image-section {
-    margin-top: 8px;
-  }
-
-  .image-buttons {
-    .p-fileupload-basic .p-button {
-      width: 100%;
-    }
-  }
-
   span.p-float-label {
     margin-top: 32px;
     display: flex;

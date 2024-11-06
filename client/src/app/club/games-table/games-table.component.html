@@ -73,29 +73,40 @@
       </tr>
     </ng-template>
     <ng-template pTemplate="rowexpansion" let-game>
-      <tr *ngFor="let score of game.Scores; let index = index" class="expansion-row">
+      <tr>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td class="flex gap-8">
-          <ng-container [ngSwitch]="game?.BoardGame?.ScoreType">
-            <ng-container *ngSwitchCase="'points'">
-              <i *ngIf="index === 0" class="pi pi-trophy" style="color: gold"></i>
-              <div *ngIf="index !== 0" class="empty-trophy"></div>
-            </ng-container>
-            <ng-container *ngSwitchCase="'rank'">
-              <i *ngIf="score.Points < 3" class="pi pi-trophy" [ngStyle]="{ color: getTrophyColor(score) }"></i>
-              <div *ngIf="score.Points >= 3" class="empty-trophy"></div>
-            </ng-container>
-            <ng-container *ngSwitchCase="'win-lose'">
-              <i *ngIf="score.Points === 1" class="pi pi-trophy" style="color: gold"></i>
-              <div *ngIf="score.Points !== 1" class="empty-trophy"></div>
-            </ng-container>
-          </ng-container>
-          <span>{{ score.Player?.Name }}</span>
+        <td [attr.colspan]="gameColumns.length">
+          <p-table [value]="game.Scores" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Name</th>
+                <th>Points</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-score>
+              <tr>
+                <td class="flex gap-8">
+                  <ng-container [ngSwitch]="game?.BoardGame?.ScoreType">
+                    <ng-container *ngSwitchCase="'points'">
+                      <i *ngIf="score.Points === game.Scores[0].Points" class="pi pi-trophy" style="color: gold"></i>
+                      <div *ngIf="score.Points !== game.Scores[0].Points" class="empty-trophy"></div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'rank'">
+                      <i *ngIf="score.Points < 3" class="pi pi-trophy" [ngStyle]="{ color: getTrophyColor(score) }"></i>
+                      <div *ngIf="score.Points >= 3" class="empty-trophy"></div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'win-lose'">
+                      <i *ngIf="score.Points === 1" class="pi pi-trophy" style="color: gold"></i>
+                      <div *ngIf="score.Points !== 1" class="empty-trophy"></div>
+                    </ng-container>
+                  </ng-container>
+                  <span>{{ score.Player?.Name }}</span>
+                </td>
+                <td *ngIf="showScore(game)">{{ score.Points | number: '1.0-3' }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
         </td>
-        <td *ngIf="showScore(game)">{{ score.Points | number: '1.0-3' }}</td>
       </tr>
     </ng-template>
   </p-table>

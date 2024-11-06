@@ -1,0 +1,42 @@
+<!-- In der clurb we all fam -->
+<p-dialog
+  [header]="title"
+  [visible]="editorVisible"
+  (visibleChange)="closeEditor.emit()"
+  [modal]="true"
+  [style]="{ width: '650px', 'min-width': '300px' }"
+  [draggable]="false"
+  position="bottom">
+  <div *ngIf="formGroup && club" class="form">
+    <form [formGroup]="formGroup" (ngSubmit)="submit()">
+      <app-textinput
+        formControlName="Name"
+        label="Club Name"
+        [entityType]="entityType"
+        [hiddenFields]="hideFields"></app-textinput>
+
+      <p-checkbox formControlName="Public" label="Is Public" [binary]="true"></p-checkbox>
+
+      <app-textarea
+        formControlName="Summary"
+        label="Summary"
+        [entityType]="entityType"
+        [hiddenFields]="hideFields"></app-textarea>
+
+      <div class="dialog-footer">
+        <div>
+          <p-button
+            *ngIf="(adminIds | async)?.includes(club?.ClubId ?? '')"
+            label="Delete"
+            [outlined]="true"
+            severity="danger"
+            (click)="toDeleteEntity()"></p-button>
+        </div>
+        <div>
+          <p-button label="Cancel" [outlined]="true" severity="secondary" (click)="closeEditor.emit()"></p-button>
+          <p-button label="Save" [outlined]="true" (click)="submit()"></p-button>
+        </div>
+      </div>
+    </form>
+  </div>
+</p-dialog>

@@ -4,7 +4,7 @@ import { EditorGameComponent } from '../editor-game/editor-game.component';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../shared/services/api.service';
 import { CommonModule } from '@angular/common';
-import { BoardGameEntity, GameEntity, PlayerEntity } from 'libs/index';
+import { BoardGameEntity, ClubEntity, GameEntity, PlayerEntity } from 'libs/index';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
@@ -20,6 +20,7 @@ import { PlayerTableComponent } from './player-table/player-table.component';
 import { BoardGameTableComponent } from './board-game-table/board-game-table.component';
 import { CardModule } from 'primeng/card';
 import { StatsComponent } from "./stats/stats.component";
+import { EditorClubComponent } from '../editor-club/editor-club.component';
 
 @Component({
   selector: 'app-club',
@@ -29,6 +30,7 @@ import { StatsComponent } from "./stats/stats.component";
     EditorGameComponent,
     EditorBoardGameComponent,
     EditorPlayerComponent,
+    EditorClubComponent,
     CommonModule,
     TableModule,
     ButtonModule,
@@ -55,6 +57,9 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   editorPlayerVisible = false;
   editPlayer?: PlayerEntity;
+
+  editorClubVisible = false;
+  editClub?: ClubEntity;
 
   games$?: Observable<GameEntity[]>;
   boardGames$?: Observable<BoardGameEntity[]>;
@@ -127,6 +132,11 @@ export class ClubComponent implements OnInit, OnDestroy {
   playerEdit(player: PlayerEntity) {
     this.editPlayer = player;
     this.editorPlayerVisible = true;
+  }
+
+  clubEdit() {
+    this.editClub = this.apiService.club;
+    this.editorClubVisible = true;
   }
 
   moveUp(game: GameEntity) {
