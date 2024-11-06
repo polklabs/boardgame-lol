@@ -6,6 +6,7 @@ import { addDays, addYears, format } from 'date-fns';
 import { ApiService } from '../../shared/services/api.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
+import autocolors from 'chartjs-plugin-autocolors';
 
 type DayItem = { color: string; tooltip: string };
 
@@ -32,6 +33,8 @@ export class StatsComponent implements OnChanges {
   rankOverTimeData: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rankOverTimeOptions: any;
+
+  chartPlugins = [autocolors];
 
   constructor(private apiService: ApiService) {}
 

@@ -142,12 +142,12 @@
 
     <div class="card">
       <h3 style="text-align: center">Wins Over Time</h3>
-      <p-chart type="line" [data]="winsOverTimeData" [options]="winsOverTimeOptions" />
+      <p-chart type="line" [data]="winsOverTimeData" [options]="winsOverTimeOptions" [plugins]="chartPlugins" />
     </div>
 
     <div class="card">
       <h3 style="text-align: center">Rank Over Time</h3>
-      <p-chart type="line" [data]="rankOverTimeData" [options]="rankOverTimeOptions" />
+      <p-chart type="line" [data]="rankOverTimeData" [options]="rankOverTimeOptions" [plugins]="chartPlugins"  />
     </div>
   </div>
 </div>
