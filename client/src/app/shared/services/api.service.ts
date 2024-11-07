@@ -26,6 +26,7 @@ export class ApiService {
   private _playerGameList: PlayerGameEntity[] = [];
 
   // Observables
+  readonly dataUpdate$ = new BehaviorSubject<void>(undefined);
   readonly publicClubs$ = new BehaviorSubject<typeof this._publicClubs>([]);
   readonly club$ = new BehaviorSubject<typeof this._club>(undefined);
   readonly stats$ = new BehaviorSubject<typeof this._stats>(undefined);
@@ -388,5 +389,7 @@ export class ApiService {
     this.playerList.forEach((x) => x.calculateFields());
 
     this.stats = new StatsModel(this.playerList, this.gameList, this.boardGameList);
+
+    this.dataUpdate$.next();
   }
 }

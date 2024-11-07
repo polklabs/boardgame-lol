@@ -61,3 +61,28 @@
       (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
   </p-tabPanel>
 </p-tabView>
+
+<!-- <i class="pi pi-filter filter-button"></i> -->
+
+<p-button (onClick)="filter.toggle($event)" class="filter-button" icon="pi pi-filter" />
+<p-overlayPanel #filter>
+  <div class="flex flex-column">
+    <h1>WIP ⚠️</h1>
+    <p>Allow user to filter out certain games/players/days/months</p>
+    <!-- <p-selectButton [options]="filterTypeOptions" [(ngModel)]="filterType" optionLabel="label" optionValue="value" /> -->
+
+    <p-multiSelect
+      [options]="(boardGames$ | async) ?? []"
+      [(ngModel)]="gameIds"
+      optionLabel="Name"
+      optionValue="BoardGameId"
+      placeholder="Select Board Games" />
+
+    <p-multiSelect
+      [options]="(players$ | async) ?? []"
+      [(ngModel)]="playerIds"
+      optionLabel="Name"
+      optionValue="PlayerId"
+      placeholder="Select Players" />
+  </div>
+</p-overlayPanel>

@@ -44,6 +44,10 @@
     background-color: unset;
   }
 
+  .p-tabview-nav-container {
+    padding-left: 38px;
+  }
+
   .filter-box {
     input {
       padding: 4px;
@@ -58,5 +62,16 @@
   .edit-header {
     width: 0;
     text-align: center;
+  }
+
+  .filter-button {
+    position: absolute;
+    top: 66px;
+    left: 4px;
+    
+    .p-button {
+      width: 2rem;
+      padding: .25rem 0;
+    }
   }
 }

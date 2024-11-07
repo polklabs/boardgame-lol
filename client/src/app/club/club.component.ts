@@ -12,6 +12,7 @@ import { TableModule } from 'primeng/table';
 import { UserService } from '../shared/services/user.service';
 import { ButtonModule } from 'primeng/button';
 import { TabViewModule } from 'primeng/tabview';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { PipeModule } from '../shared/pipes/pipe.module';
 import { InputTextModule } from 'primeng/inputtext';
 import { StatsModel } from '../shared/models/stats.model';
@@ -19,8 +20,10 @@ import { GamesTableComponent } from './games-table/games-table.component';
 import { PlayerTableComponent } from './player-table/player-table.component';
 import { BoardGameTableComponent } from './board-game-table/board-game-table.component';
 import { CardModule } from 'primeng/card';
-import { StatsComponent } from "./stats/stats.component";
+import { StatsComponent } from './stats/stats.component';
 import { EditorClubComponent } from '../editor-club/editor-club.component';
+import { FormsModule } from '@angular/forms';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-club',
@@ -41,8 +44,11 @@ import { EditorClubComponent } from '../editor-club/editor-club.component';
     GamesTableComponent,
     PlayerTableComponent,
     BoardGameTableComponent,
-    StatsComponent
-],
+    StatsComponent,
+    OverlayPanelModule,
+    FormsModule,
+    MultiSelectModule,
+  ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })
@@ -69,6 +75,13 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   subscriptions = new Subscription();
 
+  // Filter
+  gameIds: string[] = [];
+  playerIds: string[] = [];
+  dnf = true;
+  daysOfWeek: string[] = [];
+  months: string[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private apiService: ApiService,
@@ -88,8 +101,6 @@ export class ClubComponent implements OnInit, OnDestroy {
       }),
     );
 
-    this.userService.canEdit$;
-
     this.games$ = this.apiService.gameList$;
     this.boardGames$ = this.apiService.boardGameList$;
     this.players$ = this.apiService.playerList$;
@@ -97,6 +108,16 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.apiService.stats$.subscribe((stats) => {
         this.stats = stats;
+      }),
+    );
+
+    this.subscriptions.add(
+      this.apiService.dataUpdate$.subscribe(() => {
+        console.log('Reset Filter Data');
+        this.gameIds = this.apiService.boardGameList.map((x) => x.BoardGameId ?? '');
+        this.playerIds = this.apiService.playerList.map((x) => x.PlayerId ?? '');
+        this.dnf = true;
+        // this.daysOfWeek = ['M', 'T', 'W', 'Th', 'F', 'S', 'Su'];
       }),
     );
   }
