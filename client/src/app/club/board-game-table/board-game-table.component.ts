@@ -52,6 +52,7 @@ export class BoardGameTableComponent implements OnChanges {
   }
 
   calculateWinCounts(players: PlayerEntity[]) {
+    this.WinCounts = {};
     players.forEach((player) => {
       player.Wins.forEach((win) => {
         if (this.WinCounts[win.Game?.BoardGameId ?? ''] === undefined) {
