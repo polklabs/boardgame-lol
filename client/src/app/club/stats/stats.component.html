@@ -69,6 +69,18 @@
         *ngTemplateOutlet="
           trophy;
           context: {
+            emoji: '🥋',
+            title: 'The Weekend Warrior',
+            info: 'Most Wins On the Weekend',
+            array: stats?.MostWeekendWinsPlayers,
+            value: stats?.MostWeekendWins
+          }
+        "></ng-container>
+
+      <ng-container
+        *ngTemplateOutlet="
+          trophy;
+          context: {
             emoji: '1️⃣',
             title: 'The One Hit Wonder',
             info: 'Only Win 1 Game',
@@ -147,7 +159,7 @@
 
     <div class="card">
       <h3 style="text-align: center">Rank Over Time</h3>
-      <p-chart type="line" [data]="rankOverTimeData" [options]="rankOverTimeOptions" [plugins]="chartPlugins"  />
+      <p-chart type="line" [data]="rankOverTimeData" [options]="rankOverTimeOptions" [plugins]="chartPlugins" />
     </div>
   </div>
 </div>

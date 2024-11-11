@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { BoardGameEntity, GameEntity, PlayerEntity } from 'libs/index';
 
 export class StatsModel {
@@ -22,6 +23,9 @@ export class StatsModel {
   BestComeback = 0;
   BestComebackPlayers: PlayerEntity[] = [];
 
+  MostWeekendWins = 0;
+  MostWeekendWinsPlayers: PlayerEntity[] = [];
+
   OnlyWon1Game: PlayerEntity[] = [];
 
   private players: PlayerEntity[] = [];
@@ -41,6 +45,7 @@ export class StatsModel {
     this.calculateBestComeback();
     this.calculateMostTies();
     this.calculateOnlyWonOneGame();
+    this.calculateMostWeekendWins();
   }
 
   calculateMostPlays() {
@@ -166,5 +171,27 @@ export class StatsModel {
 
   calculateOnlyWonOneGame() {
     this.OnlyWon1Game = this.players.filter((x) => x.Wins.length === 1);
+  }
+
+  calculateMostWeekendWins() {
+    const weekend = ['Sun', 'Sat'];
+    const winCount: { [playerId: string]: number } = {};
+    this.games
+      .filter((x) => weekend.includes(format(x.DateObj, 'eee')))
+      .forEach((g) => {
+        g.Winners.forEach((w) => {
+          if (winCount[w.PlayerId ?? ''] === undefined) {
+            winCount[w.PlayerId ?? ''] = 0;
+          } else {
+            winCount[w.PlayerId ?? '']++;
+          }
+        });
+      });
+
+    this.MostWeekendWins = Math.max(...Object.values(winCount));
+    const playerIds = Object.keys(winCount).filter((x) => winCount[x] === this.MostWeekendWins);
+    this.MostWeekendWinsPlayers = playerIds
+      .map((id) => this.players.find((x) => x.PlayerId === id))
+      .filter((x) => x) as PlayerEntity[];
   }
 }

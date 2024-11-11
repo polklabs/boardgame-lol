@@ -52,8 +52,11 @@ export class GameEntity extends BaseEntity {
   Notes: string | null = null;
 
   get dateSortOrder() {
-    return `${this.Date}T${String(this.SortIndex).padStart(6, '0')}`
+    return `${this.Date}T${String(this.SortIndex).padStart(6, '0')}`;
   }
+
+  @Ignore()
+  DateObj: Date;
 
   @Ignore()
   BoardGame: BoardGameEntity | null = null;
@@ -70,6 +73,10 @@ export class GameEntity extends BaseEntity {
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
     super(partial, GameEntity);
     this.assign(partial, GameEntity, copyIgnored);
+
+    this.DateObj = new Date(this.Date);
+    const userTimezoneOffset = this.DateObj.getTimezoneOffset() * 60000;
+    this.DateObj = new Date(this.DateObj.getTime() + userTimezoneOffset);
   }
 
   calculateFields() {
@@ -78,7 +85,7 @@ export class GameEntity extends BaseEntity {
   }
 
   calculateWinners() {
-    this.Winners = this.calculateWinner().map(x => x.Player!);
+    this.Winners = this.calculateWinner().map((x) => x.Player!);
   }
 
   calculateHighScore() {
@@ -89,37 +96,31 @@ export class GameEntity extends BaseEntity {
     switch (this.BoardGame?.ScoreType) {
       case 'points':
         if (this.Scores.length > 0) {
-          return this.Scores.reduce(
-            (max, playerGame) => {
-              if ((playerGame.Points ?? 0) > (max[0]?.Points ?? 0)) {
-                return [playerGame];
-              } else if ((playerGame.Points ?? 0) === (max[0]?.Points ?? 0)) {
-                max.push(playerGame);
-                return max;
-              } else {
-                return max;
-              }
-            },
-            [] as PlayerGameEntity[]
-          );
+          return this.Scores.reduce((max, playerGame) => {
+            if ((playerGame.Points ?? 0) > (max[0]?.Points ?? 0)) {
+              return [playerGame];
+            } else if ((playerGame.Points ?? 0) === (max[0]?.Points ?? 0)) {
+              max.push(playerGame);
+              return max;
+            } else {
+              return max;
+            }
+          }, [] as PlayerGameEntity[]);
         } else {
           return [];
         }
       case 'rank':
         if (this.Scores.length > 0) {
-          return this.Scores.reduce(
-            (max, playerGame) => {
-              if ((playerGame.Points ?? 0) < (max[0]?.Points ?? Infinity)) {
-                return [playerGame];
-              } else if ((playerGame.Points ?? 0) === (max[0]?.Points ?? Infinity)) {
-                max.push(playerGame);
-                return max;
-              } else {
-                return max;
-              }
-            },
-            [] as PlayerGameEntity[]
-          );
+          return this.Scores.reduce((max, playerGame) => {
+            if ((playerGame.Points ?? 0) < (max[0]?.Points ?? Infinity)) {
+              return [playerGame];
+            } else if ((playerGame.Points ?? 0) === (max[0]?.Points ?? Infinity)) {
+              max.push(playerGame);
+              return max;
+            } else {
+              return max;
+            }
+          }, [] as PlayerGameEntity[]);
         } else {
           return [];
         }

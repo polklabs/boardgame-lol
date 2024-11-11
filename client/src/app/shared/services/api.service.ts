@@ -384,13 +384,9 @@ export class ApiService {
     // Filter lists
     if (this._filterEnabled) {
       this.gameList = this._gameList.filter((x) => {
-        let date = new Date(x.Date);
-        const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-        date = new Date(date.getTime() + userTimezoneOffset);
-
         return (
           this._filteredBoardGameIds.has(x.BoardGameId ?? '') &&
-          this._filteredDaysOfWeek.has(format(date, 'cccc')) &&
+          this._filteredDaysOfWeek.has(format(x.DateObj, 'cccc')) &&
           (this._includeDNF ? true : x.DidNotFinish === false)
         );
       });
