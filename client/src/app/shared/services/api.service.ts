@@ -25,15 +25,27 @@ export class ApiService {
   private _gameList: GameEntity[] = [];
   private _playerGameList: PlayerGameEntity[] = [];
 
+  // Filters
+  private _filterEnabled = false;
+  private _filteredBoardGameIds = new Set<string>();
+  private _filteredPlayerIds = new Set<string>();
+  private _fBoardGameList: BoardGameEntity[] = [];
+  private _fPlayerList: PlayerEntity[] = [];
+  private _fGameList: GameEntity[] = [];
+  private _fPlayerGameList: PlayerGameEntity[] = [];
+
   // Observables
   readonly dataUpdate$ = new BehaviorSubject<void>(undefined);
   readonly publicClubs$ = new BehaviorSubject<typeof this._publicClubs>([]);
   readonly club$ = new BehaviorSubject<typeof this._club>(undefined);
-  readonly stats$ = new BehaviorSubject<typeof this._stats>(undefined);
   readonly boardGameList$ = new BehaviorSubject<typeof this._boardGameList>([]);
   readonly playerList$ = new BehaviorSubject<typeof this._playerList>([]);
-  readonly gameList$ = new BehaviorSubject<typeof this._gameList>([]);
-  readonly playerGameList$ = new BehaviorSubject<typeof this._playerGameList>([]);
+  readonly stats$ = new BehaviorSubject<typeof this._stats>(undefined);
+  readonly filteredBoardGameList$ = new BehaviorSubject<typeof this._fBoardGameList>([]);
+  readonly filteredPlayerList$ = new BehaviorSubject<typeof this._fPlayerList>([]);
+  readonly filteredGameList$ = new BehaviorSubject<typeof this._fGameList>([]);
+  readonly filteredPlayerGameList$ = new BehaviorSubject<typeof this._fPlayerGameList>([]);
+  readonly filterEnabled$ = new BehaviorSubject<boolean>(false);
 
   // Club
   get club() {
@@ -55,38 +67,40 @@ export class ApiService {
 
   // Board Games
   get boardGameList() {
-    return this._boardGameList;
+    return this._fBoardGameList;
   }
   private set boardGameList(boardGameList: BoardGameEntity[]) {
-    this._boardGameList = boardGameList.map((x) => new BoardGameEntity(x, true));
+    this._fBoardGameList = boardGameList.map((x) => new BoardGameEntity(x, true));
+    this.filteredBoardGameList$.next(this._fBoardGameList);
     this.boardGameList$.next(this._boardGameList);
   }
 
   // Players
   get playerList() {
-    return this._playerList;
+    return this._fPlayerList;
   }
   private set playerList(playerList: PlayerEntity[]) {
-    this._playerList = playerList.map((x) => new PlayerEntity(x, true));
+    this._fPlayerList = playerList.map((x) => new PlayerEntity(x, true));
+    this.filteredPlayerList$.next(this._fPlayerList);
     this.playerList$.next(this._playerList);
   }
 
   // Games
   get gameList() {
-    return this._gameList;
+    return this._fGameList;
   }
   private set gameList(gameList: GameEntity[]) {
-    this._gameList = gameList.map((x) => new GameEntity(x, true));
-    this.gameList$.next(this._gameList);
+    this._fGameList = gameList.map((x) => new GameEntity(x, true));
+    this.filteredGameList$.next(this._fGameList);
   }
 
   // Player Games
   get playerGameList() {
-    return this._playerGameList;
+    return this._fPlayerGameList;
   }
   private set playerGameList(playerGameList: PlayerGameEntity[]) {
-    this._playerGameList = playerGameList.map((x) => new PlayerGameEntity(x, true));
-    this.playerGameList$.next(this._playerGameList);
+    this._fPlayerGameList = playerGameList.map((x) => new PlayerGameEntity(x, true));
+    this.filteredPlayerGameList$.next(this._fPlayerGameList);
   }
 
   // Public Clubs
@@ -102,10 +116,10 @@ export class ApiService {
 
   unloadClub() {
     this.club = undefined;
-    this.boardGameList = [];
-    this.playerList = [];
-    this.gameList = [];
-    this.playerGameList = [];
+    this._boardGameList = [];
+    this._playerList = [];
+    this._gameList = [];
+    this._playerGameList = [];
   }
 
   async fetchPublicClubs() {
@@ -145,11 +159,12 @@ export class ApiService {
     }
 
     this.club = data.Club;
-    this.boardGameList = data.BoardGames;
-    this.playerList = data.Players;
-    this.gameList = data.Games;
-    this.playerGameList = data.PlayerGames;
+    this._boardGameList = data.BoardGames;
+    this._playerList = data.Players;
+    this._gameList = data.Games;
+    this._playerGameList = data.PlayerGames;
     this.updateReferences();
+    this.dataUpdate$.next();
   }
 
   async postClub(isNew: boolean, data: ClubEntity) {
@@ -178,26 +193,25 @@ export class ApiService {
     }
 
     if (result) {
-      const gameIndex = this.gameList.findIndex((x) => x.GameId === result!.Game.GameId);
+      const gameIndex = this._gameList.findIndex((x) => x.GameId === result!.Game.GameId);
       if (gameIndex >= 0) {
-        this.gameList[gameIndex] = result.Game;
-        this.gameList = this._gameList;
+        this._gameList[gameIndex] = result.Game;
       } else {
-        this.gameList = [...this.gameList, result.Game];
+        this._gameList = [...this._gameList, result.Game];
       }
 
       result.PlayerGames.forEach((pg) => {
-        const pgIndex = this.playerGameList.findIndex((x) => x.PlayerGameId === pg.PlayerGameId);
+        const pgIndex = this._playerGameList.findIndex((x) => x.PlayerGameId === pg.PlayerGameId);
         if (pgIndex >= 0) {
-          this.playerGameList[pgIndex] = pg;
-          this.playerGameList = this._playerGameList;
+          this._playerGameList[pgIndex] = pg;
         } else {
-          this.playerGameList = [...this.playerGameList, pg];
+          this._playerGameList = [...this._playerGameList, pg];
         }
       });
-      this.boardGameList = result.BoardGames;
-      this.playerList = result.Players;
+      this._boardGameList = result.BoardGames;
+      this._playerList = result.Players;
       this.updateReferences();
+      this.dataUpdate$.next();
       return true;
     } else {
       return false;
@@ -213,14 +227,14 @@ export class ApiService {
     }
 
     if (result) {
-      const index = this.playerList.findIndex((x) => x.PlayerId === result!.PlayerId);
+      const index = this._playerList.findIndex((x) => x.PlayerId === result!.PlayerId);
       if (index >= 0) {
-        this.playerList[index] = result;
-        this.playerList = this._playerList;
+        this._playerList[index] = result;
       } else {
-        this.playerList = [...this._playerList, result];
+        this._playerList = [...this._playerList, result];
       }
       this.updateReferences();
+      this.dataUpdate$.next();
       return true;
     } else {
       return false;
@@ -236,14 +250,14 @@ export class ApiService {
     }
 
     if (result) {
-      const index = this.boardGameList.findIndex((x) => x.BoardGameId === result!.BoardGameId);
+      const index = this._boardGameList.findIndex((x) => x.BoardGameId === result!.BoardGameId);
       if (index >= 0) {
-        this.boardGameList[index] = result;
-        this.boardGameList = this._boardGameList;
+        this._boardGameList[index] = result;
       } else {
-        this.boardGameList = [...this._boardGameList, result];
+        this._boardGameList = [...this._boardGameList, result];
       }
       this.updateReferences();
+      this.dataUpdate$.next();
       return true;
     } else {
       return false;
@@ -261,9 +275,10 @@ export class ApiService {
     const result = await this.httpService.delete(['api', 'game', this.clubId, gameId]);
 
     if (result) {
-      this.gameList = this.gameList.filter((x) => x.GameId !== gameId);
-      this.playerGameList = this.playerGameList.filter((x) => x.GameId !== gameId);
+      this._gameList = this._gameList.filter((x) => x.GameId !== gameId);
+      this._playerGameList = this._playerGameList.filter((x) => x.GameId !== gameId);
       this.updateReferences();
+      this.dataUpdate$.next();
       return true;
     } else {
       return false;
@@ -278,15 +293,16 @@ export class ApiService {
 
     if (result) {
       result.forEach((g) => {
-        const index = this.gameList.findIndex((x) => x.GameId === g.GameId);
+        const index = this._gameList.findIndex((x) => x.GameId === g.GameId);
         if (index !== -1) {
-          this.gameList[index] = g;
+          this._gameList[index] = g;
         } else {
-          this.gameList.push(g);
+          this._gameList.push(g);
         }
       });
-      this.gameList = [...this.gameList];
+      this._gameList = [...this._gameList];
       this.updateReferences();
+      this.dataUpdate$.next();
       return true;
     } else {
       return false;
@@ -304,8 +320,9 @@ export class ApiService {
     const result = await this.httpService.delete(['api', 'player', this.clubId, playerId]);
 
     if (result) {
-      this.playerList = this.playerList.filter((x) => x.PlayerId !== playerId);
+      this._playerList = this._playerList.filter((x) => x.PlayerId !== playerId);
       this.updateReferences();
+      this.dataUpdate$.next();
       return true;
     } else {
       return false;
@@ -323,8 +340,9 @@ export class ApiService {
     const result = await this.httpService.delete(['api', 'board-game', this.clubId, boardGameId]);
 
     if (result) {
-      this.boardGameList = this.boardGameList.filter((x) => x.BoardGameId !== boardGameId);
+      this._boardGameList = this._boardGameList.filter((x) => x.BoardGameId !== boardGameId);
       this.updateReferences();
+      this.dataUpdate$.next();
       return true;
     } else {
       return false;
@@ -349,7 +367,28 @@ export class ApiService {
     }
   }
 
+  filter(enabled: boolean, playerIds: string[], boardGameIds: string[]) {
+    this._filteredBoardGameIds = new Set(boardGameIds);
+    this._filteredPlayerIds = new Set(playerIds);
+    this._filterEnabled = enabled;
+    this.filterEnabled$.next(enabled);
+    this.updateReferences();
+  }
+
   private updateReferences() {
+    // Filter lists
+    if (this._filterEnabled) {
+      this.gameList = this._gameList.filter((x) => this._filteredBoardGameIds.has(x.BoardGameId ?? ''));
+      this.boardGameList = this._boardGameList.filter((x) => this._filteredBoardGameIds.has(x.BoardGameId ?? ''));
+      this.playerGameList = this._playerGameList.filter((x) => this._filteredPlayerIds.has(x.PlayerId ?? ''));
+      this.playerList = this._playerList.filter((x) => this._filteredPlayerIds.has(x.PlayerId ?? ''));
+    } else {
+      this.gameList = this._gameList;
+      this.boardGameList = this._boardGameList;
+      this.playerGameList = this._playerGameList;
+      this.playerList = this._playerList;
+    }
+
     this.gameList.sort(
       (a, b) => a.Date.toString().localeCompare(b.Date.toString()) || (a.SortIndex ?? 0) - (b.SortIndex ?? 0),
     );
@@ -389,7 +428,5 @@ export class ApiService {
     this.playerList.forEach((x) => x.calculateFields());
 
     this.stats = new StatsModel(this.playerList, this.gameList, this.boardGameList);
-
-    this.dataUpdate$.next();
   }
 }

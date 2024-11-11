@@ -6,13 +6,13 @@ import { ApiService } from '../shared/services/api.service';
 import { CommonModule } from '@angular/common';
 import { BoardGameEntity, ClubEntity, GameEntity, PlayerEntity } from 'libs/index';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
-import { combineLatest, Observable, Subscription } from 'rxjs';
+import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
 import { TableModule } from 'primeng/table';
 import { UserService } from '../shared/services/user.service';
 import { ButtonModule } from 'primeng/button';
 import { TabViewModule } from 'primeng/tabview';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
 import { PipeModule } from '../shared/pipes/pipe.module';
 import { InputTextModule } from 'primeng/inputtext';
 import { StatsModel } from '../shared/models/stats.model';
@@ -24,6 +24,8 @@ import { StatsComponent } from './stats/stats.component';
 import { EditorClubComponent } from '../editor-club/editor-club.component';
 import { FormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { BadgeModule } from 'primeng/badge';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-club',
@@ -48,6 +50,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
     OverlayPanelModule,
     FormsModule,
     MultiSelectModule,
+    BadgeModule,
+    FloatLabelModule
   ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
@@ -76,6 +80,9 @@ export class ClubComponent implements OnInit, OnDestroy {
   subscriptions = new Subscription();
 
   // Filter
+  filterEnabled$: Observable<boolean> = of(false);
+  ogBoardGames$?: Observable<BoardGameEntity[]>;
+  ogPlayers$?: Observable<PlayerEntity[]>;
   gameIds: string[] = [];
   playerIds: string[] = [];
   dnf = true;
@@ -101,9 +108,12 @@ export class ClubComponent implements OnInit, OnDestroy {
       }),
     );
 
-    this.games$ = this.apiService.gameList$;
-    this.boardGames$ = this.apiService.boardGameList$;
-    this.players$ = this.apiService.playerList$;
+    this.games$ = this.apiService.filteredGameList$;
+    this.boardGames$ = this.apiService.filteredBoardGameList$;
+    this.players$ = this.apiService.filteredPlayerList$;
+    this.ogBoardGames$ = this.apiService.boardGameList$;
+    this.ogPlayers$ = this.apiService.playerList$;
+    this.filterEnabled$ = this.apiService.filterEnabled$;
 
     this.subscriptions.add(
       this.apiService.stats$.subscribe((stats) => {
@@ -166,5 +176,15 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   moveDown(game: GameEntity) {
     this.apiService.updateGameIndex(game.GameId, 1);
+  }
+
+  enableFilter(filter: OverlayPanel) {
+    filter.hide();
+    this.apiService.filter(true, this.playerIds, this.gameIds);
+  }
+
+  disableFilter(filter: OverlayPanel) {
+    filter.hide();
+    this.apiService.filter(false, [], []);
   }
 }

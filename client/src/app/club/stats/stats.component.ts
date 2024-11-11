@@ -124,7 +124,7 @@ export class StatsComponent implements OnChanges {
     }
 
     const gameList = this.apiService.gameList;
-    const players = this.apiService.playerList.filter((x) => x.IsRealPerson);
+    const players = this.apiService.playerList.filter((x) => x.IsRealPerson && x.Wins.length > 0);
 
     players.forEach((p) => {
       wins[p.PlayerId ?? ''] = [];
@@ -226,7 +226,7 @@ export class StatsComponent implements OnChanges {
     }
 
     const gameList = this.apiService.gameList;
-    const players = this.apiService.playerList.filter((x) => x.IsRealPerson);
+    const players = this.apiService.playerList.filter((x) => x.IsRealPerson && x.Wins.length > 0);
 
     players.forEach((p) => {
       wins[p.PlayerId ?? ''] = [];

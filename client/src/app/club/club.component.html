@@ -1,88 +1,115 @@
-<app-menu-bar
-  page="club"
-  (editClub)="clubEdit()"
-  (newGame)="newGame()"
-  (newBoardGame)="newBoardGame()"
-  (newPlayer)="newPlayer()"></app-menu-bar>
+<div class="club-wrapper">
+  <app-menu-bar
+    page="club"
+    (editClub)="clubEdit()"
+    (newGame)="newGame()"
+    (newBoardGame)="newBoardGame()"
+    (newPlayer)="newPlayer()"></app-menu-bar>
 
-<app-editor-club
-  *ngIf="editorClubVisible"
-  [editorVisible]="editorClubVisible"
-  [club]="editClub"
-  (closeEditor)="editorClubVisible = false"></app-editor-club>
+  <app-editor-club
+    *ngIf="editorClubVisible"
+    [editorVisible]="editorClubVisible"
+    [club]="editClub"
+    (closeEditor)="editorClubVisible = false"></app-editor-club>
 
-<app-editor-game
-  *ngIf="editorGameVisible"
-  [editorVisible]="editorGameVisible"
-  [game]="editGame"
-  (closeEditor)="editorGameVisible = false"></app-editor-game>
+  <app-editor-game
+    *ngIf="editorGameVisible"
+    [editorVisible]="editorGameVisible"
+    [game]="editGame"
+    (closeEditor)="editorGameVisible = false"></app-editor-game>
 
-<app-editor-board-game
-  *ngIf="editorBoardGameVisible"
-  [editorVisible]="editorBoardGameVisible"
-  [boardGame]="editBoardGame"
-  (closeEditor)="editorBoardGameVisible = false"></app-editor-board-game>
+  <app-editor-board-game
+    *ngIf="editorBoardGameVisible"
+    [editorVisible]="editorBoardGameVisible"
+    [boardGame]="editBoardGame"
+    (closeEditor)="editorBoardGameVisible = false"></app-editor-board-game>
 
-<app-editor-player
-  *ngIf="editorPlayerVisible"
-  [editorVisible]="editorPlayerVisible"
-  [player]="editPlayer"
-  (closeEditor)="editorPlayerVisible = false"></app-editor-player>
+  <app-editor-player
+    *ngIf="editorPlayerVisible"
+    [editorVisible]="editorPlayerVisible"
+    [player]="editPlayer"
+    (closeEditor)="editorPlayerVisible = false"></app-editor-player>
 
-<p-tabView>
-  <p-tabPanel header="Overview">
-    <!-- Overview goes here -->
-    <app-stats [stats]="stats"></app-stats>
-  </p-tabPanel>
-  <p-tabPanel header="Plays: {{ ((games$ | async) ?? []).length }}">
-    <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
-    <app-games-table
-      [games$]="games$"
-      [canEdit]="canEdit"
-      (gameEdit)="gameEdit($event)"
-      (moveUp)="moveUp($event)"
-      (moveDown)="moveDown($event)"></app-games-table>
-  </p-tabPanel>
-  <p-tabPanel header="Players: {{ ((players$ | async) ?? []).length }}">
-    <!-- Players --------------------------------------------------------------------------------------------- -->
-    <app-player-table
-      [players$]="players$"
-      [stats]="stats"
-      [canEdit]="canEdit"
-      (playerEdit)="playerEdit($event)"></app-player-table>
-  </p-tabPanel>
-  <p-tabPanel header="Games: {{ ((boardGames$ | async) ?? []).length }}">
-    <!-- BoardGames ----------------------------------------------------------------------------------------- -->
-    <app-board-game-table
-      [boardGames$]="boardGames$"
-      [players]="players$ | async"
-      [stats]="stats"
-      [canEdit]="canEdit"
-      (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
-  </p-tabPanel>
-</p-tabView>
+  <p-tabView>
+    <p-tabPanel header="Overview">
+      <!-- Overview goes here -->
+      <app-stats [stats]="stats"></app-stats>
+    </p-tabPanel>
+    <p-tabPanel header="Plays: {{ ((games$ | async) ?? []).length }}">
+      <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
+      <app-games-table
+        [games$]="games$"
+        [canEdit]="canEdit"
+        (gameEdit)="gameEdit($event)"
+        (moveUp)="moveUp($event)"
+        (moveDown)="moveDown($event)"></app-games-table>
+    </p-tabPanel>
+    <p-tabPanel header="Players: {{ ((players$ | async) ?? []).length }}">
+      <!-- Players --------------------------------------------------------------------------------------------- -->
+      <app-player-table
+        [players$]="players$"
+        [stats]="stats"
+        [canEdit]="canEdit"
+        (playerEdit)="playerEdit($event)"></app-player-table>
+    </p-tabPanel>
+    <p-tabPanel header="Games: {{ ((boardGames$ | async) ?? []).length }}">
+      <!-- BoardGames ----------------------------------------------------------------------------------------- -->
+      <app-board-game-table
+        [boardGames$]="boardGames$"
+        [players]="players$ | async"
+        [stats]="stats"
+        [canEdit]="canEdit"
+        (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
+    </p-tabPanel>
+  </p-tabView>
 
-<!-- <i class="pi pi-filter filter-button"></i> -->
+  <!-- <i class="pi pi-filter filter-button"></i> -->
 
-<p-button (onClick)="filter.toggle($event)" class="filter-button" icon="pi pi-filter" />
-<p-overlayPanel #filter>
-  <div class="flex flex-column">
-    <h1>WIP ⚠️</h1>
-    <p>Allow user to filter out certain games/players/days/months</p>
-    <!-- <p-selectButton [options]="filterTypeOptions" [(ngModel)]="filterType" optionLabel="label" optionValue="value" /> -->
-
-    <p-multiSelect
-      [options]="(boardGames$ | async) ?? []"
-      [(ngModel)]="gameIds"
-      optionLabel="Name"
-      optionValue="BoardGameId"
-      placeholder="Select Board Games" />
-
-    <p-multiSelect
-      [options]="(players$ | async) ?? []"
-      [(ngModel)]="playerIds"
-      optionLabel="Name"
-      optionValue="PlayerId"
-      placeholder="Select Players" />
+  <div (click)="filter.toggle($event)" class="filter-button">
+    <i
+      class="pi pi-filter p-text-secondary"
+      pBadge
+      [badgeDisabled]="(filterEnabled$ | async) === false"
+      severity="danger"></i>
   </div>
-</p-overlayPanel>
+  <p-overlayPanel #filter>
+    <div class="flex flex-column gap-8 filter-wrapper">
+      <h3>Filter</h3>
+
+      <p-floatLabel>
+        <p-multiSelect
+          [options]="(ogBoardGames$ | async) ?? []"
+          [(ngModel)]="gameIds"
+          [filter]="false"
+          optionLabel="Name"
+          optionValue="BoardGameId"
+          placeholder="Select Board Games" />
+        <label for="username">Board Games</label>
+      </p-floatLabel>
+
+      <p-floatLabel>
+        <p-multiSelect
+          [options]="(ogPlayers$ | async) ?? []"
+          [(ngModel)]="playerIds"
+          [filter]="false"
+          optionLabel="Name"
+          optionValue="PlayerId"
+          placeholder="Select Players" />
+        <label for="username">Players</label>
+      </p-floatLabel>
+
+      <div
+        class="flex gap-8 justify-content-space-between"
+        *ngIf="(filterEnabled$ | async) === true; else filterEnabled">
+        <p-button (onClick)="disableFilter(filter)" [outlined]="true" severity="secondary">Disable</p-button>
+        <p-button (onClick)="enableFilter(filter)" [outlined]="true">Update</p-button>
+      </div>
+      <ng-template #filterEnabled>
+        <div class="flex gap-8 justify-content-space-between">
+          <div></div>
+          <p-button (onClick)="enableFilter(filter)" [outlined]="true">Enable</p-button>
+        </div>
+      </ng-template>
+    </div>
+  </p-overlayPanel>
+</div>
