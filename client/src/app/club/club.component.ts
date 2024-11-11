@@ -26,6 +26,7 @@ import { FormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { BadgeModule } from 'primeng/badge';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-club',
@@ -51,7 +52,8 @@ import { FloatLabelModule } from 'primeng/floatlabel';
     FormsModule,
     MultiSelectModule,
     BadgeModule,
-    FloatLabelModule
+    FloatLabelModule,
+    CheckboxModule,
   ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
@@ -83,10 +85,11 @@ export class ClubComponent implements OnInit, OnDestroy {
   filterEnabled$: Observable<boolean> = of(false);
   ogBoardGames$?: Observable<BoardGameEntity[]>;
   ogPlayers$?: Observable<PlayerEntity[]>;
+  dow = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   gameIds: string[] = [];
   playerIds: string[] = [];
   dnf = true;
-  daysOfWeek: string[] = [];
+  daysOfWeek = [...this.dow];
   months: string[] = [];
 
   constructor(
@@ -180,11 +183,11 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   enableFilter(filter: OverlayPanel) {
     filter.hide();
-    this.apiService.filter(true, this.playerIds, this.gameIds);
+    this.apiService.filter(true, this.playerIds, this.gameIds, this.daysOfWeek, this.dnf);
   }
 
   disableFilter(filter: OverlayPanel) {
     filter.hide();
-    this.apiService.filter(false, [], []);
+    this.apiService.filter(false, [], [], [], true);
   }
 }

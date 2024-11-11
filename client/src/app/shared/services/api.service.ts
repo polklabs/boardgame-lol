@@ -11,6 +11,7 @@ import {
   PlayerGameEntity,
 } from 'libs/index';
 import { StatsModel } from '../models/stats.model';
+import { format } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
@@ -29,6 +30,8 @@ export class ApiService {
   private _filterEnabled = false;
   private _filteredBoardGameIds = new Set<string>();
   private _filteredPlayerIds = new Set<string>();
+  private _filteredDaysOfWeek = new Set<string>();
+  private _includeDNF = true; // Did not finish
   private _fBoardGameList: BoardGameEntity[] = [];
   private _fPlayerList: PlayerEntity[] = [];
   private _fGameList: GameEntity[] = [];
@@ -367,9 +370,11 @@ export class ApiService {
     }
   }
 
-  filter(enabled: boolean, playerIds: string[], boardGameIds: string[]) {
+  filter(enabled: boolean, playerIds: string[], boardGameIds: string[], daysOfWeek: string[], dnf: boolean) {
     this._filteredBoardGameIds = new Set(boardGameIds);
     this._filteredPlayerIds = new Set(playerIds);
+    this._filteredDaysOfWeek = new Set(daysOfWeek);
+    this._includeDNF = dnf;
     this._filterEnabled = enabled;
     this.filterEnabled$.next(enabled);
     this.updateReferences();
@@ -378,7 +383,17 @@ export class ApiService {
   private updateReferences() {
     // Filter lists
     if (this._filterEnabled) {
-      this.gameList = this._gameList.filter((x) => this._filteredBoardGameIds.has(x.BoardGameId ?? ''));
+      this.gameList = this._gameList.filter((x) => {
+        let date = new Date(x.Date);
+        const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+        date = new Date(date.getTime() + userTimezoneOffset);
+
+        return (
+          this._filteredBoardGameIds.has(x.BoardGameId ?? '') &&
+          this._filteredDaysOfWeek.has(format(date, 'cccc')) &&
+          (this._includeDNF ? true : x.DidNotFinish === false)
+        );
+      });
       this.boardGameList = this._boardGameList.filter((x) => this._filteredBoardGameIds.has(x.BoardGameId ?? ''));
       this.playerGameList = this._playerGameList.filter((x) => this._filteredPlayerIds.has(x.PlayerId ?? ''));
       this.playerList = this._playerList.filter((x) => this._filteredPlayerIds.has(x.PlayerId ?? ''));

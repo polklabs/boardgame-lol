@@ -78,7 +78,7 @@
 
       <p-floatLabel>
         <p-multiSelect
-          [options]="(ogBoardGames$ | async) ?? []"
+          [options]="(ogBoardGames$ | async) ?? [] | sort: 'Name'"
           [(ngModel)]="gameIds"
           [filter]="false"
           optionLabel="Name"
@@ -89,7 +89,7 @@
 
       <p-floatLabel>
         <p-multiSelect
-          [options]="(ogPlayers$ | async) ?? []"
+          [options]="(ogPlayers$ | async) ?? [] | sort: 'Name'"
           [(ngModel)]="playerIds"
           [filter]="false"
           optionLabel="Name"
@@ -97,6 +97,17 @@
           placeholder="Select Players" />
         <label for="username">Players</label>
       </p-floatLabel>
+
+      <p-floatLabel>
+        <p-multiSelect
+          [options]="dow"
+          [(ngModel)]="daysOfWeek"
+          [filter]="false"
+          placeholder="Select Days" />
+        <label for="username">Days</label>
+      </p-floatLabel>
+
+      <p-checkbox [(ngModel)]="dnf" label="Include Did Not Finish" binary="true"></p-checkbox>
 
       <div
         class="flex gap-8 justify-content-space-between"
