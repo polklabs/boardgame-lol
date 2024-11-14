@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { BoardGameEntity, ScoreType } from 'libs/index';
+import { BoardGameEntity, ScoreTypeMapping } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -47,11 +47,7 @@ export class EditorBoardGameComponent implements OnChanges {
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
-  scoreTypeMapping: Record<ScoreType, string> = {
-    points: 'Points',
-    rank: 'Ranked',
-    'win-lose': 'Win/Lose',
-  };
+  scoreTypeMapping = ScoreTypeMapping;
   scoreTypes = Object.entries(this.scoreTypeMapping).map(([value, label]) => ({ value, label }));
 
   constructor(

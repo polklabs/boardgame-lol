@@ -81,6 +81,8 @@
           [options]="(ogBoardGames$ | async) ?? [] | sort: 'Name'"
           [(ngModel)]="gameIds"
           [filter]="false"
+          selectedItemsLabel="{0} games selected"
+          appendTo="body"
           optionLabel="Name"
           optionValue="BoardGameId"
           placeholder="Select Board Games" />
@@ -92,6 +94,8 @@
           [options]="(ogPlayers$ | async) ?? [] | sort: 'Name'"
           [(ngModel)]="playerIds"
           [filter]="false"
+          selectedItemsLabel="{0} players selected"
+          appendTo="body"
           optionLabel="Name"
           optionValue="PlayerId"
           placeholder="Select Players" />
@@ -103,6 +107,8 @@
           [options]="dow"
           [(ngModel)]="daysOfWeek"
           [filter]="false"
+          selectedItemsLabel="{0} days selected"
+          appendTo="body"
           placeholder="Select Days" />
         <label for="username">Days</label>
       </p-floatLabel>

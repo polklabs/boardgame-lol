@@ -15,6 +15,11 @@ import { Mode } from '../utils/helper-utils';
 
 export const ScoreTypes = ['points', 'rank', 'win-lose'] as const;
 export type ScoreType = (typeof ScoreTypes)[number];
+export const ScoreTypeMapping: Record<ScoreType, string> = {
+  points: 'Points',
+  rank: 'Ranked',
+  'win-lose': 'Win/Lose',
+} as const;
 
 @TableName('BoardGame')
 export class BoardGameEntity extends BaseEntity {

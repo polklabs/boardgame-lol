@@ -153,6 +153,20 @@
     </div>
 
     <div class="card">
+      <h3 style="text-align: center">Play Count by Day of Week:
+        <span>Last 12 months</span></h3>
+      <p-chart type="bar" [data]="countByDayData" [options]="countByDayOptions" [plugins]="chartPlugins" />
+    </div>
+
+    <div class="card">
+      <h3 style="text-align: center">
+        Total Play Count by Month:
+        <span>Last 12 months</span>
+      </h3>
+      <p-chart type="bar" [data]="countByMonthData" [options]="countByMonthOptions" [plugins]="chartPlugins" />
+    </div>
+
+    <div class="card">
       <h3 style="text-align: center">Wins Over Time</h3>
       <p-chart type="line" [data]="winsOverTimeData" [options]="winsOverTimeOptions" [plugins]="chartPlugins" />
     </div>
