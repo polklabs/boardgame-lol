@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start-public": "ng serve --host 0.0.0.0",
     "build-prod": "ng build --configuration=production",
     "build-dev": "ng build --configuration=development",
     "watch": "ng build --watch --configuration development",
