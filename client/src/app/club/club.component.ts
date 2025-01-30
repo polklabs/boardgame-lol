@@ -59,6 +59,7 @@ import { CheckboxModule } from 'primeng/checkbox';
   styleUrl: './club.component.scss',
 })
 export class ClubComponent implements OnInit, OnDestroy {
+  title = '';
   canEdit = false;
 
   editorGameVisible = false;
@@ -107,6 +108,7 @@ export class ClubComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       combineLatest([this.apiService.club$, this.userService.accessIds$]).subscribe(([club, access]) => {
+        this.title = club?.Name ?? '';
         this.canEdit = access.find((x) => x.id === club?.ClubId) !== undefined;
       }),
     );

@@ -30,47 +30,51 @@
     [player]="editPlayer"
     (closeEditor)="editorPlayerVisible = false"></app-editor-player>
 
-  <p-tabView>
-    <p-tabPanel header="Overview">
-      <!-- Overview goes here -->
-      <app-stats [stats]="stats"></app-stats>
-    </p-tabPanel>
-    <p-tabPanel header="Plays: {{ ((games$ | async) ?? []).length }}">
-      <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
-      <app-games-table
-        [games$]="games$"
-        [canEdit]="canEdit"
-        (gameEdit)="gameEdit($event)"
-        (moveUp)="moveUp($event)"
-        (moveDown)="moveDown($event)"></app-games-table>
-    </p-tabPanel>
-    <p-tabPanel header="Players: {{ ((players$ | async) ?? []).length }}">
-      <!-- Players --------------------------------------------------------------------------------------------- -->
-      <app-player-table
-        [players$]="players$"
-        [stats]="stats"
-        [canEdit]="canEdit"
-        (playerEdit)="playerEdit($event)"></app-player-table>
-    </p-tabPanel>
-    <p-tabPanel header="Games: {{ ((boardGames$ | async) ?? []).length }}">
-      <!-- BoardGames ----------------------------------------------------------------------------------------- -->
-      <app-board-game-table
-        [boardGames$]="boardGames$"
-        [players]="players$ | async"
-        [stats]="stats"
-        [canEdit]="canEdit"
-        (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
-    </p-tabPanel>
-  </p-tabView>
+  <h1>{{ title }}</h1>
 
-  <!-- <i class="pi pi-filter filter-button"></i> -->
+  <div>
+    <p-tabView>
+      <p-tabPanel header="Overview">
+        <!-- Overview goes here -->
+        <app-stats [stats]="stats"></app-stats>
+      </p-tabPanel>
+      <p-tabPanel header="Plays: {{ ((games$ | async) ?? []).length }}">
+        <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
+        <app-games-table
+          [games$]="games$"
+          [canEdit]="canEdit"
+          (gameEdit)="gameEdit($event)"
+          (moveUp)="moveUp($event)"
+          (moveDown)="moveDown($event)"></app-games-table>
+      </p-tabPanel>
+      <p-tabPanel header="Players: {{ ((players$ | async) ?? []).length }}">
+        <!-- Players --------------------------------------------------------------------------------------------- -->
+        <app-player-table
+          [players$]="players$"
+          [stats]="stats"
+          [canEdit]="canEdit"
+          (playerEdit)="playerEdit($event)"></app-player-table>
+      </p-tabPanel>
+      <p-tabPanel header="Games: {{ ((boardGames$ | async) ?? []).length }}">
+        <!-- BoardGames ----------------------------------------------------------------------------------------- -->
+        <app-board-game-table
+          [boardGames$]="boardGames$"
+          [players]="players$ | async"
+          [stats]="stats"
+          [canEdit]="canEdit"
+          (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
+      </p-tabPanel>
+    </p-tabView>
 
-  <div (click)="filter.toggle($event)" class="filter-button">
-    <i
-      class="pi pi-filter p-text-secondary"
-      pBadge
-      [badgeDisabled]="(filterEnabled$ | async) === false"
-      severity="danger"></i>
+    <!-- <i class="pi pi-filter filter-button"></i> -->
+
+    <div (click)="filter.toggle($event)" class="filter-button">
+      <i
+        class="pi pi-filter p-text-secondary"
+        pBadge
+        [badgeDisabled]="(filterEnabled$ | async) === false"
+        severity="danger"></i>
+    </div>
   </div>
   <p-overlayPanel #filter>
     <div class="flex flex-column gap-8 filter-wrapper">

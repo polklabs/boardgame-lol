@@ -1,4 +1,9 @@
 :host ::ng-deep {
+  h1 {
+    text-align: center;
+    margin: 0;
+  }
+
   td {
     .p-button {
       height: 24px;
@@ -66,7 +71,7 @@
 
   .filter-button {
     position: absolute;
-    top: 62px;
+    top: 100px;
     left: 4px;
     padding: .5rem;
     cursor: pointer;
