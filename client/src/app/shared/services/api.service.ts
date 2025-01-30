@@ -164,7 +164,7 @@ export class ApiService {
     this.club = data.Club;
     this._boardGameList = data.BoardGames;
     this._playerList = data.Players;
-    this._gameList = data.Games;
+    this._gameList = data.Games.sort((a, b) => (a.LastModifiedDate ?? '')?.localeCompare(b.LastModifiedDate ?? ''));
     this._playerGameList = data.PlayerGames;
     this.updateReferences();
     this.dataUpdate$.next();

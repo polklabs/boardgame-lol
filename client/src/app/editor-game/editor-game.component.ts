@@ -118,7 +118,10 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       this.grabLists();
 
       if (this.isNew) {
-        this.game.BoardGameId = this.boardGames[0]?.BoardGameId ?? null;
+        const firstBoardGame = this.boardGames[0];
+        const lastBoardGame = this.apiService.gameList[0]?.BoardGame;
+        this.game.BoardGame = lastBoardGame ?? firstBoardGame ?? null;
+        this.game.BoardGameId = this.game.BoardGame?.BoardGameId ?? null;
         this.game.Date = new Date();
       } else {
         const date = new Date(this.game.Date);
@@ -195,7 +198,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   }
 
   getTrophyColor(playerGame: PlayerGameEntity): string {
-    if (playerGame.Game?.BoardGame?.ScoreType === 'rank') {
+    if (this.game?.BoardGame?.ScoreType === 'rank') {
       if (playerGame.Points === 0) {
         return 'gold';
       } else if (playerGame.Points === 1) {

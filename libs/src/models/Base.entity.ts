@@ -6,13 +6,9 @@ export abstract class BaseEntity {
   // These fields are all required but will be assigned by the Base.Manager
   // User should never have control over these values
 
-  @Exclude()
   CreatedDate?: string = new Date().toISOString();
-  // @Exclude()
   CreatedBy?: string = 'ANON';
-  @Exclude()
   LastModifiedDate?: string = new Date().toISOString();
-  @Exclude()
   LastModifiedBy?: string = 'ANON';
 
   constructor(partial: Partial<BaseEntity>, entityType: { new (partial: Partial<BaseEntity>): BaseEntity }) {
