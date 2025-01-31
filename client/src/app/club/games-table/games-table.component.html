@@ -92,8 +92,11 @@
                       <div *ngIf="score.Points !== game.Scores[0].Points" class="empty-trophy"></div>
                     </ng-container>
                     <ng-container *ngSwitchCase="'rank'">
-                      <i *ngIf="score.Points < 3" class="pi pi-trophy" [ngStyle]="{ color: getTrophyColor(score) }"></i>
-                      <div *ngIf="score.Points >= 3" class="empty-trophy"></div>
+                      <i
+                        *ngIf="score.Points !== null && score.Points < 3"
+                        class="pi pi-trophy"
+                        [ngStyle]="{ color: getTrophyColor(score) }"></i>
+                      <div *ngIf="score.Points === null || score.Points >= 3" class="empty-trophy"></div>
                     </ng-container>
                     <ng-container *ngSwitchCase="'win-lose'">
                       <i *ngIf="score.Points === 1" class="pi pi-trophy" style="color: gold"></i>

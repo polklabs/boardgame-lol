@@ -59,4 +59,9 @@
   .can-order .p-orderlist>.p-orderlist-controls {
     display: flex;
   }
+
+  .DNF {
+    text-decoration: line-through;
+    color: dimgray;
+  }
 }

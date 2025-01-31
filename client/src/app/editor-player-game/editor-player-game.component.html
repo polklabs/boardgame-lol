@@ -37,6 +37,12 @@
         label="Won Game"
         [binary]="true"></p-checkbox>
 
+      <p-checkbox
+        *ngIf="scoreType === 'rank'"
+        formControlName="DNF"
+        label="Did Not Finish"
+        [binary]="true"></p-checkbox>
+
       <div class="dialog-footer">
         <div>
           <p-button label="Delete" [outlined]="true" severity="danger" (click)="toDeleteEntity()"></p-button>

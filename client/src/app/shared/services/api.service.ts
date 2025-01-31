@@ -410,7 +410,7 @@ export class ApiService {
         .sort((a, b) => {
           switch (game?.BoardGame?.ScoreType) {
             case 'rank':
-              return (a.Points ?? 0) - (b.Points ?? 0);
+              return (a.Points ?? Infinity) - (b.Points ?? Infinity);
             case 'win-lose':
               return (b.Points ?? 0) - (a.Points ?? 0);
             case 'points':

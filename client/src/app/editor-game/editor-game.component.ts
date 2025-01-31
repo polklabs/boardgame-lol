@@ -166,7 +166,17 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   updateOrdering() {
     if (this.game?.BoardGame?.ScoreType === 'rank') {
-      this.playerGames.forEach((pg, index) => (pg.Points = index));
+      let DNFs = 0;
+      for (let i = 0; i < this.playerGames.length; i++) {
+        const pg = this.playerGames[i];
+        if (pg.DNF) {
+          DNFs += 1;
+          pg.Points = null;
+        } else {
+          pg.Points = i - DNFs;
+        }
+      }
+      this.playerGames.sort((a, b) => (a.Points ?? Infinity) - (b.Points ?? Infinity));
     } else {
       this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
     }
@@ -175,8 +185,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   updateScoring() {
     switch (this.game?.BoardGame?.ScoreType) {
       case 'rank':
-        this.playerGames.sort((a, b) => (a.Points ?? 0) - (b.Points ?? 0));
-        this.playerGames.forEach((pg, index) => (pg.Points = index));
+        this.updateOrdering();
         break;
       case 'win-lose':
         this.playerGames.forEach((pg) => {
@@ -203,8 +212,10 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
         return 'gold';
       } else if (playerGame.Points === 1) {
         return 'silver';
-      } else {
+      } else if (playerGame.Points === 2) {
         return 'chocolate';
+      } else {
+        return '';
       }
     } else {
       return 'gold';
@@ -226,11 +237,6 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       const index = this.playerGames.indexOf(playerGame);
       if (index === -1) {
         this.playerGames = [...this.playerGames, playerGame];
-        if (this.game?.BoardGame?.ScoreType === 'rank') {
-          playerGame.Points = this.playerGames.length;
-        } else {
-          // Continue
-        }
       } else {
         // continue
       }

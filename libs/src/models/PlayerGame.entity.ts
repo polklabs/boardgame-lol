@@ -33,10 +33,16 @@ export class PlayerGameEntity extends BaseEntity {
   @Ignore()
   Game: GameEntity | null = null;
 
+  @Ignore()
+  DNF: boolean = false;
+
   constructor(partial: Partial<PlayerGameEntity> = {}, copyIgnored = false) {
     super(partial, PlayerGameEntity);
     this.assign(partial, PlayerGameEntity, copyIgnored);
+    this.DNF = partial.DNF ?? false;
   }
 
-  calculateFields() {}
+  calculateFields() {
+    this.DNF = this.Game?.BoardGame?.ScoreType === 'rank' && this.Points === null;
+  }
 }
