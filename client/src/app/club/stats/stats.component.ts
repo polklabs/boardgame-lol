@@ -281,7 +281,7 @@ export class StatsComponent implements OnChanges {
       const order = playerIds.map((pId) => ({ id: pId, count: wins[pId][i] })).sort((a, b) => b.count - a.count);
       playerIds.forEach((pId) => {
         wins[pId][i] = order.findIndex((x) => x.id === pId);
-        wins[pId][i] = wins[pId][i] >= 3 ? 3 : wins[pId][i];
+        wins[pId][i] = wins[pId][i] >= 4 ? 4 : wins[pId][i];
       });
     }
 
@@ -326,8 +326,10 @@ export class StatsComponent implements OnChanges {
                 return '2nd';
               } else if (label === 2) {
                 return '3rd';
+              } else if (label === 3) {
+                return '4th';
               } else {
-                return '4th+';
+                return '5th+';
               }
             },
           },
