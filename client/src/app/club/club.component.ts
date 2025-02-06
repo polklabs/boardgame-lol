@@ -176,11 +176,11 @@ export class ClubComponent implements OnInit, OnDestroy {
   }
 
   moveUp(game: GameEntity) {
-    this.apiService.updateGameIndex(game.GameId, -1);
+    this.apiService.updateGameIndex(game.GameId, 1);
   }
 
   moveDown(game: GameEntity) {
-    this.apiService.updateGameIndex(game.GameId, 1);
+    this.apiService.updateGameIndex(game.GameId, -1);
   }
 
   enableFilter(filter: OverlayPanel) {
