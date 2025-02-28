@@ -28,6 +28,9 @@ export class StatsModel {
 
   OnlyWon1Game: PlayerEntity[] = [];
 
+  Fav3Player = 0;
+  Fav3PlayerGame: BoardGameEntity[] = [];
+
   private players: PlayerEntity[] = [];
   private games: GameEntity[] = [];
   private boardGames: BoardGameEntity[] = [];
@@ -46,6 +49,7 @@ export class StatsModel {
     this.calculateMostTies();
     this.calculateOnlyWonOneGame();
     this.calculateMostWeekendWins();
+    this.calculateFav3PlayerGame();
   }
 
   calculateMostPlays() {
@@ -193,5 +197,14 @@ export class StatsModel {
     this.MostWeekendWinsPlayers = playerIds
       .map((id) => this.players.find((x) => x.PlayerId === id))
       .filter((x) => x) as PlayerEntity[];
+  }
+
+  calculateFav3PlayerGame() {
+    const list: [BoardGameEntity, number][] = this.boardGames.map((x) => [
+      x,
+      x.Games.filter((g) => g.Players === 3).length,
+    ]);
+    this.Fav3Player = Math.max(...list.map((x) => x[1]));
+    this.Fav3PlayerGame = list.filter((x) => x[1] === this.Fav3Player).map((x) => x[0]);
   }
 }

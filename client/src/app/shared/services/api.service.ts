@@ -164,7 +164,8 @@ export class ApiService {
     this.club = data.Club;
     this._boardGameList = data.BoardGames;
     this._playerList = data.Players;
-    this._gameList = data.Games.sort((a, b) => (a.LastModifiedDate ?? '')?.localeCompare(b.LastModifiedDate ?? ''));
+    data.Games.sort((a, b) => (a.LastModifiedDate ?? '')?.localeCompare(b.LastModifiedDate ?? ''));
+    this._gameList = data.Games;
     this._playerGameList = data.PlayerGames;
     this.updateReferences();
     this.dataUpdate$.next();
@@ -196,7 +197,7 @@ export class ApiService {
     }
 
     if (result) {
-      const gameIndex = this._gameList.findIndex((x) => x.GameId === result!.Game.GameId);
+      const gameIndex = this._gameList.findIndex((x) => x.GameId === result?.Game.GameId);
       if (gameIndex >= 0) {
         this._gameList[gameIndex] = result.Game;
       } else {
@@ -230,7 +231,7 @@ export class ApiService {
     }
 
     if (result) {
-      const index = this._playerList.findIndex((x) => x.PlayerId === result!.PlayerId);
+      const index = this._playerList.findIndex((x) => x.PlayerId === result?.PlayerId);
       if (index >= 0) {
         this._playerList[index] = result;
       } else {
@@ -253,7 +254,7 @@ export class ApiService {
     }
 
     if (result) {
-      const index = this._boardGameList.findIndex((x) => x.BoardGameId === result!.BoardGameId);
+      const index = this._boardGameList.findIndex((x) => x.BoardGameId === result?.BoardGameId);
       if (index >= 0) {
         this._boardGameList[index] = result;
       } else {

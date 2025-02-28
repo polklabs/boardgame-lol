@@ -114,6 +114,18 @@
             value: stats?.MostPlaysOneDay
           }
         "></ng-container>
+
+      <ng-container
+        *ngTemplateOutlet="
+          trophy;
+          context: {
+            emoji: '3️⃣',
+            title: 'Favorite 3 Player',
+            info: 'Game played most with 3 players',
+            array: stats?.Fav3PlayerGame,
+            value: stats?.Fav3Player
+          }
+        "></ng-container>
     </div>
 
     <ng-template #trophy let-emoji="emoji" let-title="title" let-info="info" let-array="array" let-value="value">
