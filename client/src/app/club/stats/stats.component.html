@@ -159,7 +159,9 @@
             class="box"
             *ngFor="let day of week.days"
             [pTooltip]="day.tooltip"
-            [ngStyle]="{ 'background-color': day.color }"></div>
+            [ngStyle]="{ 'background-color': day.color }">
+            {{ day.icon }}
+          </div>
         </div>
       </div>
     </div>

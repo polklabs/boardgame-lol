@@ -9,7 +9,7 @@ import { ChartModule } from 'primeng/chart';
 import autocolors from 'chartjs-plugin-autocolors';
 import { ScoreTypeMapping, ScoreTypes } from 'libs/index';
 
-type DayItem = { color: string; tooltip: string };
+type DayItem = { color: string; tooltip: string; icon?: string };
 
 @Component({
   selector: 'app-stats',
@@ -64,13 +64,15 @@ export class StatsComponent implements OnChanges {
 
     const today = new Date();
     let date = addYears(today, -1);
-    while (date.getDay() !== 0) {
-      date = addDays(date, 1);
+    if (date.getDay() !== 0) {
+      date = addDays(date, 7 - date.getDay());
+    } else {
+      // Continue
     }
 
     let currentMonth = '';
     // eslint-disable-next-line no-constant-condition
-    while (true) {
+    while (date <= today) {
       const week: DayItem[] = [];
 
       for (let d = 0; d < 7; d++) {
@@ -85,27 +87,15 @@ export class StatsComponent implements OnChanges {
         } else {
           // Continue
         }
-
-        if (date > today) {
-          break;
-        } else {
-          // Continue
-        }
       }
 
-      const month = format(date, 'MMM');
+      let month = format(date > today ? addDays(date, -1) : date, 'MMM');
       if (month !== currentMonth) {
         currentMonth = month;
-        this.heatmap.push({ days: week, month: month });
       } else {
-        this.heatmap.push({ days: week, month: '' });
+        month = '';
       }
-
-      if (date > today) {
-        break;
-      } else {
-        // Continue
-      }
+      this.heatmap.push({ days: week, month });
     }
   }
 
