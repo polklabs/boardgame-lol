@@ -36,6 +36,9 @@ export class PlayerEntity extends BaseEntity {
   @Ignore()
   BestGameWins: number = 0;
 
+  @Ignore()
+  FirstSeen?: Date | string;
+
   constructor(partial: Partial<PlayerEntity> = {}, copyIgnored = false) {
     super(partial, PlayerEntity);
     this.assign(partial, PlayerEntity, copyIgnored);
@@ -45,11 +48,12 @@ export class PlayerEntity extends BaseEntity {
     this.calculateWins();
     this.calculateBestGames();
     this.calculateBestGameWins();
+    this.calculateFirstSeen();
   }
 
   calculateWins() {
-    this.Wins = this.PlayerGames.filter((pg) => pg.Game?.calculateWinner().includes(pg)).sort((a, b) =>
-      a.Game?.Date.toString().localeCompare(b.Game?.Date.toString() ?? '') ?? 0
+    this.Wins = this.PlayerGames.filter((pg) => pg.Game?.calculateWinner().includes(pg)).sort(
+      (a, b) => b.Game?.Date.toString().localeCompare(a.Game?.Date.toString() ?? '') ?? 0
     );
   }
 
@@ -68,5 +72,9 @@ export class PlayerEntity extends BaseEntity {
     } else {
       this.BestGameWins = 0;
     }
+  }
+
+  calculateFirstSeen() {
+    this.FirstSeen = this.PlayerGames[0].Game?.Date;
   }
 }

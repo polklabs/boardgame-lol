@@ -27,6 +27,7 @@ export class PlayerTableComponent {
     { field: 'Wins.length', name: 'Wins', sort: true },
     { field: '', name: 'Best Game(s)', sort: false },
     { field: 'BestGameWins', name: 'Best Game(s) Wins', sort: true },
+    { field: 'FirstSeen', name: 'First Seen', sort: true },
   ];
 
   showScore(game: GameEntity): boolean {
