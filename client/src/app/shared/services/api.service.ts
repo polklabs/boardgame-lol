@@ -31,6 +31,7 @@ export class ApiService {
   private _filteredBoardGameIds = new Set<string>();
   private _filteredPlayerIds = new Set<string>();
   private _filteredDaysOfWeek = new Set<string>();
+  private _filteredStartDate: Date | null = null;
   private _includeDNF = true; // Did not finish
   private _fBoardGameList: BoardGameEntity[] = [];
   private _fPlayerList: PlayerEntity[] = [];
@@ -371,10 +372,11 @@ export class ApiService {
     }
   }
 
-  filter(enabled: boolean, playerIds: string[], boardGameIds: string[], daysOfWeek: string[], dnf: boolean) {
+  filter(enabled: boolean, playerIds: string[], boardGameIds: string[], daysOfWeek: string[], startDate: Date | null, dnf: boolean) {
     this._filteredBoardGameIds = new Set(boardGameIds);
     this._filteredPlayerIds = new Set(playerIds);
     this._filteredDaysOfWeek = new Set(daysOfWeek);
+    this._filteredStartDate = startDate;
     this._includeDNF = dnf;
     this._filterEnabled = enabled;
     this.filterEnabled$.next(enabled);
@@ -388,6 +390,7 @@ export class ApiService {
         return (
           this._filteredBoardGameIds.has(x.BoardGameId ?? '') &&
           this._filteredDaysOfWeek.has(format(x.DateObj, 'cccc')) &&
+          (this._filteredStartDate === null || new Date(x.DateObj).getTime() >= this._filteredStartDate.getTime()) &&
           (this._includeDNF ? true : x.DidNotFinish === false)
         );
       });

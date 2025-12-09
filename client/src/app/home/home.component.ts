@@ -8,11 +8,12 @@ import { AccessIds, UserService } from '../shared/services/user.service';
 import { Observable, of } from 'rxjs';
 import { ClubEntity } from 'libs/index';
 import { ButtonModule } from 'primeng/button';
+import { EditorClubComponent } from '../editor-club/editor-club.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardModule, ButtonModule, MenuBarComponent],
+  imports: [CommonModule, RouterModule, CardModule, ButtonModule, MenuBarComponent, EditorClubComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
@@ -21,6 +22,7 @@ export class HomeComponent implements OnInit {
   publicClubList$: Observable<ClubEntity[]> = of([]);
 
   editorClubVisible = false;
+  editClub?: ClubEntity;
 
   constructor(
     private router: Router,
@@ -42,4 +44,9 @@ export class HomeComponent implements OnInit {
       // No club id
     }
   }
+
+    newClub() {
+      this.editClub = new ClubEntity();
+      this.editorClubVisible = true;
+    }
 }

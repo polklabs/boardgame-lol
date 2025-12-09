@@ -1,10 +1,10 @@
-<app-menu-bar page="home" (newClub)="editorClubVisible = true"></app-menu-bar>
+<app-menu-bar page="home" (newClub)="newClub()"></app-menu-bar>
 
-<!-- <app-editor-game
-  *ngIf="editorGameVisible"
-  [editorVisible]="editorGameVisible"
-  [game]="editGame"
-  (closeEditor)="editorGameVisible = false"></app-editor-game> -->
+<app-editor-club
+  *ngIf="editorClubVisible"
+  [editorVisible]="editorClubVisible"
+  [club]="editClub"
+  (closeEditor)="editorClubVisible = false"></app-editor-club>
 
 <h1 *ngIf="((clubList$ | async)?.length ?? 0) > 0">Groups You Manage</h1>
 <div *ngFor="let club of clubList$ | async">

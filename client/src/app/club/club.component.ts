@@ -27,6 +27,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { BadgeModule } from 'primeng/badge';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { CheckboxModule } from 'primeng/checkbox';
+import { CalendarModule } from "primeng/calendar";
 
 @Component({
   selector: 'app-club',
@@ -54,6 +55,7 @@ import { CheckboxModule } from 'primeng/checkbox';
     BadgeModule,
     FloatLabelModule,
     CheckboxModule,
+    CalendarModule
   ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
@@ -92,6 +94,7 @@ export class ClubComponent implements OnInit, OnDestroy {
   dnf = true;
   daysOfWeek = [...this.dow];
   months: string[] = [];
+  startDate: Date | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -185,11 +188,11 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   enableFilter(filter: OverlayPanel) {
     filter.hide();
-    this.apiService.filter(true, this.playerIds, this.gameIds, this.daysOfWeek, this.dnf);
+    this.apiService.filter(true, this.playerIds, this.gameIds, this.daysOfWeek, this.startDate, this.dnf);
   }
 
   disableFilter(filter: OverlayPanel) {
     filter.hide();
-    this.apiService.filter(false, [], [], [], true);
+    this.apiService.filter(false, [], [], [], null, true);
   }
 }
