@@ -242,6 +242,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       }
 
       this.updateScoring();
+      this.getControl('Players')?.setValue(this.playerGames.length);
     } else {
       // continue
     }
