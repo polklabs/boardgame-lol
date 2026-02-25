@@ -7,33 +7,37 @@
   (closeEditor)="editorClubVisible = false"></app-editor-club>
 
 <h1 *ngIf="((clubList$ | async)?.length ?? 0) > 0">Groups You Manage</h1>
-<div *ngFor="let club of clubList$ | async">
-  <p-card
-    [header]="club.name"
-    subheader="Created By: {{ club.username }}"
-    [style]="{ width: '360px' }"
-    [routerLink]="'/club/' + club.id">
-    <p>{{ club.summary }}</p>
-    <ng-template pTemplate="footer">
-      <div class="flex gap-3 mt-1">
-        <p-button label="View" class="w-full" styleClass="w-full" />
-      </div>
-    </ng-template>
-  </p-card>
+<div class="club-wrapper">
+  <div *ngFor="let club of clubList$ | async">
+    <p-card
+      [header]="club.name"
+      subheader="Created By: {{ club.username }}"
+      [style]="{ width: '360px' }"
+      [routerLink]="'/club/' + club.id">
+      <p>{{ club.summary }}</p>
+      <ng-template pTemplate="footer">
+        <div class="flex gap-3 mt-1">
+          <p-button label="View" class="w-full" styleClass="w-full" />
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
 </div>
 
 <h1>Public Groups</h1>
-<div *ngFor="let club of publicClubList$ | async">
-  <p-card
-    [header]="club.Name"
-    subheader="Created By: {{ club.CreatedBy }}"
-    [style]="{ width: '360px' }"
-    [routerLink]="'/club/' + club.ClubId">
-    <p>{{ club.Summary }}</p>
-    <ng-template pTemplate="footer">
-      <div class="flex gap-3 mt-1">
-        <p-button label="View" class="w-full" styleClass="w-full" />
-      </div>
-    </ng-template>
-  </p-card>
+<div class="club-wrapper">
+  <div *ngFor="let club of publicClubList$ | async">
+    <p-card
+      [header]="club.Name"
+      subheader="Created By: {{ club.CreatedBy }}"
+      [style]="{ width: '360px' }"
+      [routerLink]="'/club/' + club.ClubId">
+      <p>{{ club.Summary }}</p>
+      <ng-template pTemplate="footer">
+        <div class="flex gap-3 mt-1">
+          <p-button label="View" class="w-full" styleClass="w-full" />
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
 </div>

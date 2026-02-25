@@ -1,8 +1,22 @@
 :host ::ng-deep {
+  .p-card {
+    height: 100%;
+  }
+
   .p-card .p-card-content {
     padding: 0;
   }
   .p-card-body {
     cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .club-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
   }
 }
