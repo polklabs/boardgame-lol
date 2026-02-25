@@ -53,14 +53,14 @@ export class PlayerEntity extends BaseEntity {
 
   calculateWins() {
     this.Wins = this.PlayerGames.filter((pg) => pg.Game?.calculateWinner().includes(pg)).sort(
-      (a, b) => b.Game?.Date.toString().localeCompare(a.Game?.Date.toString() ?? '') ?? 0
+      (a, b) => b.Game?.Date.toString().localeCompare(a.Game?.Date.toString() ?? '') ?? 0,
     );
   }
 
   calculateBestGames() {
     this.BestGames = Mode(
       this.Wins.filter((x) => x.Game).map((x) => x.Game!.BoardGame!),
-      (x) => x.BoardGameId ?? ''
+      (x) => x.BoardGameId ?? '',
     ).filter((x) => x);
   }
 
@@ -75,6 +75,13 @@ export class PlayerEntity extends BaseEntity {
   }
 
   calculateFirstSeen() {
-    this.FirstSeen = this.PlayerGames[0].Game?.Date;
+    const minDate = Math.min(
+      ...this.PlayerGames.filter((pg) => pg.Game).map((pg) => new Date(pg.Game!.DateObj).getDate()),
+    );
+    if (minDate === Infinity) {
+      this.FirstSeen = undefined;
+    } else {
+      this.FirstSeen = new Date(minDate);
+    }
   }
 }
