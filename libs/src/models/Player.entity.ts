@@ -76,7 +76,7 @@ export class PlayerEntity extends BaseEntity {
 
   calculateFirstSeen() {
     const minDate = Math.min(
-      ...this.PlayerGames.filter((pg) => pg.Game).map((pg) => new Date(pg.Game!.DateObj).getDate()),
+      ...this.PlayerGames.filter((pg) => pg.Game).map((pg) => new Date(pg.Game!.DateObj).getTime()),
     );
     if (minDate === Infinity) {
       this.FirstSeen = undefined;
