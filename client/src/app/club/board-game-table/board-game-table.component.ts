@@ -26,7 +26,9 @@ export class BoardGameTableComponent implements OnChanges {
     [boardGameId: string]: {
       playerId: string;
       name: string;
-      count: number;
+      wins: number;
+      plays: number;
+      winPercent: number;
     }[];
   } = {};
 
@@ -35,7 +37,6 @@ export class BoardGameTableComponent implements OnChanges {
     { field: 'Name', name: 'Game', sort: true },
     { field: 'Games.length', name: 'Plays', sort: true, width: 0 },
     { field: 'ChampionWins', name: 'Champion(s)', sort: true },
-    { field: 'ChampionWins', name: 'Wins', sort: true, width: 0 },
     { field: 'MaxPlayers', name: 'Max Player Count', sort: true, width: 0 },
     { field: 'AveragePlayers', name: 'Average Player Count', sort: true, width: 0 },
     { field: 'MaxScore', name: 'High Score', sort: true, width: 0 },
@@ -54,28 +55,36 @@ export class BoardGameTableComponent implements OnChanges {
   calculateWinCounts(players: PlayerEntity[]) {
     this.WinCounts = {};
     players.forEach((player) => {
-      player.Wins.forEach((win) => {
-        if (this.WinCounts[win.Game?.BoardGameId ?? ''] === undefined) {
-          this.WinCounts[win.Game?.BoardGameId ?? ''] = [];
+      const wonGames = new Set(player.Wins.map((w) => w.PlayerGameId));
+      player.PlayerGames.forEach((pg) => {
+        const boardGameId = pg.Game?.BoardGameId ?? '';
+        if (this.WinCounts[boardGameId] === undefined) {
+          this.WinCounts[boardGameId] = [];
         } else {
           // Continue
         }
 
-        const row = this.WinCounts[win.Game?.BoardGameId ?? ''].find((x) => x.playerId === player.PlayerId);
-        if (row) {
-          row.count++;
+        const winRow = this.WinCounts[boardGameId].find((x) => x.playerId === player.PlayerId);
+        const won = wonGames.has(pg.PlayerGameId);
+
+        if (winRow) {
+          winRow.wins += won ? 1 : 0;
+          winRow.plays++;
+          winRow.winPercent = (winRow.wins / winRow.plays) * 100;
         } else {
-          this.WinCounts[win.Game?.BoardGameId ?? ''].push({
+          this.WinCounts[boardGameId].push({
             playerId: player.PlayerId ?? '',
             name: player.Name ?? 'Unknown',
-            count: 1,
+            wins: won ? 1 : 0,
+            plays: 1,
+            winPercent: won ? 100 : 0,
           });
         }
       });
     });
 
     Object.values(this.WinCounts).forEach((count) => {
-      count.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+      count.sort((a, b) => b.wins - a.wins || a.name.localeCompare(b.name));
     });
   }
 }
