@@ -120,10 +120,15 @@ export class ApiService {
 
   unloadClub() {
     this.club = undefined;
+    this._stats = undefined;
     this._boardGameList = [];
+    this._fBoardGameList = [];
     this._playerList = [];
+    this._fPlayerList = [];
     this._gameList = [];
+    this._fGameList = [];
     this._playerGameList = [];
+    this._fPlayerGameList = [];
   }
 
   async fetchPublicClubs() {
@@ -372,7 +377,14 @@ export class ApiService {
     }
   }
 
-  filter(enabled: boolean, playerIds: string[], boardGameIds: string[], daysOfWeek: string[], startDate: Date | null, dnf: boolean) {
+  filter(
+    enabled: boolean,
+    playerIds: string[],
+    boardGameIds: string[],
+    daysOfWeek: string[],
+    startDate: Date | null,
+    dnf: boolean,
+  ) {
     this._filteredBoardGameIds = new Set(boardGameIds);
     this._filteredPlayerIds = new Set(playerIds);
     this._filteredDaysOfWeek = new Set(daysOfWeek);
