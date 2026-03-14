@@ -80,7 +80,7 @@
             <ng-template pTemplate="header">
               <tr>
                 <th>Name</th>
-                <th>Points</th>
+                <th *ngIf="showScore(game)">Points</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-score>
@@ -106,7 +106,6 @@
                   <span>{{ score.Player?.Name }}</span>
                 </td>
                 <td *ngIf="showScore(game)">{{ score.Points | number: '1.0-3' }}</td>
-                <td *ngIf="!showScore(game)"></td>
               </tr>
             </ng-template>
           </p-table>

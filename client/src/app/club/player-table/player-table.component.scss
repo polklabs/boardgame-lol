@@ -1,0 +1,6 @@
+:host ::ng-deep {
+  td .p-datatable-wrapper .p-datatable-table {
+    width: unset !important;
+    min-width: 200px !important;
+  }
+}

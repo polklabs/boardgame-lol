@@ -84,7 +84,7 @@ export class BoardGameTableComponent implements OnChanges {
     });
 
     Object.values(this.WinCounts).forEach((count) => {
-      count.sort((a, b) => b.wins - a.wins || a.name.localeCompare(b.name));
+      count.sort((a, b) => b.wins - a.wins || b.winPercent - a.winPercent || a.name.localeCompare(b.name));
     });
   }
 }

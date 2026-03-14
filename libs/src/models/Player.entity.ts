@@ -52,16 +52,14 @@ export class PlayerEntity extends BaseEntity {
   }
 
   calculateWins() {
-    this.Wins = this.PlayerGames.filter((pg) => pg.Game?.calculateWinner().includes(pg)).sort(
-      (a, b) => b.Game?.Date.toString().localeCompare(a.Game?.Date.toString() ?? '') ?? 0,
-    );
+    this.Wins = this.PlayerGames.filter((pg) => pg.Game?.calculateWinner().includes(pg)).reverse();
   }
 
   calculateBestGames() {
     this.BestGames = Mode(
       this.Wins.filter((x) => x.Game).map((x) => x.Game!.BoardGame!),
       (x) => x.BoardGameId ?? '',
-    ).filter((x) => x);
+    ).filter(Boolean);
   }
 
   calculateBestGameWins() {

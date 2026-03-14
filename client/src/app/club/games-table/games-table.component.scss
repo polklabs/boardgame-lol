@@ -1,3 +1,10 @@
-.edit-header {
-  width: 160px;
+:host ::ng-deep {
+  .edit-header {
+    width: 160px;
+  }
+
+  td .p-datatable-wrapper .p-datatable-table {
+    width: unset !important;
+    min-width: 200px !important;
+  }
 }
