@@ -29,3 +29,12 @@ export function Mode<T>(arr: Array<T>, predicate: (elem: T) => string | number) 
     return [];
   }
 }
+
+export function UnicodeToEmoji(unicode: string): string {
+  const codePoints = unicode
+    .trim()
+    .split(/\s+/)
+    .map((cp) => Number.parseInt(cp.replace('U+', ''), 16));
+
+  return String.fromCodePoint(...codePoints);
+}

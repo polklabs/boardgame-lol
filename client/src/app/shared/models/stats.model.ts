@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { BoardGameEntity, GameEntity, PlayerEntity } from 'libs/index';
+import { BoardGameEntity, GameEntity, Mode, PlayerEntity } from 'libs/index';
 
 export class StatsModel {
   MostPlays = 0;
@@ -27,9 +27,11 @@ export class StatsModel {
   MostWeekendWinsPlayers: PlayerEntity[] = [];
 
   OnlyWon1Game: PlayerEntity[] = [];
+  OnlyWon1GameLength = 0;
 
-  Fav3Player = 0;
-  Fav3PlayerGame: BoardGameEntity[] = [];
+  FavXPlayerCount = 0;
+  FavXPlayer = 0;
+  FavXPlayerGame: BoardGameEntity[] = [];
 
   private players: PlayerEntity[] = [];
   private games: GameEntity[] = [];
@@ -49,7 +51,7 @@ export class StatsModel {
     this.calculateMostTies();
     this.calculateOnlyWonOneGame();
     this.calculateMostWeekendWins();
-    this.calculateFav3PlayerGame();
+    this.calculateFavXPlayerGame();
   }
 
   calculateMostPlays() {
@@ -88,7 +90,7 @@ export class StatsModel {
   calculateMostUniqueWins() {
     const uniqueWins = this.players.map((x) => ({
       player: x,
-      count: [...new Set(x.Wins.map((w) => w.Game?.BoardGameId))].length,
+      count: new Set(x.Wins.map((w) => w.Game?.BoardGameId)).size,
     }));
     this.MaxUniqueWins = uniqueWins.reduce((max, x) => Math.max(max, x.count), 0);
     this.MaxUniqueWinsPlayers = uniqueWins.filter((x) => x.count === this.MaxUniqueWins).map((x) => x.player);
@@ -175,13 +177,14 @@ export class StatsModel {
 
   calculateOnlyWonOneGame() {
     this.OnlyWon1Game = this.players.filter((x) => x.Wins.length === 1);
+    this.OnlyWon1GameLength = this.OnlyWon1Game.length;
   }
 
   calculateMostWeekendWins() {
-    const weekend = ['Sun', 'Sat'];
+    const weekend = new Set(['Sun', 'Sat']);
     const winCount: { [playerId: string]: number } = {};
     this.games
-      .filter((x) => weekend.includes(format(x.DateObj, 'eee')))
+      .filter((x) => weekend.has(format(x.DateObj, 'eee')))
       .forEach((g) => {
         g.Winners.forEach((w) => {
           if (winCount[w.PlayerId ?? ''] === undefined) {
@@ -196,15 +199,17 @@ export class StatsModel {
     const playerIds = Object.keys(winCount).filter((x) => winCount[x] === this.MostWeekendWins);
     this.MostWeekendWinsPlayers = playerIds
       .map((id) => this.players.find((x) => x.PlayerId === id))
-      .filter((x) => x) as PlayerEntity[];
+      .filter(Boolean) as PlayerEntity[];
   }
 
-  calculateFav3PlayerGame() {
+  calculateFavXPlayerGame() {
+    this.FavXPlayerCount = Mode(this.games, (x) => x.Players)?.[0].Players ?? 0;
+
     const list: [BoardGameEntity, number][] = this.boardGames.map((x) => [
       x,
-      x.Games.filter((g) => g.Players === 3).length,
+      x.Games.filter((g) => g.Players === this.FavXPlayerCount).length,
     ]);
-    this.Fav3Player = Math.max(...list.map((x) => x[1]));
-    this.Fav3PlayerGame = list.filter((x) => x[1] === this.Fav3Player).map((x) => x[0]);
+    this.FavXPlayer = Math.max(...list.map((x) => x[1]));
+    this.FavXPlayerGame = list.filter((x) => x[1] === this.FavXPlayer).map((x) => x[0]);
   }
 }

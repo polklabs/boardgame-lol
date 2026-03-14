@@ -7,7 +7,8 @@ import { ApiService } from '../../shared/services/api.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
 import autocolors from 'chartjs-plugin-autocolors';
-import { ScoreTypeMapping, ScoreTypes } from 'libs/index';
+import { ScoreTypeMapping, ScoreTypes, UnicodeToEmoji } from 'libs/index';
+import { TROPHIES, Trophy } from './stats.metadata';
 
 type DayItem = { color: string; tooltip: string; icon?: string };
 
@@ -48,15 +49,63 @@ export class StatsComponent implements OnChanges {
 
   chartPlugins = [autocolors];
 
+  trophies: Trophy[] = [];
+
   constructor(private apiService: ApiService) {}
 
   ngOnChanges(): void {
+    this.calculateTrophies();
     this.updateHeatmap();
     this.generateWinsOverTimeChart();
     this.generateRankOverTimeChart();
     this.generateCountByDayChart();
     this.generateCountByMonthChart();
     this.ShowCharts = true;
+  }
+
+  calculateTrophies() {
+    this.trophies = structuredClone(TROPHIES);
+    this.trophies.forEach((t) => {
+      const array = this.stats?.[t.arrayKey];
+      if (Array.isArray(array)) {
+        t.array = array;
+      } else {
+        t.array = undefined;
+      }
+
+      const value = this.stats?.[t.valueKey];
+      if (typeof value === 'number') {
+        t.value = value;
+      } else {
+        t.value = undefined;
+      }
+      
+      t.emoji = this.textReplace(t.emoji);
+      t.title = this.textReplace(t.title);
+      t.info = this.textReplace(t.info);
+
+      if (t.emoji.includes('U+')) {
+        t.emoji = UnicodeToEmoji(t.emoji);
+      } else {
+        // Continue
+      }
+    });
+
+    this.trophies.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+  }
+
+  textReplace(text: string): string {
+    const regex = /\{(.+?)\}/gm;
+    const result = text.replaceAll(regex, (_, g1: string) => {
+      const stats = (this.stats ?? {}) as { [key: string]: unknown };
+      if (g1 in stats) {
+        return `${stats[g1]}`;
+      } else {
+        return '';
+      }
+    });
+
+    return result;
   }
 
   updateHeatmap() {
