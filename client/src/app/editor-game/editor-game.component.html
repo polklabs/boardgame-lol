@@ -80,6 +80,11 @@
                     <span [ngClass]="{ DNF: playerGame.DNF }">{{ playerGame.Player?.Name }}</span>
                   </ng-container>
                   <ng-container *ngSwitchCase="'win-lose'">
+                    <p-checkbox
+                      [ngModel]="playerGame.Points === 1"
+                      [ngModelOptions]="{ standalone: true }"
+                      (onChange)="playerGame.Points = $event.checked ? 1 : 0; this.updateScoring()"
+                      [binary]="true" />
                     <i *ngIf="playerGame.Points === 1" class="pi pi-trophy" style="color: gold"></i>
                     <div *ngIf="playerGame.Points !== 1" class="empty-trophy"></div>
                     <span>{{ playerGame.Player?.Name }}</span>
