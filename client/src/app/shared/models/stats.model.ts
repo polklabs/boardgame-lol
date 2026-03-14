@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { differenceInDays, format, max } from 'date-fns';
 import { BoardGameEntity, GameEntity, Mode, PlayerEntity } from 'libs/index';
 
 export class StatsModel {
@@ -33,6 +33,9 @@ export class StatsModel {
   FavXPlayer = 0;
   FavXPlayerGame: BoardGameEntity[] = [];
 
+  LastGroupWinGame: BoardGameEntity[] = [];
+  LastGroupWinDays = 0;
+
   private players: PlayerEntity[] = [];
   private games: GameEntity[] = [];
   private boardGames: BoardGameEntity[] = [];
@@ -52,6 +55,7 @@ export class StatsModel {
     this.calculateOnlyWonOneGame();
     this.calculateMostWeekendWins();
     this.calculateFavXPlayerGame();
+    this.calculateLastGroupWinGame();
   }
 
   calculateMostPlays() {
@@ -211,5 +215,21 @@ export class StatsModel {
     ]);
     this.FavXPlayer = Math.max(...list.map((x) => x[1]));
     this.FavXPlayerGame = list.filter((x) => x[1] === this.FavXPlayer).map((x) => x[0]);
+  }
+
+  calculateLastGroupWinGame() {
+    const groupWins = this.games.filter((x) => x.Winners.length === x.Players);
+    const maxDate = max(groupWins.map((x) => x.DateObj));
+
+    this.LastGroupWinGame = groupWins
+      .filter((x) => x.DateObj === maxDate)
+      .map((x) => x.BoardGame)
+      .filter((x) => x !== null) as BoardGameEntity[];
+
+    if (groupWins.length > 0) {
+      this.LastGroupWinDays = differenceInDays(new Date(), maxDate);
+    } else {
+      this.LastGroupWinDays = Infinity;
+    }
   }
 }
