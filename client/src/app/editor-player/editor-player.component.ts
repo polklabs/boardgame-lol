@@ -81,8 +81,7 @@ export class EditorPlayerComponent implements OnChanges {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.player) {
       return;
-    } else {
-      if (this.standalone) {
+    } else if (this.standalone) {
         const result = await this.apiService.postPlayer(this.player.PlayerId === null, this.formGroup.getRawValue());
         if (result) {
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Player' });
@@ -94,7 +93,6 @@ export class EditorPlayerComponent implements OnChanges {
         Object.assign(this.player, this.formGroup.getRawValue());
         this.closeEditor.emit(this.player);
       }
-    }
   }
 
   toDeleteEntity() {
@@ -111,7 +109,7 @@ export class EditorPlayerComponent implements OnChanges {
           if (result) {
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Player' });
             this.closeEditor.emit();
-            this.router.navigateByUrl(`/club/${this.apiService.club}`);
+            this.router.navigateByUrl(`/club/${this.apiService.club?.ClubId}`);
           } else {
             // Do nothing
           }

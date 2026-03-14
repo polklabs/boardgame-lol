@@ -2,7 +2,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { getIgnore } from 'libs/decorators/ignore.decorator';
 import { getNullable, getPrimaryKey, getSecondaryKey } from 'libs/index';
 
-export function nullableValidator<T>(entityType: { new (partial: Partial<T>): T }, propertyKey: keyof T): ValidatorFn {
+export function nullableValidator<T>(entityType: new (partial: Partial<T>) => T, propertyKey: keyof T): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
     const pk = getPrimaryKey(entityType);
@@ -18,10 +18,10 @@ export function nullableValidator<T>(entityType: { new (partial: Partial<T>): T 
 
     const isNullable = getNullable(entityType).includes(String(propertyKey)) || getIgnore(entityType).includes(String(propertyKey));
 
-    if (!isNullable) {
-      return value === null || value === undefined || value === '' ? { nullable: true } : null;
-    } else {
+    if (isNullable) {
       return null;
+    } else {
+      return value === null || value === undefined || value === '' ? { nullable: true } : null;
     }
   };
 }

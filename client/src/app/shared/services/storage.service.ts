@@ -20,7 +20,7 @@ export class StorageService {
     await this.getPreferences();
     const toReturn = this._preferences?.[key];
     if (toReturn === undefined) {
-      await this.setString(key, defaultValue);
+      await this.setValue(key, defaultValue);
       return defaultValue;
     } else {
       return toReturn as StringSet;
@@ -31,20 +31,14 @@ export class StorageService {
     await this.getPreferences();
     const toReturn = this._preferences?.[key];
     if (toReturn === undefined) {
-      await this.setNumber(key, defaultValue);
+      await this.setValue(key, defaultValue);
       return defaultValue;
     } else {
       return toReturn as NumberSet;
     }
   }
 
-  async setString(key: string, value: StringSet) {
-    await this.getPreferences();
-    this._preferences![key] = value;
-    await this.savePreferences();
-  }
-
-  async setNumber(key: string, value: NumberSet) {
+  async setValue(key: string, value: StringSet | NumberSet) {
     await this.getPreferences();
     this._preferences![key] = value;
     await this.savePreferences();
@@ -61,10 +55,10 @@ export class StorageService {
 
   private async getPreferences() {
     const userId = await this.getUserId();
-    if (userId !== this._userId) {
-      this.loadPreferences(userId);
-    } else {
+    if (userId === this._userId) {
       // continue
+    } else {
+      this.loadPreferences(userId);
     }
   }
 

@@ -223,11 +223,11 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   }
 
   editPlayerGame(playerGame?: PlayerGameEntity) {
-    if (!playerGame) {
+    if (playerGame) {
+      this.playerGameEdit = playerGame;
+    } else {
       this.playerGameEdit = new PlayerGameEntity({ ClubId: this.game?.ClubId, GameId: '-1' });
       this.playerGameEdit.PlayerId = this.players[0].PlayerId;
-    } else {
-      this.playerGameEdit = playerGame;
     }
     this.playerGameEditorVisible = true;
   }
@@ -253,11 +253,11 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   deletePlayerGame(playerGame?: PlayerGameEntity) {
     if (playerGame) {
       const index = this.playerGames.indexOf(playerGame);
-      if (index !== -1) {
+      if (index === -1) {
+        // continue
+      } else {
         this.playerGames.splice(index, 1);
         this.playerGames = [...this.playerGames];
-      } else {
-        // continue
       }
     } else {
       // continue
@@ -268,14 +268,14 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   }
 
   editPlayer(player?: PlayerEntity) {
-    if (!player) {
+    if (player) {
+      this.playerEdit = player;
+    } else {
       let nextId = 0;
-      while (this.newPlayers.find((x) => x.PlayerId === `${nextId}`)) {
+      while (this.newPlayers.some((x) => x.PlayerId === `${nextId}`)) {
         nextId++;
       }
       this.playerEdit = new PlayerEntity({ PlayerId: `${nextId}`, ClubId: this.game?.ClubId });
-    } else {
-      this.playerEdit = player;
     }
     this.playerEditorVisible = true;
   }
@@ -298,11 +298,11 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   deletePlayer(player?: PlayerEntity) {
     if (player) {
       const index = this.newPlayers.indexOf(player);
-      if (index !== -1) {
+      if (index === -1) {
+        // continue
+      } else {
         this.newPlayers.splice(index, 1);
         this.newPlayers = [...this.newPlayers];
-      } else {
-        // continue
       }
     } else {
       // continue
@@ -322,14 +322,14 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   }
 
   editBoardGame(boardGame?: BoardGameEntity) {
-    if (!boardGame) {
+    if (boardGame) {
+      this.boardGameEdit = boardGame;
+    } else {
       let nextId = 0;
-      while (this.newBoardGames.find((x) => x.BoardGameId === `${nextId}`)) {
+      while (this.newBoardGames.some((x) => x.BoardGameId === `${nextId}`)) {
         nextId++;
       }
       this.boardGameEdit = new BoardGameEntity({ BoardGameId: `${nextId}`, ClubId: this.game?.ClubId });
-    } else {
-      this.boardGameEdit = boardGame;
     }
     this.boardGameEditorVisible = true;
   }
@@ -357,11 +357,11 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   deleteBoardGame(boardGame?: BoardGameEntity) {
     if (boardGame) {
       const index = this.newBoardGames.indexOf(boardGame);
-      if (index !== -1) {
+      if (index === -1) {
+        // continue
+      } else {
         this.newBoardGames.splice(index, 1);
         this.newBoardGames = [...this.newBoardGames];
-      } else {
-        // continue
       }
     } else {
       // continue

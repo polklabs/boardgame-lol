@@ -370,7 +370,7 @@ export class LoginComponent implements OnInit {
   }
 
   enterEmoji(emoji: string, list: string[]) {
-    const index = list.findIndex((x) => x === '_');
+    const index = list.indexOf('_');
     if (index === -1) {
       return;
     } else {

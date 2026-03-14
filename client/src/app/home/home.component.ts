@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit {
     private userService: UserService,
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.clubList$ = this.userService.accessIds$;
     this.publicClubList$ = this.apiService.publicClubs$;
     this.apiService.unloadClub();

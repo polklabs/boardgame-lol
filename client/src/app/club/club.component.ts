@@ -112,7 +112,7 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       combineLatest([this.apiService.club$, this.userService.accessIds$]).subscribe(([club, access]) => {
         this.title = club?.Name ?? '';
-        this.canEdit = access.find((x) => x.id === club?.ClubId) !== undefined;
+        this.canEdit = access.some((x) => x.id === club?.ClubId);
       }),
     );
 
@@ -135,7 +135,6 @@ export class ClubComponent implements OnInit, OnDestroy {
         this.gameIds = this.apiService.boardGameList.map((x) => x.BoardGameId ?? '');
         this.playerIds = this.apiService.playerList.map((x) => x.PlayerId ?? '');
         this.dnf = true;
-        // this.daysOfWeek = ['M', 'T', 'W', 'Th', 'F', 'S', 'Su'];
       }),
     );
   }

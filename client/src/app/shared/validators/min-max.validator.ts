@@ -1,7 +1,7 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { getMinMax } from 'libs/index';
 
-export function minMaxValidator<T>(entityType: { new (partial: Partial<T>): T }, propertyKey: keyof T): ValidatorFn {
+export function minMaxValidator<T>(entityType: new (partial: Partial<T>) => T, propertyKey: keyof T): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
 
@@ -23,7 +23,7 @@ export function minMaxValidator<T>(entityType: { new (partial: Partial<T>): T },
         console.error(`${String(propertyKey)}: ${minMax.type} cannot have MinMax decorator`);
         minMaxValid = false;
       }
-      return !minMaxValid ? { minMax: true } : null;
+      return minMaxValid ? null : { minMax: true };
     } else {
       return null;
     }

@@ -147,7 +147,7 @@ export class MenuBarComponent implements OnInit, OnDestroy {
     private userService: UserService,
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     if (this.page === 'home') {
       this.subscriptions.add(
         this.userService.canEdit$.subscribe((canEdit) => {
@@ -157,7 +157,7 @@ export class MenuBarComponent implements OnInit, OnDestroy {
     } else {
       this.subscriptions.add(
         combineLatest([this.apiService.club$, this.userService.accessIds$]).subscribe(([club, access]) => {
-          this.canEdit = access.find((x) => x.id === club?.ClubId) !== undefined;
+          this.canEdit = access.some((x) => x.id === club?.ClubId);
         }),
       );
     }

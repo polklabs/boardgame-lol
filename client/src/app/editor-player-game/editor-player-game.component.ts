@@ -101,7 +101,6 @@ export class EditorPlayerGameComponent implements OnChanges {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.playerGame) {
       console.log(this.formGroup.controls);
-      return;
     } else {
       Object.assign(this.playerGame, this.formGroup.getRawValue());
       this.playerGame.Player = this.players.find((x) => x.PlayerId === this.playerGame?.PlayerId) ?? null;

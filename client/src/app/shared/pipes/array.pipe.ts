@@ -7,10 +7,10 @@ export class ArrayPipe implements PipeTransform {
   transform<T>(value: T[] | undefined, key: string): string {
     if (value === undefined || !Array.isArray(value)) {
       return '';
-    } else if (!key) {
-      return value.join(', ');
-    } else {
+    } else if (key) {
       // Continue
+    } else {
+      return value.join(', ');
     }
 
     const keys = key.split('.');

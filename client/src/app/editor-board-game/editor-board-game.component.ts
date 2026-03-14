@@ -86,22 +86,20 @@ export class EditorBoardGameComponent implements OnChanges {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.boardGame) {
       return;
-    } else {
-      if (this.standalone) {
-        const result = await this.apiService.postBoardGame(
-          this.boardGame.BoardGameId === null,
-          this.formGroup.getRawValue(),
-        );
-        if (result) {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved BoardGame' });
-          this.closeEditor.emit();
-        } else {
-          // Do nothing
-        }
+    } else if (this.standalone) {
+      const result = await this.apiService.postBoardGame(
+        this.boardGame.BoardGameId === null,
+        this.formGroup.getRawValue(),
+      );
+      if (result) {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved BoardGame' });
+        this.closeEditor.emit();
       } else {
-        Object.assign(this.boardGame, this.formGroup.getRawValue());
-        this.closeEditor.emit(this.boardGame);
+        // Do nothing
       }
+    } else {
+      Object.assign(this.boardGame, this.formGroup.getRawValue());
+      this.closeEditor.emit(this.boardGame);
     }
   }
 
@@ -120,7 +118,7 @@ export class EditorBoardGameComponent implements OnChanges {
             if (result) {
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted BoardGame' });
               this.closeEditor.emit();
-              this.router.navigateByUrl(`/club/${this.apiService.club}`);
+              this.router.navigateByUrl(`/club/${this.apiService.club?.ClubId}`);
             } else {
               // Do nothing
             }

@@ -134,10 +134,10 @@ export class ApiService {
   async fetchPublicClubs() {
     const data = await this.httpService.get<ClubEntity[]>(['api', 'clubs']);
 
-    if (!data) {
-      return;
-    } else {
+    if (data) {
       // continue
+    } else {
+      return;
     }
 
     this.publicClubs = data;
@@ -161,10 +161,10 @@ export class ApiService {
       Players: PlayerEntity[];
     }>(['api', 'club', clubId]);
 
-    if (!data?.Club) {
-      return;
-    } else {
+    if (data?.Club) {
       // continue
+    } else {
+      return;
     }
 
     this.club = data.Club;
@@ -304,10 +304,10 @@ export class ApiService {
     if (result) {
       result.forEach((g) => {
         const index = this._gameList.findIndex((x) => x.GameId === g.GameId);
-        if (index !== -1) {
-          this._gameList[index] = g;
-        } else {
+        if (index === -1) {
           this._gameList.push(g);
+        } else {
+          this._gameList[index] = g;
         }
       });
       this._gameList = [...this._gameList];

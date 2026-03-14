@@ -5,7 +5,7 @@ import { minMaxValidator } from './validators/min-max.validator';
 
 export function buildForm<T extends BaseEntity>(
   fb: FormBuilder,
-  entityType: { new (partial: Partial<T>): T },
+  entityType: new (partial: Partial<T>) => T,
   entity: T,
 ) {
   const formControlsConfig: { [key: string]: unknown } = {};

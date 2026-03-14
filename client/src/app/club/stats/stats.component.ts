@@ -79,7 +79,7 @@ export class StatsComponent implements OnChanges {
       } else {
         t.value = undefined;
       }
-      
+
       t.emoji = this.textReplace(t.emoji);
       t.title = this.textReplace(t.title);
       t.info = this.textReplace(t.info);
@@ -113,10 +113,10 @@ export class StatsComponent implements OnChanges {
 
     const today = new Date();
     let date = addYears(today, -1);
-    if (date.getDay() !== 0) {
-      date = addDays(date, 7 - date.getDay());
-    } else {
+    if (date.getDay() === 0) {
       // Continue
+    } else {
+      date = addDays(date, 7 - date.getDay());
     }
 
     let currentMonth = '';
@@ -139,10 +139,10 @@ export class StatsComponent implements OnChanges {
       }
 
       let month = format(date > today ? addDays(date, -1) : date, 'MMM');
-      if (month !== currentMonth) {
-        currentMonth = month;
-      } else {
+      if (month === currentMonth) {
         month = '';
+      } else {
+        currentMonth = month;
       }
       this.heatmap.push({ days: week, month });
     }
@@ -187,15 +187,14 @@ export class StatsComponent implements OnChanges {
     const userTimezoneOffset = date.getTimezoneOffset() * 60000;
     date = new Date(date.getTime() + userTimezoneOffset);
 
-    let endDate = new Date(gameList[gameList.length - 1].Date);
+    let endDate = new Date(gameList.at(-1)!.Date);
     endDate = new Date(endDate.getTime() + userTimezoneOffset);
 
     while (date <= endDate) {
       const dateStr = format(date, 'yyyy-MM-dd');
       const winners = gameList
         .filter((x) => x.Date === dateStr)
-        .map((x) => x.Winners)
-        .flat()
+        .flatMap((x) => x.Winners)
         .map((x) => x.PlayerId);
 
       players.forEach((p) => {
@@ -290,8 +289,7 @@ export class StatsComponent implements OnChanges {
     dates.forEach((dateStr) => {
       const winners = gameList
         .filter((x) => x.Date === dateStr)
-        .map((x) => x.Winners)
-        .flat()
+        .flatMap((x) => x.Winners)
         .map((x) => x.PlayerId);
 
       players.forEach((p) => {
@@ -320,7 +318,7 @@ export class StatsComponent implements OnChanges {
       const order = playerIds.map((pId) => ({ id: pId, count: wins[pId][i] })).sort((a, b) => b.count - a.count);
       playerIds.forEach((pId) => {
         wins[pId][i] = order.findIndex((x) => x.id === pId);
-        wins[pId][i] = wins[pId][i] >= 4 ? 4 : wins[pId][i];
+        wins[pId][i] = Math.min(wins[pId][i], 4);
       });
     }
 
