@@ -207,7 +207,7 @@ export class StatsModel {
   }
 
   calculateFavXPlayerGame() {
-    this.FavXPlayerCount = Mode(this.games, (x) => x.Players)?.[0].Players ?? 0;
+    this.FavXPlayerCount = Mode(this.games, (x) => x.Players)?.[0]?.Players ?? 0;
 
     const list: [BoardGameEntity, number][] = this.boardGames.map((x) => [
       x,
