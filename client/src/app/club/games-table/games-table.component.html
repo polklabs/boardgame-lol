@@ -65,11 +65,11 @@
         </td>
         <td *ngIf="canEdit">
           <div class="flex flex-row">
-            <p-button (click)="moveUp.emit(game)" icon="pi pi-arrow-up" [rounded]="true" [text]="true"></p-button>
+            <p-button (onClick)="moveUp.emit(game)" icon="pi pi-arrow-up" [rounded]="true" [text]="true"></p-button>
 
-            <p-button (click)="moveDown.emit(game)" icon="pi pi-arrow-down" [rounded]="true" [text]="true"></p-button>
+            <p-button (onClick)="moveDown.emit(game)" icon="pi pi-arrow-down" [rounded]="true" [text]="true"></p-button>
 
-            <p-button (click)="gameEdit.emit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
+            <p-button (onClick)="gameEdit.emit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
           </div>
         </td>
       </tr>

@@ -49,7 +49,7 @@
         <td>{{ player.BestGameWins | hide: '0' | number: '1.0-0' }}</td>
         <td>{{ player.FirstSeen | date: 'MM/dd/yy' }}</td>
         <td *ngIf="canEdit">
-          <p-button (click)="playerEdit.emit(player)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
+          <p-button (onClick)="playerEdit.emit(player)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
         </td>
       </tr>
     </ng-template>

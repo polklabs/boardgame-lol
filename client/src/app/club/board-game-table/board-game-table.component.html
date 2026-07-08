@@ -54,7 +54,7 @@
         <td>{{ boardGame.AverageWinningScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>
         <td *ngIf="canEdit">
           <p-button
-            (click)="boardGameEdit.emit(boardGame)"
+            (onClick)="boardGameEdit.emit(boardGame)"
             icon="pi pi-pencil"
             [rounded]="true"
             [text]="true"></p-button>
