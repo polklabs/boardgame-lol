@@ -39,9 +39,9 @@ export class BoardGameTableComponent implements OnChanges {
     { field: 'ChampionWins', name: 'Champion(s)', sort: true },
     { field: 'MaxPlayers', name: 'Max Player Count', sort: true, width: 0 },
     { field: 'AveragePlayers', name: 'Average Player Count', sort: true, width: 0 },
-    { field: 'MaxScore', name: 'High Score', sort: true, width: 0 },
-    { field: 'AverageScore', name: 'Average Score', sort: true, width: 0 },
-    { field: 'AverageWinningScore', name: 'Average Winning Score', sort: true },
+    { field: 'MaxScore', name: 'High Score', sort: false, width: 0 },
+    { field: 'AverageScore', name: 'Average Score', sort: false, width: 0 },
+    { field: 'AverageWinningScore', name: 'Average Winning Score', sort: false },
   ];
 
   ngOnChanges(): void {
