@@ -101,73 +101,51 @@ export class StatsModel {
   }
 
   calculateLongestStreak() {
-    const winners = this.games.map((x) => x.Winners.map((w) => w.PlayerId));
-
-    let totalMaxStreak = 0;
-    let streakPlayers: PlayerEntity[] = [];
+    const streakPlayers: {player: PlayerEntity, streak: number}[] = [];
 
     for (const player of this.players) {
       let maxStreak = 0;
       let streak = 0;
-      for (const playerIds of winners) {
-        if (playerIds.includes(player.PlayerId)) {
+      for (const game of this.games) {
+        if (game.Winners.some(x => x.PlayerId === player.PlayerId)) {
           streak++;
-        } else {
+        } else if (game.Scores.some(x => x.PlayerId === player.PlayerId)) {
           maxStreak = Math.max(maxStreak, streak);
           streak = 0;
+        } else {
+          // Did not play, streak continues
         }
       }
 
-      if (maxStreak > totalMaxStreak) {
-        totalMaxStreak = maxStreak;
-        streakPlayers = [player];
-      } else if (maxStreak === totalMaxStreak) {
-        streakPlayers.push(player);
-      } else {
-        // Nothing
-      }
+      streakPlayers.push({player, streak});
     }
 
-    this.LongestWinStreak = totalMaxStreak;
-    this.LongestWinStreakPlayers = streakPlayers;
+    this.LongestWinStreak = streakPlayers.reduce((prev, curr) => Math.max(prev, curr.streak), 0);
+    this.LongestWinStreakPlayers = streakPlayers.filter(x => x.streak === this.LongestWinStreak).map(x => x.player);
   }
 
   calculateBestComeback() {
-    const winners = this.games.map((x) => x.Winners.map((w) => w.PlayerId));
-
-    let totalMaxStreak = 0;
-    let streakPlayers: PlayerEntity[] = [];
+    const streakPlayers: {player: PlayerEntity, streak: number}[] = [];
 
     for (const player of this.players) {
-      let maxStreak = 0;
-      let streak = 0;
-      let firstFind = true;
-      for (const playerIds of winners) {
-        if (playerIds.includes(player.PlayerId)) {
-          if (firstFind === false) {
-            maxStreak = Math.max(maxStreak, streak);
-          } else {
-            // Skip
-          }
-          streak = 0;
-          firstFind = false;
+      const loseStreaks: number[] = [];
+      let losses = 0;
+      for (const game of this.games) {
+        if (game.Winners.some(x => x.PlayerId === player.PlayerId)) {
+          loseStreaks.push(losses);
+          losses = 0;
+        } else if (game.Scores.some(x => x.PlayerId === player.PlayerId)) {
+          losses++;
         } else {
-          streak++;
+          // Did not play, streak continues
         }
       }
 
-      if (maxStreak > totalMaxStreak) {
-        totalMaxStreak = maxStreak;
-        streakPlayers = [player];
-      } else if (maxStreak === totalMaxStreak) {
-        streakPlayers.push(player);
-      } else {
-        // Nothing
-      }
+      streakPlayers.push({player, streak: Math.max(...loseStreaks)});
     }
 
-    this.BestComeback = totalMaxStreak;
-    this.BestComebackPlayers = streakPlayers;
+    this.BestComeback = streakPlayers.reduce((prev, curr) => Math.max(prev, curr.streak), 0);
+    this.BestComebackPlayers = streakPlayers.filter(x => x.streak === this.BestComeback).map(x => x.player);
   }
 
   calculateMostTies() {
@@ -176,7 +154,7 @@ export class StatsModel {
       count: x.Wins.filter((w) => (w.Game?.Winners.length ?? 0) > 1).length,
     }));
     this.MostTies = tiedWins.reduce((max, x) => Math.max(max, x.count), 0);
-    this.MostTiesPlayers = tiedWins.filter((x) => x.count === this.MostTies).map((x) => x.player);
+    this.MostTiesPlayers = tiedWins.filter((x) => x.count > 0 && x.count === this.MostTies).map((x) => x.player);
   }
 
   calculateOnlyWonOneGame() {
