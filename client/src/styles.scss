@@ -60,6 +60,15 @@ body {
   flex-wrap: wrap;
 }
 
+.flex-grow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  > * {
+    flex-grow: 1;
+  }
+}
+
 .flex-column {
   display: flex;
   flex-direction: column;
@@ -117,4 +126,10 @@ body {
 
 .p-overlaypanel {
   margin: 4px 4px 4px 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
