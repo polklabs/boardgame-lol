@@ -80,7 +80,7 @@
                 </td>
                 <td>
                   <ng-container *ngIf="showScore(playerGame.Game)">
-                    {{ playerGame.Points | number: '1.0-3' }}
+                    {{ playerGame.Points | number: '1.0-3' | score: playerGame.Game.BoardGame }}
                   </ng-container>
                 </td>
               </tr>

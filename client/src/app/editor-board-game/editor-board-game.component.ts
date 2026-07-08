@@ -1,4 +1,13 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { BoardGameEntity, ScoreTypeMapping } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../shared/services/api.service';
@@ -12,6 +21,7 @@ import { DialogModule } from 'primeng/dialog';
 import { Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
+import { Subscription } from 'rxjs';
 
 type EntityType = BoardGameEntity;
 
@@ -32,7 +42,7 @@ type EntityType = BoardGameEntity;
   templateUrl: './editor-board-game.component.html',
   styleUrl: './editor-board-game.component.scss',
 })
-export class EditorBoardGameComponent implements OnChanges {
+export class EditorBoardGameComponent implements OnChanges, OnDestroy {
   @Input() editorVisible = false;
   @Input() boardGame?: BoardGameEntity;
   @Input() standalone = true;
@@ -49,6 +59,8 @@ export class EditorBoardGameComponent implements OnChanges {
 
   scoreTypeMapping = ScoreTypeMapping;
   scoreTypes = Object.entries(this.scoreTypeMapping).map(([value, label]) => ({ value, label }));
+
+  subscriptions = new Subscription();
 
   constructor(
     private fb: FormBuilder,
@@ -72,14 +84,50 @@ export class EditorBoardGameComponent implements OnChanges {
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new BoardGameEntity());
       this.formGroup.patchValue(new BoardGameEntity(this.boardGame));
+      this.updatePrefixSuffix();
+
+      this.subscriptions.add(
+        this.getControl('ScoreType')?.valueChanges.subscribe(() => {
+          this.updatePrefixSuffix();
+        }),
+      );
+      this.subscriptions.add(
+        this.getControl('ScorePrefix')?.valueChanges.subscribe(() => {
+          this.updatePrefixSuffix();
+        }),
+      );
+      this.subscriptions.add(
+        this.getControl('ScoreSuffix')?.valueChanges.subscribe(() => {
+          this.updatePrefixSuffix();
+        }),
+      );
     } else {
       // No Changes
     }
     this.cdr.detectChanges();
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
+  }
+
+  updatePrefixSuffix() {
+    const score = this.getControl('ScoreType');
+    if (score?.value === 'points') {
+      this.hideFields.delete('ScorePrefix');
+      this.hideFields.delete('ScoreSuffix');
+    } else {
+      this.hideFields.add('ScorePrefix');
+      this.hideFields.add('ScoreSuffix');
+    }
+    this.getControl('exampleScore')?.setValue(
+      `${this.getControl('ScorePrefix')?.value??''}42${this.getControl('ScoreSuffix')?.value??''}`,
+    );
+    this.getControl('exampleScore')?.disable();
   }
 
   async submit() {

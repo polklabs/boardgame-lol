@@ -69,7 +69,7 @@
                     <i *ngIf="index === 0" class="pi pi-trophy" style="color: gold"></i>
                     <div *ngIf="index !== 0" class="empty-trophy"></div>
                     <span>{{ playerGame.Player?.Name }}</span>
-                    <span *ngIf="playerGame.Points !== null">: {{ playerGame.Points | number: '1.0-3' }}</span>
+                    <span *ngIf="playerGame.Points !== null">: {{ playerGame.Points | number: '1.0-3' | score: playerGame.Game.BoardGame }}</span>
                   </ng-container>
                   <ng-container *ngSwitchCase="'rank'">
                     <i

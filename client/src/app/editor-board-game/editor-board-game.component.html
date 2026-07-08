@@ -20,7 +20,28 @@
         optionValue="value"
         [showClear]="false"></app-dropdown>
 
-      <app-textinput formControlName="BoardGameGeekId" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
+      <div class="flex-grow gap-8 width-100">
+        <app-textinput
+          formControlName="ScorePrefix"
+          label="Score Prefix"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"></app-textinput>
+        <app-textinput
+          formControlName="ScoreSuffix"
+          label="Score Suffix"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"></app-textinput>
+        <app-textinput
+          formControlName="exampleScore"
+          label="Example Score"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"></app-textinput>
+      </div>
+
+      <app-textinput
+        formControlName="BoardGameGeekId"
+        [entityType]="entityType"
+        [hiddenFields]="hideFields"></app-textinput>
 
       <div class="dialog-footer">
         <div>

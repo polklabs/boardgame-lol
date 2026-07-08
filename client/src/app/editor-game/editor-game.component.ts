@@ -27,6 +27,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { Subscription } from 'rxjs';
 import { format } from 'date-fns';
 import { TextareaComponent } from '../shared/components/textarea/textarea.component';
+import { PipeModule } from '../shared/pipes/pipe.module';
 
 type EntityType = GameEntity;
 
@@ -48,6 +49,7 @@ type EntityType = GameEntity;
     EditorBoardGameComponent,
     EditorPlayerGameComponent,
     OrderListModule,
+    PipeModule
   ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
@@ -94,7 +96,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   boardGameEditorVisible = false;
   boardGameEdit?: BoardGameEntity;
 
-  subscriptions = new Subscription();
+  subscription?: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -133,13 +135,11 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
       this.formGroup.patchValue(new GameEntity(this.game));
 
-      this.subscriptions.add(
-        this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
-          console.log(value);
-          this.game!.BoardGame = this.boardGames.find((x) => x.BoardGameId === value) ?? null;
-          this.updateScoring();
-        }),
-      );
+      this.subscription = this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
+        console.log(value);
+        this.game!.BoardGame = this.boardGames.find((x) => x.BoardGameId === value) ?? null;
+        this.updateScoring();
+      });
     } else {
       // No Changes
     }
@@ -147,7 +147,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.subscription?.unsubscribe();
   }
 
   grabLists() {

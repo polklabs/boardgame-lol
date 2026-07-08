@@ -49,9 +49,9 @@
         <td>{{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }} - {{ boardGame.Champions | array: 'Name' }}</td>
         <td>{{ boardGame.MaxPlayers | hide: '0' | number: '1.0-0' }}</td>
         <td>{{ boardGame.AveragePlayers | hide: '0' | number: '1.0-1' }}</td>
-        <td>{{ boardGame.MaxScore | hide: '0' | number: '1.0-1' }}</td>
-        <td>{{ boardGame.AverageScore | hide: '0' | number: '1.0-1' }}</td>
-        <td>{{ boardGame.AverageWinningScore | hide: '0' | number: '1.0-1' }}</td>
+        <td>{{ boardGame.MaxScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>
+        <td>{{ boardGame.AverageScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>
+        <td>{{ boardGame.AverageWinningScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>
         <td *ngIf="canEdit">
           <p-button
             (click)="boardGameEdit.emit(boardGame)"
