@@ -452,7 +452,10 @@ export class ApiService {
     this.gameList.forEach((x) => x.calculateFields());
     this.playerGameList.forEach((x) => x.calculateFields());
     this.boardGameList.forEach((x) => x.calculateFields());
-    this.playerList.forEach((x) => x.calculateFields());
+    this.playerList.forEach((x) => {
+      x.calculateFields();
+      x.calculateNickname(this.playerList);
+    });
 
     this.stats = new StatsModel(this.playerList, this.gameList, this.boardGameList);
   }

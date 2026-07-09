@@ -46,7 +46,7 @@
             class="bar-percent"
             [ngStyle]="{ width: (boardGame.Games.length / (stats?.numbers?.MostPlays ?? 1)) * 100 + '%' }"></div>
         </td>
-        <td>{{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }} - {{ boardGame.Champions | array: 'Name' }}</td>
+        <td>{{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }} - {{ boardGame.Champions | array: 'Nickname' }}</td>
         <td>{{ boardGame.MaxPlayers | hide: '0' | number: '1.0-0' }}</td>
         <td>{{ boardGame.AveragePlayers | hide: '0' | number: '1.0-1' }}</td>
         <td>{{ boardGame.MaxScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>

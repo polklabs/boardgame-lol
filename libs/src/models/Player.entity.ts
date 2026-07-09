@@ -39,6 +39,9 @@ export class PlayerEntity extends BaseEntity {
   @Ignore()
   FirstSeen?: Date | string;
 
+  @Ignore()
+  Nickname?: string;
+
   constructor(partial: Partial<PlayerEntity> = {}, copyIgnored = false) {
     super(partial, PlayerEntity);
     this.assign(partial, PlayerEntity, copyIgnored);
@@ -49,6 +52,18 @@ export class PlayerEntity extends BaseEntity {
     this.calculateBestGames();
     this.calculateBestGameWins();
     this.calculateFirstSeen();
+  }
+
+  calculateNickname(players: PlayerEntity[]) {
+    this.Nickname = this.Name?.trim().split(' ')[0];
+    if (
+      this.Nickname &&
+      players.filter((x) => x.PlayerId !== this.PlayerId).some((x) => x.Name?.startsWith(this.Nickname!))
+    ) {
+      this.Nickname = this.Name ?? undefined;
+    } else {
+      // continue
+    }
   }
 
   calculateWins() {

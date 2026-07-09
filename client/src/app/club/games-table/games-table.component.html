@@ -56,7 +56,7 @@
         </td>
         <td>{{ game.Date | date: 'MM/dd/yy' }}</td>
         <td>{{ game.BoardGame.Name }}</td>
-        <td>{{ game.Winners | array: 'Name' }}</td>
+        <td>{{ game.Winners | array: 'Nickname' }}</td>
         <td>
           <ng-container *ngIf="showScore(game)">
             {{ game.HighScore | number: '1.0-3' | score: game.BoardGame }}

@@ -223,7 +223,7 @@ export class StatsComponent implements OnChanges {
 
     Object.keys(wins).forEach((pId) => {
       this.winsOverTimeData.datasets.push({
-        label: players.find((x) => x.PlayerId === pId)?.Name ?? 'Unknown',
+        label: players.find((x) => x.PlayerId === pId)?.Nickname ?? 'Unknown',
         data: wins[pId],
         fill: false,
         // borderColor: documentStyle.getPropertyValue('--blue-500'),
@@ -326,10 +326,9 @@ export class StatsComponent implements OnChanges {
 
     playerIds.forEach((pId) => {
       this.rankOverTimeData.datasets.push({
-        label: players.find((x) => x.PlayerId === pId)?.Name ?? 'Unknown',
+        label: players.find((x) => x.PlayerId === pId)?.Nickname ?? 'Unknown',
         data: wins[pId],
         fill: false,
-        // borderColor: documentStyle.getPropertyValue('--blue-500'),
         tension: 0.4,
       });
     });
