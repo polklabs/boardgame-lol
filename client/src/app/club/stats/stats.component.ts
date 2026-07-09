@@ -91,7 +91,21 @@ export class StatsComponent implements OnChanges {
       }
     });
 
-    this.trophies.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+    this.trophies.sort((a, b) => {
+      let valueA = a.value ?? 0;
+      let valueB = b.value ?? 0;
+      if (valueA === Infinity) {
+        valueA = -Infinity;
+      } else {
+        // Continue
+      }
+      if (valueB === Infinity) {
+        valueB = -Infinity;
+      } else {
+        // Continue
+      }
+      return valueB - valueA;
+    });
   }
 
   textReplace(text: string): string {
