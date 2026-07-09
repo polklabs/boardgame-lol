@@ -5,7 +5,8 @@ import { TableModule } from 'primeng/table';
 import { PipeModule } from '../../shared/pipes/pipe.module';
 import { Observable } from 'rxjs';
 import { GameEntity, PlayerEntity } from 'libs/index';
-import { StatsModel } from '../../shared/models/stats.model';
+import { TrophyService } from '../../shared/services/trophy.service';
+import { ITrophy } from '../../shared/trophies/trophy.model';
 
 @Component({
   selector: 'app-player-table',
@@ -17,9 +18,10 @@ import { StatsModel } from '../../shared/models/stats.model';
 export class PlayerTableComponent {
   @Input() players$?: Observable<PlayerEntity[]>;
   @Input() canEdit = false;
-  @Input() stats?: StatsModel;
 
   @Output() playerEdit = new EventEmitter<PlayerEntity>();
+
+  mostWins: ITrophy;
 
   expandedRows = {};
   playerColumns = [
@@ -29,6 +31,10 @@ export class PlayerTableComponent {
     { field: 'BestGameWins', name: 'Best Game(s) Wins', sort: true },
     { field: 'FirstSeen', name: 'First Seen', sort: true },
   ];
+
+  constructor(trophyService: TrophyService) {
+    this.mostWins = trophyService.getTrophy('MostWins');
+  }
 
   showScore(game: GameEntity): boolean {
     return game.BoardGame?.ScoreType === 'points';

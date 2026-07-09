@@ -10,7 +10,6 @@ import {
   PlayerEntity,
   PlayerGameEntity,
 } from 'libs/index';
-import { StatsModel } from '../models/stats.model';
 import { format } from 'date-fns';
 
 @Injectable({
@@ -20,7 +19,6 @@ export class ApiService {
   // Instances
   private _publicClubs: ClubEntity[] = [];
   private _club?: ClubEntity;
-  private _stats?: StatsModel;
   private _boardGameList: BoardGameEntity[] = [];
   private _playerList: PlayerEntity[] = [];
   private _gameList: GameEntity[] = [];
@@ -44,7 +42,6 @@ export class ApiService {
   readonly club$ = new BehaviorSubject<typeof this._club>(undefined);
   readonly boardGameList$ = new BehaviorSubject<typeof this._boardGameList>([]);
   readonly playerList$ = new BehaviorSubject<typeof this._playerList>([]);
-  readonly stats$ = new BehaviorSubject<typeof this._stats>(undefined);
   readonly filteredBoardGameList$ = new BehaviorSubject<typeof this._fBoardGameList>([]);
   readonly filteredPlayerList$ = new BehaviorSubject<typeof this._fPlayerList>([]);
   readonly filteredGameList$ = new BehaviorSubject<typeof this._fGameList>([]);
@@ -61,12 +58,6 @@ export class ApiService {
   private set club(club: ClubEntity | undefined) {
     this._club = new ClubEntity(club, true);
     this.club$.next(this._club);
-  }
-
-  // Stats
-  private set stats(stats: StatsModel | undefined) {
-    this._stats = stats;
-    this.stats$.next(stats);
   }
 
   // Board Games
@@ -120,7 +111,6 @@ export class ApiService {
 
   unloadClub() {
     this.club = undefined;
-    this._stats = undefined;
     this._boardGameList = [];
     this._fBoardGameList = [];
     this._playerList = [];
@@ -393,6 +383,7 @@ export class ApiService {
     this._filterEnabled = enabled;
     this.filterEnabled$.next(enabled);
     this.updateReferences();
+    this.dataUpdate$.next();
   }
 
   private updateReferences() {
@@ -452,11 +443,7 @@ export class ApiService {
     this.gameList.forEach((x) => x.calculateFields());
     this.playerGameList.forEach((x) => x.calculateFields());
     this.boardGameList.forEach((x) => x.calculateFields());
-    this.playerList.forEach((x) => {
-      x.calculateFields();
-      x.calculateNickname(this.playerList);
-    });
-
-    this.stats = new StatsModel(this.playerList, this.gameList, this.boardGameList);
+    this.playerList.forEach((x) => x.calculateFields());
+    this.playerList.forEach((x) => x.postCalculate(this.playerList));
   }
 }

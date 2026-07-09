@@ -4,8 +4,9 @@ import { TableModule } from 'primeng/table';
 import { PipeModule } from '../../shared/pipes/pipe.module';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { StatsModel } from '../../shared/models/stats.model';
 import { BoardGameEntity, PlayerEntity } from 'libs/index';
+import { ITrophy } from '../../shared/trophies/trophy.model';
+import { TrophyService } from '../../shared/services/trophy.service';
 
 @Component({
   selector: 'app-board-game-table',
@@ -18,7 +19,6 @@ export class BoardGameTableComponent implements OnChanges {
   @Input() boardGames$?: Observable<BoardGameEntity[]>;
   @Input() players: PlayerEntity[] | null = null;
   @Input() canEdit = false;
-  @Input() stats?: StatsModel;
 
   @Output() boardGameEdit = new EventEmitter<BoardGameEntity>();
 
@@ -43,6 +43,12 @@ export class BoardGameTableComponent implements OnChanges {
     { field: 'AverageScore', name: 'Average Score', sort: false },
     { field: 'AverageWinningScore', name: 'Average Winning Score', sort: false },
   ];
+
+  mostPlays: ITrophy;
+
+  constructor(trophyService: TrophyService) {
+    this.mostPlays = trophyService.getTrophy('MostPlays');
+  }
 
   ngOnChanges(): void {
     if (this.players) {

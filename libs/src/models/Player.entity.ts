@@ -42,6 +42,9 @@ export class PlayerEntity extends BaseEntity {
   @Ignore()
   Nickname?: string;
 
+  @Ignore()
+  hasMostWins: boolean = false;
+
   constructor(partial: Partial<PlayerEntity> = {}, copyIgnored = false) {
     super(partial, PlayerEntity);
     this.assign(partial, PlayerEntity, copyIgnored);
@@ -54,7 +57,7 @@ export class PlayerEntity extends BaseEntity {
     this.calculateFirstSeen();
   }
 
-  calculateNickname(players: PlayerEntity[]) {
+  postCalculate(players: PlayerEntity[]) {
     this.Nickname = this.Name?.trim().split(' ')[0];
     if (
       this.Nickname &&
@@ -64,6 +67,9 @@ export class PlayerEntity extends BaseEntity {
     } else {
       // continue
     }
+
+    const maxWins = Math.max(...players.map((x) => x.Wins.length));
+    this.hasMostWins = this.Wins.length >= maxWins;
   }
 
   calculateWins() {

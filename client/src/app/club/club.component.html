@@ -36,7 +36,7 @@
     <p-tabView>
       <p-tabPanel header="Overview">
         <!-- Overview goes here -->
-        <app-stats [stats]="stats"></app-stats>
+        <app-stats></app-stats>
       </p-tabPanel>
       <p-tabPanel header="Plays: {{ ((games$ | async) ?? []).length }}">
         <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
@@ -51,7 +51,6 @@
         <!-- Players --------------------------------------------------------------------------------------------- -->
         <app-player-table
           [players$]="players$"
-          [stats]="stats"
           [canEdit]="canEdit"
           (playerEdit)="playerEdit($event)"></app-player-table>
       </p-tabPanel>
@@ -60,7 +59,6 @@
         <app-board-game-table
           [boardGames$]="boardGames$"
           [players]="players$ | async"
-          [stats]="stats"
           [canEdit]="canEdit"
           (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
       </p-tabPanel>

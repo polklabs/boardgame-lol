@@ -1,5 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
-import { StatNumbers, StatsModel } from '../../shared/models/stats.model';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PipeModule } from '../../shared/pipes/pipe.module';
 import { addDays, addYears, format } from 'date-fns';
@@ -7,8 +6,10 @@ import { ApiService } from '../../shared/services/api.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
 import autocolors from 'chartjs-plugin-autocolors';
-import { ScoreTypeMapping, ScoreTypes, UnicodeToEmoji } from 'libs/index';
-import { TROPHIES, Trophy } from './stats.metadata';
+import { ScoreTypeMapping, ScoreTypes } from 'libs/index';
+import { ITrophy, Trophy } from '../../shared/trophies/trophy.model';
+import { Subscription } from 'rxjs';
+import { TrophyService } from '../../shared/services/trophy.service';
 
 type DayItem = { color: string; tooltip: string; icon?: string };
 
@@ -19,9 +20,7 @@ type DayItem = { color: string; tooltip: string; icon?: string };
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
 })
-export class StatsComponent implements OnChanges {
-  @Input() stats?: StatsModel;
-
+export class StatsComponent implements OnInit {
   heatmap: { days: DayItem[]; month: string }[] = [];
   colors = ['#1C2532', '#0E4429', '#006D32', '#26A641', '#39D353'];
 
@@ -51,35 +50,33 @@ export class StatsComponent implements OnChanges {
 
   trophies: Trophy[] = [];
 
-  constructor(private apiService: ApiService) {}
+  subscriptions = new Subscription();
 
-  ngOnChanges(): void {
-    this.calculateTrophies();
-    this.updateHeatmap();
-    this.generateWinsOverTimeChart();
-    this.generateRankOverTimeChart();
-    this.generateCountByDayChart();
-    this.generateCountByMonthChart();
-    this.ShowCharts = true;
+  constructor(
+    private apiService: ApiService,
+    private trophyService: TrophyService,
+  ) {}
+
+  ngOnInit(): void {
+    this.subscriptions.add(
+      this.apiService.dataUpdate$.subscribe(() => {
+        this.generateWinsOverTimeChart();
+        this.generateRankOverTimeChart();
+        this.generateCountByDayChart();
+        this.generateCountByMonthChart();
+        this.ShowCharts = this.apiService.gameList.length > 0;
+      }),
+    );
+    this.subscriptions.add(
+      this.trophyService.trophies$.subscribe((t) => {
+        this.updateHeatmap();
+        this.calculateTrophies(t);
+      }),
+    );
   }
 
-  calculateTrophies() {
-    this.trophies = structuredClone(TROPHIES);
-    this.trophies.forEach((t) => {
-      t.array = this.stats?.arrays[t.arrayKey];
-      t.value = this.stats?.numbers[t.valueKey];
-
-      t.emoji = this.textReplace(t.emoji);
-      t.title = this.textReplace(t.title);
-      t.info = this.textReplace(t.info);
-
-      if (t.emoji.includes('U+')) {
-        t.emoji = UnicodeToEmoji(t.emoji);
-      } else {
-        // Continue
-      }
-    });
-
+  calculateTrophies(trophies: ITrophy[]) {
+    this.trophies = trophies.map((x) => x.export()).filter((x) => (x.array?.length ?? 0) > 0);
     this.trophies.sort((a, b) => {
       let valueA = a.value ?? 0;
       let valueB = b.value ?? 0;
@@ -95,19 +92,6 @@ export class StatsComponent implements OnChanges {
       }
       return valueB - valueA;
     });
-  }
-
-  textReplace(text: string): string {
-    const regex = /\{(.+?)\}/gm;
-    const result = text.replaceAll(regex, (_, g1: string) => {
-      if (g1 in (this.stats?.numbers ?? {})) {
-        return `${this.stats?.numbers[g1 as StatNumbers] ?? ''}`;
-      } else {
-        return '';
-      }
-    });
-
-    return result;
   }
 
   updateHeatmap() {
@@ -151,7 +135,8 @@ export class StatsComponent implements OnChanges {
   }
 
   getHeatmapColor(count: number) {
-    const division = (this.stats?.numbers.MostPlaysOneDay ?? 0) / 5;
+    const mostPlays = this.trophyService.getTrophy('MostWins').value;
+    const division = Math.max(mostPlays / 5, 1);
 
     let section = division;
     let index = 0;

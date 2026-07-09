@@ -15,7 +15,6 @@ import { TabViewModule } from 'primeng/tabview';
 import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
 import { PipeModule } from '../shared/pipes/pipe.module';
 import { InputTextModule } from 'primeng/inputtext';
-import { StatsModel } from '../shared/models/stats.model';
 import { GamesTableComponent } from './games-table/games-table.component';
 import { PlayerTableComponent } from './player-table/player-table.component';
 import { BoardGameTableComponent } from './board-game-table/board-game-table.component';
@@ -80,8 +79,6 @@ export class ClubComponent implements OnInit, OnDestroy {
   boardGames$?: Observable<BoardGameEntity[]>;
   players$?: Observable<PlayerEntity[]>;
 
-  stats?: StatsModel;
-
   subscriptions = new Subscription();
 
   // Filter
@@ -122,12 +119,6 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.ogBoardGames$ = this.apiService.boardGameList$;
     this.ogPlayers$ = this.apiService.playerList$;
     this.filterEnabled$ = this.apiService.filterEnabled$;
-
-    this.subscriptions.add(
-      this.apiService.stats$.subscribe((stats) => {
-        this.stats = stats;
-      }),
-    );
 
     this.subscriptions.add(
       this.apiService.dataUpdate$.subscribe(() => {
