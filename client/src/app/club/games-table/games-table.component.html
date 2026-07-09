@@ -28,14 +28,17 @@
     </ng-template>
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 0"></th>
-        <th *ngFor="let column of gameColumns" [pSortableColumn]="column.sort ? column.field : undefined">
+        <th id="expansion" style="width: 0"></th>
+        <th
+          id="{{ column.field }}"
+          *ngFor="let column of gameColumns"
+          [pSortableColumn]="column.sort ? column.field : undefined">
           <span>
             {{ column.name }}
             <p-sortIcon *ngIf="column.sort" [field]="column.field" />
           </span>
         </th>
-        <th *ngIf="canEdit" class="edit-header">Edit</th>
+        <th *ngIf="canEdit" id="edit" class="edit-header">Edit</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-game let-expanded="expanded">
@@ -81,8 +84,8 @@
           <p-table [value]="game.Scores" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
             <ng-template pTemplate="header">
               <tr>
-                <th>Name</th>
-                <th *ngIf="showScore(game)">Points</th>
+                <th id="name">Name</th>
+                <th id="points" *ngIf="showScore(game)">Points</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-score>

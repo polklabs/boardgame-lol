@@ -12,15 +12,15 @@
     [expandedRowKeys]="expandedRows">
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 0"></th>
+        <th id="expansion" style="width: 0"></th>
         <th
+          id="{{ column.field }}"
           *ngFor="let column of boardGameColumns"
-          [pSortableColumn]="column.sort ? column.field : undefined"
-          [style]="{ width: column.width }">
+          [pSortableColumn]="column.sort ? column.field : undefined">
           {{ column.name }}
           <p-sortIcon *ngIf="column.sort" [field]="column.field" />
         </th>
-        <th *ngIf="canEdit" class="edit-header">Edit</th>
+        <th *ngIf="canEdit" id="edit" class="edit-header">Edit</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-boardGame let-expanded="expanded">
@@ -73,9 +73,9 @@
             [tableStyle]="{ 'min-width': '50rem' }">
             <ng-template pTemplate="header">
               <tr>
-                <th>Name</th>
-                <th>Wins</th>
-                <th>Win %</th>
+                <th id="name">Name</th>
+                <th id="wins">Wins</th>
+                <th id="winPercent">Win %</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-player>

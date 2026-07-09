@@ -11,15 +11,16 @@
     [expandedRowKeys]="expandedRows">
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 0" id="blank"></th>
+        <th id="expansion" style="width: 0" id="blank"></th>
         <th
+          id="{{ column.field }}"
           *ngFor="let column of playerColumns"
           [pSortableColumn]="column.sort ? column.field : undefined"
           [id]="column.field">
           {{ column.name }}
           <p-sortIcon *ngIf="column.sort" [field]="column.field" />
         </th>
-        <th *ngIf="canEdit" class="edit-header" id="edit">Edit</th>
+        <th *ngIf="canEdit" id="edit" class="edit-header" id="edit">Edit</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-player let-expanded="expanded">
@@ -59,10 +60,7 @@
       <tr>
         <td></td>
         <td [attr.colspan]="playerColumns.length">
-          <p-table
-            [value]="player.Wins"
-            styleClass="p-datatable-sm"
-            [tableStyle]="{ 'min-width': '50rem' }">
+          <p-table [value]="player.Wins" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
             <ng-template pTemplate="header">
               <tr>
                 <th id="date">Date</th>

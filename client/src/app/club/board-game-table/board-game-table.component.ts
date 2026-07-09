@@ -35,12 +35,12 @@ export class BoardGameTableComponent implements OnChanges {
   expandedRows = {};
   boardGameColumns = [
     { field: 'Name', name: 'Game', sort: true },
-    { field: 'Games.length', name: 'Plays', sort: true, width: 0 },
+    { field: 'Games.length', name: 'Plays', sort: true },
     { field: 'ChampionWins', name: 'Champion(s)', sort: true },
-    { field: 'MaxPlayers', name: 'Max Player Count', sort: true, width: 0 },
-    { field: 'AveragePlayers', name: 'Average Player Count', sort: true, width: 0 },
-    { field: 'MaxScore', name: 'High Score', sort: false, width: 0 },
-    { field: 'AverageScore', name: 'Average Score', sort: false, width: 0 },
+    { field: 'MaxPlayers', name: 'Max Players', sort: true },
+    { field: 'AveragePlayers', name: 'Avg Players', sort: true },
+    { field: 'MaxScore', name: 'High Score', sort: false },
+    { field: 'AverageScore', name: 'Average Score', sort: false },
     { field: 'AverageWinningScore', name: 'Average Winning Score', sort: false },
   ];
 
