@@ -44,7 +44,7 @@
           optionLabel="Name"
           optionValue="BoardGameId"></app-dropdown>
         <p-button *ngIf="canEditBoardGame()" (onClick)="editBoardGame(selectedBoardGame)" icon="pi pi-pencil"></p-button>
-        <p-button (onClick)="editBoardGame()" icon="pi pi-plus"></p-button>
+        <p-button (onClick)="editBoardGame()" pTooltip="New Game" icon="pi pi-plus"></p-button>
       </div>
 
       <p-orderList
@@ -56,8 +56,8 @@
         [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
         <ng-template pTemplate="header">
           <div class="order-list-header flex justify-content-space-between">
-            <div class="p-orderlist-title">Winners</div>
-            <p-button (click)="editPlayerGame()" icon="pi pi-plus"></p-button>
+            <div class="p-orderlist-title">Players</div>
+            <p-button (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
           </div>
         </ng-template>
         <ng-template let-playerGame let-index="index" pTemplate="item">

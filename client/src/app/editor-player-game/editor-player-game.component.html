@@ -20,7 +20,7 @@
           optionValue="PlayerId"
           [showClear]="false"></app-dropdown>
         <p-button *ngIf="canEditPlayer()" (click)="editPlayer.emit(selectedPlayer)" icon="pi pi-pencil"></p-button>
-        <p-button (click)="editPlayer.emit()" icon="pi pi-plus"></p-button>
+        <p-button (click)="editPlayer.emit()" pTooltip="New Player" icon="pi pi-plus"></p-button>
       </div>
 
       <app-textinput

@@ -50,7 +50,7 @@ type EntityType = GameEntity;
     EditorPlayerGameComponent,
     OrderListModule,
     PipeModule
-  ],
+],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
 })

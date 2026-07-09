@@ -63,10 +63,10 @@ export class EditorPlayerGameComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if ('playerGame' in changes && this.playerGame) {
       if (this.playerGame.PlayerGameId === null) {
-        this.title = 'New Winner';
+        this.title = 'Add Player';
         this.isNew = true;
       } else {
-        this.title = 'Edit Winner';
+        this.title = 'Edit Player';
         this.isNew = false;
       }
 
