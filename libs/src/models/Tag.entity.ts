@@ -21,5 +21,7 @@ export class TagEntity extends BaseEntity {
     this.assign(partial, TagEntity, copyIgnored);
   }
 
-  calculateFields() {}
+  calculateFields() {
+    // Stub
+  }
 }

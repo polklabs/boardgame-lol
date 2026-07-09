@@ -5,7 +5,6 @@ import { Nullable } from '../decorators/nullable.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
 import { CHARACTER_LIMIT_LONG, CHARACTER_LIMIT_SHORT } from '../constants';
 import { Sanitize } from '../decorators/sanitize.decorator';
-import { Exclude } from 'class-transformer';
 
 @TableName('Club')
 export class ClubEntity extends BaseEntity {
@@ -28,5 +27,7 @@ export class ClubEntity extends BaseEntity {
     this.assign(partial, ClubEntity, copyIgnored);
   }
 
-  calculateFields() {}
+  calculateFields() {
+    // Stub
+  }
 }

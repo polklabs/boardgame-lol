@@ -11,13 +11,13 @@ export abstract class BaseEntity {
   LastModifiedDate?: string = new Date().toISOString();
   LastModifiedBy?: string = 'ANON';
 
-  constructor(partial: Partial<BaseEntity>, entityType: { new (partial: Partial<BaseEntity>): BaseEntity }) {
+  constructor(partial: Partial<BaseEntity>, entityType: new (partial: Partial<BaseEntity>) => BaseEntity) {
     this.assign(partial, entityType, false);
   }
 
   public abstract calculateFields(): void;
 
-  protected assign<T>(partial: Partial<T>, entityType: { new (partial: Partial<T>): T }, copyIgnored: boolean) {
+  protected assign<T>(partial: Partial<T>, entityType: new (partial: Partial<T>) => T, copyIgnored: boolean) {
     const ignored = getIgnore(entityType);
     for (const key in partial) {
       if (partial.hasOwnProperty(key) && key in this) {
@@ -57,7 +57,7 @@ export abstract class BaseEntity {
 
   protected booleanConverter<T>(partial: Partial<T>, propName: keyof T) {
     if (partial[propName] !== undefined && partial[propName] !== null && typeof partial[propName] === 'number') {
-      partial[propName] = (partial[propName] === 1 ? true : false) as T[keyof T];
+      partial[propName] = (partial[propName] === 1) as T[keyof T];
     } else {
       // continue
     }
