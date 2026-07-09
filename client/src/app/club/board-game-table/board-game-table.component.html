@@ -44,7 +44,7 @@
           <div
             *ngIf="boardGame.Games.length > 0"
             class="bar-percent"
-            [ngStyle]="{ width: (boardGame.Games.length / (stats?.MostPlays ?? 1)) * 100 + '%' }"></div>
+            [ngStyle]="{ width: (boardGame.Games.length / (stats?.numbers?.MostPlays ?? 1)) * 100 + '%' }"></div>
         </td>
         <td>{{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }} - {{ boardGame.Champions | array: 'Name' }}</td>
         <td>{{ boardGame.MaxPlayers | hide: '0' | number: '1.0-0' }}</td>

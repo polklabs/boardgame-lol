@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { StatsModel } from '../../shared/models/stats.model';
+import { StatNumbers, StatsModel } from '../../shared/models/stats.model';
 import { CommonModule } from '@angular/common';
 import { PipeModule } from '../../shared/pipes/pipe.module';
 import { addDays, addYears, format } from 'date-fns';
@@ -66,19 +66,8 @@ export class StatsComponent implements OnChanges {
   calculateTrophies() {
     this.trophies = structuredClone(TROPHIES);
     this.trophies.forEach((t) => {
-      const array = this.stats?.[t.arrayKey];
-      if (Array.isArray(array)) {
-        t.array = array;
-      } else {
-        t.array = undefined;
-      }
-
-      const value = this.stats?.[t.valueKey];
-      if (typeof value === 'number') {
-        t.value = value;
-      } else {
-        t.value = undefined;
-      }
+      t.array = this.stats?.arrays[t.arrayKey];
+      t.value = this.stats?.numbers[t.valueKey];
 
       t.emoji = this.textReplace(t.emoji);
       t.title = this.textReplace(t.title);
@@ -111,9 +100,8 @@ export class StatsComponent implements OnChanges {
   textReplace(text: string): string {
     const regex = /\{(.+?)\}/gm;
     const result = text.replaceAll(regex, (_, g1: string) => {
-      const stats = (this.stats ?? {}) as { [key: string]: unknown };
-      if (g1 in stats) {
-        return `${stats[g1]}`;
+      if (g1 in (this.stats?.numbers ?? {})) {
+        return `${this.stats?.numbers[g1 as StatNumbers] ?? ''}`;
       } else {
         return '';
       }
@@ -163,7 +151,7 @@ export class StatsComponent implements OnChanges {
   }
 
   getHeatmapColor(count: number) {
-    const division = (this.stats?.MostPlaysOneDay ?? 0) / 5;
+    const division = (this.stats?.numbers.MostPlaysOneDay ?? 0) / 5;
 
     let section = division;
     let index = 0;

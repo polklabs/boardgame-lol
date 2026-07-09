@@ -1,12 +1,12 @@
-import { StatsModel } from '../../shared/models/stats.model';
+import { StatNumbers, StatArrays } from '../../shared/models/stats.model';
 
 export type Trophy = {
   emoji: string;
   title: string;
   info: string;
-  arrayKey: keyof StatsModel;
+  arrayKey: StatArrays;
   array?: unknown[];
-  valueKey: keyof StatsModel;
+  valueKey: StatNumbers;
   value?: number;
 };
 
@@ -87,5 +87,12 @@ export const TROPHIES: Trophy[] = [
     info: 'Days since everyone playing the game won',
     arrayKey: 'LastGroupWinGame',
     valueKey: 'LastGroupWinDays',
+  },
+  {
+    emoji: '🏅',
+    title: 'Participation Trophy',
+    info: 'Most Losses',
+    arrayKey: 'MostLosses',
+    valueKey: 'MostLosses',
   },
 ];
