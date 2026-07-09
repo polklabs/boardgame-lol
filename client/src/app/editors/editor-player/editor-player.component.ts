@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
-import { TextInputComponent } from '../shared/components/textinput/textinput.component';
+import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { buildForm } from '../shared/form.utils';
+import { buildForm } from '../../shared/form.utils';
 import { PlayerEntity } from 'libs/index';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { CheckboxModule } from 'primeng/checkbox';
-import { ApiService } from '../shared/services/api.service';
+import { ApiService } from '../../shared/services/api.service';
 import { Router } from '@angular/router';
 
 type EntityType = PlayerEntity;

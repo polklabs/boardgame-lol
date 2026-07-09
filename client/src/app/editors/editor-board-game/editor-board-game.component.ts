@@ -10,13 +10,13 @@ import {
 } from '@angular/core';
 import { BoardGameEntity, ScoreTypeMapping } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ApiService } from '../shared/services/api.service';
+import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { buildForm } from '../shared/form.utils';
+import { buildForm } from '../../shared/form.utils';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { TextInputComponent } from '../shared/components/textinput/textinput.component';
-import { DropdownComponent } from '../shared/components/dropdown/dropdown.component';
+import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
+import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
 import { DialogModule } from 'primeng/dialog';
 import { Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';

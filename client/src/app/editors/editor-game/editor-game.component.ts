@@ -10,24 +10,24 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BoardGameEntity, GameEntity, isGuid, PlayerEntity, PlayerGameEntity } from 'libs/index';
-import { ApiService } from '../shared/services/api.service';
+import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { buildForm } from '../shared/form.utils';
+import { buildForm } from '../../shared/form.utils';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { OrderListModule } from 'primeng/orderlist';
 import { ButtonModule } from 'primeng/button';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
-import { DropdownComponent } from '../shared/components/dropdown/dropdown.component';
-import { TextInputComponent } from '../shared/components/textinput/textinput.component';
+import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
+import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-game.component';
-import { CalendarComponent } from '../shared/components/calendar/calendar.component';
+import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
 import { CheckboxModule } from 'primeng/checkbox';
 import { Subscription } from 'rxjs';
 import { format } from 'date-fns';
-import { TextareaComponent } from '../shared/components/textarea/textarea.component';
-import { PipeModule } from '../shared/pipes/pipe.module';
+import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
+import { PipeModule } from '../../shared/pipes/pipe.module';
 
 type EntityType = GameEntity;
 

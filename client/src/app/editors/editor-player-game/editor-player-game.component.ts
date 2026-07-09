@@ -2,11 +2,11 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, S
 import { isGuid, PlayerEntity, PlayerGameEntity, ScoreType } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
-import { buildForm } from '../shared/form.utils';
+import { buildForm } from '../../shared/form.utils';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { TextInputComponent } from '../shared/components/textinput/textinput.component';
-import { DropdownComponent } from '../shared/components/dropdown/dropdown.component';
+import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
+import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';

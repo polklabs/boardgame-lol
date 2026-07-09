@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
-import { TextInputComponent } from '../shared/components/textinput/textinput.component';
+import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ClubEntity } from 'libs/index';
-import { ApiService } from '../shared/services/api.service';
+import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
-import { buildForm } from '../shared/form.utils';
-import { UserService } from '../shared/services/user.service';
+import { buildForm } from '../../shared/form.utils';
+import { UserService } from '../../shared/services/user.service';
 import { Observable, of } from 'rxjs';
-import { TextareaComponent } from '../shared/components/textarea/textarea.component';
+import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
 
 type EntityType = ClubEntity;
 

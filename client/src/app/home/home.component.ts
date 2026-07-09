@@ -8,7 +8,7 @@ import { AccessIds, UserService } from '../shared/services/user.service';
 import { Observable, of } from 'rxjs';
 import { ClubEntity } from 'libs/index';
 import { ButtonModule } from 'primeng/button';
-import { EditorClubComponent } from '../editor-club/editor-club.component';
+import { EditorClubComponent } from '../editors/editor-club/editor-club.component';
 
 @Component({
   selector: 'app-home',
