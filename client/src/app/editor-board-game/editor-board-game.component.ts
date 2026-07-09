@@ -120,9 +120,11 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
     if (score?.value === 'points') {
       this.hideFields.delete('ScorePrefix');
       this.hideFields.delete('ScoreSuffix');
+      this.hideFields.delete('exampleScore');
     } else {
       this.hideFields.add('ScorePrefix');
       this.hideFields.add('ScoreSuffix');
+      this.hideFields.add('exampleScore');
     }
     this.getControl('exampleScore')?.setValue(
       `${this.getControl('ScorePrefix')?.value??''}42${this.getControl('ScoreSuffix')?.value??''}`,
