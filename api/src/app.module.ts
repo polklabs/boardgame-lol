@@ -7,7 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { EmailService } from './services/email.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { join } from 'node:path';
 import { EmojiService } from './auth/emoji.service';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';

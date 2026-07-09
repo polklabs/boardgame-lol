@@ -28,7 +28,7 @@ export abstract class BaseManager<T extends BaseEntity> {
   protected enums: EnumValue;
   protected sanitize: SanitizeTags;
 
-  constructor(entityType: { new (partial: Partial<T>): T }) {
+  constructor(entityType: new (partial: Partial<T>) => T) {
     this.new = (data: T) => new entityType(data);
 
     this.primaryKey = getPrimaryKey(entityType) as keyof T;
@@ -72,9 +72,9 @@ export abstract class BaseManager<T extends BaseEntity> {
    * @returns All rows that match foreign keys
    */
   loadMany<K, M>(
-    target: { new (partial: Partial<K>): K } | keyof T,
+    target: (new (partial: Partial<K>) => K) | keyof T,
     targetId: string | null,
-    secondaryTarget?: { new (partial: Partial<M>): M } | keyof T,
+    secondaryTarget?: (new (partial: Partial<M>) => M) | keyof T,
     secondaryTargetId?: string | null,
   ): T[] {
     let targetPK;
@@ -224,7 +224,7 @@ export abstract class BaseManager<T extends BaseEntity> {
         const skValue = entity[this.secondaryKey] as any;
 
         const fk = getForeignKey(entity, String(key));
-        if (fk && fk.tableName && fk.primaryKey && fk.secondaryKey) {
+        if (fk?.tableName && fk.primaryKey && fk.secondaryKey) {
           const result = this.db.GetRaw(`SELECT * FROM ${fk.tableName} WHERE ${fk.primaryKey} = ?`, [fkValue]) as any;
           if (result === undefined) {
             // Possibly from transaction
@@ -254,13 +254,11 @@ export abstract class BaseManager<T extends BaseEntity> {
           allowedTags: this.sanitize[key],
           allowedAttributes: {},
         }) as T[keyof T];
+      } else if (value !== null && value !== undefined) {
+        console.warn(`Cannot sanitize, nullifying: ${String(key)}`);
+        entity[key as keyof T] = null as T[keyof T];
       } else {
-        if (value !== null && value !== undefined) {
-          console.warn(`Cannot sanitize, nullifying: ${String(key)}`);
-          entity[key as keyof T] = null as T[keyof T];
-        } else {
-          // continue
-        }
+        // continue
       }
     });
   }
