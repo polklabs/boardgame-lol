@@ -117,7 +117,7 @@ export class StatsModel {
         }
       }
 
-      streakPlayers.push({player, streak});
+      streakPlayers.push({player, streak: maxStreak});
     }
 
     this.LongestWinStreak = streakPlayers.reduce((prev, curr) => Math.max(prev, curr.streak), 0);
