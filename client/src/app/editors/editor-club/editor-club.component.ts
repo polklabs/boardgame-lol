@@ -4,7 +4,6 @@ import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CheckboxModule } from 'primeng/checkbox';
 import { ClubEntity } from 'libs/index';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -13,6 +12,7 @@ import { buildForm } from '../../shared/form.utils';
 import { UserService } from '../../shared/services/user.service';
 import { Observable, of } from 'rxjs';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
+import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 
 type EntityType = ClubEntity;
 
@@ -27,7 +27,7 @@ type EntityType = ClubEntity;
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    CheckboxModule,
+    CheckboxComponent,
   ],
   templateUrl: './editor-club.component.html',
   styleUrl: './editor-club.component.scss',

@@ -7,9 +7,9 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { buildForm } from '../../shared/form.utils';
 import { PlayerEntity } from 'libs/index';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { CheckboxModule } from 'primeng/checkbox';
 import { ApiService } from '../../shared/services/api.service';
 import { Router } from '@angular/router';
+import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 
 type EntityType = PlayerEntity;
 
@@ -23,7 +23,7 @@ type EntityType = PlayerEntity;
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    CheckboxModule,
+    CheckboxComponent,
   ],
   templateUrl: './editor-player.component.html',
   styleUrl: './editor-player.component.scss',
@@ -82,17 +82,17 @@ export class EditorPlayerComponent implements OnChanges {
     if (this.formGroup.invalid || !this.player) {
       return;
     } else if (this.standalone) {
-        const result = await this.apiService.postPlayer(this.player.PlayerId === null, this.formGroup.getRawValue());
-        if (result) {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Player' });
-          this.closeEditor.emit();
-        } else {
-          // Do nothing
-        }
+      const result = await this.apiService.postPlayer(this.player.PlayerId === null, this.formGroup.getRawValue());
+      if (result) {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Player' });
+        this.closeEditor.emit();
       } else {
-        Object.assign(this.player, this.formGroup.getRawValue());
-        this.closeEditor.emit(this.player);
+        // Do nothing
       }
+    } else {
+      Object.assign(this.player, this.formGroup.getRawValue());
+      this.closeEditor.emit(this.player);
+    }
   }
 
   toDeleteEntity() {

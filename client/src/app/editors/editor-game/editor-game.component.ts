@@ -23,11 +23,12 @@ import { DropdownComponent } from '../../shared/components/dropdown/dropdown.com
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-game.component';
 import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
-import { CheckboxModule } from 'primeng/checkbox';
 import { Subscription } from 'rxjs';
 import { format } from 'date-fns';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
 import { PipeModule } from '../../shared/pipes/pipe.module';
+import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { CheckboxModule } from 'primeng/checkbox';
 
 type EntityType = GameEntity;
 
@@ -41,6 +42,7 @@ type EntityType = GameEntity;
     TextareaComponent,
     TextInputComponent,
     CalendarComponent,
+    CheckboxComponent,
     CheckboxModule,
     ButtonModule,
     FormsModule,
@@ -49,8 +51,8 @@ type EntityType = GameEntity;
     EditorBoardGameComponent,
     EditorPlayerGameComponent,
     OrderListModule,
-    PipeModule
-],
+    PipeModule,
+  ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
 })

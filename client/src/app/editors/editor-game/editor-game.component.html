@@ -129,10 +129,7 @@
           inputType="number"></app-textinput>
       </div>
 
-      <div class="flex items-center">
-        <p-checkbox inputId="dnf" formControlName="DidNotFinish"></p-checkbox>
-        <label for="dnf">Did Not Finish Game</label>
-      </div>
+      <app-checkbox formControlName="DidNotFinish" label="Did Not Finish Game"></app-checkbox>
 
       <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
     </form>

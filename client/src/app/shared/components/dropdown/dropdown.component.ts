@@ -45,14 +45,11 @@ export class DropdownComponent implements ControlValueAccessor {
 
   constructor(private formGroupDirective: FormGroupDirective) {}
 
-  writeValue(): void {
-  }
+  writeValue(): void {}
 
-  registerOnChange(): void {
-  }
+  registerOnChange(): void {}
 
-  registerOnTouched(): void {
-  }
+  registerOnTouched(): void {}
 
   onModelChange(value: unknown): void {
     this.changed.emit(value);

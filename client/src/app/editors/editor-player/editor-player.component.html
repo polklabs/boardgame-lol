@@ -8,17 +8,21 @@
   position="bottom">
   <div *ngIf="formGroup && player" class="form">
     <form [formGroup]="formGroup" (ngSubmit)="submit()">
-      <app-textinput formControlName="Name" label="Player Name" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
+      <app-textinput
+        formControlName="Name"
+        label="Player Name"
+        [entityType]="entityType"
+        [hiddenFields]="hideFields"></app-textinput>
 
-      <p-checkbox formControlName="IsRealPerson" label="Is Real Person" [binary]="true"></p-checkbox>
+      <app-checkbox formControlName="IsRealPerson" label="Is Real Person"></app-checkbox>
 
       <div class="dialog-footer">
         <div>
-          <p-button label="Delete" [outlined]="true" severity="danger" (click)="toDeleteEntity()"></p-button>
+          <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
         </div>
         <div>
-          <p-button label="Cancel" [outlined]="true" severity="secondary" (click)="closeEditor.emit()"></p-button>
-          <p-button label="Save" [outlined]="true" (click)="submit()"></p-button>
+          <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
+          <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
         </div>
       </div>
     </form>
