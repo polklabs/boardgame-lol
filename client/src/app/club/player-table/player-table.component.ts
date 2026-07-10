@@ -2,15 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { PipeModule } from '../../shared/pipes/pipe.module';
 import { Observable } from 'rxjs';
 import { GameEntity, PlayerEntity } from 'libs/index';
 import { TrophyService } from '../../shared/services/trophy.service';
 import { ITrophy } from '../../shared/trophies/trophy.model';
+import { HidePipe } from '../../shared/pipes/hide.pipe';
+import { ArrayPipe } from '../../shared/pipes/array.pipe';
+import { ScorePipe } from '../../shared/pipes/score.pipe';
 
 @Component({
   selector: 'app-player-table',
-  imports: [TableModule, ButtonModule, PipeModule, CommonModule],
+  imports: [TableModule, ButtonModule, CommonModule, HidePipe, ArrayPipe, ScorePipe],
   templateUrl: './player-table.component.html',
   styleUrl: './player-table.component.scss',
 })

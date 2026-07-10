@@ -5,10 +5,11 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { Table, TableModule } from 'primeng/table';
 import { Observable } from 'rxjs';
-import { PipeModule } from '../../shared/pipes/pipe.module';
 import { TagModule } from 'primeng/tag';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { ArrayPipe } from '../../shared/pipes/array.pipe';
+import { ScorePipe } from '../../shared/pipes/score.pipe';
 
 @Component({
   selector: 'app-games-table',
@@ -18,9 +19,10 @@ import { InputIconModule } from 'primeng/inputicon';
     InputTextModule,
     ButtonModule,
     CommonModule,
-    PipeModule,
     IconFieldModule,
     InputIconModule,
+    ArrayPipe,
+    ScorePipe,
   ],
   templateUrl: './games-table.component.html',
   styleUrl: './games-table.component.scss',

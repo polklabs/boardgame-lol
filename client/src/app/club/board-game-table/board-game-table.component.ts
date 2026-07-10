@@ -1,16 +1,18 @@
 import { Component, EventEmitter, Input, OnChanges, Output, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { PipeModule } from '../../shared/pipes/pipe.module';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { BoardGameEntity, PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { ITrophy } from '../../shared/trophies/trophy.model';
 import { TrophyService } from '../../shared/services/trophy.service';
+import { HidePipe } from '../../shared/pipes/hide.pipe';
+import { ArrayPipe } from '../../shared/pipes/array.pipe';
+import { ScorePipe } from '../../shared/pipes/score.pipe';
 
 @Component({
   selector: 'app-board-game-table',
-  imports: [TableModule, ButtonModule, PipeModule, CommonModule],
+  imports: [TableModule, ButtonModule, CommonModule, ScorePipe, HidePipe, ArrayPipe],
   templateUrl: './board-game-table.component.html',
   styleUrl: './board-game-table.component.scss',
 })

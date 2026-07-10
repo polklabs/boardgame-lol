@@ -28,7 +28,6 @@ import { CalendarComponent } from '../../shared/components/calendar/calendar.com
 import { Subscription } from 'rxjs';
 import { format } from 'date-fns';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
-import { PipeModule } from '../../shared/pipes/pipe.module';
 import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -59,7 +58,6 @@ type EntityType = GameEntity;
     InputGroupModule,
     InputGroupAddonModule,
     InputNumberModule,
-    PipeModule,
   ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',

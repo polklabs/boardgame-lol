@@ -12,7 +12,6 @@ import { TableModule } from 'primeng/table';
 import { UserService } from '../shared/services/user.service';
 import { ButtonModule } from 'primeng/button';
 import { Popover, PopoverModule } from 'primeng/popover';
-import { PipeModule } from '../shared/pipes/pipe.module';
 import { InputTextModule } from 'primeng/inputtext';
 import { GamesTableComponent } from './games-table/games-table.component';
 import { PlayerTableComponent } from './player-table/player-table.component';
@@ -27,6 +26,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TabsModule } from 'primeng/tabs';
 import { DatePickerModule } from 'primeng/datepicker';
+import { SortPipe } from '../shared/pipes/sort.pipe';
 
 @Component({
   selector: 'app-club',
@@ -42,7 +42,6 @@ import { DatePickerModule } from 'primeng/datepicker';
     TabsModule,
     InputTextModule,
     CardModule,
-    PipeModule,
     GamesTableComponent,
     PlayerTableComponent,
     BoardGameTableComponent,
@@ -54,6 +53,7 @@ import { DatePickerModule } from 'primeng/datepicker';
     FloatLabelModule,
     CheckboxModule,
     DatePickerModule,
+    SortPipe,
   ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',

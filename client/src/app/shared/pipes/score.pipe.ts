@@ -3,7 +3,6 @@ import { BoardGameEntity } from 'libs/index';
 
 @Pipe({
   name: 'score',
-  standalone: false,
 })
 export class ScorePipe implements PipeTransform {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

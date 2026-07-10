@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PipeModule } from '../../shared/pipes/pipe.module';
 import { addDays, addYears, format } from 'date-fns';
 import { ApiService } from '../../shared/services/api.service';
 import { TooltipModule } from 'primeng/tooltip';
@@ -10,12 +9,13 @@ import { ScoreTypeMapping, ScoreTypes } from 'libs/index';
 import { ITrophy, Trophy } from '../../shared/trophies/trophy.model';
 import { Subscription } from 'rxjs';
 import { TrophyService } from '../../shared/services/trophy.service';
+import { ArrayPipe } from '../../shared/pipes/array.pipe';
 
 type DayItem = { color: string; tooltip: string; icon?: string };
 
 @Component({
   selector: 'app-stats',
-  imports: [TooltipModule, PipeModule, ChartModule, CommonModule],
+  imports: [TooltipModule, ChartModule, CommonModule, ArrayPipe],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
 })

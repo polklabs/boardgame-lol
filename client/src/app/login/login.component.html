@@ -14,7 +14,7 @@
           <app-textinput formControlName="Username" label="Email/Username"></app-textinput>
           <app-password formControlName="Password" label="Password"></app-password>
           <p-checkbox label="Keep Me Logged In" [binary]="true" formControlName="RememberMe"></p-checkbox>
-          <p-button label="Login" [outlined]="true" (click)="login()"></p-button>
+          <p-button label="Login" [outlined]="true" (onClick)="login()"></p-button>
         </form>
         <span class="sign-up">
           Not registered?
@@ -36,7 +36,7 @@
           <app-textinput formControlName="Username" [icon]="usernameIcon" [entityType]="entityType"></app-textinput>
           <app-password formControlName="Password" [feedback]="true" [entityType]="entityType"></app-password>
           <app-password formControlName="PasswordRetry" label="Confirm Password"></app-password>
-          <p-button label="Signup" [outlined]="true" (click)="signup()"></p-button>
+          <p-button label="Signup" [outlined]="true" (onClick)="signup()"></p-button>
         </form>
         <span class="sign-up">
           Already have an account?
@@ -50,10 +50,10 @@
   @if (view === 'email_verify') {
     <div>
       <ng-container
-      *ngTemplateOutlet="
-        emojiVerify;
-        context: { emojiList: emailEmojis, emojiVerified: emailEmojisVerified }
-      "></ng-container>
+        *ngTemplateOutlet="
+          emojiVerify;
+          context: { emojiList: emailEmojis, emojiVerified: emailEmojisVerified }
+        "></ng-container>
       <p-button label="Submit" [outlined]="true" (click)="loginWithVerify()" [disabled]="countdownDone"></p-button>
       <countdown #cd [config]="countdownConfig" (event)="countdownEvent($event)" />
     </div>
@@ -65,7 +65,7 @@
       <div class="flex-column">
         <form [formGroup]="passResetFormGroup" (ngSubmit)="resetPasswordRequest()">
           <app-textinput formControlName="Username" label="Username/Email"></app-textinput>
-          <p-button label="Request Password Reset" [outlined]="true" (click)="resetPasswordRequest()"></p-button>
+          <p-button label="Request Password Reset" [outlined]="true" (onClick)="resetPasswordRequest()"></p-button>
         </form>
       </div>
     </div>
@@ -75,11 +75,11 @@
   @if (view === 'forgot_pass_verify') {
     <div>
       <ng-container
-      *ngTemplateOutlet="
-        emojiVerify;
-        context: { emojiList: passEmojis, emojiVerified: passEmojisVerified }
-      "></ng-container>
-      <p-button label="Submit" [outlined]="true" (click)="resetPasswordCheck()" [disabled]="countdownDone"></p-button>
+        *ngTemplateOutlet="
+          emojiVerify;
+          context: { emojiList: passEmojis, emojiVerified: passEmojisVerified }
+        "></ng-container>
+      <p-button label="Submit" [outlined]="true" (onClick)="resetPasswordCheck()" [disabled]="countdownDone"></p-button>
       <p class="countdown-label">Expires In:</p>
       <countdown #cd [config]="countdownConfig" (event)="countdownEvent($event)" />
     </div>
@@ -91,7 +91,10 @@
       <div class="flex-column">
         <form [formGroup]="passResetFormGroup" (ngSubmit)="resetPassword()">
           <app-password formControlName="Password" [feedback]="true" [entityType]="entityType"></app-password>
-          <app-password formControlName="PasswordRetry" label="Confirm Password" [entityType]="entityType"></app-password>
+          <app-password
+            formControlName="PasswordRetry"
+            label="Confirm Password"
+            [entityType]="entityType"></app-password>
           <p-button label="Request Password Reset" [outlined]="true" (click)="resetPassword()"></p-button>
         </form>
       </div>
@@ -109,7 +112,7 @@
               [label]="emoji"
               [outlined]="true"
               severity="secondary"
-            (click)="clearEmoji(i, emojiVerified)"></p-button>
+              (onClick)="clearEmoji(i, emojiVerified)"></p-button>
           </div>
         }
       </div>
@@ -123,7 +126,7 @@
               [label]="emoji"
               [outlined]="true"
               severity="secondary"
-            (click)="enterEmoji(emoji, emojiVerified)"></p-button>
+              (onClick)="enterEmoji(emoji, emojiVerified)"></p-button>
           </div>
         }
       </div>
