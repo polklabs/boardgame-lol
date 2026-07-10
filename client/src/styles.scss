@@ -57,6 +57,12 @@ body {
   }
 }
 
+.flex-nowrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
 .flex-column {
   display: flex;
   flex-direction: column;
