@@ -27,7 +27,7 @@
     <ng-template pTemplate="body" let-boardGame let-expanded="expanded">
       <tr>
         <td>
-          @if ((WinCounts[boardGame.BoardGameId]?.length??0) > 0) {
+          @if (showExpansion(boardGame)) {
             <p-button
               type="button"
               pRipple

@@ -4,7 +4,7 @@ import { TableModule } from 'primeng/table';
 import { PipeModule } from '../../shared/pipes/pipe.module';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { BoardGameEntity, PlayerEntity } from 'libs/index';
+import { BoardGameEntity, PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { ITrophy } from '../../shared/trophies/trophy.model';
 import { TrophyService } from '../../shared/services/trophy.service';
 
@@ -29,7 +29,7 @@ export class BoardGameTableComponent implements OnChanges {
       wins: number;
       plays: number;
       winPercent: number;
-      totalPoints: number;
+      totalPoints?: number;
     }[];
   } = {};
 
@@ -78,7 +78,7 @@ export class BoardGameTableComponent implements OnChanges {
           winRow.wins += won ? 1 : 0;
           winRow.plays++;
           winRow.winPercent = (winRow.wins / winRow.plays) * 100;
-          winRow.totalPoints += pg.Points ?? 0;
+          winRow.totalPoints = this.getPoints(pg, winRow.totalPoints);
         } else {
           this.WinCounts[boardGameId].push({
             playerId: player.PlayerId ?? '',
@@ -86,7 +86,7 @@ export class BoardGameTableComponent implements OnChanges {
             wins: won ? 1 : 0,
             plays: 1,
             winPercent: won ? 100 : 0,
-            totalPoints: pg.Points ?? 0,
+            totalPoints: this.getPoints(pg),
           });
         }
       });
@@ -95,5 +95,17 @@ export class BoardGameTableComponent implements OnChanges {
     Object.values(this.WinCounts).forEach((count) => {
       count.sort((a, b) => b.wins - a.wins || b.winPercent - a.winPercent || a.name.localeCompare(b.name));
     });
+  }
+
+  getPoints(playerGame: PlayerGameEntity, curr?: number) {
+    if (playerGame.Game?.BoardGame?.ScoreType === 'points') {
+      return (curr ?? 0) + (playerGame.Points ?? 0);
+    } else {
+      return undefined;
+    }
+  }
+
+  showExpansion(boardGame: BoardGameEntity) {
+    return (this.WinCounts[boardGame.BoardGameId ?? '']?.length ?? 0) > 0;
   }
 }
