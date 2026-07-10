@@ -98,6 +98,8 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   boardGameEditorVisible = false;
   boardGameEdit?: BoardGameEntity;
 
+  maxPoints = 0;
+
   subscription?: Subscription;
 
   constructor(
@@ -200,6 +202,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
         this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
         break;
       case 'points':
+        this.maxPoints = Math.max(...this.playerGames.map((x) => x.Points ?? 0));
         this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
         break;
       default:

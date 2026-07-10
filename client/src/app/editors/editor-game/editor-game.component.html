@@ -68,14 +68,20 @@
             <div class="flex-column">
               <div class="flex gap-8 justify-content-space-between">
                 <span class="font-bold flex gap-8" [ngSwitch]="game?.BoardGame?.ScoreType">
+                  <!-- POINTS -->
                   <ng-container *ngSwitchCase="'points'">
-                    <i *ngIf="index === 0" class="pi pi-trophy" style="color: gold"></i>
-                    <div *ngIf="index !== 0" class="empty-trophy"></div>
+                    @if (playerGame.Points === maxPoints) {
+                      <i class="pi pi-trophy" style="color: gold"></i>
+                    } @else {
+                      <div class="empty-trophy"></div>
+                    }
+
                     <span>{{ playerGame.Player?.Name }}</span>
                     <span *ngIf="playerGame.Points !== null">
                       : {{ playerGame.Points | number: '1.0-3' | score: selectedBoardGame }}
                     </span>
                   </ng-container>
+                  <!-- RANK -->
                   <ng-container *ngSwitchCase="'rank'">
                     <i
                       *ngIf="playerGame.Points !== null && playerGame.Points < 3"
@@ -84,6 +90,7 @@
                     <div *ngIf="playerGame.Points >= 3" class="empty-trophy"></div>
                     <span [ngClass]="{ DNF: playerGame.DNF }">{{ playerGame.Player?.Name }}</span>
                   </ng-container>
+                  <!-- WIN/LOSE -->
                   <ng-container *ngSwitchCase="'win-lose'">
                     <p-checkbox
                       [ngModel]="playerGame.Points === 1"
