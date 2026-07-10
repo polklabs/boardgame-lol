@@ -50,6 +50,10 @@ export class StatsComponent implements OnInit {
 
   trophies: Trophy[] = [];
 
+  private textColor = '--p-text-color';
+  private textColorSecondary = '--p-surface-50';
+  private surfaceBorder = 'transparent';
+
   subscriptions = new Subscription();
 
   constructor(
@@ -58,6 +62,7 @@ export class StatsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.calculateChartColors();
     this.subscriptions.add(
       this.apiService.dataUpdate$.subscribe(() => {
         this.generateWinsOverTimeChart();
@@ -75,23 +80,20 @@ export class StatsComponent implements OnInit {
     );
   }
 
+  calculateChartColors() {
+    const documentStyle = getComputedStyle(document.documentElement);
+    this.textColor = documentStyle.getPropertyValue(this.textColor);
+    this.textColorSecondary = documentStyle.getPropertyValue(this.textColorSecondary);
+  }
+
   calculateTrophies(trophies: ITrophy[]) {
-    this.trophies = trophies.map((x) => x.export()).filter((x) => (x.array?.length ?? 0) > 0);
+    this.trophies = trophies
+      .map((x) => x.export())
+      .filter((x) => x.array.length > 0 && x.array.length <= 2 && x.value !== Math.abs(Infinity));
     this.trophies.sort((a, b) => {
-      let valueA = a.value ?? 0;
-      let valueB = b.value ?? 0;
-      if (valueA === Infinity) {
-        valueA = -Infinity;
-      } else {
-        // Continue
-      }
-      if (valueB === Infinity) {
-        valueB = -Infinity;
-      } else {
-        // Continue
-      }
-      return valueB - valueA;
+      return b.value - a.value;
     });
+    this.trophies = this.trophies.slice(0, 9);
   }
 
   updateHeatmap() {
@@ -135,7 +137,7 @@ export class StatsComponent implements OnInit {
   }
 
   getHeatmapColor(count: number) {
-    const mostPlays = this.trophyService.getTrophy('MostWins').value;
+    const mostPlays = this.trophyService.getTrophy('MostPlaysOneDay').value;
     const division = Math.max(mostPlays / 5, 1);
 
     let section = division;
@@ -196,11 +198,6 @@ export class StatsComponent implements OnInit {
       date = addDays(date, 1);
     }
 
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
-
     this.winsOverTimeData = {
       labels: winDates,
       datasets: [],
@@ -222,26 +219,26 @@ export class StatsComponent implements OnInit {
       plugins: {
         legend: {
           labels: {
-            color: textColor,
+            color: this.textColor,
           },
         },
       },
       scales: {
         x: {
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
           },
           grid: {
-            color: surfaceBorder,
+            color: this.surfaceBorder,
             drawBorder: false,
           },
         },
         y: {
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
           },
           grid: {
-            color: surfaceBorder,
+            color: this.surfaceBorder,
             drawBorder: false,
           },
         },
@@ -289,11 +286,6 @@ export class StatsComponent implements OnInit {
       rankDates.push(dateStr);
     });
 
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
-
     this.rankOverTimeData = {
       labels: rankDates,
       datasets: [],
@@ -324,23 +316,23 @@ export class StatsComponent implements OnInit {
       plugins: {
         legend: {
           labels: {
-            color: textColor,
+            color: this.textColor,
           },
         },
       },
       scales: {
         x: {
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
           },
           grid: {
-            color: surfaceBorder,
+            color: this.surfaceBorder,
             drawBorder: false,
           },
         },
         y: {
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
             stepSize: 1,
             callback: (label: number) => {
               if (label === 0) {
@@ -357,7 +349,7 @@ export class StatsComponent implements OnInit {
             },
           },
           grid: {
-            color: surfaceBorder,
+            color: this.surfaceBorder,
             drawBorder: false,
           },
         },
@@ -399,11 +391,6 @@ export class StatsComponent implements OnInit {
       }
     });
 
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
-
     this.countByDayData = {
       labels: countDays,
       datasets: [],
@@ -425,7 +412,7 @@ export class StatsComponent implements OnInit {
       plugins: {
         legend: {
           labels: {
-            color: textColor,
+            color: this.textColor,
           },
         },
       },
@@ -433,21 +420,21 @@ export class StatsComponent implements OnInit {
         x: {
           stacked: true,
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
           },
           grid: {
-            color: surfaceBorder,
+            color: this.surfaceBorder,
             drawBorder: false,
           },
         },
         y: {
           stacked: true,
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
             stepSize: 1,
           },
           grid: {
-            color: surfaceBorder,
+            color: this.surfaceBorder,
             drawBorder: false,
           },
         },
@@ -496,11 +483,6 @@ export class StatsComponent implements OnInit {
       }
     });
 
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
-
     this.countByMonthData = {
       labels: countMonths,
       datasets: [],
@@ -522,7 +504,7 @@ export class StatsComponent implements OnInit {
       plugins: {
         legend: {
           labels: {
-            color: textColor,
+            color: this.textColor,
           },
         },
       },
@@ -530,21 +512,21 @@ export class StatsComponent implements OnInit {
         x: {
           stacked: true,
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
           },
           grid: {
-            color: surfaceBorder,
+            color: this.surfaceBorder,
             drawBorder: false,
           },
         },
         y: {
           stacked: true,
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
             stepSize: 1,
           },
           grid: {
-            color: surfaceBorder,
+            color: this.surfaceBorder,
             drawBorder: false,
           },
         },
