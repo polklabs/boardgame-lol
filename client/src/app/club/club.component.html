@@ -36,31 +36,39 @@
     <p-tabView>
       <p-tabPanel header="Overview">
         <!-- Overview goes here -->
-        <app-stats></app-stats>
+        <ng-template pTemplate="content">
+          <app-stats></app-stats>
+        </ng-template>
       </p-tabPanel>
       <p-tabPanel header="Plays: {{ ((games$ | async) ?? []).length }}">
         <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
-        <app-games-table
-          [games$]="games$"
-          [canEdit]="canEdit"
-          (gameEdit)="gameEdit($event)"
-          (moveUp)="moveUp($event)"
-          (moveDown)="moveDown($event)"></app-games-table>
+        <ng-template pTemplate="content">
+          <app-games-table
+            [games$]="games$"
+            [canEdit]="canEdit"
+            (gameEdit)="gameEdit($event)"
+            (moveUp)="moveUp($event)"
+            (moveDown)="moveDown($event)"></app-games-table>
+        </ng-template>
       </p-tabPanel>
       <p-tabPanel header="Players: {{ ((players$ | async) ?? []).length }}">
         <!-- Players --------------------------------------------------------------------------------------------- -->
-        <app-player-table
-          [players$]="players$"
-          [canEdit]="canEdit"
-          (playerEdit)="playerEdit($event)"></app-player-table>
+        <ng-template pTemplate="content">
+          <app-player-table
+            [players$]="players$"
+            [canEdit]="canEdit"
+            (playerEdit)="playerEdit($event)"></app-player-table>
+        </ng-template>
       </p-tabPanel>
       <p-tabPanel header="Games: {{ ((boardGames$ | async) ?? []).length }}">
         <!-- BoardGames ----------------------------------------------------------------------------------------- -->
-        <app-board-game-table
-          [boardGames$]="boardGames$"
-          [players]="players$ | async"
-          [canEdit]="canEdit"
-          (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
+        <ng-template pTemplate="content">
+          <app-board-game-table
+            [boardGames$]="boardGames$"
+            [players]="players$ | async"
+            [canEdit]="canEdit"
+            (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
+        </ng-template>
       </p-tabPanel>
     </p-tabView>
 
