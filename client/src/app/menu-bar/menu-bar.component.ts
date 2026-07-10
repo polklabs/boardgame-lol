@@ -66,7 +66,7 @@ export class MenuBarComponent implements OnInit, OnDestroy {
 
   editClubItems = [
     {
-      label: 'Game',
+      label: 'Play',
       icon: 'pi pi-plus',
       command: () => {
         this.newGame.emit();

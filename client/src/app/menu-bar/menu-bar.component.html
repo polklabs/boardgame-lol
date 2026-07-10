@@ -6,9 +6,9 @@
     <ng-container [ngSwitch]="page">
       <ng-container *ngSwitchCase="'club'">
         <p-button label="Club" (click)="editClub.emit()" icon="pi pi-pencil" [outlined]="true"></p-button>
-        <p-button label="Game" (click)="newGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
-        <p-button label="BoardGame" (click)="newBoardGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+        <p-button label="Play" (click)="newGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
         <p-button label="Player" (click)="newPlayer.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+        <p-button label="BoardGame" (click)="newBoardGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
       </ng-container>
 
       <ng-container *ngSwitchCase="'board-game'">

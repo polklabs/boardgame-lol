@@ -69,7 +69,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   @Input() game?: GameEntity;
   @Output() closeEditor = new EventEmitter<void>();
 
-  title = 'Edit Game';
+  title = 'Edit Play';
   isNew = false;
 
   entityType = GameEntity;
@@ -124,10 +124,10 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     if ('game' in changes && this.game) {
       this.game = new GameEntity(this.game, true);
       if (this.game.GameId === null) {
-        this.title = 'New Game';
+        this.title = 'New Play';
         this.isNew = true;
       } else {
-        this.title = 'Edit Game';
+        this.title = 'Edit Play';
         this.isNew = false;
       }
 
