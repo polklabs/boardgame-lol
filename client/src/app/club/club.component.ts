@@ -54,8 +54,8 @@ import { CalendarModule } from "primeng/calendar";
     BadgeModule,
     FloatLabelModule,
     CheckboxModule,
-    CalendarModule
-  ],
+    CalendarModule,
+],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })

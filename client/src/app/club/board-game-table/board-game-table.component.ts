@@ -29,6 +29,7 @@ export class BoardGameTableComponent implements OnChanges {
       wins: number;
       plays: number;
       winPercent: number;
+      totalPoints: number;
     }[];
   } = {};
 
@@ -77,6 +78,7 @@ export class BoardGameTableComponent implements OnChanges {
           winRow.wins += won ? 1 : 0;
           winRow.plays++;
           winRow.winPercent = (winRow.wins / winRow.plays) * 100;
+          winRow.totalPoints += pg.Points ?? 0;
         } else {
           this.WinCounts[boardGameId].push({
             playerId: player.PlayerId ?? '',
@@ -84,6 +86,7 @@ export class BoardGameTableComponent implements OnChanges {
             wins: won ? 1 : 0,
             plays: 1,
             winPercent: won ? 100 : 0,
+            totalPoints: pg.Points ?? 0,
           });
         }
       });
