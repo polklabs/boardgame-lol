@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
@@ -16,14 +16,13 @@ type EntityType = PlayerEntity;
 @Component({
   selector: 'app-editor-player',
   imports: [
-    CommonModule,
     DialogModule,
     TextInputComponent,
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    CheckboxComponent,
-  ],
+    CheckboxComponent
+],
   templateUrl: './editor-player.component.html',
   styleUrl: './editor-player.component.scss',
 })

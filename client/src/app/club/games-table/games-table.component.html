@@ -24,111 +24,134 @@
             type="text"
             (input)="filterTable(gameTable, $event)"
             placeholder="Search keyword" />
-        </p-iconfield>
-      </div>
-    </ng-template>
-    <ng-template pTemplate="header">
-      <tr>
-        <th id="expansion" style="width: 0"></th>
-        <th
-          id="{{ column.field }}"
-          *ngFor="let column of gameColumns"
-          [pSortableColumn]="column.sort ? column.field : undefined">
-          <span>
-            {{ column.name }}
-            <p-sortIcon *ngIf="column.sort" [field]="column.field" />
-          </span>
-        </th>
-        <th *ngIf="canEdit" id="edit" class="edit-header">Edit</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-game let-expanded="expanded">
-      <tr>
-        <td>
-          <p-button
-            *ngIf="game.Scores.length > game.Winners.length"
-            type="button"
-            pRipple
-            [pRowToggler]="game"
-            [text]="true"
-            [rounded]="true"
-            [plain]="true"
-            [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-        </td>
-        <td>{{ game.Date | date: 'MM/dd/yy' }}</td>
-        <td>{{ game.BoardGame.Name }}</td>
-        <td>{{ game.Winners | array: 'Nickname' }}</td>
-        <td>
-          <ng-container *ngIf="showScore(game)">
-            {{ game.HighScore | number: '1.0-3' | score: game.BoardGame }}
-          </ng-container>
-        </td>
-        <td>{{ game.Players | number: '1.0-0' }}</td>
-        <td>
-          <p-tag *ngIf="game.DidNotFinish" value="Did Not Finish" severity="danger" />
-        </td>
-        <td *ngIf="canEdit">
-          <div class="flex-nowrap">
-            @if (canAdjustOrder(gameTable)) {
+          </p-iconfield>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th id="expansion" style="width: 0"></th>
+          @for (column of gameColumns; track column) {
+            <th
+              id="{{ column.field }}"
+              [pSortableColumn]="column.sort ? column.field : undefined">
+              <span>
+                {{ column.name }}
+                @if (column.sort) {
+                  <p-sortIcon [field]="column.field" />
+                }
+              </span>
+            </th>
+          }
+          @if (canEdit) {
+            <th id="edit" class="edit-header">Edit</th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-game let-expanded="expanded">
+        <tr>
+          <td>
+            @if (game.Scores.length > game.Winners.length) {
               <p-button
-                (onClick)="moveUp.emit(game)"
-                icon="pi pi-arrow-up"
-                [rounded]="true"
+                type="button"
+                pRipple
+                [pRowToggler]="game"
                 [text]="true"
-                [disabled]="game.newest"></p-button>
-
-              <p-button
-                (onClick)="moveDown.emit(game)"
-                icon="pi pi-arrow-down"
                 [rounded]="true"
-                [text]="true"
-                [disabled]="game.oldest"></p-button>
+                [plain]="true"
+                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
             }
-
-            <p-button (onClick)="gameEdit.emit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="rowexpansion" let-game>
-      <tr>
-        <td></td>
-        <td [attr.colspan]="gameColumns.length">
-          <p-table [value]="game.Scores" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
-            <ng-template pTemplate="header">
-              <tr>
-                <th id="name">Name</th>
-                <th id="points" *ngIf="showScore(game)">Points</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-score>
-              <tr>
-                <td class="flex gap-8">
-                  <ng-container [ngSwitch]="game?.BoardGame?.ScoreType">
-                    <ng-container *ngSwitchCase="'points'">
-                      <i *ngIf="score.Points === game.Scores[0].Points" class="pi pi-trophy" style="color: gold"></i>
-                      <div *ngIf="score.Points !== game.Scores[0].Points" class="empty-trophy"></div>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'rank'">
-                      <i
-                        *ngIf="score.Points !== null && score.Points < 3"
-                        class="pi pi-trophy"
-                        [ngStyle]="{ color: getTrophyColor(score) }"></i>
-                      <div *ngIf="score.Points === null || score.Points >= 3" class="empty-trophy"></div>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'win-lose'">
-                      <i *ngIf="score.Points === 1" class="pi pi-trophy" style="color: gold"></i>
-                      <div *ngIf="score.Points !== 1" class="empty-trophy"></div>
-                    </ng-container>
-                  </ng-container>
-                  <span>{{ score.Player?.Name }}</span>
-                </td>
-                <td *ngIf="showScore(game)">{{ score.Points | number: '1.0-3' | score: game.BoardGame }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-</div>
+          </td>
+          <td>{{ game.Date | date: 'MM/dd/yy' }}</td>
+          <td>{{ game.BoardGame.Name }}</td>
+          <td>{{ game.Winners | array: 'Nickname' }}</td>
+          <td>
+            @if (showScore(game)) {
+              {{ game.HighScore | number: '1.0-3' | score: game.BoardGame }}
+            }
+          </td>
+          <td>{{ game.Players | number: '1.0-0' }}</td>
+          <td>
+            @if (game.DidNotFinish) {
+              <p-tag value="Did Not Finish" severity="danger" />
+            }
+          </td>
+          @if (canEdit) {
+            <td>
+              <div class="flex-nowrap">
+                @if (canAdjustOrder(gameTable)) {
+                  <p-button
+                    (onClick)="moveUp.emit(game)"
+                    icon="pi pi-arrow-up"
+                    [rounded]="true"
+                    [text]="true"
+                  [disabled]="game.newest"></p-button>
+                  <p-button
+                    (onClick)="moveDown.emit(game)"
+                    icon="pi pi-arrow-down"
+                    [rounded]="true"
+                    [text]="true"
+                  [disabled]="game.oldest"></p-button>
+                }
+                <p-button (onClick)="gameEdit.emit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
+              </div>
+            </td>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="rowexpansion" let-game>
+        <tr>
+          <td></td>
+          <td [attr.colspan]="gameColumns.length">
+            <p-table [value]="game.Scores" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th id="name">Name</th>
+                  @if (showScore(game)) {
+                    <th id="points">Points</th>
+                  }
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-score>
+                <tr>
+                  <td class="flex gap-8">
+                    @switch (game?.BoardGame?.ScoreType) {
+                      @case ('points') {
+                        @if (score.Points === game.Scores[0].Points) {
+                          <i class="pi pi-trophy" style="color: gold"></i>
+                        }
+                        @if (score.Points !== game.Scores[0].Points) {
+                          <div class="empty-trophy"></div>
+                        }
+                      }
+                      @case ('rank') {
+                        @if (score.Points !== null && score.Points < 3) {
+                          <i
+                            class="pi pi-trophy"
+                          [ngStyle]="{ color: getTrophyColor(score) }"></i>
+                        }
+                        @if (score.Points === null || score.Points >= 3) {
+                          <div class="empty-trophy"></div>
+                        }
+                      }
+                      @case ('win-lose') {
+                        @if (score.Points === 1) {
+                          <i class="pi pi-trophy" style="color: gold"></i>
+                        }
+                        @if (score.Points !== 1) {
+                          <div class="empty-trophy"></div>
+                        }
+                      }
+                    }
+                    <span>{{ score.Player?.Name }}</span>
+                  </td>
+                  @if (showScore(game)) {
+                    <td>{{ score.Points | number: '1.0-3' | score: game.BoardGame }}</td>
+                  }
+                </tr>
+              </ng-template>
+            </p-table>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>

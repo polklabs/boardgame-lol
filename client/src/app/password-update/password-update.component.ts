@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -15,7 +15,7 @@ type PassChangePost = { CurrentPassword: string; Password: string };
 
 @Component({
   selector: 'app-password-update',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ButtonModule, PasswordComponent, DialogModule],
+  imports: [FormsModule, ReactiveFormsModule, ButtonModule, PasswordComponent, DialogModule],
   templateUrl: './password-update.component.html',
   styleUrl: './password-update.component.scss',
 })

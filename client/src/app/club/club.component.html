@@ -4,31 +4,35 @@
     (editClub)="clubEdit()"
     (newGame)="newGame()"
     (newBoardGame)="newBoardGame()"
-    (newPlayer)="newPlayer()"></app-menu-bar>
+  (newPlayer)="newPlayer()"></app-menu-bar>
 
-  <app-editor-club
-    *ngIf="editorClubVisible"
-    [editorVisible]="editorClubVisible"
-    [club]="editClub"
+  @if (editorClubVisible) {
+    <app-editor-club
+      [editorVisible]="editorClubVisible"
+      [club]="editClub"
     (closeEditor)="editorClubVisible = false"></app-editor-club>
+  }
 
-  <app-editor-game
-    *ngIf="editorGameVisible"
-    [editorVisible]="editorGameVisible"
-    [game]="editGame"
+  @if (editorGameVisible) {
+    <app-editor-game
+      [editorVisible]="editorGameVisible"
+      [game]="editGame"
     (closeEditor)="editorGameVisible = false"></app-editor-game>
+  }
 
-  <app-editor-board-game
-    *ngIf="editorBoardGameVisible"
-    [editorVisible]="editorBoardGameVisible"
-    [boardGame]="editBoardGame"
+  @if (editorBoardGameVisible) {
+    <app-editor-board-game
+      [editorVisible]="editorBoardGameVisible"
+      [boardGame]="editBoardGame"
     (closeEditor)="editorBoardGameVisible = false"></app-editor-board-game>
+  }
 
-  <app-editor-player
-    *ngIf="editorPlayerVisible"
-    [editorVisible]="editorPlayerVisible"
-    [player]="editPlayer"
+  @if (editorPlayerVisible) {
+    <app-editor-player
+      [editorVisible]="editorPlayerVisible"
+      [player]="editPlayer"
     (closeEditor)="editorPlayerVisible = false"></app-editor-player>
+  }
 
   <h1>{{ title }}</h1>
 
@@ -50,20 +54,20 @@
             [canEdit]="canEdit"
             (gameEdit)="gameEdit($event)"
             (moveUp)="moveUp($event)"
-            (moveDown)="moveDown($event)"></app-games-table>
+          (moveDown)="moveDown($event)"></app-games-table>
         </p-tabpanel>
         <p-tabpanel value="players">
           <app-player-table
             [players$]="players$"
             [canEdit]="canEdit"
-            (playerEdit)="playerEdit($event)"></app-player-table>
+          (playerEdit)="playerEdit($event)"></app-player-table>
         </p-tabpanel>
         <p-tabpanel value="games">
           <app-board-game-table
             [boardGames$]="boardGames$"
             [players]="players$ | async"
             [canEdit]="canEdit"
-            (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
+          (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
@@ -73,7 +77,7 @@
         class="pi pi-filter p-text-secondary"
         pBadge
         [badgeDisabled]="(filterEnabled$ | async) === false"
-        severity="danger"></i>
+      severity="danger"></i>
     </div>
   </div>
   <p-popover #filter>
@@ -89,48 +93,49 @@
           optionLabel="Name"
           optionValue="BoardGameId"
           placeholder="Select Board Games" />
-        <label for="username">Board Games</label>
-      </p-floatLabel>
+          <label for="username">Board Games</label>
+        </p-floatLabel>
 
-      <p-floatLabel>
-        <p-multiSelect
-          [options]="(ogPlayers$ | async) ?? [] | sort: 'Name'"
-          [(ngModel)]="playerIds"
-          selectedItemsLabel="{0} players selected"
-          appendTo="body"
-          optionLabel="Name"
-          optionValue="PlayerId"
-          placeholder="Select Players" />
-        <label for="username">Players</label>
-      </p-floatLabel>
+        <p-floatLabel>
+          <p-multiSelect
+            [options]="(ogPlayers$ | async) ?? [] | sort: 'Name'"
+            [(ngModel)]="playerIds"
+            selectedItemsLabel="{0} players selected"
+            appendTo="body"
+            optionLabel="Name"
+            optionValue="PlayerId"
+            placeholder="Select Players" />
+            <label for="username">Players</label>
+          </p-floatLabel>
 
-      <p-floatLabel>
-        <p-multiSelect
-          [options]="dow"
-          [(ngModel)]="daysOfWeek"
-          selectedItemsLabel="{0} days selected"
-          appendTo="body"
-          placeholder="Select Days" />
-        <label for="username">Days of Week</label>
-      </p-floatLabel>
+          <p-floatLabel>
+            <p-multiSelect
+              [options]="dow"
+              [(ngModel)]="daysOfWeek"
+              selectedItemsLabel="{0} days selected"
+              appendTo="body"
+              placeholder="Select Days" />
+              <label for="username">Days of Week</label>
+            </p-floatLabel>
 
-      <div class="flex items-center">
-        <p-checkbox inputId="dnf" [(ngModel)]="dnf" [binary]="true" />
-        <label for="dnf" class="ml-2">Include Did Not Finish</label>
+            <div class="flex items-center">
+              <p-checkbox inputId="dnf" [(ngModel)]="dnf" [binary]="true" />
+              <label for="dnf" class="ml-2">Include Did Not Finish</label>
+            </div>
+
+            @if ((filterEnabled$ | async) === true) {
+              <div
+                class="flex gap-8 justify-content-space-between"
+                >
+                <p-button (onClick)="disableFilter(filter)" [outlined]="true" severity="secondary">Reset</p-button>
+                <p-button (onClick)="enableFilter(filter)" [outlined]="true">Update</p-button>
+              </div>
+            } @else {
+              <div class="flex gap-8 justify-content-space-between">
+                <div></div>
+                <p-button (onClick)="enableFilter(filter)" [outlined]="true">Enable</p-button>
+              </div>
+            }
+          </div>
+        </p-popover>
       </div>
-
-      <div
-        class="flex gap-8 justify-content-space-between"
-        *ngIf="(filterEnabled$ | async) === true; else filterEnabled">
-        <p-button (onClick)="disableFilter(filter)" [outlined]="true" severity="secondary">Reset</p-button>
-        <p-button (onClick)="enableFilter(filter)" [outlined]="true">Update</p-button>
-      </div>
-      <ng-template #filterEnabled>
-        <div class="flex gap-8 justify-content-space-between">
-          <div></div>
-          <p-button (onClick)="enableFilter(filter)" [outlined]="true">Enable</p-button>
-        </div>
-      </ng-template>
-    </div>
-  </p-popover>
-</div>

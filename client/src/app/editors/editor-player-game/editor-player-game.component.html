@@ -6,46 +6,48 @@
   [style]="{ width: '650px', 'min-width': '300px' }"
   [draggable]="false"
   position="bottom">
-  <div *ngIf="formGroup && playerGame" class="form">
-    <form [formGroup]="formGroup" (ngSubmit)="submit()">
-      <div class="flex gap-4 align-items-end justify-content-space-between">
-        <app-dropdown
-          style="flex-grow: 1"
-          formControlName="PlayerId"
-          label="Player"
-          [entityType]="entityType"
-          [hiddenFields]="hideFields"
-          [options]="players"
-          optionLabel="Name"
-          optionValue="PlayerId"
+  @if (formGroup && playerGame) {
+    <div class="form">
+      <form [formGroup]="formGroup" (ngSubmit)="submit()">
+        <div class="flex gap-4 align-items-end justify-content-space-between">
+          <app-dropdown
+            style="flex-grow: 1"
+            formControlName="PlayerId"
+            label="Player"
+            [entityType]="entityType"
+            [hiddenFields]="hideFields"
+            [options]="players"
+            optionLabel="Name"
+            optionValue="PlayerId"
           [showClear]="false"></app-dropdown>
-        <p-button *ngIf="canEditPlayer()" (onClick)="editPlayer.emit(selectedPlayer)" icon="pi pi-pencil"></p-button>
-        <p-button (onClick)="editPlayer.emit()" pTooltip="New Player" icon="pi pi-plus"></p-button>
-      </div>
-
-      <app-textinput
-        *ngIf="scoreType === 'points'"
-        formControlName="Points"
-        label="Points"
-        [entityType]="entityType"
-        [hiddenFields]="hideFields"
-        inputType="number"></app-textinput>
-
-      @if (scoreType === 'win-lose') {
-        <app-checkbox formControlName="Points" label="Won Game" [hiddenFields]="hideFields"></app-checkbox>
-      } @else if (scoreType === 'rank') {
-        <app-checkbox formControlName="DNF" label="Did Not Finish" [hiddenFields]="hideFields"></app-checkbox>
-      }
-
-      <div class="dialog-footer">
-        <div>
-          <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
+          @if (canEditPlayer()) {
+            <p-button (onClick)="editPlayer.emit(selectedPlayer)" icon="pi pi-pencil"></p-button>
+          }
+          <p-button (onClick)="editPlayer.emit()" pTooltip="New Player" icon="pi pi-plus"></p-button>
         </div>
-        <div>
-          <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-          <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+        @if (scoreType === 'points') {
+          <app-textinput
+            formControlName="Points"
+            label="Points"
+            [entityType]="entityType"
+            [hiddenFields]="hideFields"
+          inputType="number"></app-textinput>
+        }
+        @if (scoreType === 'win-lose') {
+          <app-checkbox formControlName="Points" label="Won Game" [hiddenFields]="hideFields"></app-checkbox>
+        } @else if (scoreType === 'rank') {
+          <app-checkbox formControlName="DNF" label="Did Not Finish" [hiddenFields]="hideFields"></app-checkbox>
+        }
+        <div class="dialog-footer">
+          <div>
+            <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
+          </div>
+          <div>
+            <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
+            <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+          </div>
         </div>
-      </div>
-    </form>
-  </div>
+      </form>
+    </div>
+  }
 </p-dialog>

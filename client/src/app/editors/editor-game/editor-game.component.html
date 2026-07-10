@@ -3,13 +3,13 @@
   [player]="playerEdit"
   [standalone]="false"
   (closeEditor)="savePlayer($event); playerGameEditor.playerSaved($event)"
-  (deleteEntity)="deletePlayer($event); playerGameEditor.playerDeleted($event)"></app-editor-player>
+(deleteEntity)="deletePlayer($event); playerGameEditor.playerDeleted($event)"></app-editor-player>
 <app-editor-board-game
   [editorVisible]="boardGameEditorVisible"
   [boardGame]="boardGameEdit"
   [standalone]="false"
   (closeEditor)="saveBoardGame($event)"
-  (deleteEntity)="deleteBoardGame($event)"></app-editor-board-game>
+(deleteEntity)="deleteBoardGame($event)"></app-editor-board-game>
 
 <app-editor-player-game
   #playerGameEditor
@@ -19,7 +19,7 @@
   [scoreType]="game?.BoardGame?.ScoreType"
   (closeEditor)="savePlayerGame($event)"
   (deleteEntity)="deletePlayerGame($event)"
-  (editPlayer)="editPlayer($event)"></app-editor-player-game>
+(editPlayer)="editPlayer($event)"></app-editor-player-game>
 
 <p-dialog
   [header]="title"
@@ -29,187 +29,193 @@
   [style]="{ width: '650px', 'min-width': '300px', 'max-height': 'calc(100% - 60px)' }"
   [draggable]="false"
   position="bottom">
-  <div *ngIf="formGroup && editorVisible" class="form">
-    <form [formGroup]="formGroup" (ngSubmit)="submit()">
-      <!-- BoardGame -->
-      <div class="flex gap-4 align-items-end justify-content-space-between">
-        <app-dropdown
-          style="flex-grow: 1"
-          formControlName="BoardGameId"
-          label="BoardGame"
-          [entityType]="entityType"
-          [hiddenFields]="hideFields"
-          [options]="boardGames"
-          [showClear]="false"
-          optionLabel="Name"
+  @if (formGroup && editorVisible) {
+    <div class="form">
+      <form [formGroup]="formGroup" (ngSubmit)="submit()">
+        <!-- BoardGame -->
+        <div class="flex gap-4 align-items-end justify-content-space-between">
+          <app-dropdown
+            style="flex-grow: 1"
+            formControlName="BoardGameId"
+            label="BoardGame"
+            [entityType]="entityType"
+            [hiddenFields]="hideFields"
+            [options]="boardGames"
+            [showClear]="false"
+            optionLabel="Name"
           optionValue="BoardGameId"></app-dropdown>
-        <p-button
-          *ngIf="canEditBoardGame()"
-          (onClick)="editBoardGame(selectedBoardGame)"
-          icon="pi pi-pencil"></p-button>
-        <p-button (onClick)="editBoardGame()" pTooltip="New Game" icon="pi pi-plus"></p-button>
-      </div>
-
-      <p-orderList
-        [value]="playerGames"
-        [dragdrop]="true"
-        [responsive]="true"
-        [metaKeySelection]="true"
-        (onReorder)="updateOrdering()"
-        [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
-        <ng-template pTemplate="header">
-          <div class="order-list-header flex justify-content-space-between">
-            <div class="p-orderlist-title">Players</div>
-            @if (selectedPlayerGame && game?.BoardGame?.ScoreType === 'points') {
-              <p-buttongroup>
-                <p-button
-                  label="-100"
-                  variant="outlined"
-                  severity="warn"
-                  (onClick)="addPoints(selectedPlayerGame, -100)" />
-                <p-button
-                  label="-50"
-                  variant="outlined"
-                  severity="warn"
-                  (onClick)="addPoints(selectedPlayerGame, -50)" />
-                <p-button
-                  label="-10"
-                  variant="outlined"
-                  severity="warn"
-                  (onClick)="addPoints(selectedPlayerGame, -10)" />
-                <p-button
-                  label="+10"
-                  variant="outlined"
-                  severity="success"
-                  (onClick)="addPoints(selectedPlayerGame, 10)" />
-                <p-button
-                  label="+50"
-                  variant="outlined"
-                  severity="success"
-                  (onClick)="addPoints(selectedPlayerGame, 50)" />
-                <p-button
-                  label="+100"
-                  variant="outlined"
-                  severity="success"
-                  (onClick)="addPoints(selectedPlayerGame, 100)" />
-              </p-buttongroup>
-            }
-            <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
-          </div>
-        </ng-template>
-        <ng-template let-playerGame pTemplate="item">
-          <ng-container
-            [ngTemplateOutlet]="orderListItem"
-            [ngTemplateOutletContext]="{ $implicit: playerGame }"></ng-container>
-        </ng-template>
-        <ng-template pTemplate="empty">
-          <div class="empty-list">Add a player to start</div>
-        </ng-template>
-      </p-orderList>
-
-      <div class="flex-grow gap-8 width-100">
-        <app-calendar
-          formControlName="Date"
-          label="Date"
-          [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-calendar>
-
-        <app-textinput
-          formControlName="Players"
-          label="Players"
-          [entityType]="entityType"
-          [hiddenFields]="hideFields"
-          inputType="number"></app-textinput>
-      </div>
-
-      <app-checkbox formControlName="DidNotFinish" label="Did Not Finish Game"></app-checkbox>
-
-      <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
-    </form>
-    <div class="flex dialog-footer">
-      <div>
-        <p-button
-          *ngIf="isNew === false"
-          label="Delete"
-          [outlined]="true"
-          severity="danger"
-          (onClick)="toDeleteEntity()"></p-button>
-      </div>
-      <div>
-        <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-        <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
-      </div>
-    </div>
-  </div>
-</p-dialog>
-
-<ng-template #orderListItem let-playerGame>
-  <div class="list-items" (click)="onPlayerSelection(playerGame)">
-    <div class="flex-column">
-      <div class="flex gap-8 justify-content-space-between">
-        <span class="font-bold flex-nowrap gap-8" [ngSwitch]="game?.BoardGame?.ScoreType">
-          <!-- POINTS -->
-          <ng-container *ngSwitchCase="'points'">
-            <p-inputNumber
-              class="point-editor"
-              [showButtons]="true"
-              buttonLayout="horizontal"
-              [prefix]="game?.BoardGame?.ScorePrefix ?? undefined"
-              [suffix]="game?.BoardGame?.ScoreSuffix ?? undefined"
-              [ngModel]="playerGame.Points"
-              [ngModelOptions]="{ standalone: true }"
-              (ngModelChange)="setPoints(playerGame, $event)">
-              <ng-template pTemplate="incrementbuttonicon">
-                <span class="pi pi-plus"></span>
-              </ng-template>
-              <ng-template pTemplate="decrementbuttonicon">
-                <span class="pi pi-minus"></span>
-              </ng-template>
-            </p-inputNumber>
-
-            @if (playerGame.Points === maxPoints) {
-              <i class="pi pi-trophy" style="color: gold"></i>
-            } @else {
-              <div class="empty-trophy"></div>
-            }
-
-            <span class="player-name">{{ playerGame.Player?.Name }}</span>
-          </ng-container>
-          <!-- RANK -->
-          <ng-container *ngSwitchCase="'rank'">
-            <i
-              *ngIf="playerGame.Points !== null && playerGame.Points < 3"
-              class="pi pi-trophy"
-              [ngStyle]="{ color: getTrophyColor(playerGame) }"></i>
-            <div *ngIf="playerGame.Points >= 3" class="empty-trophy"></div>
-            <span [ngClass]="{ DNF: playerGame.DNF }">{{ playerGame.Player?.Name }}</span>
-          </ng-container>
-          <!-- WIN/LOSE -->
-          <ng-container *ngSwitchCase="'win-lose'">
-            <p-checkbox
-              [ngModel]="playerGame.Points === 1"
-              [ngModelOptions]="{ standalone: true }"
-              (onChange)="playerGame.Points = $event.checked ? 1 : 0; this.updateScoring()"
-              [binary]="true" />
-            <i *ngIf="playerGame.Points === 1" class="pi pi-trophy" style="color: gold"></i>
-            <div *ngIf="playerGame.Points !== 1" class="empty-trophy"></div>
-            <span>{{ playerGame.Player?.Name }}</span>
-          </ng-container>
-        </span>
-        <div class="flex gap-8 edit-btns">
-          <p-button
-            (onClick)="editPlayerGame(playerGame)"
-            [rounded]="true"
-            [text]="true"
+          @if (canEditBoardGame()) {
+            <p-button
+              (onClick)="editBoardGame(selectedBoardGame)"
             icon="pi pi-pencil"></p-button>
-          <p-button
-            (onClick)="deletePlayerGame(playerGame)"
-            icon="pi pi-trash"
-            [rounded]="true"
-            [text]="true"
-            severity="danger"></p-button>
+          }
+          <p-button (onClick)="editBoardGame()" pTooltip="New Game" icon="pi pi-plus"></p-button>
         </div>
-      </div>
-    </div>
-  </div>
-</ng-template>
+        <p-orderList
+          [value]="playerGames"
+          [dragdrop]="true"
+          [responsive]="true"
+          [metaKeySelection]="true"
+          (onReorder)="updateOrdering()"
+          [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
+          <ng-template pTemplate="header">
+            <div class="order-list-header flex justify-content-space-between">
+              <div class="p-orderlist-title">Players</div>
+              @if (selectedPlayerGame && game?.BoardGame?.ScoreType === 'points') {
+                <p-buttongroup>
+                  <p-button
+                    label="-100"
+                    variant="outlined"
+                    severity="warn"
+                    (onClick)="addPoints(selectedPlayerGame, -100)" />
+                    <p-button
+                      label="-50"
+                      variant="outlined"
+                      severity="warn"
+                      (onClick)="addPoints(selectedPlayerGame, -50)" />
+                      <p-button
+                        label="-10"
+                        variant="outlined"
+                        severity="warn"
+                        (onClick)="addPoints(selectedPlayerGame, -10)" />
+                        <p-button
+                          label="+10"
+                          variant="outlined"
+                          severity="success"
+                          (onClick)="addPoints(selectedPlayerGame, 10)" />
+                          <p-button
+                            label="+50"
+                            variant="outlined"
+                            severity="success"
+                            (onClick)="addPoints(selectedPlayerGame, 50)" />
+                            <p-button
+                              label="+100"
+                              variant="outlined"
+                              severity="success"
+                              (onClick)="addPoints(selectedPlayerGame, 100)" />
+                            </p-buttongroup>
+                          }
+                          <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
+                        </div>
+                      </ng-template>
+                      <ng-template let-playerGame pTemplate="item">
+                        <ng-container
+                          [ngTemplateOutlet]="orderListItem"
+                        [ngTemplateOutletContext]="{ $implicit: playerGame }"></ng-container>
+                      </ng-template>
+                      <ng-template pTemplate="empty">
+                        <div class="empty-list">Add a player to start</div>
+                      </ng-template>
+                    </p-orderList>
+                    <div class="flex-grow gap-8 width-100">
+                      <app-calendar
+                        formControlName="Date"
+                        label="Date"
+                        [entityType]="entityType"
+                      [hiddenFields]="hideFields"></app-calendar>
+                      <app-textinput
+                        formControlName="Players"
+                        label="Players"
+                        [entityType]="entityType"
+                        [hiddenFields]="hideFields"
+                      inputType="number"></app-textinput>
+                    </div>
+                    <app-checkbox formControlName="DidNotFinish" label="Did Not Finish Game"></app-checkbox>
+                    <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
+                  </form>
+                  <div class="flex dialog-footer">
+                    <div>
+                      @if (isNew === false) {
+                        <p-button
+                          label="Delete"
+                          [outlined]="true"
+                          severity="danger"
+                        (onClick)="toDeleteEntity()"></p-button>
+                      }
+                    </div>
+                    <div>
+                      <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
+                      <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+                    </div>
+                  </div>
+                </div>
+              }
+            </p-dialog>
+
+            <ng-template #orderListItem let-playerGame>
+              <div class="list-items" (click)="onPlayerSelection(playerGame)">
+                <div class="flex-column">
+                  <div class="flex gap-8 justify-content-space-between">
+                    <span class="font-bold flex-nowrap gap-8">
+                      @switch (game?.BoardGame?.ScoreType) {
+                        <!-- POINTS -->
+                        @case ('points') {
+                          <p-inputNumber
+                            class="point-editor"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            [prefix]="game?.BoardGame?.ScorePrefix ?? undefined"
+                            [suffix]="game?.BoardGame?.ScoreSuffix ?? undefined"
+                            [ngModel]="playerGame.Points"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="setPoints(playerGame, $event)">
+                            <ng-template pTemplate="incrementbuttonicon">
+                              <span class="pi pi-plus"></span>
+                            </ng-template>
+                            <ng-template pTemplate="decrementbuttonicon">
+                              <span class="pi pi-minus"></span>
+                            </ng-template>
+                          </p-inputNumber>
+                          @if (playerGame.Points === maxPoints) {
+                            <i class="pi pi-trophy" style="color: gold"></i>
+                          } @else {
+                            <div class="empty-trophy"></div>
+                          }
+                          <span class="player-name">{{ playerGame.Player?.Name }}</span>
+                        }
+                        <!-- RANK -->
+                        @case ('rank') {
+                          @if (playerGame.Points !== null && playerGame.Points < 3) {
+                            <i
+                              class="pi pi-trophy"
+                            [ngStyle]="{ color: getTrophyColor(playerGame) }"></i>
+                          }
+                          @if (playerGame.Points >= 3) {
+                            <div class="empty-trophy"></div>
+                          }
+                          <span [ngClass]="{ DNF: playerGame.DNF }">{{ playerGame.Player?.Name }}</span>
+                        }
+                        <!-- WIN/LOSE -->
+                        @case ('win-lose') {
+                          <p-checkbox
+                            [ngModel]="playerGame.Points === 1"
+                            [ngModelOptions]="{ standalone: true }"
+                            (onChange)="playerGame.Points = $event.checked ? 1 : 0; this.updateScoring()"
+                            [binary]="true" />
+                            @if (playerGame.Points === 1) {
+                              <i class="pi pi-trophy" style="color: gold"></i>
+                            }
+                            @if (playerGame.Points !== 1) {
+                              <div class="empty-trophy"></div>
+                            }
+                            <span>{{ playerGame.Player?.Name }}</span>
+                          }
+                        }
+                      </span>
+                      <div class="flex gap-8 edit-btns">
+                        <p-button
+                          (onClick)="editPlayerGame(playerGame)"
+                          [rounded]="true"
+                          [text]="true"
+                        icon="pi pi-pencil"></p-button>
+                        <p-button
+                          (onClick)="deletePlayerGame(playerGame)"
+                          icon="pi pi-trash"
+                          [rounded]="true"
+                          [text]="true"
+                        severity="danger"></p-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
