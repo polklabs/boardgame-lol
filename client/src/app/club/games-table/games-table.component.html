@@ -12,7 +12,7 @@
     [globalFilterFields]="['Date', 'BoardGame.Name']"
     [tableStyle]="{ 'min-width': '50rem' }"
     [expandedRowKeys]="expandedRows">
-    <ng-template pTemplate="caption">
+    <ng-template #caption>
       <div class="flex justify-content-center">
         <div></div>
         <p-iconfield>
@@ -27,7 +27,7 @@
         </p-iconfield>
       </div>
     </ng-template>
-    <ng-template pTemplate="header">
+    <ng-template #header>
       <tr>
         <th id="expansion" style="width: 0"></th>
         @for (column of gameColumns; track column) {
@@ -45,7 +45,7 @@
         }
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-game let-expanded="expanded">
+    <ng-template #body let-game let-expanded="expanded">
       <tr>
         <td>
           @if (game.Scores.length > game.Winners.length) {
@@ -96,12 +96,12 @@
         }
       </tr>
     </ng-template>
-    <ng-template pTemplate="rowexpansion" let-game>
+    <ng-template #expandedrow let-game>
       <tr>
         <td></td>
         <td [attr.colspan]="gameColumns.length">
           <p-table [value]="game.Scores" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
-            <ng-template pTemplate="header">
+            <ng-template #header>
               <tr>
                 <th id="name">Name</th>
                 @if (showScore(game)) {
@@ -109,7 +109,7 @@
                 }
               </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-score>
+            <ng-template #body let-score>
               <tr>
                 <td class="flex gap-8">
                   @switch (game?.BoardGame?.ScoreType) {

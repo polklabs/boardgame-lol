@@ -19,7 +19,7 @@
         [style]="{ width: '360px' }"
         [routerLink]="'/club/' + club.id">
         <p>{{ club.summary }}</p>
-        <ng-template pTemplate="footer">
+        <ng-template #footer>
           <div class="flex gap-3 mt-1">
             <p-button label="View" class="w-full" styleClass="w-full" />
           </div>
@@ -39,7 +39,7 @@
         [style]="{ width: '360px' }"
         [routerLink]="'/club/' + club.ClubId">
         <p>{{ club.Summary }}</p>
-        <ng-template pTemplate="footer">
+        <ng-template #footer>
           <div class="flex gap-3 mt-1">
             <p-button label="View" class="w-full" styleClass="w-full" />
           </div>

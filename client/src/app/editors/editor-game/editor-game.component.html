@@ -58,7 +58,7 @@
           [metaKeySelection]="true"
           (onReorder)="updateOrdering()"
           [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <div class="order-list-header flex justify-content-space-between">
               <div class="p-orderlist-title">Players</div>
               @if (selectedPlayerGame && game?.BoardGame?.ScoreType === 'points') {
@@ -98,12 +98,12 @@
                           <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
                         </div>
                       </ng-template>
-                      <ng-template let-playerGame pTemplate="item">
+                      <ng-template let-playerGame #item>
                         <ng-container
                           [ngTemplateOutlet]="orderListItem"
                         [ngTemplateOutletContext]="{ $implicit: playerGame }"></ng-container>
                       </ng-template>
-                      <ng-template pTemplate="empty">
+                      <ng-template #empty>
                         <div class="empty-list">Add a player to start</div>
                       </ng-template>
                     </p-orderList>
@@ -159,10 +159,10 @@
                             [ngModel]="playerGame.Points"
                             [ngModelOptions]="{ standalone: true }"
                             (ngModelChange)="setPoints(playerGame, $event)">
-                            <ng-template pTemplate="incrementbuttonicon">
+                            <ng-template #incrementbuttonicon>
                               <span class="pi pi-plus"></span>
                             </ng-template>
-                            <ng-template pTemplate="decrementbuttonicon">
+                            <ng-template #decrementbuttonicon>
                               <span class="pi pi-minus"></span>
                             </ng-template>
                           </p-inputNumber>

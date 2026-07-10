@@ -10,7 +10,7 @@
     [sortOrder]="-1"
     [tableStyle]="{ 'min-width': '50rem' }"
     [expandedRowKeys]="expandedRows">
-    <ng-template pTemplate="header">
+    <ng-template #header>
       <tr>
         <th id="expansion" style="width: 0" id="blank"></th>
         @for (column of playerColumns; track column) {
@@ -29,7 +29,7 @@
         }
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-player let-expanded="expanded">
+    <ng-template #body let-player let-expanded="expanded">
       <tr>
         <td>
           @if (player.Wins.length > 0) {
@@ -69,19 +69,19 @@
       </ng-template>
 
       <!-- Row Expansion -->
-      <ng-template pTemplate="rowexpansion" let-player>
+      <ng-template #expandedrow let-player>
         <tr>
           <td></td>
           <td [attr.colspan]="playerColumns.length">
             <p-table [value]="player.Wins" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
-              <ng-template pTemplate="header">
+              <ng-template #header>
                 <tr>
                   <th id="date">Date</th>
                   <th id="game">Game</th>
                   <th id="points">Points</th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-playerGame>
+              <ng-template #body let-playerGame>
                 <tr>
                   <td>
                     {{ playerGame.Game.Date | date: 'MM/dd/yy' }}

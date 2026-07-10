@@ -10,7 +10,7 @@
     [sortOrder]="-1"
     [tableStyle]="{ 'min-width': '50rem' }"
     [expandedRowKeys]="expandedRows">
-    <ng-template pTemplate="header">
+    <ng-template #header>
       <tr>
         <th id="expansion" style="width: 0"></th>
         @for (column of boardGameColumns; track column) {
@@ -28,7 +28,7 @@
         }
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-boardGame let-expanded="expanded">
+    <ng-template #body let-boardGame let-expanded="expanded">
       <tr>
         <td>
           @if (showExpansion(boardGame)) {
@@ -75,7 +75,7 @@
       </ng-template>
 
       <!-- Row Expansion -->
-      <ng-template pTemplate="rowexpansion" let-boardGame>
+      <ng-template #expandedrow let-boardGame>
         <tr>
           <td></td>
           <td [attr.colspan]="boardGameColumns.length">
@@ -85,7 +85,7 @@
               sortField="wins"
               [sortOrder]="-1"
               [tableStyle]="{ 'min-width': '50rem' }">
-              <ng-template pTemplate="header">
+              <ng-template #header>
                 <tr>
                   <th id="name" pSortableColumn="name">
                     Name
@@ -105,7 +105,7 @@
                   </th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-player>
+              <ng-template #body let-player>
                 <tr>
                   <td>
                     {{ player.name }}
