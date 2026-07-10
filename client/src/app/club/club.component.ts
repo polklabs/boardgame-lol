@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MenuBarComponent } from '../menu-bar/menu-bar.component';
 import { EditorGameComponent } from '../editors/editor-game/editor-game.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../shared/services/api.service';
 import { CommonModule } from '@angular/common';
 import { BoardGameEntity, ClubEntity, GameEntity, PlayerEntity } from 'libs/index';
@@ -79,6 +79,8 @@ export class ClubComponent implements OnInit, OnDestroy {
   boardGames$?: Observable<BoardGameEntity[]>;
   players$?: Observable<PlayerEntity[]>;
 
+  activeTab = 'overview';
+
   subscriptions = new Subscription();
 
   // Filter
@@ -95,6 +97,7 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private apiService: ApiService,
     private userService: UserService,
   ) {}
@@ -105,6 +108,8 @@ export class ClubComponent implements OnInit, OnDestroy {
         this.apiService.fetchClub(x['id']);
       }),
     );
+
+    this.activeTab = this.route.snapshot.fragment ?? 'overview';
 
     this.subscriptions.add(
       combineLatest([this.apiService.club$, this.userService.accessIds$]).subscribe(([club, access]) => {
@@ -184,5 +189,13 @@ export class ClubComponent implements OnInit, OnDestroy {
   disableFilter(filter: Popover) {
     filter.hide();
     this.apiService.filter(false, [], [], [], null, true);
+  }
+
+  onTabChange(event: string | number) {
+    this.router.navigate([], {
+      fragment: `${event}`, // sets the #fragment
+      queryParamsHandling: 'preserve', // keep existing query params
+      preserveFragment: false, // overwrite existing fragment
+    });
   }
 }

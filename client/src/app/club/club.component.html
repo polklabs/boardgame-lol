@@ -33,20 +33,18 @@
   <h1>{{ title }}</h1>
 
   <div>
-    <p-tabs value="0" [lazy]="true">
+    <p-tabs [(value)]="activeTab" (valueChange)="onTabChange($event)" [lazy]="true">
       <p-tablist>
-        <p-tab value="0">Overview</p-tab>
-        <p-tab value="1">Plays: {{ ((games$ | async) ?? []).length }}</p-tab>
-        <p-tab value="2">Players: {{ ((players$ | async) ?? []).length }}</p-tab>
-        <p-tab value="3">Games: {{ ((boardGames$ | async) ?? []).length }}</p-tab>
+        <p-tab value="overview">Overview</p-tab>
+        <p-tab value="plays">Plays: {{ ((games$ | async) ?? []).length }}</p-tab>
+        <p-tab value="players">Players: {{ ((players$ | async) ?? []).length }}</p-tab>
+        <p-tab value="games">Games: {{ ((boardGames$ | async) ?? []).length }}</p-tab>
       </p-tablist>
       <p-tabpanels>
-        <p-tabpanel value="0">
-          <!-- Overview goes here -->
+        <p-tabpanel value="overview">
           <app-stats></app-stats>
         </p-tabpanel>
-        <p-tabpanel value="1">
-          <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
+        <p-tabpanel value="plays">
           <app-games-table
             [games$]="games$"
             [canEdit]="canEdit"
@@ -54,15 +52,13 @@
             (moveUp)="moveUp($event)"
             (moveDown)="moveDown($event)"></app-games-table>
         </p-tabpanel>
-        <p-tabpanel value="2">
-          <!-- Players --------------------------------------------------------------------------------------------- -->
+        <p-tabpanel value="players">
           <app-player-table
             [players$]="players$"
             [canEdit]="canEdit"
             (playerEdit)="playerEdit($event)"></app-player-table>
         </p-tabpanel>
-        <p-tabpanel value="3">
-          <!-- BoardGames ----------------------------------------------------------------------------------------- -->
+        <p-tabpanel value="games">
           <app-board-game-table
             [boardGames$]="boardGames$"
             [players]="players$ | async"
