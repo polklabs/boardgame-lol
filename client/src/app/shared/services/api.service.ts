@@ -444,6 +444,7 @@ export class ApiService {
     this.playerGameList.forEach((x) => x.calculateFields());
     this.boardGameList.forEach((x) => x.calculateFields());
     this.playerList.forEach((x) => x.calculateFields());
-    this.playerList.forEach((x) => x.postCalculate(this.playerList));
+    PlayerEntity.postCalculate(this.playerList);
+    GameEntity.postCalculate(this.gameList);
   }
 }

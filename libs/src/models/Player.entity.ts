@@ -57,21 +57,6 @@ export class PlayerEntity extends BaseEntity {
     this.calculateFirstSeen();
   }
 
-  postCalculate(players: PlayerEntity[]) {
-    this.Nickname = this.Name?.trim().split(' ')[0];
-    if (
-      this.Nickname &&
-      players.filter((x) => x.PlayerId !== this.PlayerId).some((x) => x.Name?.startsWith(this.Nickname!))
-    ) {
-      this.Nickname = this.Name ?? undefined;
-    } else {
-      // continue
-    }
-
-    const maxWins = Math.max(...players.map((x) => x.Wins.length));
-    this.hasMostWins = this.Wins.length >= maxWins;
-  }
-
   calculateWins() {
     this.Wins = this.PlayerGames.filter((pg) => pg.Game?.calculateWinner().includes(pg)).reverse();
   }
@@ -102,5 +87,20 @@ export class PlayerEntity extends BaseEntity {
     } else {
       this.FirstSeen = new Date(minDate);
     }
+  }
+
+  static postCalculate(players: PlayerEntity[]) {
+    const maxWins = Math.max(...players.map((x) => x.Wins.length));
+
+    players.forEach((p) => {
+      p.Nickname = p.Name?.trim().split(' ')[0];
+      if (p.Nickname && players.filter((x) => x.PlayerId !== p.PlayerId).some((x) => x.Name?.startsWith(p.Nickname!))) {
+        p.Nickname = p.Name ?? undefined;
+      } else {
+        // continue
+      }
+
+      p.hasMostWins = p.Wins.length >= maxWins;
+    });
   }
 }
