@@ -42,7 +42,10 @@ export const LaraDark = definePreset(Lara, {
     tabs: {
       tabpanel: {
         background: 'none',
-        padding: 0,
+        padding: '0',
+      },
+      tablist: {
+        background: 'none',
       },
     },
     listbox: {
@@ -52,7 +55,7 @@ export const LaraDark = definePreset(Lara, {
     },
     dialog: {
       header: {
-        padding: '1rem 1rem 4px'
+        padding: '1rem 1rem 4px',
       },
       content: {
         padding: '0 1rem 1rem',
@@ -62,22 +65,18 @@ export const LaraDark = definePreset(Lara, {
       colorScheme: {
         dark: {
           row: {
-            striped: {
-              background: '#1c2532',
-            },
+            stripedBackground: '#1c2532',
           },
         },
       },
       header: {
-        cell: {
-          padding: '0.5rem',
-        },
         padding: '0.5rem',
       },
-      body: {
-        cell: {
-          padding: '0.5rem',
-        },
+      headerCell: {
+        padding: '0.5rem',
+      },
+      bodyCell: {
+        padding: '0.5rem',
       },
     },
   },

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { MenuBarComponent } from '../menu-bar/menu-bar.component';
 import { EditorGameComponent } from '../editors/editor-game/editor-game.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -25,8 +25,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { BadgeModule } from 'primeng/badge';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { CheckboxModule } from 'primeng/checkbox';
-import { CalendarModule } from 'primeng/calendar';
 import { TabsModule } from 'primeng/tabs';
+import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
   selector: 'app-club',
@@ -53,12 +53,17 @@ import { TabsModule } from 'primeng/tabs';
     BadgeModule,
     FloatLabelModule,
     CheckboxModule,
-    CalendarModule,
+    DatePickerModule,
   ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })
 export class ClubComponent implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private apiService = inject(ApiService);
+  private userService = inject(UserService);
+
   title = '';
   canEdit = false;
 
@@ -93,13 +98,6 @@ export class ClubComponent implements OnInit, OnDestroy {
   daysOfWeek = [...this.dow];
   months: string[] = [];
   startDate: Date | null = null;
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private apiService: ApiService,
-    private userService: UserService,
-  ) {}
 
   ngOnInit(): void {
     this.subscriptions.add(
@@ -190,9 +188,9 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.apiService.filter(false, [], [], [], null, true);
   }
 
-  onTabChange(event: string | number) {
+  onTabChange(event?: string | number) {
     this.router.navigate([], {
-      fragment: `${event}`, // sets the #fragment
+      fragment: `${event ?? ''}`, // sets the #fragment
       queryParamsHandling: 'preserve', // keep existing query params
       preserveFragment: false, // overwrite existing fragment
     });

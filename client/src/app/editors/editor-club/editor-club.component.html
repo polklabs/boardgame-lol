@@ -23,7 +23,7 @@
         [hiddenFields]="hideFields"></app-textarea>
         <div class="dialog-footer">
           <div>
-            @if ((adminIds | async)?.includes(club?.ClubId ?? '')) {
+            @if ((adminIds | async)?.includes(club.ClubId ?? '')) {
               <p-button
                 label="Delete"
                 [outlined]="true"

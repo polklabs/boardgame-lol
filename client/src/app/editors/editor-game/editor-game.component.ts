@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -64,6 +65,12 @@ type EntityType = GameEntity;
   styleUrl: './editor-game.component.scss',
 })
 export class EditorGameComponent implements OnChanges, OnDestroy {
+  private fb = inject(FormBuilder);
+  private apiService = inject(ApiService);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
+  private cdr = inject(ChangeDetectorRef);
+
   @Input() editorVisible = false;
   @Input() game?: GameEntity;
   @Output() closeEditor = new EventEmitter<void>();
@@ -110,14 +117,6 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   maxPoints = 0;
 
   subscription?: Subscription;
-
-  constructor(
-    private fb: FormBuilder,
-    private apiService: ApiService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private cdr: ChangeDetectorRef,
-  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('game' in changes && this.game) {
