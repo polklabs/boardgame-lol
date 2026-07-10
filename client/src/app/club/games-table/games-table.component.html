@@ -68,10 +68,22 @@
           <p-tag *ngIf="game.DidNotFinish" value="Did Not Finish" severity="danger" />
         </td>
         <td *ngIf="canEdit">
-          <div class="flex flex-row">
-            <p-button (onClick)="moveUp.emit(game)" icon="pi pi-arrow-up" [rounded]="true" [text]="true"></p-button>
+          <div class="flex-nowrap">
+            @if (canAdjustOrder(gameTable)) {
+              <p-button
+                (onClick)="moveUp.emit(game)"
+                icon="pi pi-arrow-up"
+                [rounded]="true"
+                [text]="true"
+                [disabled]="game.newest"></p-button>
 
-            <p-button (onClick)="moveDown.emit(game)" icon="pi pi-arrow-down" [rounded]="true" [text]="true"></p-button>
+              <p-button
+                (onClick)="moveDown.emit(game)"
+                icon="pi pi-arrow-down"
+                [rounded]="true"
+                [text]="true"
+                [disabled]="game.oldest"></p-button>
+            }
 
             <p-button (onClick)="gameEdit.emit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
           </div>

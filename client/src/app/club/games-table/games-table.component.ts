@@ -65,4 +65,8 @@ export class GamesTableComponent {
       return 'gold';
     }
   }
+
+  canAdjustOrder(table: Table): boolean {
+    return table.sortField === 'dateSortOrder' && table.sortOrder === -1;
+  }
 }
