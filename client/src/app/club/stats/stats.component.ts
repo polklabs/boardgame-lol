@@ -23,7 +23,7 @@ export class StatsComponent implements OnInit {
   private apiService = inject(ApiService);
   private trophyService = inject(TrophyService);
 
-  heatmap: { days: DayItem[]; month: string }[] = [];
+  heatmap: { days: DayItem[]; month: string; key: string }[] = [];
   colors = ['#1C2532', '#0E4429', '#006D32', '#26A641', '#39D353'];
 
   ShowCharts = false;
@@ -108,6 +108,7 @@ export class StatsComponent implements OnInit {
     // eslint-disable-next-line no-constant-condition
     while (date <= today) {
       const week: DayItem[] = [];
+      const key = format(date, 'yyyy MM d');
 
       for (let d = 0; d < 7; d++) {
         const dateStr = format(date, 'yyyy-MM-dd');
@@ -129,7 +130,7 @@ export class StatsComponent implements OnInit {
       } else {
         currentMonth = month;
       }
-      this.heatmap.push({ days: week, month });
+      this.heatmap.push({ days: week, month, key });
     }
   }
 
