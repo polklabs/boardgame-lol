@@ -10,7 +10,7 @@
     <form [formGroup]="formGroup" (ngSubmit)="submit()">
       <div class="flex gap-4 align-items-end justify-content-space-between">
         <app-dropdown
-          style="width: calc(100% - 104px)"
+          style="flex-grow: 1"
           formControlName="PlayerId"
           label="Player"
           [entityType]="entityType"
@@ -31,17 +31,11 @@
         [hiddenFields]="hideFields"
         inputType="number"></app-textinput>
 
-      <p-checkbox
-        *ngIf="scoreType === 'win-lose'"
-        formControlName="Points"
-        label="Won Game"
-        [binary]="true"></p-checkbox>
-
-      <p-checkbox
-        *ngIf="scoreType === 'rank'"
-        formControlName="DNF"
-        label="Did Not Finish"
-        [binary]="true"></p-checkbox>
+      @if (scoreType === 'win-lose') {
+        <app-checkbox formControlName="Points" label="Won Game" [hiddenFields]="hideFields"></app-checkbox>
+      } @else if (scoreType === 'rank') {
+        <app-checkbox formControlName="DNF" label="Did Not Finish" [hiddenFields]="hideFields"></app-checkbox>
+      }
 
       <div class="dialog-footer">
         <div>

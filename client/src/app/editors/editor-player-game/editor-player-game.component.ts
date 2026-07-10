@@ -10,6 +10,7 @@ import { DropdownComponent } from '../../shared/components/dropdown/dropdown.com
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
+import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 
 type EntityType = PlayerGameEntity;
 
@@ -26,6 +27,7 @@ type EntityType = PlayerGameEntity;
     CheckboxModule,
     DialogModule,
     TooltipModule,
+    CheckboxComponent,
   ],
   templateUrl: './editor-player-game.component.html',
   styleUrl: './editor-player-game.component.scss',
@@ -74,7 +76,7 @@ export class EditorPlayerGameComponent implements OnChanges {
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerGameEntity());
       this.formGroup.patchValue(new PlayerGameEntity(this.playerGame));
 
-      if(this.scoreType === 'win-lose') {
+      if (this.scoreType === 'win-lose') {
         this.getControl('Points')?.setValue(this.playerGame.Points === null ? true : this.playerGame.Points === 1);
       } else {
         // Continue
@@ -90,13 +92,12 @@ export class EditorPlayerGameComponent implements OnChanges {
   }
 
   async submit() {
-    if(this.scoreType === 'win-lose') {
+    if (this.scoreType === 'win-lose') {
       const won = this.getControl('Points')?.value ?? false;
       this.getControl('Points')?.setValue(won ? 1 : 0);
     } else {
       // Continue
     }
-    
 
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.playerGame) {

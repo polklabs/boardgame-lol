@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { OrderListModule } from 'primeng/orderlist';
 import { ButtonModule } from 'primeng/button';
+import { ButtonGroupModule } from 'primeng/buttongroup';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
 import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
@@ -29,6 +30,9 @@ import { TextareaComponent } from '../../shared/components/textarea/textarea.com
 import { PipeModule } from '../../shared/pipes/pipe.module';
 import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 import { CheckboxModule } from 'primeng/checkbox';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 type EntityType = GameEntity;
 
@@ -45,12 +49,16 @@ type EntityType = GameEntity;
     CheckboxComponent,
     CheckboxModule,
     ButtonModule,
+    ButtonGroupModule,
     FormsModule,
     ReactiveFormsModule,
     EditorPlayerComponent,
     EditorBoardGameComponent,
     EditorPlayerGameComponent,
     OrderListModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputNumberModule,
     PipeModule,
   ],
   templateUrl: './editor-game.component.html',
@@ -68,6 +76,8 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   private playerList: PlayerEntity[] = [];
   private boardGameList: BoardGameEntity[] = [];
+
+  protected selectedPlayerGame?: PlayerGameEntity;
 
   get boardGames() {
     return [...this.boardGameList, ...this.newBoardGames].sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
@@ -166,6 +176,20 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
+  }
+
+  addPoints(playerGame: PlayerGameEntity, points: number) {
+    playerGame.Points = (playerGame.Points ?? 0) + points;
+    this.updateScoring();
+  }
+
+  setPoints(playerGame: PlayerGameEntity, event: number) {
+    playerGame.Points = event;
+    this.updateScoring();
+  }
+
+  onPlayerSelection(event: PlayerGameEntity) {
+    this.selectedPlayerGame = event;
   }
 
   updateOrdering() {

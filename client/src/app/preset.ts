@@ -45,6 +45,19 @@ export const LaraDark = definePreset(Lara, {
         padding: 0,
       },
     },
+    listbox: {
+      option: {
+        padding: '8px',
+      },
+    },
+    dialog: {
+      header: {
+        padding: '1rem 1rem 4px'
+      },
+      content: {
+        padding: '0 1rem 1rem',
+      },
+    },
     datatable: {
       colorScheme: {
         dark: {

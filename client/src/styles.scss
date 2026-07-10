@@ -61,6 +61,7 @@ body {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  align-items: center;
 }
 
 .flex-column {
@@ -108,10 +109,6 @@ body {
 
 .justify-content-space-between {
   justify-content: space-between;
-}
-
-.p-dialog .p-dialog-header {
-  padding-bottom: 4px;
 }
 
 .p-picklist-item:not(.cdk-drag-disabled) {
