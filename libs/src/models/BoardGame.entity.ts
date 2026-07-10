@@ -2,7 +2,7 @@ import { TableName } from '../decorators/table-name.decorator';
 import { BaseEntity } from './Base.entity';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
-import { CHARACTER_LIMIT_SHORT, CHARACTER_LIMIT_TINY } from '../constants';
+import { CHARACTER_LIMIT_SHORT, CHARACTER_LIMIT_BYTE } from '../constants';
 import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { Nullable } from '../decorators/nullable.decorator';
 import { Expose } from 'class-transformer';
@@ -37,12 +37,12 @@ export class BoardGameEntity extends BaseEntity {
   ScoreType: ScoreType = 'points';
 
   @Nullable()
-  @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
+  @MinMax(1, CHARACTER_LIMIT_BYTE, 'string')
   @Sanitize()
   ScorePrefix: string | null = null;
 
   @Nullable()
-  @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
+  @MinMax(1, CHARACTER_LIMIT_BYTE, 'string')
   @Sanitize()
   ScoreSuffix: string | null = null;
 

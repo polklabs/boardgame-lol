@@ -2,7 +2,7 @@ import { TableName } from '../decorators/table-name.decorator';
 import { BaseEntity } from './Base.entity';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
-import { CHARACTER_LIMIT_SHORT } from '../constants';
+import { CHARACTER_LIMIT_TINY } from '../constants';
 import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { Sanitize } from '../decorators/sanitize.decorator';
 import { Ignore } from '../decorators/ignore.decorator';
@@ -18,7 +18,7 @@ export class PlayerEntity extends BaseEntity {
   @SecondaryKey
   ClubId: string | null = null;
 
-  @MinMax(1, CHARACTER_LIMIT_SHORT, 'string')
+  @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
   @Sanitize()
   Name: string | null = null;
 
