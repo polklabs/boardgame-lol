@@ -23,7 +23,7 @@
     "@angular/platform-browser-dynamic": "^18.2.14",
     "@angular/router": "^18.2.14",
     "@auth0/angular-jwt": "^5.2.0",
-    "@primeng/themes": "^21.0.4",
+    "@primeng/themes": "^18.0.2",
     "chart.js": "^4.4.6",
     "chartjs-plugin-autocolors": "^0.3.1",
     "class-transformer": "^0.5.1",

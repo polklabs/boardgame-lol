@@ -43,7 +43,10 @@
           [showClear]="false"
           optionLabel="Name"
           optionValue="BoardGameId"></app-dropdown>
-        <p-button *ngIf="canEditBoardGame()" (onClick)="editBoardGame(selectedBoardGame)" icon="pi pi-pencil"></p-button>
+        <p-button
+          *ngIf="canEditBoardGame()"
+          (onClick)="editBoardGame(selectedBoardGame)"
+          icon="pi pi-pencil"></p-button>
         <p-button (onClick)="editBoardGame()" pTooltip="New Game" icon="pi pi-plus"></p-button>
       </div>
 
@@ -69,7 +72,9 @@
                     <i *ngIf="index === 0" class="pi pi-trophy" style="color: gold"></i>
                     <div *ngIf="index !== 0" class="empty-trophy"></div>
                     <span>{{ playerGame.Player?.Name }}</span>
-                    <span *ngIf="playerGame.Points !== null">: {{ playerGame.Points | number: '1.0-3' | score: selectedBoardGame }}</span>
+                    <span *ngIf="playerGame.Points !== null">
+                      : {{ playerGame.Points | number: '1.0-3' | score: selectedBoardGame }}
+                    </span>
                   </ng-container>
                   <ng-container *ngSwitchCase="'rank'">
                     <i
@@ -124,7 +129,10 @@
           inputType="number"></app-textinput>
       </div>
 
-      <p-checkbox formControlName="DidNotFinish" label="Did Not Finish Game" [binary]="true"></p-checkbox>
+      <div class="flex items-center">
+        <p-checkbox inputId="dnf" formControlName="DidNotFinish"></p-checkbox>
+        <label for="dnf">Did Not Finish Game</label>
+      </div>
 
       <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
     </form>
