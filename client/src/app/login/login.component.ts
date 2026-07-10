@@ -36,7 +36,6 @@ type ResetPassResp = { ok: boolean; emojis?: string[] };
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [
     CardModule,
     CommonModule,

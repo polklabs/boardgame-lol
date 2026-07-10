@@ -18,7 +18,6 @@ type EntityType = ClubEntity;
 
 @Component({
   selector: 'app-editor-club',
-  standalone: true,
   imports: [
     CommonModule,
     DialogModule,

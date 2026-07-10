@@ -10,7 +10,6 @@ import { TrophyService } from '../../shared/services/trophy.service';
 
 @Component({
   selector: 'app-board-game-table',
-  standalone: true,
   imports: [TableModule, ButtonModule, PipeModule, CommonModule],
   templateUrl: './board-game-table.component.html',
   styleUrl: './board-game-table.component.scss',

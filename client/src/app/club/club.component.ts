@@ -30,7 +30,6 @@ import { TabsModule } from 'primeng/tabs';
 
 @Component({
   selector: 'app-club',
-  standalone: true,
   imports: [
     MenuBarComponent,
     EditorGameComponent,

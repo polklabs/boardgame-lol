@@ -15,7 +15,6 @@ type DayItem = { color: string; tooltip: string; icon?: string };
 
 @Component({
   selector: 'app-stats',
-  standalone: true,
   imports: [TooltipModule, PipeModule, ChartModule, CommonModule],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',

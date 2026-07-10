@@ -12,7 +12,6 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
 
 @Component({
   selector: 'app-textarea',
-  standalone: true,
   imports: [TextareaModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './textarea.component.html',
   styleUrl: './textarea.component.scss',

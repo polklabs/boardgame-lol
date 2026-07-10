@@ -12,7 +12,6 @@ import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-dropdown',
-  standalone: true,
   imports: [SelectModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.scss',

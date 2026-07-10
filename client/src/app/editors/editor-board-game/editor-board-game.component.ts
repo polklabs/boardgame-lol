@@ -27,7 +27,6 @@ type EntityType = BoardGameEntity;
 
 @Component({
   selector: 'app-editor-board-game',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -127,7 +126,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
       this.hideFields.add('exampleScore');
     }
     this.getControl('exampleScore')?.setValue(
-      `${this.getControl('ScorePrefix')?.value??''}42${this.getControl('ScoreSuffix')?.value??''}`,
+      `${this.getControl('ScorePrefix')?.value ?? ''}42${this.getControl('ScoreSuffix')?.value ?? ''}`,
     );
     this.getControl('exampleScore')?.disable();
   }

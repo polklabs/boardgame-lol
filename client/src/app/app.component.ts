@@ -9,7 +9,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterOutlet, CommonModule, ProgressSpinnerModule, ToastModule, ConfirmDialogModule],
   providers: [],
   templateUrl: './app.component.html',

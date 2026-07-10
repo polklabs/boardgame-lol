@@ -38,7 +38,6 @@ type EntityType = GameEntity;
 
 @Component({
   selector: 'app-editor-game',
-  standalone: true,
   imports: [
     CommonModule,
     DialogModule,
@@ -294,6 +293,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
     this.playerGameEdit = undefined;
     this.playerGameEditorVisible = false;
+    this.selectedPlayerGame = undefined;
   }
 
   editPlayer(player?: PlayerEntity) {

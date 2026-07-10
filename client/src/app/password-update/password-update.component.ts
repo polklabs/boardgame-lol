@@ -15,7 +15,6 @@ type PassChangePost = { CurrentPassword: string; Password: string };
 
 @Component({
   selector: 'app-password-update',
-  standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, ButtonModule, PasswordComponent, DialogModule],
   templateUrl: './password-update.component.html',
   styleUrl: './password-update.component.scss',

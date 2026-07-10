@@ -12,7 +12,6 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
 
 @Component({
   selector: 'app-textinput',
-  standalone: true,
   imports: [InputTextModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './textinput.component.html',
   styleUrl: './textinput.component.scss',
@@ -44,5 +43,5 @@ export class TextInputComponent implements ControlValueAccessor {
 
   registerOnChange(): void {}
 
-  registerOnTouched(): void {}  
+  registerOnTouched(): void {}
 }

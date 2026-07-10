@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'hide',
+  standalone: false,
 })
 export class HidePipe implements PipeTransform {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

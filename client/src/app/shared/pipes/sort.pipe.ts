@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'sort',
+  standalone: false,
 })
 export class SortPipe implements PipeTransform {
   transform<T>(value: T[] | undefined, key: string = ''): T[] {

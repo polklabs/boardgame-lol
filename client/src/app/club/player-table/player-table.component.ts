@@ -10,7 +10,6 @@ import { ITrophy } from '../../shared/trophies/trophy.model';
 
 @Component({
   selector: 'app-player-table',
-  standalone: true,
   imports: [TableModule, ButtonModule, PipeModule, CommonModule],
   templateUrl: './player-table.component.html',
   styleUrl: './player-table.component.scss',

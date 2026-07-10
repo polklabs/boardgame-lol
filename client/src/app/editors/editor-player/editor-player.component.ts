@@ -15,7 +15,6 @@ type EntityType = PlayerEntity;
 
 @Component({
   selector: 'app-editor-player',
-  standalone: true,
   imports: [
     CommonModule,
     DialogModule,

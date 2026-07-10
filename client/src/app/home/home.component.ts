@@ -12,7 +12,6 @@ import { EditorClubComponent } from '../editors/editor-club/editor-club.componen
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   imports: [CommonModule, RouterModule, CardModule, ButtonModule, MenuBarComponent, EditorClubComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -45,8 +44,8 @@ export class HomeComponent implements OnInit {
     }
   }
 
-    newClub() {
-      this.editClub = new ClubEntity();
-      this.editorClubVisible = true;
-    }
+  newClub() {
+    this.editClub = new ClubEntity();
+    this.editorClubVisible = true;
+  }
 }

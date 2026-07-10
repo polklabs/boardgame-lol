@@ -12,7 +12,6 @@ import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-games-table',
-  standalone: true,
   imports: [
     TableModule,
     TagModule,

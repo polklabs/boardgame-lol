@@ -12,7 +12,6 @@ import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
   selector: 'app-calendar',
-  standalone: true,
   imports: [DatePickerModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',
@@ -43,5 +42,5 @@ export class CalendarComponent implements ControlValueAccessor {
 
   registerOnChange(): void {}
 
-  registerOnTouched(): void {}  
+  registerOnTouched(): void {}
 }

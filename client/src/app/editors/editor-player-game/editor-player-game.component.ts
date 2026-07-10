@@ -16,7 +16,6 @@ type EntityType = PlayerGameEntity;
 
 @Component({
   selector: 'app-editor-player-game',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,

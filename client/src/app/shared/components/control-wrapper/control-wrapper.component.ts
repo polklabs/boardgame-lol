@@ -7,7 +7,6 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-control-wrapper',
-  standalone: true,
   imports: [CommonModule, FloatLabelModule],
   templateUrl: './control-wrapper.component.html',
   styleUrl: './control-wrapper.component.scss',

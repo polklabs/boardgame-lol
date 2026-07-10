@@ -12,7 +12,6 @@ import { PasswordUpdateComponent } from '../password-update/password-update.comp
 
 @Component({
   selector: 'app-menu-bar',
-  standalone: true,
   imports: [CommonModule, ButtonModule, SplitButtonModule, MenuModule, LoginComponent, PasswordUpdateComponent],
   templateUrl: './menu-bar.component.html',
   styleUrl: './menu-bar.component.scss',

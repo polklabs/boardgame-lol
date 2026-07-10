@@ -45,7 +45,7 @@
     }
   }
 
-  .p-listbox-list {
+  .p-listbox-list-container {
     min-height: 12rem;
   }
 
@@ -87,6 +87,11 @@
         border-radius: 8px;
       }
     }
+  }
+  
+  .empty-list {
+    text-align: center;
+    margin-top: 4rem;
   }
 
   .p-orderlist > .p-orderlist-controls {

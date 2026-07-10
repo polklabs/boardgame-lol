@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'array',
+  standalone: false,
 })
 export class ArrayPipe implements PipeTransform {
   transform<T>(value: T[] | undefined, keys: string | string[]): string {

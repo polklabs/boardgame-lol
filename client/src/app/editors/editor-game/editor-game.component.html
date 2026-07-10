@@ -102,6 +102,9 @@
             [ngTemplateOutlet]="orderListItem"
             [ngTemplateOutletContext]="{ $implicit: playerGame }"></ng-container>
         </ng-template>
+        <ng-template pTemplate="empty">
+          <div class="empty-list">Add a player to start</div>
+        </ng-template>
       </p-orderList>
 
       <div class="flex-grow gap-8 width-100">

@@ -13,7 +13,6 @@ import { DividerModule } from 'primeng/divider';
 
 @Component({
   selector: 'app-password',
-  standalone: true,
   imports: [PasswordModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent, DividerModule],
   templateUrl: './password.component.html',
   styleUrl: './password.component.scss',
