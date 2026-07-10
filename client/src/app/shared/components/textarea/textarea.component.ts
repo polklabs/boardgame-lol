@@ -7,13 +7,13 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 
 @Component({
   selector: 'app-textarea',
   standalone: true,
-  imports: [InputTextareaModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
+  imports: [TextareaModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './textarea.component.html',
   styleUrl: './textarea.component.scss',
   providers: [

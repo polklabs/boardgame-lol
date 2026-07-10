@@ -11,8 +11,7 @@ import { EditorPlayerComponent } from '../editors/editor-player/editor-player.co
 import { TableModule } from 'primeng/table';
 import { UserService } from '../shared/services/user.service';
 import { ButtonModule } from 'primeng/button';
-import { TabViewModule } from 'primeng/tabview';
-import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { PipeModule } from '../shared/pipes/pipe.module';
 import { InputTextModule } from 'primeng/inputtext';
 import { GamesTableComponent } from './games-table/games-table.component';
@@ -26,7 +25,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { BadgeModule } from 'primeng/badge';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { CheckboxModule } from 'primeng/checkbox';
-import { CalendarModule } from "primeng/calendar";
+import { CalendarModule } from 'primeng/calendar';
+import { TabsModule } from 'primeng/tabs';
 
 @Component({
   selector: 'app-club',
@@ -40,7 +40,7 @@ import { CalendarModule } from "primeng/calendar";
     CommonModule,
     TableModule,
     ButtonModule,
-    TabViewModule,
+    TabsModule,
     InputTextModule,
     CardModule,
     PipeModule,
@@ -48,14 +48,14 @@ import { CalendarModule } from "primeng/calendar";
     PlayerTableComponent,
     BoardGameTableComponent,
     StatsComponent,
-    OverlayPanelModule,
+    PopoverModule,
     FormsModule,
     MultiSelectModule,
     BadgeModule,
     FloatLabelModule,
     CheckboxModule,
     CalendarModule,
-],
+  ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })
@@ -176,12 +176,12 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.apiService.updateGameIndex(game.GameId, -1);
   }
 
-  enableFilter(filter: OverlayPanel) {
+  enableFilter(filter: Popover) {
     filter.hide();
     this.apiService.filter(true, this.playerIds, this.gameIds, this.daysOfWeek, this.startDate, this.dnf);
   }
 
-  disableFilter(filter: OverlayPanel) {
+  disableFilter(filter: Popover) {
     filter.hide();
     this.apiService.filter(false, [], [], [], null, true);
   }

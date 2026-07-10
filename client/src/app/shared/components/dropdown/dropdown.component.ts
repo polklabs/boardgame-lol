@@ -7,13 +7,13 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-dropdown',
   standalone: true,
-  imports: [DropdownModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
+  imports: [SelectModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.scss',
   providers: [

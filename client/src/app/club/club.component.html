@@ -33,44 +33,44 @@
   <h1>{{ title }}</h1>
 
   <div>
-    <p-tabView>
-      <p-tabPanel header="Overview">
-        <!-- Overview goes here -->
-        <ng-template pTemplate="content">
+    <p-tabs value="0" [lazy]="true">
+      <p-tablist>
+        <p-tab value="0">Overview</p-tab>
+        <p-tab value="1">Plays: {{ ((games$ | async) ?? []).length }}</p-tab>
+        <p-tab value="2">Players: {{ ((players$ | async) ?? []).length }}</p-tab>
+        <p-tab value="3">Games: {{ ((boardGames$ | async) ?? []).length }}</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <!-- Overview goes here -->
           <app-stats></app-stats>
-        </ng-template>
-      </p-tabPanel>
-      <p-tabPanel header="Plays: {{ ((games$ | async) ?? []).length }}">
-        <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
-        <ng-template pTemplate="content">
+        </p-tabpanel>
+        <p-tabpanel value="1">
+          <!-- Games/Plays ----------------------------------------------------------------------------------------- -->
           <app-games-table
             [games$]="games$"
             [canEdit]="canEdit"
             (gameEdit)="gameEdit($event)"
             (moveUp)="moveUp($event)"
             (moveDown)="moveDown($event)"></app-games-table>
-        </ng-template>
-      </p-tabPanel>
-      <p-tabPanel header="Players: {{ ((players$ | async) ?? []).length }}">
-        <!-- Players --------------------------------------------------------------------------------------------- -->
-        <ng-template pTemplate="content">
+        </p-tabpanel>
+        <p-tabpanel value="2">
+          <!-- Players --------------------------------------------------------------------------------------------- -->
           <app-player-table
             [players$]="players$"
             [canEdit]="canEdit"
             (playerEdit)="playerEdit($event)"></app-player-table>
-        </ng-template>
-      </p-tabPanel>
-      <p-tabPanel header="Games: {{ ((boardGames$ | async) ?? []).length }}">
-        <!-- BoardGames ----------------------------------------------------------------------------------------- -->
-        <ng-template pTemplate="content">
+        </p-tabpanel>
+        <p-tabpanel value="3">
+          <!-- BoardGames ----------------------------------------------------------------------------------------- -->
           <app-board-game-table
             [boardGames$]="boardGames$"
             [players]="players$ | async"
             [canEdit]="canEdit"
             (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
-        </ng-template>
-      </p-tabPanel>
-    </p-tabView>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
 
     <div (click)="filter.toggle($event)" class="filter-button">
       <i
@@ -80,7 +80,7 @@
         severity="danger"></i>
     </div>
   </div>
-  <p-overlayPanel #filter>
+  <p-popover #filter>
     <div class="flex flex-column gap-8 filter-wrapper">
       <h3>Filter</h3>
 
@@ -136,5 +136,5 @@
         </div>
       </ng-template>
     </div>
-  </p-overlayPanel>
+  </p-popover>
 </div>

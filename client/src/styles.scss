@@ -1,9 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'primeng/resources/themes/lara-dark-blue/theme.css';
-@import 'primeng/resources/primeng.css';
 @import 'primeicons/primeicons.css';
 
 :root {
+  font-family: Roboto, sans-serif;
   --poster-width: 186px;
   --poster-height: 279px;
   --giant-text: 42px;
@@ -15,9 +14,6 @@
 
 // 500px breaking point
 @media only screen and (max-width: 500px) {
-  // .show-lt-500px {
-  //   display: initial !important;
-  // }
   .show-gt-500px {
     display: none !important;
   }
@@ -26,16 +22,10 @@
   .show-lt-500px {
     display: none !important;
   }
-  // .show-gt-500px {
-  //   display: initial !important;
-  // }
 }
 
 // 700px breaking point
 @media only screen and (max-width: 700px) {
-  // .show-lt-700px {
-  //   display: initial !important;
-  // }
   .show-gt-700px {
     display: none !important;
   }
@@ -44,9 +34,6 @@
   .show-lt-700px {
     display: none !important;
   }
-  // .show-gt-700px {
-  //   display: initial !important;
-  // }
 }
 
 body {
