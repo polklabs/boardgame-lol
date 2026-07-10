@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ITrophy } from '../trophies/trophy.model';
 import { TrophyMostWins } from '../trophies/trophy-most-wins';
 import { TrophyBestComeback } from '../trophies/trophy-best-comeback';
@@ -36,7 +36,9 @@ export class TrophyService {
 
   readonly trophies$ = new BehaviorSubject<ITrophy[]>([]);
 
-  constructor(apiService: ApiService) {
+  constructor() {
+    const apiService = inject(ApiService);
+
     apiService.dataUpdate$.subscribe(() => {
       const values = Object.values(this._trophies);
       values.forEach((t) => {

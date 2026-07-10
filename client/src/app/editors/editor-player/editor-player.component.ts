@@ -1,5 +1,5 @@
 
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
@@ -27,6 +27,13 @@ type EntityType = PlayerEntity;
   styleUrl: './editor-player.component.scss',
 })
 export class EditorPlayerComponent implements OnChanges {
+  private fb = inject(FormBuilder);
+  private apiService = inject(ApiService);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+
   @Input() editorVisible = false;
   @Input() player?: PlayerEntity;
   @Input() standalone = true;
@@ -42,15 +49,6 @@ export class EditorPlayerComponent implements OnChanges {
   hideFields: Set<keyof EntityType> = new Set();
 
   subtypes: string[] = [];
-
-  constructor(
-    private fb: FormBuilder,
-    private apiService: ApiService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private cdr: ChangeDetectorRef,
-    private router: Router,
-  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('player' in changes && this.player) {

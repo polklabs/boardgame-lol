@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { PipeModule } from '../../shared/pipes/pipe.module';
@@ -31,7 +31,9 @@ export class PlayerTableComponent {
     { field: 'FirstSeen', name: 'First Seen', sort: true },
   ];
 
-  constructor(trophyService: TrophyService) {
+  constructor() {
+    const trophyService = inject(TrophyService);
+
     this.mostWins = trophyService.getTrophy('MostWins');
   }
 

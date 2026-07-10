@@ -124,7 +124,6 @@ export class ClubComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.apiService.dataUpdate$.subscribe(() => {
-        console.log('Reset Filter Data');
         this.gameIds = this.apiService.boardGameList.map((x) => x.BoardGameId ?? '');
         this.playerIds = this.apiService.playerList.map((x) => x.PlayerId ?? '');
         this.dnf = true;

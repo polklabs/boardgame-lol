@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { PipeModule } from '../../shared/pipes/pipe.module';
@@ -46,7 +46,9 @@ export class BoardGameTableComponent implements OnChanges {
 
   mostPlays: ITrophy;
 
-  constructor(trophyService: TrophyService) {
+  constructor() {
+    const trophyService = inject(TrophyService);
+
     this.mostPlays = trophyService.getTrophy('MostPlays');
   }
 

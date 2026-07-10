@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { JwtModel } from 'libs/index';
 
@@ -11,10 +11,10 @@ type StringSet = string | null | undefined;
   providedIn: 'root',
 })
 export class StorageService {
+  private jwtHelper = inject(JwtHelperService);
+
   private _userId = '';
   private _preferences: Record<string, string | number | null | undefined> | null = null;
-
-  constructor(private jwtHelper: JwtHelperService) {}
 
   async getString(key: string, defaultValue: StringSet): Promise<StringSet> {
     await this.getPreferences();

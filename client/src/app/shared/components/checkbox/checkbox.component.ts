@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Optional, Output, Self } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 
@@ -9,6 +9,8 @@ import { CheckboxModule } from 'primeng/checkbox';
   styleUrl: './checkbox.component.scss',
 })
 export class CheckboxComponent implements ControlValueAccessor {
+  private ngControl = inject(NgControl, { optional: true, self: true });
+
   @Input() label?: string;
   @Input() hiddenFields = new Set<string>();
   @Output() changed = new EventEmitter<boolean>();
@@ -20,10 +22,10 @@ export class CheckboxComponent implements ControlValueAccessor {
   private onTouched: () => void = () => {};
 
   get inputId(): string {
-    return `${this.ngControl.name ?? ''}`;
+    return `${this.ngControl?.name ?? ''}`;
   }
 
-  constructor(@Optional() @Self() private ngControl: NgControl) {
+  constructor() {
     if (this.ngControl) {
       // Tell Angular this component is the value accessor
       this.ngControl.valueAccessor = this;

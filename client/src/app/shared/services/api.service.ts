@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpService } from './http.service';
 import { BehaviorSubject } from 'rxjs';
 import {
@@ -16,6 +16,8 @@ import { format } from 'date-fns';
   providedIn: 'root',
 })
 export class ApiService {
+  private httpService = inject(HttpService);
+
   // Instances
   private _publicClubs: ClubEntity[] = [];
   private _club?: ClubEntity;
@@ -106,8 +108,6 @@ export class ApiService {
     this._publicClubs = publicClubs.map((x) => new ClubEntity(x, true));
     this.publicClubs$.next(this._publicClubs);
   }
-
-  constructor(private httpService: HttpService) {}
 
   unloadClub() {
     this.club = undefined;

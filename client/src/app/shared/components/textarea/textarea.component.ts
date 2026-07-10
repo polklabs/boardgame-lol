@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroupDirective,
@@ -24,6 +24,8 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
   ],
 })
 export class TextareaComponent implements ControlValueAccessor {
+  private formGroupDirective = inject(FormGroupDirective);
+
   @Input() formControlName!: string;
   @Input() label?: string;
   @Input() entityType: unknown;
@@ -36,8 +38,6 @@ export class TextareaComponent implements ControlValueAccessor {
   get formGroup() {
     return this.formGroupDirective.form;
   }
-
-  constructor(private formGroupDirective: FormGroupDirective) {}
 
   writeValue(): void {}
 

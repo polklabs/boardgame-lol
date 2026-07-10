@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HttpService } from './shared/services/http.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -19,7 +19,9 @@ export class AppComponent {
 
   showSpinner$: Observable<boolean>;
 
-  constructor(httpService: HttpService) {
+  constructor() {
+    const httpService = inject(HttpService);
+
     this.showSpinner$ = httpService.loadingSpinner$;
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { tokenGetter, tokenSetter } from '../../app.config';
 import { BehaviorSubject } from 'rxjs';
@@ -11,6 +11,9 @@ export type AccessIds = { id: string; name: string; summary: string; username: s
   providedIn: 'root',
 })
 export class UserService {
+  private jwtHelper = inject(JwtHelperService);
+  private httpService = inject(HttpService);
+
   loggedIn$ = new BehaviorSubject<boolean>(false);
   accessIds$ = new BehaviorSubject<AccessIds[]>([]);
   adminIds$ = new BehaviorSubject<string[]>([]);
@@ -33,10 +36,7 @@ export class UserService {
     return this.loggedIn$;
   }
 
-  constructor(
-    private jwtHelper: JwtHelperService,
-    private httpService: HttpService,
-  ) {
+  constructor() {
     const isLoggedIn = this.isLoggedIn();
     this.loggedIn$.next(isLoggedIn);
     if (isLoggedIn) {

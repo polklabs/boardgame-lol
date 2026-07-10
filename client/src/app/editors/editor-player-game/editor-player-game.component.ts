@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { isGuid, PlayerEntity, PlayerGameEntity, ScoreType } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
@@ -31,6 +31,10 @@ type EntityType = PlayerGameEntity;
   styleUrl: './editor-player-game.component.scss',
 })
 export class EditorPlayerGameComponent implements OnChanges {
+  private fb = inject(FormBuilder);
+  private confirmationService = inject(ConfirmationService);
+  private cdr = inject(ChangeDetectorRef);
+
   @Input() editorVisible = false;
   @Input() playerGame?: PlayerGameEntity;
   @Input() players: PlayerEntity[] = [];
@@ -53,12 +57,6 @@ export class EditorPlayerGameComponent implements OnChanges {
 
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
-
-  constructor(
-    private fb: FormBuilder,
-    private confirmationService: ConfirmationService,
-    private cdr: ChangeDetectorRef,
-  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('playerGame' in changes && this.playerGame) {

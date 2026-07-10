@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PipeModule } from '../../shared/pipes/pipe.module';
 import { addDays, addYears, format } from 'date-fns';
@@ -20,6 +20,9 @@ type DayItem = { color: string; tooltip: string; icon?: string };
   styleUrl: './stats.component.scss',
 })
 export class StatsComponent implements OnInit {
+  private apiService = inject(ApiService);
+  private trophyService = inject(TrophyService);
+
   heatmap: { days: DayItem[]; month: string }[] = [];
   colors = ['#1C2532', '#0E4429', '#006D32', '#26A641', '#39D353'];
 
@@ -54,11 +57,6 @@ export class StatsComponent implements OnInit {
   private surfaceBorder = 'transparent';
 
   subscriptions = new Subscription();
-
-  constructor(
-    private apiService: ApiService,
-    private trophyService: TrophyService,
-  ) {}
 
   ngOnInit(): void {
     this.calculateChartColors();

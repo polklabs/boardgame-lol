@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, forwardRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroupDirective,
@@ -24,6 +24,8 @@ import { SelectModule } from 'primeng/select';
   ],
 })
 export class DropdownComponent implements ControlValueAccessor {
+  private formGroupDirective = inject(FormGroupDirective);
+
   @Input() formControlName!: string;
   @Input() label?: string;
   @Input() entityType: unknown;
@@ -41,8 +43,6 @@ export class DropdownComponent implements ControlValueAccessor {
   get formGroup() {
     return this.formGroupDirective.form;
   }
-
-  constructor(private formGroupDirective: FormGroupDirective) {}
 
   writeValue(): void {}
 

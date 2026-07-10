@@ -1,5 +1,5 @@
 
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { PasswordComponent } from '../shared/components/password/password.component';
@@ -20,6 +20,10 @@ type PassChangePost = { CurrentPassword: string; Password: string };
   styleUrl: './password-update.component.scss',
 })
 export class PasswordUpdateComponent implements OnInit {
+  private httpService = inject(HttpService);
+  private messageService = inject(MessageService);
+  private fb = inject(FormBuilder);
+
   @Output() closeForm = new EventEmitter<void>();
 
   passChangeFormGroup!: FormGroup;
@@ -27,12 +31,6 @@ export class PasswordUpdateComponent implements OnInit {
   headerText = 'CHANGE PASSWORD';
 
   entityType = UserEntity;
-
-  constructor(
-    private httpService: HttpService,
-    private messageService: MessageService,
-    private fb: FormBuilder,
-  ) {}
 
   ngOnInit(): void {
     this.passChangeFormGroup = this.fb.group({
