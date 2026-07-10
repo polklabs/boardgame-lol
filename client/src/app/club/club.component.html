@@ -84,7 +84,6 @@
         <p-multiSelect
           [options]="(ogBoardGames$ | async) ?? [] | sort: 'Name'"
           [(ngModel)]="gameIds"
-          [filter]="false"
           selectedItemsLabel="{0} games selected"
           appendTo="body"
           optionLabel="Name"
@@ -97,7 +96,6 @@
         <p-multiSelect
           [options]="(ogPlayers$ | async) ?? [] | sort: 'Name'"
           [(ngModel)]="playerIds"
-          [filter]="false"
           selectedItemsLabel="{0} players selected"
           appendTo="body"
           optionLabel="Name"
@@ -110,19 +108,21 @@
         <p-multiSelect
           [options]="dow"
           [(ngModel)]="daysOfWeek"
-          [filter]="false"
           selectedItemsLabel="{0} days selected"
           appendTo="body"
           placeholder="Select Days" />
-        <label for="username">Days</label>
+        <label for="username">Days of Week</label>
       </p-floatLabel>
 
-      <p-checkbox [(ngModel)]="dnf" label="Include Did Not Finish" binary="true"></p-checkbox>
+      <div class="flex items-center">
+        <p-checkbox inputId="dnf" [(ngModel)]="dnf" [binary]="true" />
+        <label for="dnf" class="ml-2">Include Did Not Finish</label>
+      </div>
 
       <div
         class="flex gap-8 justify-content-space-between"
         *ngIf="(filterEnabled$ | async) === true; else filterEnabled">
-        <p-button (onClick)="disableFilter(filter)" [outlined]="true" severity="secondary">Disable</p-button>
+        <p-button (onClick)="disableFilter(filter)" [outlined]="true" severity="secondary">Reset</p-button>
         <p-button (onClick)="enableFilter(filter)" [outlined]="true">Update</p-button>
       </div>
       <ng-template #filterEnabled>
