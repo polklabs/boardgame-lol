@@ -35,11 +35,32 @@
     }
   }
 
+  .p-listbox-header {
+    padding: 1.5rem;
+    font-weight: 700;
+    border: solid var(--p-surface-600);
+    border-width: 0 0 1px 0;
+  }
+
+  .p-listbox-list {
+    min-height: 12rem;
+  }
+
+  .p-orderlist-list-container {
+    width: 100%;
+  }
+
+  .p-listbox-option {
+    cursor: default;
+  }
+
   .order-list-header,
   .pick-list-header,
   .list-items {
     display: flex;
     position: relative;
+    width: 100%;
+    cursor: default;
 
     p-button:first-child {
       position: absolute;
@@ -53,11 +74,19 @@
     }
   }
 
-  .p-orderlist>.p-orderlist-controls {
+  .p-orderlist > .p-orderlist-controls {
     display: none;
   }
-  .can-order .p-orderlist>.p-orderlist-controls {
-    display: flex;
+  .can-order {
+    .p-orderlist > .p-orderlist-controls {
+      display: flex;
+    }
+    .p-listbox-option {
+      cursor: ns-resize;
+    }
+    .list-items {
+      cursor: ns-resize;
+    }
   }
 
   .DNF {

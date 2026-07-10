@@ -63,6 +63,11 @@ body {
   width: 100%;
 }
 
+.items-center {
+  gap: 8px;
+  align-items: center;
+}
+
 .gap-1 {
   gap: 1px;
 }
@@ -120,4 +125,12 @@ form {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.p-datatable-table .p-datatable-thead tr th {
+  padding: 0.5rem;
+}
+.p-datatable-table .p-datatable-tbody tr td {
+  border: 1px solid var(--p-surface-700);
+  border-width: 0 0 1px 0;
 }

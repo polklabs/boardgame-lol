@@ -7,11 +7,22 @@ import { Table, TableModule } from 'primeng/table';
 import { Observable } from 'rxjs';
 import { PipeModule } from '../../shared/pipes/pipe.module';
 import { TagModule } from 'primeng/tag';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-games-table',
   standalone: true,
-  imports: [TableModule, TagModule, InputTextModule, ButtonModule, CommonModule, PipeModule],
+  imports: [
+    TableModule,
+    TagModule,
+    InputTextModule,
+    ButtonModule,
+    CommonModule,
+    PipeModule,
+    IconFieldModule,
+    InputIconModule,
+  ],
   templateUrl: './games-table.component.html',
   styleUrl: './games-table.component.scss',
 })

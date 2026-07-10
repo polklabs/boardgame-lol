@@ -4,6 +4,7 @@
     [value]="(games$ | async) ?? []"
     dataKey="GameId"
     [scrollable]="true"
+    [stripedRows]="true"
     scrollHeight="flex"
     styleClass="p-datatable-striped p-datatable-sm"
     sortField="dateSortOrder"
@@ -15,15 +16,15 @@
     <ng-template pTemplate="caption">
       <div class="flex justify-content-center">
         <div></div>
-        <span class="p-input-icon-left ml-auto filter-box">
-          <i class="pi pi-search"></i>
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search" />
           <input
             #gameTableFilter
             pInputText
             type="text"
             (input)="filterTable(gameTable, $event)"
             placeholder="Search keyword" />
-        </span>
+        </p-iconfield>
       </div>
     </ng-template>
     <ng-template pTemplate="header">
