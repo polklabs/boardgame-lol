@@ -1,3 +1,5 @@
+import { getPrimaryKey } from '../decorators/primary-key.decorator';
+
 export function Mode<T>(arr: Array<T>, predicate: (elem: T) => string | number) {
   const counts: { [key: string | number]: { e: T; count: number } } = {};
   arr.forEach(function (e) {
@@ -37,4 +39,15 @@ export function UnicodeToEmoji(unicode: string): string {
     .map((cp) => Number.parseInt(cp.replace('U+', ''), 16));
 
   return String.fromCodePoint(...codePoints);
+}
+
+export function ConvertListToDict<T>(list: T[], entityType: new (partial: Partial<T>) => T): Record<string, T> {
+  const toReturn: Record<string, T> = {};
+  const primaryKey = getPrimaryKey(entityType) as keyof T;
+
+  list.forEach((item) => {
+    toReturn[(item[primaryKey] as string) ?? ''] = item;
+  });
+
+  return toReturn;
 }

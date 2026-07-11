@@ -1,4 +1,3 @@
-import { Exclude } from 'class-transformer';
 import 'reflect-metadata'; // This must be imported here for the prod build to work
 import { getIgnore } from '../decorators/ignore.decorator';
 
