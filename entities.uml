@@ -1,0 +1,106 @@
+@startuml
+abstract class Base {
+  +CreatedDate: string
+  +CreatedBy: string
+  +LastModifiedDate: string
+  +LastModifiedBy: string
+  calculateFields()
+}
+
+class Club {
+  +ClubId: string
+  +Name: string
+  +Public: bool
+  +Summary: string | null
+}
+
+class User {
+  +UserId: string
+  +Username: string
+  +Email: string
+  +EmailVerified: bool
+  +Deleted: bool
+  -EmailVerificationCode: string | null
+  -EmailVerificationCodeDateTime: string | null
+  -Password: string
+  -PasswordResetCode: string | null
+  -PasswordResetCodeDateTime: string | null
+}
+
+ClubUser }-- Club
+ClubUser }-- User
+class ClubUser {
+  +ClubUserId: string
+  +ClubId: string
+  +UserId: string
+  +Admin: bool
+}
+
+BoardGame }-- Club
+class BoardGame {
+    +BoardGameId: string
+    +ClubId: string
+    +Name: string
+    +ScoreType: Enum
+    +ScorePrefix: string
+    +ScoreSuffix: sctring
+    +BoardGameGeekId: string | null
+    ~Games: Game[]
+    ~Champions: Player[]
+    ChampionWins: number
+    MaxPlayers: number
+    AveragePlayers: number
+    MaxScore: number
+    AverageScore: number
+    AverageWinningScore: number
+    exampleScore: string
+    boardGameGeekUrl()
+}
+
+Game }-- BoardGame
+class Game {
+    +GameId: string
+    +ClubId: string
+    +BoardGameId: string
+    +Date: string
+    +SortIndex: number | null
+    +Players: number
+    +DidNotFinish: bool
+    +Notes: string | null
+    ~BoardGame: BoardGame
+    ~Scores: PlayerGame[]
+    ~Winners: Player[]
+    newest: bool
+    oldest: bool
+    DateObj: Date
+    HighScore: number
+}
+
+Player }-- Club
+class Player {
+    +PlayerId: string
+    +ClubId: string
+    +Name: string
+    +IsRealPerson: bool
+}
+
+PlayerGame -- Player
+PlayerGame }-- Game
+class PlayerGame {
+    +PlayerGameId: string
+    +ClubId: string
+    +PlayerId: string
+    +GameId: string
+    +Points: number | null
+}
+
+Tag }-- Club
+Tag }..{ Game
+Tag }..{ Player
+Tag }..{ BoardGame
+class Tag {
+    +TagId: string
+    +ClubId: string
+    +Text: string
+}
+@enduml
