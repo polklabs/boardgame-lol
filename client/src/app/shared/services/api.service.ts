@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import {
   BoardGameEntity,
   ClubEntity,
+  ConvertListToDict,
   GameEntity,
   GameReturn,
   GameWrapper,
@@ -21,10 +22,16 @@ export class ApiService {
   // Instances
   private _publicClubs: ClubEntity[] = [];
   private _club?: ClubEntity;
-  private _boardGameList: BoardGameEntity[] = [];
-  private _playerList: PlayerEntity[] = [];
-  private _gameList: GameEntity[] = [];
-  private _playerGameList: PlayerGameEntity[] = [];
+  private _boardGameListFull: BoardGameEntity[] = [];
+  private _playerListFull: PlayerEntity[] = [];
+  private _gameListFull: GameEntity[] = [];
+  private _playerGameListFull: PlayerGameEntity[] = [];
+
+  // Maps
+  private _boardGameDict: Record<string, BoardGameEntity> = {};
+  private _playerDict: Record<string, PlayerEntity> = {};
+  private _gameDict: Record<string, GameEntity> = {};
+  private _playerGameDict: Record<string, PlayerGameEntity> = {};
 
   // Filters
   private _filterEnabled = false;
@@ -42,8 +49,8 @@ export class ApiService {
   readonly dataUpdate$ = new BehaviorSubject<void>(undefined);
   readonly publicClubs$ = new BehaviorSubject<typeof this._publicClubs>([]);
   readonly club$ = new BehaviorSubject<typeof this._club>(undefined);
-  readonly boardGameList$ = new BehaviorSubject<typeof this._boardGameList>([]);
-  readonly playerList$ = new BehaviorSubject<typeof this._playerList>([]);
+  readonly boardGameList$ = new BehaviorSubject<typeof this._boardGameListFull>([]);
+  readonly playerList$ = new BehaviorSubject<typeof this._playerListFull>([]);
   readonly filteredBoardGameList$ = new BehaviorSubject<typeof this._fBoardGameList>([]);
   readonly filteredPlayerList$ = new BehaviorSubject<typeof this._fPlayerList>([]);
   readonly filteredGameList$ = new BehaviorSubject<typeof this._fGameList>([]);
@@ -66,28 +73,49 @@ export class ApiService {
   get boardGameList() {
     return this._fBoardGameList;
   }
+  getBoardGame(key: string): BoardGameEntity | undefined {
+    return this._boardGameDict[key];
+  }
   private set boardGameList(boardGameList: BoardGameEntity[]) {
-    this._fBoardGameList = boardGameList.map((x) => new BoardGameEntity(x, true));
+    this._boardGameListFull = boardGameList.map((x) => new BoardGameEntity(x));
+    this._boardGameDict = ConvertListToDict(this._boardGameListFull, BoardGameEntity);
+    this.boardGameList$.next(this._boardGameListFull);
+  }
+  private set fBoardGameList(boardGameList: BoardGameEntity[]) {
+    this._fBoardGameList = boardGameList;
     this.filteredBoardGameList$.next(this._fBoardGameList);
-    this.boardGameList$.next(this._boardGameList);
   }
 
   // Players
   get playerList() {
     return this._fPlayerList;
   }
+  getPlayer(key: string): PlayerEntity | undefined {
+    return this._playerDict[key];
+  }
   private set playerList(playerList: PlayerEntity[]) {
-    this._fPlayerList = playerList.map((x) => new PlayerEntity(x, true));
+    this._playerListFull = playerList.map((x) => new PlayerEntity(x));
+    this._playerDict = ConvertListToDict(this._playerListFull, PlayerEntity);
+    this.playerList$.next(this._playerListFull);
+  }
+  private set fPlayerList(playerList: PlayerEntity[]) {
+    this._fPlayerList = playerList;
     this.filteredPlayerList$.next(this._fPlayerList);
-    this.playerList$.next(this._playerList);
   }
 
   // Games
   get gameList() {
     return this._fGameList;
   }
+  getGame(key: string): GameEntity | undefined {
+    return this._gameDict[key];
+  }
   private set gameList(gameList: GameEntity[]) {
-    this._fGameList = gameList.map((x) => new GameEntity(x, true));
+    this._gameListFull = gameList.map((x) => new GameEntity(x));
+    this._gameDict = ConvertListToDict(this._gameListFull, GameEntity);
+  }
+  private set fGameList(gameList: GameEntity[]) {
+    this._fGameList = gameList;
     this.filteredGameList$.next(this._fGameList);
   }
 
@@ -95,8 +123,15 @@ export class ApiService {
   get playerGameList() {
     return this._fPlayerGameList;
   }
+  getPlayerGame(key: string): PlayerGameEntity | undefined {
+    return this._playerGameDict[key];
+  }
   private set playerGameList(playerGameList: PlayerGameEntity[]) {
-    this._fPlayerGameList = playerGameList.map((x) => new PlayerGameEntity(x, true));
+    this._playerGameListFull = playerGameList.map((x) => new PlayerGameEntity(x));
+    this._playerGameDict = ConvertListToDict(this._playerGameListFull, PlayerGameEntity);
+  }
+  private set fPlayerGameList(playerGameList: PlayerGameEntity[]) {
+    this._fPlayerGameList = playerGameList;
     this.filteredPlayerGameList$.next(this._fPlayerGameList);
   }
 
@@ -111,14 +146,14 @@ export class ApiService {
 
   unloadClub() {
     this.club = undefined;
-    this._boardGameList = [];
-    this._fBoardGameList = [];
-    this._playerList = [];
-    this._fPlayerList = [];
-    this._gameList = [];
-    this._fGameList = [];
-    this._playerGameList = [];
-    this._fPlayerGameList = [];
+    this.boardGameList = [];
+    this.fBoardGameList = [];
+    this.playerList = [];
+    this.fPlayerList = [];
+    this.gameList = [];
+    this.fGameList = [];
+    this.playerGameList = [];
+    this.fPlayerGameList = [];
   }
 
   async fetchPublicClubs() {
@@ -158,11 +193,11 @@ export class ApiService {
     }
 
     this.club = data.Club;
-    this._boardGameList = data.BoardGames;
-    this._playerList = data.Players;
+    this.boardGameList = data.BoardGames;
+    this.playerList = data.Players;
     data.Games.sort((a, b) => (a.LastModifiedDate ?? '')?.localeCompare(b.LastModifiedDate ?? ''));
-    this._gameList = data.Games;
-    this._playerGameList = data.PlayerGames;
+    this.gameList = data.Games;
+    this.playerGameList = data.PlayerGames;
     this.updateReferences();
     this.dataUpdate$.next();
   }
@@ -193,23 +228,18 @@ export class ApiService {
     }
 
     if (result) {
-      const gameIndex = this._gameList.findIndex((x) => x.GameId === result?.Game.GameId);
-      if (gameIndex >= 0) {
-        this._gameList[gameIndex] = result.Game;
-      } else {
-        this._gameList = [...this._gameList, result.Game];
-      }
+      this.gameList = this.upsertEntry(result.Game, (x) => x.GameId, this._gameListFull, this._gameDict);
 
       result.PlayerGames.forEach((pg) => {
-        const pgIndex = this._playerGameList.findIndex((x) => x.PlayerGameId === pg.PlayerGameId);
-        if (pgIndex >= 0) {
-          this._playerGameList[pgIndex] = pg;
-        } else {
-          this._playerGameList = [...this._playerGameList, pg];
-        }
+        this.playerGameList = this.upsertEntry(
+          pg,
+          (x) => x.PlayerGameId,
+          this._playerGameListFull,
+          this._playerGameDict,
+        );
       });
-      this._boardGameList = result.BoardGames;
-      this._playerList = result.Players;
+      this.boardGameList = result.BoardGames;
+      this.playerList = result.Players;
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -227,12 +257,7 @@ export class ApiService {
     }
 
     if (result) {
-      const index = this._playerList.findIndex((x) => x.PlayerId === result?.PlayerId);
-      if (index >= 0) {
-        this._playerList[index] = result;
-      } else {
-        this._playerList = [...this._playerList, result];
-      }
+      this.playerList = this.upsertEntry(result, (x) => x.PlayerId, this._playerListFull, this._playerDict);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -250,12 +275,7 @@ export class ApiService {
     }
 
     if (result) {
-      const index = this._boardGameList.findIndex((x) => x.BoardGameId === result?.BoardGameId);
-      if (index >= 0) {
-        this._boardGameList[index] = result;
-      } else {
-        this._boardGameList = [...this._boardGameList, result];
-      }
+      this.boardGameList = this.upsertEntry(result, (x) => x.BoardGameId, this._boardGameListFull, this._boardGameDict);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -275,8 +295,8 @@ export class ApiService {
     const result = await this.httpService.delete(['api', 'game', this.clubId, gameId]);
 
     if (result) {
-      this._gameList = this._gameList.filter((x) => x.GameId !== gameId);
-      this._playerGameList = this._playerGameList.filter((x) => x.GameId !== gameId);
+      this.gameList = this._gameListFull.filter((x) => x.GameId !== gameId);
+      this.playerGameList = this._playerGameListFull.filter((x) => x.GameId !== gameId);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -293,14 +313,9 @@ export class ApiService {
 
     if (result) {
       result.forEach((g) => {
-        const index = this._gameList.findIndex((x) => x.GameId === g.GameId);
-        if (index === -1) {
-          this._gameList.push(g);
-        } else {
-          this._gameList[index] = g;
-        }
+        this.gameList = this.upsertEntry(g, (x) => x.GameId, this._gameListFull, this._gameDict);
       });
-      this._gameList = [...this._gameList];
+      this.gameList = [...this._gameListFull];
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -320,7 +335,7 @@ export class ApiService {
     const result = await this.httpService.delete(['api', 'player', this.clubId, playerId]);
 
     if (result) {
-      this._playerList = this._playerList.filter((x) => x.PlayerId !== playerId);
+      this.playerList = this._playerListFull.filter((x) => x.PlayerId !== playerId);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -340,7 +355,7 @@ export class ApiService {
     const result = await this.httpService.delete(['api', 'board-game', this.clubId, boardGameId]);
 
     if (result) {
-      this._boardGameList = this._boardGameList.filter((x) => x.BoardGameId !== boardGameId);
+      this.boardGameList = this._boardGameListFull.filter((x) => x.BoardGameId !== boardGameId);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -389,7 +404,7 @@ export class ApiService {
   private updateReferences() {
     // Filter lists
     if (this._filterEnabled) {
-      this.gameList = this._gameList.filter((x) => {
+      this.fGameList = this._gameListFull.filter((x) => {
         return (
           this._filteredBoardGameIds.has(x.BoardGameId ?? '') &&
           this._filteredDaysOfWeek.has(format(x.DateObj, 'cccc')) &&
@@ -397,14 +412,14 @@ export class ApiService {
           (this._includeDNF ? true : x.DidNotFinish === false)
         );
       });
-      this.boardGameList = this._boardGameList.filter((x) => this._filteredBoardGameIds.has(x.BoardGameId ?? ''));
-      this.playerGameList = this._playerGameList.filter((x) => this._filteredPlayerIds.has(x.PlayerId ?? ''));
-      this.playerList = this._playerList.filter((x) => this._filteredPlayerIds.has(x.PlayerId ?? ''));
+      this.fBoardGameList = this._boardGameListFull.filter((x) => this._filteredBoardGameIds.has(x.BoardGameId ?? ''));
+      this.fPlayerGameList = this._playerGameListFull.filter((x) => this._filteredPlayerIds.has(x.PlayerId ?? ''));
+      this.fPlayerList = this._playerListFull.filter((x) => this._filteredPlayerIds.has(x.PlayerId ?? ''));
     } else {
-      this.gameList = this._gameList;
-      this.boardGameList = this._boardGameList;
-      this.playerGameList = this._playerGameList;
-      this.playerList = this._playerList;
+      this.fGameList = this._gameListFull;
+      this.fBoardGameList = this._boardGameListFull;
+      this.fPlayerGameList = this._playerGameListFull;
+      this.fPlayerList = this._playerListFull;
     }
 
     this.gameList.sort(
@@ -446,5 +461,16 @@ export class ApiService {
     this.playerList.forEach((x) => x.calculateFields());
     PlayerEntity.postCalculate(this.playerList);
     GameEntity.postCalculate(this.gameList);
+  }
+
+  private upsertEntry<T>(item: T, key: (item: T) => string | null, list: T[], dict: Record<string, T>): T[] {
+    dict[key(item) ?? ''] = item;
+    const pgIndex = list.findIndex((x) => key(x) === key(item));
+    if (pgIndex >= 0) {
+      list[pgIndex] = item;
+      return list;
+    } else {
+      return [...list, item];
+    }
   }
 }
