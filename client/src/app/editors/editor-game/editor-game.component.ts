@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -17,23 +18,26 @@ import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { OrderListModule } from 'primeng/orderlist';
 import { ButtonModule } from 'primeng/button';
+import { ButtonGroupModule } from 'primeng/buttongroup';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
 import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-game.component';
 import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
-import { CheckboxModule } from 'primeng/checkbox';
 import { Subscription } from 'rxjs';
 import { format } from 'date-fns';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
-import { PipeModule } from '../../shared/pipes/pipe.module';
+import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 type EntityType = GameEntity;
 
 @Component({
   selector: 'app-editor-game',
-  standalone: true,
   imports: [
     CommonModule,
     DialogModule,
@@ -41,31 +45,43 @@ type EntityType = GameEntity;
     TextareaComponent,
     TextInputComponent,
     CalendarComponent,
+    CheckboxComponent,
     CheckboxModule,
     ButtonModule,
+    ButtonGroupModule,
     FormsModule,
     ReactiveFormsModule,
     EditorPlayerComponent,
     EditorBoardGameComponent,
     EditorPlayerGameComponent,
     OrderListModule,
-    PipeModule
-],
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputNumberModule,
+  ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
 })
 export class EditorGameComponent implements OnChanges, OnDestroy {
+  private fb = inject(FormBuilder);
+  private apiService = inject(ApiService);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
+  private cdr = inject(ChangeDetectorRef);
+
   @Input() editorVisible = false;
   @Input() game?: GameEntity;
   @Output() closeEditor = new EventEmitter<void>();
 
-  title = 'Edit Game';
+  title = 'Edit Play';
   isNew = false;
 
   entityType = GameEntity;
 
   private playerList: PlayerEntity[] = [];
   private boardGameList: BoardGameEntity[] = [];
+
+  protected selectedPlayerGame?: PlayerGameEntity;
 
   get boardGames() {
     return [...this.boardGameList, ...this.newBoardGames].sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
@@ -96,24 +112,18 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   boardGameEditorVisible = false;
   boardGameEdit?: BoardGameEntity;
 
-  subscription?: Subscription;
+  maxPoints = 0;
 
-  constructor(
-    private fb: FormBuilder,
-    private apiService: ApiService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private cdr: ChangeDetectorRef,
-  ) {}
+  subscription?: Subscription;
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('game' in changes && this.game) {
       this.game = new GameEntity(this.game, true);
       if (this.game.GameId === null) {
-        this.title = 'New Game';
+        this.title = 'New Play';
         this.isNew = true;
       } else {
-        this.title = 'Edit Game';
+        this.title = 'Edit Play';
         this.isNew = false;
       }
 
@@ -164,6 +174,20 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     return this.formGroup.get(key);
   }
 
+  addPoints(playerGame: PlayerGameEntity, points: number) {
+    playerGame.Points = (playerGame.Points ?? 0) + points;
+    this.updateScoring();
+  }
+
+  setPoints(playerGame: PlayerGameEntity, event: number) {
+    playerGame.Points = event;
+    this.updateScoring();
+  }
+
+  onPlayerSelection(event: PlayerGameEntity) {
+    this.selectedPlayerGame = event;
+  }
+
   updateOrdering() {
     if (this.game?.BoardGame?.ScoreType === 'rank') {
       let DNFs = 0;
@@ -198,6 +222,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
         this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
         break;
       case 'points':
+        this.maxPoints = Math.max(...this.playerGames.map((x) => x.Points ?? 0));
         this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
         break;
       default:
@@ -227,7 +252,8 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       this.playerGameEdit = playerGame;
     } else {
       this.playerGameEdit = new PlayerGameEntity({ ClubId: this.game?.ClubId, GameId: '-1' });
-      this.playerGameEdit.PlayerId = this.players[0].PlayerId;
+      const existingPlayers = new Set(this.playerGames.map((x) => x.PlayerId));
+      this.playerGameEdit.PlayerId = this.players.find((x) => !existingPlayers.has(x.PlayerId))?.PlayerId ?? null;
     }
     this.playerGameEditorVisible = true;
   }
@@ -265,6 +291,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
     this.playerGameEdit = undefined;
     this.playerGameEditorVisible = false;
+    this.selectedPlayerGame = undefined;
   }
 
   editPlayer(player?: PlayerEntity) {

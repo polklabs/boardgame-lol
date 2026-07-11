@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, catchError, firstValueFrom, map, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
@@ -10,15 +10,13 @@ type URL = (string | number | null | undefined)[];
   providedIn: 'root',
 })
 export class HttpService {
+  private httpClient = inject(HttpClient);
+  private messageService = inject(MessageService);
+
   private baseUrl = environment.baseUrl;
   private loadingSpinner = 0;
 
   readonly loadingSpinner$ = new BehaviorSubject(false);
-
-  constructor(
-    private httpClient: HttpClient,
-    private messageService: MessageService,
-  ) {}
 
   get<T>(url: URL, showSpinner = true) {
     this.addSpinner(showSpinner);

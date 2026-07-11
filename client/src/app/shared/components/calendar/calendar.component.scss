@@ -1,5 +1,9 @@
 :host ::ng-deep {
-  .p-float-label input:not(:focus):not(.p-filled) ~ label {
+  .p-floatlabel input:not(:focus):not(.p-filled) ~ label {
     top: 1.4rem
+  }
+
+  input {
+    width: 100%;
   }
 }

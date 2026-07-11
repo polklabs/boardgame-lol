@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroupDirective,
@@ -12,7 +12,6 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
 
 @Component({
   selector: 'app-textinput',
-  standalone: true,
   imports: [InputTextModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './textinput.component.html',
   styleUrl: './textinput.component.scss',
@@ -25,6 +24,8 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
   ],
 })
 export class TextInputComponent implements ControlValueAccessor {
+  private formGroupDirective = inject(FormGroupDirective);
+
   @Input() formControlName!: string;
   @Input() label?: string;
   @Input() entityType: unknown;
@@ -38,11 +39,9 @@ export class TextInputComponent implements ControlValueAccessor {
     return this.formGroupDirective.form;
   }
 
-  constructor(private formGroupDirective: FormGroupDirective) {}
-
   writeValue(): void {}
 
   registerOnChange(): void {}
 
-  registerOnTouched(): void {}  
+  registerOnTouched(): void {}
 }

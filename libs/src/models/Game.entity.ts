@@ -10,6 +10,8 @@ import { PlayerEntity } from './Player.entity';
 import { Ignore } from '../decorators/ignore.decorator';
 import { Nullable } from '../decorators/nullable.decorator';
 import { CHARACTER_LIMIT_LONG } from '../constants';
+import { max } from 'date-fns/max';
+import { min } from 'date-fns/min';
 
 export type GameWrapper = {
   Game: GameEntity;
@@ -56,6 +58,12 @@ export class GameEntity extends BaseEntity {
   }
 
   @Ignore()
+  newest = false;
+
+  @Ignore()
+  oldest = false;
+
+  @Ignore()
   DateObj: Date;
 
   @Ignore()
@@ -79,17 +87,10 @@ export class GameEntity extends BaseEntity {
     this.DateObj = new Date(this.DateObj.getTime() + userTimezoneOffset);
   }
 
-  calculateFields() {
-    this.calculateWinners();
-    this.calculateHighScore();
-  }
-
-  calculateWinners() {
+  calculate() {
     this.Winners = this.calculateWinner().map((x) => x.Player!);
-  }
-
-  calculateHighScore() {
     this.HighScore = this.calculateWinner()?.[0]?.Points ?? null;
+    this.calculated = true;
   }
 
   calculateWinner(): PlayerGameEntity[] {
@@ -129,5 +130,14 @@ export class GameEntity extends BaseEntity {
       default:
         return [];
     }
+  }
+
+  static postCalculate(games: GameEntity[]) {
+    const newestDate = max(games.map((x) => x.DateObj)).getTime();
+    const oldestDate = min(games.map((x) => x.DateObj)).getTime();
+    games.forEach((g) => {
+      g.newest = g.DateObj.getTime() === newestDate;
+      g.oldest = g.DateObj.getTime() === oldestDate;
+    });
   }
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroupDirective,
@@ -13,7 +13,6 @@ import { DividerModule } from 'primeng/divider';
 
 @Component({
   selector: 'app-password',
-  standalone: true,
   imports: [PasswordModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent, DividerModule],
   templateUrl: './password.component.html',
   styleUrl: './password.component.scss',
@@ -26,6 +25,8 @@ import { DividerModule } from 'primeng/divider';
   ],
 })
 export class PasswordComponent implements ControlValueAccessor {
+  private formGroupDirective = inject(FormGroupDirective);
+
   @Input() formControlName!: string;
   @Input() label?: string;
   @Input() entityType: unknown;
@@ -35,8 +36,6 @@ export class PasswordComponent implements ControlValueAccessor {
   get formGroup() {
     return this.formGroupDirective.form;
   }
-
-  constructor(private formGroupDirective: FormGroupDirective) {}
 
   writeValue(): void {}
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroupDirective,
@@ -7,13 +7,12 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 
 @Component({
   selector: 'app-textarea',
-  standalone: true,
-  imports: [InputTextareaModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
+  imports: [TextareaModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './textarea.component.html',
   styleUrl: './textarea.component.scss',
   providers: [
@@ -25,6 +24,8 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
   ],
 })
 export class TextareaComponent implements ControlValueAccessor {
+  private formGroupDirective = inject(FormGroupDirective);
+
   @Input() formControlName!: string;
   @Input() label?: string;
   @Input() entityType: unknown;
@@ -37,8 +38,6 @@ export class TextareaComponent implements ControlValueAccessor {
   get formGroup() {
     return this.formGroupDirective.form;
   }
-
-  constructor(private formGroupDirective: FormGroupDirective) {}
 
   writeValue(): void {}
 

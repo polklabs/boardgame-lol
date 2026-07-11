@@ -5,13 +5,25 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { Table, TableModule } from 'primeng/table';
 import { Observable } from 'rxjs';
-import { PipeModule } from '../../shared/pipes/pipe.module';
 import { TagModule } from 'primeng/tag';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { ArrayPipe } from '../../shared/pipes/array.pipe';
+import { ScorePipe } from '../../shared/pipes/score.pipe';
 
 @Component({
   selector: 'app-games-table',
-  standalone: true,
-  imports: [TableModule, TagModule, InputTextModule, ButtonModule, CommonModule, PipeModule],
+  imports: [
+    TableModule,
+    TagModule,
+    InputTextModule,
+    ButtonModule,
+    CommonModule,
+    IconFieldModule,
+    InputIconModule,
+    ArrayPipe,
+    ScorePipe,
+  ],
   templateUrl: './games-table.component.html',
   styleUrl: './games-table.component.scss',
 })
@@ -53,5 +65,9 @@ export class GamesTableComponent {
     } else {
       return 'gold';
     }
+  }
+
+  canAdjustOrder(table: Table): boolean {
+    return table.sortField === 'dateSortOrder' && table.sortOrder === -1;
   }
 }

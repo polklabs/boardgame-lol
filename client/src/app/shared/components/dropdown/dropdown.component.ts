@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, forwardRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroupDirective,
@@ -7,13 +7,12 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-dropdown',
-  standalone: true,
-  imports: [DropdownModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
+  imports: [SelectModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.scss',
   providers: [
@@ -25,6 +24,8 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
   ],
 })
 export class DropdownComponent implements ControlValueAccessor {
+  private formGroupDirective = inject(FormGroupDirective);
+
   @Input() formControlName!: string;
   @Input() label?: string;
   @Input() entityType: unknown;
@@ -43,16 +44,11 @@ export class DropdownComponent implements ControlValueAccessor {
     return this.formGroupDirective.form;
   }
 
-  constructor(private formGroupDirective: FormGroupDirective) {}
+  writeValue(): void {}
 
-  writeValue(): void {
-  }
+  registerOnChange(): void {}
 
-  registerOnChange(): void {
-  }
-
-  registerOnTouched(): void {
-  }
+  registerOnTouched(): void {}
 
   onModelChange(value: unknown): void {
     this.changed.emit(value);

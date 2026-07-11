@@ -1,0 +1,6 @@
+@if (isShown()) {
+  <div class="flex items-center checkbox-wrapper">
+    <p-checkbox [inputId]="inputId" [ngModel]="value" [binary]="true" (onChange)="onModelChange($event.checked)"></p-checkbox>
+    <label [for]="inputId">{{ getFieldLabel() }}</label>
+  </div>
+}

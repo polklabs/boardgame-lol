@@ -1,19 +1,10 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, inject } from '@angular/core';
 import { BoardGameEntity, ScoreTypeMapping } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
-import { CommonModule } from '@angular/common';
+
 import { ButtonModule } from 'primeng/button';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
@@ -27,9 +18,7 @@ type EntityType = BoardGameEntity;
 
 @Component({
   selector: 'app-editor-board-game',
-  standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     DropdownComponent,
@@ -37,12 +26,19 @@ type EntityType = BoardGameEntity;
     TextInputComponent,
     CheckboxModule,
     DialogModule,
-    TooltipModule,
-  ],
+    TooltipModule
+],
   templateUrl: './editor-board-game.component.html',
   styleUrl: './editor-board-game.component.scss',
 })
 export class EditorBoardGameComponent implements OnChanges, OnDestroy {
+  private fb = inject(FormBuilder);
+  private apiService = inject(ApiService);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+
   @Input() editorVisible = false;
   @Input() boardGame?: BoardGameEntity;
   @Input() standalone = true;
@@ -61,15 +57,6 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
   scoreTypes = Object.entries(this.scoreTypeMapping).map(([value, label]) => ({ value, label }));
 
   subscriptions = new Subscription();
-
-  constructor(
-    private fb: FormBuilder,
-    private apiService: ApiService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private cdr: ChangeDetectorRef,
-    private router: Router,
-  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('boardGame' in changes && this.boardGame) {
@@ -127,7 +114,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
       this.hideFields.add('exampleScore');
     }
     this.getControl('exampleScore')?.setValue(
-      `${this.getControl('ScorePrefix')?.value??''}42${this.getControl('ScoreSuffix')?.value??''}`,
+      `${this.getControl('ScorePrefix')?.value ?? ''}42${this.getControl('ScoreSuffix')?.value ?? ''}`,
     );
     this.getControl('exampleScore')?.disable();
   }

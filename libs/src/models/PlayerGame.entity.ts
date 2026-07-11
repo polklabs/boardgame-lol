@@ -42,7 +42,8 @@ export class PlayerGameEntity extends BaseEntity {
     this.DNF = partial.DNF ?? false;
   }
 
-  calculateFields() {
+  calculate() {
     this.DNF = this.Game?.BoardGame?.ScoreType === 'rank' && this.Points === null;
+    this.calculated = true;
   }
 }

@@ -6,13 +6,13 @@
     gap: 8px;
   }
 
-  span.p-float-label {
+  .p-floatlabel {
     margin-top: 32px;
     display: flex;
     flex-direction: column;
   }
 
-  .p-dropdown {
+  .p-select {
     width: 100%;
   }
 
@@ -35,29 +35,78 @@
     }
   }
 
+  .p-listbox-header {
+    font-weight: 700;
+    border: solid var(--p-surface-600);
+    border-width: 0 0 1px 0;
+    padding: 8px;
+    .order-list-header {
+      align-items: center;
+    }
+  }
+
+  .p-listbox-list-container {
+    min-height: 12rem;
+  }
+
+  .p-orderlist-list-container {
+    width: 100%;
+  }
+
+  .p-listbox-option {
+    cursor: default;
+  }
+
   .order-list-header,
   .pick-list-header,
   .list-items {
     display: flex;
     position: relative;
+    width: 100%;
+    cursor: default;
 
-    p-button:first-child {
-      position: absolute;
-      top: -0.75rem;
-      right: 1.5rem;
+    .player-name {
+      flex-shrink: 0;
     }
-    p-button:nth-child(2) {
-      position: absolute;
-      top: -0.75rem;
-      right: -1rem;
+
+    .point-editor {
+      .p-button,
+      input {
+        padding: 4px 0.5rem;
+      }
+      input {
+        max-width: 100px;
+        height: 30px;
+      }
+    }
+
+    .edit-btns {
+      gap: 4px;
+      .p-button {
+        height: 30px;
+        border-radius: 8px;
+      }
     }
   }
+  
+  .empty-list {
+    text-align: center;
+    margin-top: 4rem;
+  }
 
-  .p-orderlist>.p-orderlist-controls {
+  .p-orderlist > .p-orderlist-controls {
     display: none;
   }
-  .can-order .p-orderlist>.p-orderlist-controls {
-    display: flex;
+  .can-order {
+    .p-orderlist > .p-orderlist-controls {
+      display: flex;
+    }
+    .p-listbox-option {
+      cursor: ns-resize;
+    }
+    .list-items {
+      cursor: ns-resize;
+    }
   }
 
   .DNF {

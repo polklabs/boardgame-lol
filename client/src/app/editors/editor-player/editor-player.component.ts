@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
@@ -7,28 +7,33 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { buildForm } from '../../shared/form.utils';
 import { PlayerEntity } from 'libs/index';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { CheckboxModule } from 'primeng/checkbox';
 import { ApiService } from '../../shared/services/api.service';
 import { Router } from '@angular/router';
+import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 
 type EntityType = PlayerEntity;
 
 @Component({
   selector: 'app-editor-player',
-  standalone: true,
   imports: [
-    CommonModule,
     DialogModule,
     TextInputComponent,
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    CheckboxModule,
-  ],
+    CheckboxComponent
+],
   templateUrl: './editor-player.component.html',
   styleUrl: './editor-player.component.scss',
 })
 export class EditorPlayerComponent implements OnChanges {
+  private fb = inject(FormBuilder);
+  private apiService = inject(ApiService);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+
   @Input() editorVisible = false;
   @Input() player?: PlayerEntity;
   @Input() standalone = true;
@@ -44,15 +49,6 @@ export class EditorPlayerComponent implements OnChanges {
   hideFields: Set<keyof EntityType> = new Set();
 
   subtypes: string[] = [];
-
-  constructor(
-    private fb: FormBuilder,
-    private apiService: ApiService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private cdr: ChangeDetectorRef,
-    private router: Router,
-  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('player' in changes && this.player) {
@@ -82,17 +78,17 @@ export class EditorPlayerComponent implements OnChanges {
     if (this.formGroup.invalid || !this.player) {
       return;
     } else if (this.standalone) {
-        const result = await this.apiService.postPlayer(this.player.PlayerId === null, this.formGroup.getRawValue());
-        if (result) {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Player' });
-          this.closeEditor.emit();
-        } else {
-          // Do nothing
-        }
+      const result = await this.apiService.postPlayer(this.player.PlayerId === null, this.formGroup.getRawValue());
+      if (result) {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Player' });
+        this.closeEditor.emit();
       } else {
-        Object.assign(this.player, this.formGroup.getRawValue());
-        this.closeEditor.emit(this.player);
+        // Do nothing
       }
+    } else {
+      Object.assign(this.player, this.formGroup.getRawValue());
+      this.closeEditor.emit(this.player);
+    }
   }
 
   toDeleteEntity() {

@@ -6,52 +6,50 @@
   [style]="{ width: '650px', 'min-width': '300px' }"
   [draggable]="false"
   position="bottom">
-  <div *ngIf="formGroup && boardGame" class="form">
-    <form [formGroup]="formGroup" (ngSubmit)="submit()">
-      <app-textinput formControlName="Name" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
-
-      <app-dropdown
-        formControlName="ScoreType"
-        label="Score Type"
-        [entityType]="entityType"
-        [hiddenFields]="hideFields"
-        [options]="scoreTypes"
-        optionLabel="label"
-        optionValue="value"
+  @if (formGroup && boardGame) {
+    <div class="form">
+      <form [formGroup]="formGroup" (ngSubmit)="submit()">
+        <app-textinput formControlName="Name" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
+        <app-dropdown
+          formControlName="ScoreType"
+          label="Score Type"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"
+          [options]="scoreTypes"
+          optionLabel="label"
+          optionValue="value"
         [showClear]="false"></app-dropdown>
-
-      <div class="flex-grow gap-8 width-100">
-        <app-textinput
-          formControlName="ScorePrefix"
-          label="Score Prefix"
-          [entityType]="entityType"
+        <div class="flex-grow gap-8 width-100">
+          <app-textinput
+            formControlName="ScorePrefix"
+            label="Score Prefix"
+            [entityType]="entityType"
           [hiddenFields]="hideFields"></app-textinput>
-        <app-textinput
-          formControlName="ScoreSuffix"
-          label="Score Suffix"
-          [entityType]="entityType"
+          <app-textinput
+            formControlName="ScoreSuffix"
+            label="Score Suffix"
+            [entityType]="entityType"
           [hiddenFields]="hideFields"></app-textinput>
-        <app-textinput
-          formControlName="exampleScore"
-          label="Example Score"
-          [entityType]="entityType"
+          <app-textinput
+            formControlName="exampleScore"
+            label="Example Score"
+            [entityType]="entityType"
           [hiddenFields]="hideFields"></app-textinput>
-      </div>
-
-      <app-textinput
-        formControlName="BoardGameGeekId"
-        [entityType]="entityType"
+        </div>
+        <app-textinput
+          formControlName="BoardGameGeekId"
+          [entityType]="entityType"
         [hiddenFields]="hideFields"></app-textinput>
-
-      <div class="dialog-footer">
-        <div>
-          <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
+        <div class="dialog-footer">
+          <div>
+            <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
+          </div>
+          <div>
+            <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
+            <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+          </div>
         </div>
-        <div>
-          <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-          <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
-        </div>
-      </div>
-    </form>
-  </div>
+      </form>
+    </div>
+  }
 </p-dialog>

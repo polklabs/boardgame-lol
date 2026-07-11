@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroupDirective,
@@ -7,13 +7,12 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { CalendarModule } from 'primeng/calendar';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
+import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
   selector: 'app-calendar',
-  standalone: true,
-  imports: [CalendarModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
+  imports: [DatePickerModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',
   providers: [
@@ -25,6 +24,8 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
   ],
 })
 export class CalendarComponent implements ControlValueAccessor {
+  private formGroupDirective = inject(FormGroupDirective);
+
   @Input() formControlName!: string;
   @Input() label?: string;
   @Input() entityType: unknown;
@@ -37,11 +38,9 @@ export class CalendarComponent implements ControlValueAccessor {
     return this.formGroupDirective.form;
   }
 
-  constructor(private formGroupDirective: FormGroupDirective) {}
-
   writeValue(): void {}
 
   registerOnChange(): void {}
 
-  registerOnTouched(): void {}  
+  registerOnTouched(): void {}
 }

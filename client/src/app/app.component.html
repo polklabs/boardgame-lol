@@ -1,6 +1,8 @@
-<div *ngIf="showSpinner$ | async" class="progress-spinner-wrapper">
-  <p-progressSpinner></p-progressSpinner>
-</div>
+@if (showSpinner$ | async) {
+  <div class="progress-spinner-wrapper">
+    <p-progressSpinner></p-progressSpinner>
+  </div>
+}
 <div class="main-content">
   <router-outlet></router-outlet>
 </div>

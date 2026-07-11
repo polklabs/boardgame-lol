@@ -2,7 +2,7 @@ import { TableName } from '../decorators/table-name.decorator';
 import { BaseEntity } from './Base.entity';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
-import { CHARACTER_LIMIT_SHORT } from '../constants';
+import { CHARACTER_LIMIT_TINY } from '../constants';
 import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { Sanitize } from '../decorators/sanitize.decorator';
 import { Ignore } from '../decorators/ignore.decorator';
@@ -18,7 +18,7 @@ export class PlayerEntity extends BaseEntity {
   @SecondaryKey
   ClubId: string | null = null;
 
-  @MinMax(1, CHARACTER_LIMIT_SHORT, 'string')
+  @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
   @Sanitize()
   Name: string | null = null;
 
@@ -50,26 +50,12 @@ export class PlayerEntity extends BaseEntity {
     this.assign(partial, PlayerEntity, copyIgnored);
   }
 
-  calculateFields() {
+  calculate() {
     this.calculateWins();
     this.calculateBestGames();
     this.calculateBestGameWins();
     this.calculateFirstSeen();
-  }
-
-  postCalculate(players: PlayerEntity[]) {
-    this.Nickname = this.Name?.trim().split(' ')[0];
-    if (
-      this.Nickname &&
-      players.filter((x) => x.PlayerId !== this.PlayerId).some((x) => x.Name?.startsWith(this.Nickname!))
-    ) {
-      this.Nickname = this.Name ?? undefined;
-    } else {
-      // continue
-    }
-
-    const maxWins = Math.max(...players.map((x) => x.Wins.length));
-    this.hasMostWins = this.Wins.length >= maxWins;
+    this.calculated = true;
   }
 
   calculateWins() {
@@ -102,5 +88,20 @@ export class PlayerEntity extends BaseEntity {
     } else {
       this.FirstSeen = new Date(minDate);
     }
+  }
+
+  static postCalculate(players: PlayerEntity[]) {
+    const maxWins = Math.max(...players.map((x) => x.Wins.length));
+
+    players.forEach((p) => {
+      p.Nickname = p.Name?.trim().split(' ')[0];
+      if (p.Nickname && players.filter((x) => x.PlayerId !== p.PlayerId).some((x) => x.Name?.startsWith(p.Nickname!))) {
+        p.Nickname = p.Name ?? undefined;
+      } else {
+        // continue
+      }
+
+      p.hasMostWins = p.Wins.length > 0 && p.Wins.length >= maxWins;
+    });
   }
 }

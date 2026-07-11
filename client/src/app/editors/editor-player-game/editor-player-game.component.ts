@@ -1,23 +1,22 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { isGuid, PlayerEntity, PlayerGameEntity, ScoreType } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
-import { CommonModule } from '@angular/common';
+
 import { ButtonModule } from 'primeng/button';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
+import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 
 type EntityType = PlayerGameEntity;
 
 @Component({
   selector: 'app-editor-player-game',
-  standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     DropdownComponent,
@@ -26,11 +25,16 @@ type EntityType = PlayerGameEntity;
     CheckboxModule,
     DialogModule,
     TooltipModule,
-  ],
+    CheckboxComponent
+],
   templateUrl: './editor-player-game.component.html',
   styleUrl: './editor-player-game.component.scss',
 })
 export class EditorPlayerGameComponent implements OnChanges {
+  private fb = inject(FormBuilder);
+  private confirmationService = inject(ConfirmationService);
+  private cdr = inject(ChangeDetectorRef);
+
   @Input() editorVisible = false;
   @Input() playerGame?: PlayerGameEntity;
   @Input() players: PlayerEntity[] = [];
@@ -54,12 +58,6 @@ export class EditorPlayerGameComponent implements OnChanges {
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
-  constructor(
-    private fb: FormBuilder,
-    private confirmationService: ConfirmationService,
-    private cdr: ChangeDetectorRef,
-  ) {}
-
   ngOnChanges(changes: SimpleChanges): void {
     if ('playerGame' in changes && this.playerGame) {
       if (this.playerGame.PlayerGameId === null) {
@@ -74,7 +72,7 @@ export class EditorPlayerGameComponent implements OnChanges {
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerGameEntity());
       this.formGroup.patchValue(new PlayerGameEntity(this.playerGame));
 
-      if(this.scoreType === 'win-lose') {
+      if (this.scoreType === 'win-lose') {
         this.getControl('Points')?.setValue(this.playerGame.Points === null ? true : this.playerGame.Points === 1);
       } else {
         // Continue
@@ -90,13 +88,12 @@ export class EditorPlayerGameComponent implements OnChanges {
   }
 
   async submit() {
-    if(this.scoreType === 'win-lose') {
+    if (this.scoreType === 'win-lose') {
       const won = this.getControl('Points')?.value ?? false;
       this.getControl('Points')?.setValue(won ? 1 : 0);
     } else {
       // Continue
     }
-    
 
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.playerGame) {

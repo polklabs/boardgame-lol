@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ApiService } from '../shared/services/api.service';
 import { Router, RouterModule } from '@angular/router';
 import { CardModule } from 'primeng/card';
@@ -12,23 +12,20 @@ import { EditorClubComponent } from '../editors/editor-club/editor-club.componen
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   imports: [CommonModule, RouterModule, CardModule, ButtonModule, MenuBarComponent, EditorClubComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
+  private router = inject(Router);
+  private apiService = inject(ApiService);
+  private userService = inject(UserService);
+
   clubList$: Observable<AccessIds[]> = of([]);
   publicClubList$: Observable<ClubEntity[]> = of([]);
 
   editorClubVisible = false;
   editClub?: ClubEntity;
-
-  constructor(
-    private router: Router,
-    private apiService: ApiService,
-    private userService: UserService,
-  ) {}
 
   ngOnInit() {
     this.clubList$ = this.userService.accessIds$;
@@ -45,8 +42,8 @@ export class HomeComponent implements OnInit {
     }
   }
 
-    newClub() {
-      this.editClub = new ClubEntity();
-      this.editorClubVisible = true;
-    }
+  newClub() {
+    this.editClub = new ClubEntity();
+    this.editorClubVisible = true;
+  }
 }

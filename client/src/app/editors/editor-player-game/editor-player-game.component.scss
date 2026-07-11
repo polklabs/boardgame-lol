@@ -3,15 +3,15 @@
     min-height: 200px;
   }
 
-  span.p-float-label {
+  .p-floatlabel {
     margin-top: 32px;
     display: flex;
     flex-direction: column;
   }
 
-  p-dropdown {
+  p-select {
     max-width: calc(100vw - 75px);
-    .p-dropdown {
+    .p-select {
       width: 100%;
     }
   }

@@ -1,10 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CheckboxModule } from 'primeng/checkbox';
 import { ClubEntity } from 'libs/index';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -13,12 +21,12 @@ import { buildForm } from '../../shared/form.utils';
 import { UserService } from '../../shared/services/user.service';
 import { Observable, of } from 'rxjs';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
+import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 
 type EntityType = ClubEntity;
 
 @Component({
   selector: 'app-editor-club',
-  standalone: true,
   imports: [
     CommonModule,
     DialogModule,
@@ -27,12 +35,20 @@ type EntityType = ClubEntity;
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    CheckboxModule,
+    CheckboxComponent,
   ],
   templateUrl: './editor-club.component.html',
   styleUrl: './editor-club.component.scss',
 })
 export class EditorClubComponent implements OnChanges {
+  private fb = inject(FormBuilder);
+  private apiService = inject(ApiService);
+  private userService = inject(UserService);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+
   @Input() editorVisible = false;
   @Input() club?: ClubEntity;
   @Output() closeEditor = new EventEmitter<ClubEntity>();
@@ -48,15 +64,7 @@ export class EditorClubComponent implements OnChanges {
 
   adminIds: Observable<string[]> = of([]);
 
-  constructor(
-    private fb: FormBuilder,
-    private apiService: ApiService,
-    private userService: UserService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private cdr: ChangeDetectorRef,
-    private router: Router,
-  ) {
+  constructor() {
     this.adminIds = this.userService.adminIds$;
   }
 

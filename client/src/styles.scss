@@ -1,9 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'primeng/resources/themes/lara-dark-blue/theme.css';
-@import 'primeng/resources/primeng.css';
 @import 'primeicons/primeicons.css';
 
 :root {
+  font-family: Roboto, sans-serif;
+  color: #ffffff;
   --poster-width: 186px;
   --poster-height: 279px;
   --giant-text: 42px;
@@ -15,9 +15,6 @@
 
 // 500px breaking point
 @media only screen and (max-width: 500px) {
-  // .show-lt-500px {
-  //   display: initial !important;
-  // }
   .show-gt-500px {
     display: none !important;
   }
@@ -26,16 +23,10 @@
   .show-lt-500px {
     display: none !important;
   }
-  // .show-gt-500px {
-  //   display: initial !important;
-  // }
 }
 
 // 700px breaking point
 @media only screen and (max-width: 700px) {
-  // .show-lt-700px {
-  //   display: initial !important;
-  // }
   .show-gt-700px {
     display: none !important;
   }
@@ -44,9 +35,6 @@
   .show-lt-700px {
     display: none !important;
   }
-  // .show-gt-700px {
-  //   display: initial !important;
-  // }
 }
 
 body {
@@ -69,10 +57,22 @@ body {
   }
 }
 
+.flex-nowrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
 .flex-column {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.items-center {
+  gap: 8px;
+  align-items: center;
 }
 
 .gap-1 {
@@ -111,10 +111,6 @@ body {
   justify-content: space-between;
 }
 
-.p-dialog .p-dialog-header {
-  padding-bottom: 4px;
-}
-
 .p-picklist-item:not(.cdk-drag-disabled) {
   cursor: move;
   z-index: 99999 !important;
@@ -132,4 +128,12 @@ form {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.p-datatable-table .p-datatable-thead tr th {
+  padding: 0.5rem;
+}
+.p-datatable-table .p-datatable-tbody tr td {
+  border: 1px solid var(--p-surface-700);
+  border-width: 0 0 1px 0;
 }

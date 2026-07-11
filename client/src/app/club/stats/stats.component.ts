@@ -1,67 +1,61 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PipeModule } from '../../shared/pipes/pipe.module';
 import { addDays, addYears, format } from 'date-fns';
 import { ApiService } from '../../shared/services/api.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
 import autocolors from 'chartjs-plugin-autocolors';
-import { ScoreTypeMapping, ScoreTypes } from 'libs/index';
+import { GameEntity, ScoreTypeMapping, ScoreTypes } from 'libs/index';
 import { ITrophy, Trophy } from '../../shared/trophies/trophy.model';
 import { Subscription } from 'rxjs';
 import { TrophyService } from '../../shared/services/trophy.service';
+import { ArrayPipe } from '../../shared/pipes/array.pipe';
+import { ChartData, ChartOptions } from 'chart.js';
+import { clone } from 'lodash-es';
 
 type DayItem = { color: string; tooltip: string; icon?: string };
 
 @Component({
   selector: 'app-stats',
-  standalone: true,
-  imports: [TooltipModule, PipeModule, ChartModule, CommonModule],
+  imports: [TooltipModule, ChartModule, CommonModule, ArrayPipe],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
 })
 export class StatsComponent implements OnInit {
-  heatmap: { days: DayItem[]; month: string }[] = [];
+  private apiService = inject(ApiService);
+  private trophyService = inject(TrophyService);
+
+  heatmap: { days: DayItem[]; month: string; key: string }[] = [];
   colors = ['#1C2532', '#0E4429', '#006D32', '#26A641', '#39D353'];
 
   ShowCharts = false;
-  // Chart.js
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  winsOverTimeData: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  winsOverTimeOptions: any;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  rankOverTimeData: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  rankOverTimeOptions: any;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  countByDayData: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  countByDayOptions: any;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  countByMonthData: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  countByMonthOptions: any;
+  winsOverTimeData: ChartData = { labels: [], datasets: [] };
+  winsOverTimeOptions?: ChartOptions;
+  rankOverTimeData: ChartData = { labels: [], datasets: [] };
+  rankOverTimeOptions?: ChartOptions;
+  countByDayData: ChartData = { labels: [], datasets: [] };
+  countByDayOptions?: ChartOptions;
+  countByMonthData: ChartData = { labels: [], datasets: [] };
+  countByMonthOptions?: ChartOptions;
 
   chartPlugins = [autocolors];
 
   trophies: Trophy[] = [];
 
+  private textColor = '--p-text-color';
+  private textColorSecondary = '--p-surface-50';
+  private surfaceBorder = 'transparent';
+
   subscriptions = new Subscription();
 
-  constructor(
-    private apiService: ApiService,
-    private trophyService: TrophyService,
-  ) {}
-
   ngOnInit(): void {
+    this.calculateChartColors();
     this.subscriptions.add(
       this.apiService.dataUpdate$.subscribe(() => {
-        this.generateWinsOverTimeChart();
-        this.generateRankOverTimeChart();
+        const [wins, dates] = this.generateWins();
+        this.generateWinsOverTimeChart(wins, dates);
+        this.generateRankOverTimeChart(wins, dates);
         this.generateCountByDayChart();
         this.generateCountByMonthChart();
         this.ShowCharts = this.apiService.gameList.length > 0;
@@ -75,23 +69,20 @@ export class StatsComponent implements OnInit {
     );
   }
 
+  calculateChartColors() {
+    const documentStyle = getComputedStyle(document.documentElement);
+    this.textColor = documentStyle.getPropertyValue(this.textColor);
+    this.textColorSecondary = documentStyle.getPropertyValue(this.textColorSecondary);
+  }
+
   calculateTrophies(trophies: ITrophy[]) {
-    this.trophies = trophies.map((x) => x.export()).filter((x) => (x.array?.length ?? 0) > 0);
+    this.trophies = trophies
+      .map((x) => x.export())
+      .filter((x) => x.array.length > 0 && x.array.length <= 2 && x.value !== Math.abs(Infinity));
     this.trophies.sort((a, b) => {
-      let valueA = a.value ?? 0;
-      let valueB = b.value ?? 0;
-      if (valueA === Infinity) {
-        valueA = -Infinity;
-      } else {
-        // Continue
-      }
-      if (valueB === Infinity) {
-        valueB = -Infinity;
-      } else {
-        // Continue
-      }
-      return valueB - valueA;
+      return b.value - a.value;
     });
+    this.trophies = this.trophies.slice(0, 9);
   }
 
   updateHeatmap() {
@@ -109,10 +100,11 @@ export class StatsComponent implements OnInit {
     // eslint-disable-next-line no-constant-condition
     while (date <= today) {
       const week: DayItem[] = [];
+      const key = format(date, 'yyyy MM d');
 
       for (let d = 0; d < 7; d++) {
         const dateStr = format(date, 'yyyy-MM-dd');
-        const dateText = format(date, 'MMMM do');
+        const dateText = format(date, 'MMMM do, yyyy');
 
         const count = this.apiService.gameList.reduce((count, game) => count + (game.Date === dateStr ? 1 : 0), 0);
         week.push({ color: this.getHeatmapColor(count), tooltip: `${count} games on ${dateText}` });
@@ -130,12 +122,12 @@ export class StatsComponent implements OnInit {
       } else {
         currentMonth = month;
       }
-      this.heatmap.push({ days: week, month });
+      this.heatmap.push({ days: week, month, key });
     }
   }
 
   getHeatmapColor(count: number) {
-    const mostPlays = this.trophyService.getTrophy('MostWins').value;
+    const mostPlays = this.trophyService.getTrophy('MostPlaysOneDay').value;
     const division = Math.max(mostPlays / 5, 1);
 
     let section = division;
@@ -153,66 +145,40 @@ export class StatsComponent implements OnInit {
     return this.colors[index];
   }
 
-  generateWinsOverTimeChart() {
-    const wins: { [playerId: string]: number[] } = {};
-    const winDates: string[] = [];
-
-    if (this.apiService.gameList.length === 0) {
+  generateWinsOverTimeChart(wins: Record<string, number[]>, dates: string[]) {
+    if (dates.length <= 1) {
       return;
     } else {
-      // Continue
+      // Create chart
     }
 
-    const gameList = this.apiService.gameList;
-    const players = this.apiService.playerList.filter((x) => x.IsRealPerson && x.Wins.length > 0);
+    const lastYear = format(addYears(new Date(), -1), 'yyyy-MM-dd');
+    const toDelete = dates.findIndex((d) => d > lastYear);
 
-    players.forEach((p) => {
-      wins[p.PlayerId ?? ''] = [];
-    });
+    wins = clone(wins);
 
-    let date = new Date(gameList[0].Date);
-    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-    date = new Date(date.getTime() + userTimezoneOffset);
-
-    let endDate = new Date(gameList.at(-1)!.Date);
-    endDate = new Date(endDate.getTime() + userTimezoneOffset);
-
-    while (date <= endDate) {
-      const dateStr = format(date, 'yyyy-MM-dd');
-      const winners = gameList
-        .filter((x) => x.Date === dateStr)
-        .flatMap((x) => x.Winners)
-        .map((x) => x.PlayerId);
-
-      players.forEach((p) => {
-        wins[p.PlayerId ?? ''].push(
-          (wins[p.PlayerId ?? ''][wins[p.PlayerId ?? ''].length - 1] ?? 0) +
-            winners.reduce((count, w) => count + (w === p.PlayerId ? 1 : 0), 0),
-        );
+    const pIds = Object.keys(wins);
+    if (toDelete > 0) {
+      dates = [lastYear, ...dates.slice(toDelete)];
+      pIds.forEach((p) => {
+        wins[p] = [wins[p][toDelete - 1], ...wins[p].slice(toDelete)];
       });
-
-      winDates.push(dateStr);
-
-      date = addDays(date, 1);
+    } else {
+      // Skip
     }
-
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
     this.winsOverTimeData = {
-      labels: winDates,
+      labels: dates,
       datasets: [],
     };
 
-    Object.keys(wins).forEach((pId) => {
+    pIds.forEach((pId) => {
       this.winsOverTimeData.datasets.push({
-        label: players.find((x) => x.PlayerId === pId)?.Nickname ?? 'Unknown',
+        label: this.apiService.getPlayer(pId)?.Nickname ?? 'Unknown',
         data: wins[pId],
         fill: false,
-        // borderColor: documentStyle.getPropertyValue('--blue-500'),
-        tension: 0.4,
+        stepped: true,
+        pointRadius: wins[pId].map((x, i) => (x !== wins[pId].at(i - 1) ? 4 : 0)),
       });
     });
 
@@ -222,96 +188,95 @@ export class StatsComponent implements OnInit {
       plugins: {
         legend: {
           labels: {
-            color: textColor,
+            color: this.textColor,
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const data = context.dataset.data as number[];
+              if (context.dataIndex > 0) {
+                const lastValue = data.at(context.dataIndex - 1) ?? 0;
+                return `${context.dataset.label}: (+${+context.formattedValue - lastValue}) ${context.formattedValue} `;
+              } else {
+                return `${context.dataset.label}: ${context.formattedValue}`;
+              }
+            },
           },
         },
       },
       scales: {
         x: {
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
           },
           grid: {
-            color: surfaceBorder,
-            drawBorder: false,
+            color: this.surfaceBorder,
           },
         },
         y: {
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
           },
           grid: {
-            color: surfaceBorder,
-            drawBorder: false,
+            color: this.surfaceBorder,
           },
-        },
-      },
-      elements: {
-        point: {
-          pointStyle: false,
         },
       },
     };
   }
 
-  generateRankOverTimeChart() {
-    const wins: { [playerId: string]: number[] } = {};
-    const rankDates: string[] = [];
-
-    if (this.apiService.gameList.length === 0) {
+  generateRankOverTimeChart(wins: Record<string, number[]>, dates: string[]) {
+    if (dates.length <= 1) {
       return;
     } else {
-      // Continue
+      // Create chart
+    }
+    
+    const spots = 5;
+    const ranks = ['5th', '4th', '3rd', '2nd', '1st'];
+
+    const lastYear = format(addYears(new Date(), -1), 'yyyy-MM-dd');
+    const toDelete = dates.findIndex((d) => d > lastYear);
+
+    wins = clone(wins);
+
+    let pIds = Object.keys(wins);
+    if (toDelete > 0) {
+      dates = [lastYear, ...dates.slice(toDelete)];
+      pIds.forEach((p) => {
+        wins[p] = [wins[p][toDelete - 1], ...wins[p].slice(toDelete)];
+      });
+    } else {
+      // Skip
     }
 
-    const gameList = this.apiService.gameList;
-    const players = this.apiService.playerList.filter((x) => x.IsRealPerson && x.Wins.length > 0);
+    const maxValues = dates.map((_, i) =>
+      pIds
+        .map((id) => wins[id][i])
+        .toSorted((a, b) => b - a)
+        .slice(0, spots)
+        .toReversed(),
+    );
 
-    players.forEach((p) => {
-      wins[p.PlayerId ?? ''] = [];
+    pIds.forEach((id) => {
+      wins[id] = wins[id].map((x, i) => Math.max(0, maxValues[i].lastIndexOf(x)));
+      if (wins[id].every((x) => x <= 0)) {
+        delete wins[id];
+      } else {
+        // Keep
+      }
     });
-
-    const dates = [...new Set(gameList.map((x) => `${x.Date}`))].sort((a, b) => a.localeCompare(b));
-
-    dates.forEach((dateStr) => {
-      const winners = gameList
-        .filter((x) => x.Date === dateStr)
-        .flatMap((x) => x.Winners)
-        .map((x) => x.PlayerId);
-
-      players.forEach((p) => {
-        wins[p.PlayerId ?? ''].push(
-          (wins[p.PlayerId ?? ''][wins[p.PlayerId ?? ''].length - 1] ?? 0) +
-            winners.reduce((count, w) => count + (w === p.PlayerId ? 1 : 0), 0),
-        );
-      });
-
-      rankDates.push(dateStr);
-    });
-
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+    pIds = Object.keys(wins);
 
     this.rankOverTimeData = {
-      labels: rankDates,
+      labels: dates,
       datasets: [],
     };
 
-    const playerIds = Object.keys(wins);
-
-    for (let i = 0; i < rankDates.length; i++) {
-      const order = playerIds.map((pId) => ({ id: pId, count: wins[pId][i] })).sort((a, b) => b.count - a.count);
-      playerIds.forEach((pId) => {
-        wins[pId][i] = order.findIndex((x) => x.id === pId);
-        wins[pId][i] = Math.min(wins[pId][i], 4);
-      });
-    }
-
-    playerIds.forEach((pId) => {
+    pIds.forEach((pId) => {
       this.rankOverTimeData.datasets.push({
-        label: players.find((x) => x.PlayerId === pId)?.Nickname ?? 'Unknown',
+        label: this.apiService.getPlayer(pId)?.Nickname ?? 'Unknown',
         data: wins[pId],
         fill: false,
         tension: 0.4,
@@ -324,41 +289,35 @@ export class StatsComponent implements OnInit {
       plugins: {
         legend: {
           labels: {
-            color: textColor,
+            color: this.textColor,
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return `${context.dataset.label}: ${ranks[+context.formattedValue]}`;
+            },
           },
         },
       },
       scales: {
         x: {
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
           },
           grid: {
-            color: surfaceBorder,
-            drawBorder: false,
+            color: this.surfaceBorder,
           },
         },
         y: {
           ticks: {
-            color: textColorSecondary,
-            stepSize: 1,
-            callback: (label: number) => {
-              if (label === 0) {
-                return '1st';
-              } else if (label === 1) {
-                return '2nd';
-              } else if (label === 2) {
-                return '3rd';
-              } else if (label === 3) {
-                return '4th';
-              } else {
-                return '5th+';
-              }
+            color: this.textColorSecondary,
+            callback: (label: string | number) => {
+              return ranks[+label] ?? '';
             },
           },
           grid: {
-            color: surfaceBorder,
-            drawBorder: false,
+            color: this.surfaceBorder,
           },
         },
       },
@@ -368,6 +327,48 @@ export class StatsComponent implements OnInit {
         },
       },
     };
+  }
+
+  generateWins(): [Record<string, number[]>, string[]] {
+    const wins: Record<string, number[]> = {};
+
+    if (this.apiService.gameList.length === 0) {
+      return [{}, []];
+    } else {
+      // Continue
+    }
+
+    const pIds = this.apiService.playerList
+      .filter((x) => x.IsRealPerson && x.Wins.length > 0)
+      .map((x) => x.PlayerId ?? '');
+
+    const gameDayDict: Record<string, GameEntity[]> = {};
+    const dateSet = new Set<string>();
+    this.apiService.gameList.forEach((g) => {
+      const dateStr = format(g.DateObj, 'yyyy-MM-dd');
+      dateSet.add(dateStr);
+      if (dateStr in gameDayDict) {
+        gameDayDict[dateStr].push(g);
+      } else {
+        gameDayDict[dateStr] = [g];
+      }
+    });
+    const dates = [...dateSet].sort((a, b) => a.localeCompare(b));
+
+    pIds.forEach((p) => {
+      wins[p] = [];
+    });
+
+    for (const date of dates) {
+      const winners = gameDayDict[date]?.flatMap((x) => x.Winners).map((x) => x.PlayerId) ?? [];
+
+      pIds.forEach((p) => {
+        const v = winners.reduce((count, w) => count + (w === p ? 1 : 0), 0);
+        wins[p].push((wins[p].at(-1) ?? 0) + v);
+      });
+    }
+
+    return [wins, dates];
   }
 
   generateCountByDayChart() {
@@ -383,26 +384,15 @@ export class StatsComponent implements OnInit {
     const gameList = this.apiService.gameList;
 
     ScoreTypes.forEach((st) => (counts[st] = {}));
-    const today = new Date();
-    const date = addYears(today, -1);
 
     gameList.forEach((game) => {
-      if (game.DateObj >= date) {
-        const day = format(game.DateObj, 'eeee');
-        if (counts[game.BoardGame?.ScoreType ?? ''][day] === undefined) {
-          counts[game.BoardGame?.ScoreType ?? ''][day] = 1;
-        } else {
-          counts[game.BoardGame?.ScoreType ?? ''][day]++;
-        }
+      const day = format(game.DateObj, 'eeee');
+      if (counts[game.BoardGame?.ScoreType ?? ''][day] === undefined) {
+        counts[game.BoardGame?.ScoreType ?? ''][day] = 1;
       } else {
-        // Skip
+        counts[game.BoardGame?.ScoreType ?? ''][day]++;
       }
     });
-
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
     this.countByDayData = {
       labels: countDays,
@@ -425,7 +415,7 @@ export class StatsComponent implements OnInit {
       plugins: {
         legend: {
           labels: {
-            color: textColor,
+            color: this.textColor,
           },
         },
       },
@@ -433,22 +423,20 @@ export class StatsComponent implements OnInit {
         x: {
           stacked: true,
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
           },
           grid: {
-            color: surfaceBorder,
-            drawBorder: false,
+            color: this.surfaceBorder,
           },
         },
         y: {
           stacked: true,
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
             stepSize: 1,
           },
           grid: {
-            color: surfaceBorder,
-            drawBorder: false,
+            color: this.surfaceBorder,
           },
         },
       },
@@ -470,36 +458,24 @@ export class StatsComponent implements OnInit {
       // Continue
     }
 
-    const today = new Date();
-    const date = addYears(today, -1);
-
     const gameList = this.apiService.gameList;
 
     ScoreTypes.forEach((st) => (counts[st] = {}));
 
     gameList.forEach((game) => {
-      if (game.DateObj >= date) {
-        const month = format(game.DateObj, 'MMM yyyy');
-        if (countMonths.includes(month) === false) {
-          countMonths.push(month);
-        } else {
-          // Continue
-        }
-        const scoreTypeCount = counts[game.BoardGame?.ScoreType ?? ''];
-        if (scoreTypeCount[month] === undefined) {
-          scoreTypeCount[month] = 1;
-        } else {
-          scoreTypeCount[month]++;
-        }
+      const month = format(game.DateObj, 'MMM yyyy');
+      if (countMonths.includes(month) === false) {
+        countMonths.push(month);
       } else {
-        // Skip
+        // Continue
+      }
+      const scoreTypeCount = counts[game.BoardGame?.ScoreType ?? ''];
+      if (scoreTypeCount[month] === undefined) {
+        scoreTypeCount[month] = 1;
+      } else {
+        scoreTypeCount[month]++;
       }
     });
-
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
     this.countByMonthData = {
       labels: countMonths,
@@ -522,7 +498,7 @@ export class StatsComponent implements OnInit {
       plugins: {
         legend: {
           labels: {
-            color: textColor,
+            color: this.textColor,
           },
         },
       },
@@ -530,22 +506,20 @@ export class StatsComponent implements OnInit {
         x: {
           stacked: true,
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
           },
           grid: {
-            color: surfaceBorder,
-            drawBorder: false,
+            color: this.surfaceBorder,
           },
         },
         y: {
           stacked: true,
           ticks: {
-            color: textColorSecondary,
+            color: this.textColorSecondary,
             stepSize: 1,
           },
           grid: {
-            color: surfaceBorder,
-            drawBorder: false,
+            color: this.surfaceBorder,
           },
         },
       },

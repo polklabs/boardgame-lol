@@ -6,7 +6,7 @@
   [entityType]="entityType"
   [hiddenFields]="hiddenFields"
   textInputType="dropdown">
-  <p-dropdown
+  <p-select
     inputId="{{ formControlName }}"
     formControlName="{{ formControlName }}"
     [options]="options"
@@ -17,5 +17,5 @@
     [optionValue]="optionValue"
     appendTo="body"
     placeholder="{{ placeholder ?? label ?? '' }}"
-    [ngClass]="{ 'ng-invalid ng-dirty': false }"></p-dropdown>
+    [ngClass]="{ 'ng-invalid ng-dirty': false }"></p-select>
 </app-control-wrapper>

@@ -3,113 +3,123 @@
     [value]="(boardGames$ | async) ?? []"
     dataKey="BoardGameId"
     [scrollable]="true"
+    [stripedRows]="true"
     scrollHeight="flex"
-    styleClass="p-datatable-striped p-datatable-sm"
+    class="p-datatable-striped p-datatable-sm"
     sortField="Games.length"
     [sortOrder]="-1"
     [tableStyle]="{ 'min-width': '50rem' }"
-    [autoLayout]="true"
     [expandedRowKeys]="expandedRows">
-    <ng-template pTemplate="header">
+    <ng-template #header>
       <tr>
         <th id="expansion" style="width: 0"></th>
-        <th
-          id="{{ column.field }}"
-          *ngFor="let column of boardGameColumns"
-          [pSortableColumn]="column.sort ? column.field : undefined">
-          {{ column.name }}
-          <p-sortIcon *ngIf="column.sort" [field]="column.field" />
-        </th>
-        <th *ngIf="canEdit" id="edit" class="edit-header">Edit</th>
+        @for (column of boardGameColumns; track column) {
+          <th
+            id="{{ column.field }}"
+            [pSortableColumn]="column.sort ? column.field : undefined">
+            {{ column.name }}
+            @if (column.sort) {
+              <p-sortIcon [field]="column.field" />
+            }
+          </th>
+        }
+        @if (canEdit) {
+          <th id="edit" class="edit-header">Edit</th>
+        }
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-boardGame let-expanded="expanded">
+    <ng-template #body let-boardGame let-expanded="expanded">
       <tr>
         <td>
-          <p-button
-            type="button"
-            pRipple
-            [pRowToggler]="boardGame"
-            [text]="true"
-            [rounded]="true"
-            [plain]="true"
-            [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-        </td>
-        <td>
-          {{ boardGame.Name }}
-        </td>
+          @if (showExpansion(boardGame)) {
+            <p-button
+              type="button"
+              pRipple
+              [pRowToggler]="boardGame"
+              [text]="true"
+              [rounded]="true"
+              [plain]="true"
+              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+            }
+          </td>
+          <td>
+            {{ boardGame.Name }}
+          </td>
 
-        <td>
-          <span>{{ boardGame.Games.length | hide: '0' | number: '1.0-0' }}</span>
-          <div
-            *ngIf="boardGame.Games.length > 0"
-            class="bar-percent"
-            [ngStyle]="{ width: (boardGame.Games.length / (mostPlays.value || 1)) * 100 + '%' }"></div>
-        </td>
-        <td>
-          {{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }} - {{ boardGame.Champions | array: 'Nickname' }}
-        </td>
-        <td>{{ boardGame.MaxPlayers | hide: '0' | number: '1.0-0' }}</td>
-        <td>{{ boardGame.AveragePlayers | hide: '0' | number: '1.0-1' }}</td>
-        <td>{{ boardGame.MaxScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>
-        <td>{{ boardGame.AverageScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>
-        <td>{{ boardGame.AverageWinningScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>
-        <td *ngIf="canEdit">
-          <p-button
-            (onClick)="boardGameEdit.emit(boardGame)"
-            icon="pi pi-pencil"
-            [rounded]="true"
-            [text]="true"></p-button>
-        </td>
-      </tr>
-    </ng-template>
+          <td>
+            <span>{{ boardGame.Games.length | hide: '0' | number: '1.0-0' }}</span>
+            @if (boardGame.Games.length > 0) {
+              <div
+                class="bar-percent"
+              [ngStyle]="{ width: (boardGame.Games.length / (mostPlays.value || 1)) * 100 + '%' }"></div>
+            }
+          </td>
+          <td>
+            {{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }} - {{ boardGame.Champions | array: 'Nickname' }}
+          </td>
+          <td>{{ boardGame.MaxPlayers | hide: '0' | number: '1.0-0' }}</td>
+          <td>{{ boardGame.AveragePlayers | hide: '0' | number: '1.0-1' }}</td>
+          <td>{{ boardGame.MaxScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>
+          <td>{{ boardGame.AverageScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>
+          <td>{{ boardGame.AverageWinningScore | hide: '0' | number: '1.0-1' | score: boardGame }}</td>
+          @if (canEdit) {
+            <td>
+              <p-button
+                (onClick)="boardGameEdit.emit(boardGame)"
+                icon="pi pi-pencil"
+                [rounded]="true"
+              [text]="true"></p-button>
+            </td>
+          }
+        </tr>
+      </ng-template>
 
-    <!-- Row Expansion -->
-    <ng-template pTemplate="rowexpansion" let-boardGame>
-      <tr>
-        <td></td>
-        <td [attr.colspan]="boardGameColumns.length">
-          <p-table
-            [value]="WinCounts[boardGame.BoardGameId]"
-            styleClass="p-datatable-sm"
-            sortField="wins"
-            [sortOrder]="-1"
-            [tableStyle]="{ 'min-width': '50rem' }">
-            <ng-template pTemplate="header">
-              <tr>
-                <th id="name" pSortableColumn="name">
-                  Name
-                  <p-sortIcon field="name" />
-                </th>
-                <th id="wins" pSortableColumn="wins">
-                  Wins
-                  <p-sortIcon field="wins" />
-                </th>
-                <th id="winPercent" pSortableColumn="winPercent">
-                  Win %
-                  <p-sortIcon field="winPercent" />
-                </th>
-                <th id="totalPoints" pSortableColumn="totalPoints">
-                  Total Points
-                  <p-sortIcon field="totalPoints" />
-                </th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-player>
-              <tr>
-                <td>
-                  {{ player.name }}
-                </td>
-                <td>
-                  {{ player.wins | number: '1.0-3' }}
-                </td>
-                <td>{{ player.winPercent | number: '1.0-0' }}%</td>
-                <td>{{ player.totalPoints | number: '1.0-0' }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-</div>
+      <!-- Row Expansion -->
+      <ng-template #expandedrow let-boardGame>
+        <tr>
+          <td></td>
+          <td [attr.colspan]="boardGameColumns.length">
+            <p-table
+              [value]="WinCounts[boardGame.BoardGameId]"
+              class="p-datatable-sm"
+              sortField="wins"
+              [sortOrder]="-1"
+              [tableStyle]="{ 'min-width': '50rem' }">
+              <ng-template #header>
+                <tr>
+                  <th id="name" pSortableColumn="name">
+                    Name
+                    <p-sortIcon field="name" />
+                  </th>
+                  <th id="wins" pSortableColumn="wins">
+                    Wins
+                    <p-sortIcon field="wins" />
+                  </th>
+                  <th id="winPercent" pSortableColumn="winPercent">
+                    Win %
+                    <p-sortIcon field="winPercent" />
+                  </th>
+                  <th id="totalPoints" pSortableColumn="totalPoints">
+                    Total Points
+                    <p-sortIcon field="totalPoints" />
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-player>
+                <tr>
+                  <td>
+                    {{ player.name }}
+                  </td>
+                  <td>
+                    {{ player.wins | number: '1.0-3' }}
+                  </td>
+                  <td>{{ player.winPercent | number: '1.0-0' }}%</td>
+                  <td>{{ player.totalPoints | number: '1.0-0' }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>

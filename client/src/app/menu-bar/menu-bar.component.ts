@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { Router } from '@angular/router';
@@ -12,12 +12,15 @@ import { PasswordUpdateComponent } from '../password-update/password-update.comp
 
 @Component({
   selector: 'app-menu-bar',
-  standalone: true,
   imports: [CommonModule, ButtonModule, SplitButtonModule, MenuModule, LoginComponent, PasswordUpdateComponent],
   templateUrl: './menu-bar.component.html',
   styleUrl: './menu-bar.component.scss',
 })
 export class MenuBarComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private apiService = inject(ApiService);
+  private userService = inject(UserService);
+
   @Input() page: 'home' | 'club' | 'player' | 'board-game' = 'home';
 
   @Output() editClub = new EventEmitter();
@@ -66,7 +69,7 @@ export class MenuBarComponent implements OnInit, OnDestroy {
 
   editClubItems = [
     {
-      label: 'Game',
+      label: 'Play',
       icon: 'pi pi-plus',
       command: () => {
         this.newGame.emit();
@@ -140,12 +143,6 @@ export class MenuBarComponent implements OnInit, OnDestroy {
   ];
 
   subscriptions = new Subscription();
-
-  constructor(
-    private router: Router,
-    private apiService: ApiService,
-    private userService: UserService,
-  ) {}
 
   ngOnInit() {
     if (this.page === 'home') {

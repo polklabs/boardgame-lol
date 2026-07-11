@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -36,7 +36,6 @@ type ResetPassResp = { ok: boolean; emojis?: string[] };
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [
     CardModule,
     CommonModule,
@@ -56,6 +55,11 @@ type ResetPassResp = { ok: boolean; emojis?: string[] };
   styleUrl: './login.component.scss',
 })
 export class LoginComponent implements OnInit {
+  private httpService = inject(HttpService);
+  private userService = inject(UserService);
+  private messageService = inject(MessageService);
+  private fb = inject(FormBuilder);
+
   @Output() closeLogin = new EventEmitter<void>();
 
   loginFormGroup!: FormGroup;
@@ -131,13 +135,6 @@ export class LoginComponent implements OnInit {
       }),
     );
   }
-
-  constructor(
-    private httpService: HttpService,
-    private userService: UserService,
-    private messageService: MessageService,
-    private fb: FormBuilder,
-  ) {}
 
   ngOnInit(): void {
     this.loginFormGroup = this.fb.group({

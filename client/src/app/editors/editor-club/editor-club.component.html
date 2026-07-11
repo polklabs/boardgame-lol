@@ -7,36 +7,36 @@
   [style]="{ width: '650px', 'min-width': '300px' }"
   [draggable]="false"
   position="bottom">
-  <div *ngIf="formGroup && club" class="form">
-    <form [formGroup]="formGroup" (ngSubmit)="submit()">
-      <app-textinput
-        formControlName="Name"
-        label="Club Name"
-        [entityType]="entityType"
+  @if (formGroup && club) {
+    <div class="form">
+      <form [formGroup]="formGroup" (ngSubmit)="submit()">
+        <app-textinput
+          formControlName="Name"
+          label="Club Name"
+          [entityType]="entityType"
         [hiddenFields]="hideFields"></app-textinput>
-
-      <p-checkbox formControlName="Public" label="Is Public" [binary]="true"></p-checkbox>
-
-      <app-textarea
-        formControlName="Summary"
-        label="Summary"
-        [entityType]="entityType"
+        <app-checkbox formControlName="Public" label="Is Public"></app-checkbox>
+        <app-textarea
+          formControlName="Summary"
+          label="Summary"
+          [entityType]="entityType"
         [hiddenFields]="hideFields"></app-textarea>
-
-      <div class="dialog-footer">
-        <div>
-          <p-button
-            *ngIf="(adminIds | async)?.includes(club?.ClubId ?? '')"
-            label="Delete"
-            [outlined]="true"
-            severity="danger"
-            (onClick)="toDeleteEntity()"></p-button>
+        <div class="dialog-footer">
+          <div>
+            @if ((adminIds | async)?.includes(club.ClubId ?? '')) {
+              <p-button
+                label="Delete"
+                [outlined]="true"
+                severity="danger"
+              (onClick)="toDeleteEntity()"></p-button>
+            }
+          </div>
+          <div>
+            <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
+            <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+          </div>
         </div>
-        <div>
-          <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-          <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
-        </div>
-      </div>
-    </form>
-  </div>
+      </form>
+    </div>
+  }
 </p-dialog>

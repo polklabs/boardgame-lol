@@ -2,38 +2,38 @@
 <div class="header show-gt-700px">
   <h2 (click)="navigateHome()" (keyup)="navigateHome()">BoardGame.lol</h2>
 
-  <ng-container *ngIf="canEdit">
-    <ng-container [ngSwitch]="page">
-      <ng-container *ngSwitchCase="'club'">
-        <p-button label="Club" (click)="editClub.emit()" icon="pi pi-pencil" [outlined]="true"></p-button>
-        <p-button label="Game" (click)="newGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
-        <p-button label="BoardGame" (click)="newBoardGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
-        <p-button label="Player" (click)="newPlayer.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
-      </ng-container>
+  @if (canEdit) {
+    @switch (page) {
+      @case ('club') {
+        <p-button label="Club" (onClick)="editClub.emit()" icon="pi pi-pencil" [outlined]="true"></p-button>
+        <p-button label="Play" (onClick)="newGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+        <p-button label="Player" (onClick)="newPlayer.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+        <p-button label="BoardGame" (onClick)="newBoardGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+      }
 
-      <ng-container *ngSwitchCase="'board-game'">
+      @case ('board-game') {
         <p-splitButton
           label="BoardGame"
           (onClick)="editBoardGame.emit()"
           icon="pi pi-pencil"
-          styleClass="p-button-outlined mr-2 mb-2"
+          class="p-button-outlined mr-2 mb-2"
           [model]="items"></p-splitButton>
-      </ng-container>
+      }
 
-      <ng-container *ngSwitchCase="'player'">
+      @case ('player') {
         <p-splitButton
           label="Player"
           (onClick)="editPlayer.emit()"
           icon="pi pi-pencil"
-          styleClass="p-button-outlined mr-2 mb-2"
+          class="p-button-outlined mr-2 mb-2"
           [model]="items"></p-splitButton>
-      </ng-container>
+      }
 
-      <ng-container *ngSwitchCase="'home'">
-        <p-button label="Club" (click)="newClub.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
-      </ng-container>
-    </ng-container>
-  </ng-container>
+      @case ('home') {
+        <p-button label="Club" (onClick)="newClub.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+      }
+    }
+  }
 
   <div class="flex-fill"></div>
 
@@ -41,7 +41,7 @@
     <p-menu #menu [model]="userItems" [popup]="true"></p-menu>
     <p-button
       class="user-button"
-      (click)="menu.toggle($event)"
+      (onClick)="menu.toggle($event)"
       [label]="username()"
       [link]="true"
       icon="pi pi-chevron-down"
@@ -49,7 +49,7 @@
   </ng-container>
 
   <ng-template #notLoggedIn>
-    <p-button (click)="showLogin = true" label="Login/Signup" icon="pi pi-sign-in" [link]="true"></p-button>
+    <p-button (onClick)="showLogin = true" label="Login/Signup" icon="pi pi-sign-in" [link]="true"></p-button>
   </ng-template>
 </div>
 
@@ -62,7 +62,7 @@
         <p-menu #menu [model]="editClubItems" [popup]="true"></p-menu>
         <p-button
           label="Edit"
-          (click)="menu.toggle($event)"
+          (onClick)="menu.toggle($event)"
           icon="pi pi-chevron-down"
           iconPos="right"
           [outlined]="true"></p-button>
@@ -72,7 +72,7 @@
         <p-menu #menu [model]="editPlayerItems" [popup]="true"></p-menu>
         <p-button
           label="Edit"
-          (click)="menu.toggle($event)"
+          (onClick)="menu.toggle($event)"
           icon="pi pi-chevron-down"
           iconPos="right"
           [outlined]="true"></p-button>
@@ -82,7 +82,7 @@
         <p-menu #menu [model]="editBoardGameItems" [popup]="true"></p-menu>
         <p-button
           label="Edit"
-          (click)="menu.toggle($event)"
+          (onClick)="menu.toggle($event)"
           icon="pi pi-chevron-down"
           iconPos="right"
           [outlined]="true"></p-button>
@@ -92,7 +92,7 @@
         <p-menu #menu [model]="editHomeItems" [popup]="true"></p-menu>
         <p-button
           label="Edit"
-          (click)="menu.toggle($event)"
+          (onClick)="menu.toggle($event)"
           icon="pi pi-chevron-down"
           iconPos="right"
           [outlined]="true"></p-button>
@@ -106,14 +106,14 @@
     <p-menu #menu [model]="userItems" [popup]="true"></p-menu>
     <p-button
       class="user-button"
-      (click)="menu.toggle($event)"
+      (onClick)="menu.toggle($event)"
       [link]="true"
       icon="pi pi-user"
       iconPos="right"></p-button>
   </ng-container>
 
   <ng-template #notLoggedIn>
-    <p-button (click)="showLogin = true" label="Login/Signup" icon="pi pi-sign-in" [link]="true"></p-button>
+    <p-button (onClick)="showLogin = true" label="Login/Signup" icon="pi pi-sign-in" [link]="true"></p-button>
   </ng-template>
 </div>
 

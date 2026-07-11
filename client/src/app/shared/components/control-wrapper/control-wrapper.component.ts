@@ -1,13 +1,13 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
 import { getIgnore } from 'libs/decorators/ignore.decorator';
 import { getMinMax, getNullable } from 'libs/index';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-control-wrapper',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [FloatLabelModule],
   templateUrl: './control-wrapper.component.html',
   styleUrl: './control-wrapper.component.scss',
 })

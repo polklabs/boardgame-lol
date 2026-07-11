@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HttpService } from './shared/services/http.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -9,7 +9,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterOutlet, CommonModule, ProgressSpinnerModule, ToastModule, ConfirmDialogModule],
   providers: [],
   templateUrl: './app.component.html',
@@ -20,7 +19,9 @@ export class AppComponent {
 
   showSpinner$: Observable<boolean>;
 
-  constructor(httpService: HttpService) {
+  constructor() {
+    const httpService = inject(HttpService);
+
     this.showSpinner$ = httpService.loadingSpinner$;
   }
 }
