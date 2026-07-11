@@ -252,7 +252,8 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       this.playerGameEdit = playerGame;
     } else {
       this.playerGameEdit = new PlayerGameEntity({ ClubId: this.game?.ClubId, GameId: '-1' });
-      this.playerGameEdit.PlayerId = this.players[0].PlayerId;
+      const existingPlayers = new Set(this.playerGames.map((x) => x.PlayerId));
+      this.playerGameEdit.PlayerId = this.players.find((x) => !existingPlayers.has(x.PlayerId))?.PlayerId ?? null;
     }
     this.playerGameEditorVisible = true;
   }
