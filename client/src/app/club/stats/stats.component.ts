@@ -146,6 +146,12 @@ export class StatsComponent implements OnInit {
   }
 
   generateWinsOverTimeChart(wins: Record<string, number[]>, dates: string[]) {
+    if (dates.length <= 1) {
+      return;
+    } else {
+      // Create chart
+    }
+
     const lastYear = format(addYears(new Date(), -1), 'yyyy-MM-dd');
     const toDelete = dates.findIndex((d) => d > lastYear);
 
@@ -185,6 +191,19 @@ export class StatsComponent implements OnInit {
             color: this.textColor,
           },
         },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const data = context.dataset.data as number[];
+              if (context.dataIndex > 0) {
+                const lastValue = data.at(context.dataIndex - 1) ?? 0;
+                return `${context.dataset.label}: (+${+context.formattedValue - lastValue}) ${context.formattedValue} `;
+              } else {
+                return `${context.dataset.label}: ${context.formattedValue}`;
+              }
+            },
+          },
+        },
       },
       scales: {
         x: {
@@ -208,6 +227,12 @@ export class StatsComponent implements OnInit {
   }
 
   generateRankOverTimeChart(wins: Record<string, number[]>, dates: string[]) {
+    if (dates.length <= 1) {
+      return;
+    } else {
+      // Create chart
+    }
+    
     const spots = 5;
     const ranks = ['5th', '4th', '3rd', '2nd', '1st'];
 

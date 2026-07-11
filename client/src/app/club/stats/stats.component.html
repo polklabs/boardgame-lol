@@ -47,25 +47,33 @@
     </div>
 
     @if (ShowCharts) {
-      <div class="card">
-        <h3 style="text-align: center">Play Count by Day of Week</h3>
-        <p-chart type="bar" [data]="countByDayData" [options]="countByDayOptions" [plugins]="chartPlugins" />
-      </div>
+      @if (rankOverTimeOptions) {
+        <div class="card">
+          <h3 style="text-align: center">Rank Over Time</h3>
+          <p-chart type="line" [data]="rankOverTimeData" [options]="rankOverTimeOptions" [plugins]="chartPlugins" />
+        </div>
+      }
 
-      <div class="card">
-        <h3 style="text-align: center">Total Play Count by Month</h3>
-        <p-chart type="bar" [data]="countByMonthData" [options]="countByMonthOptions" [plugins]="chartPlugins" />
-      </div>
+      @if (countByDayOptions) {
+        <div class="card">
+          <h3 style="text-align: center">Play Count by Day of Week</h3>
+          <p-chart type="bar" [data]="countByDayData" [options]="countByDayOptions" [plugins]="chartPlugins" />
+        </div>
+      }
 
-      <div class="card">
-        <h3 style="text-align: center">Wins Over Time</h3>
-        <p-chart type="line" [data]="winsOverTimeData" [options]="winsOverTimeOptions" [plugins]="chartPlugins" />
-      </div>
+      @if (countByMonthOptions) {
+        <div class="card">
+          <h3 style="text-align: center">Total Play Count by Month</h3>
+          <p-chart type="bar" [data]="countByMonthData" [options]="countByMonthOptions" [plugins]="chartPlugins" />
+        </div>
+      }
 
-      <div class="card">
-        <h3 style="text-align: center">Rank Over Time</h3>
-        <p-chart type="line" [data]="rankOverTimeData" [options]="rankOverTimeOptions" [plugins]="chartPlugins" />
-      </div>
+      @if (winsOverTimeOptions) {
+        <div class="card">
+          <h3 style="text-align: center">Wins Over Time</h3>
+          <p-chart type="line" [data]="winsOverTimeData" [options]="winsOverTimeOptions" [plugins]="chartPlugins" />
+        </div>
+      }
     }
   </div>
 </div>
