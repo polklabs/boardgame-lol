@@ -27,7 +27,8 @@ export class PlayerTableComponent {
   expandedRows = {};
   playerColumns = [
     { field: 'Name', name: 'Name', sort: true },
-    { field: 'Wins.length', name: 'Wins', sort: true },
+    { field: 'WinCount', name: 'Wins', sort: true },
+    { field: 'LossCount', name: 'Losses', sort: true },
     { field: '', name: 'Best Game(s)', sort: false },
     { field: 'BestGameWins', name: 'Best Game(s) Wins', sort: true },
     { field: 'FirstSeen', name: 'First Seen', sort: true },

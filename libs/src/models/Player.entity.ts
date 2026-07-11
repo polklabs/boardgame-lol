@@ -31,6 +31,12 @@ export class PlayerEntity extends BaseEntity {
   Wins: PlayerGameEntity[] = [];
 
   @Ignore()
+  WinCount = 0;
+
+  @Ignore()
+  LossCount = 0;
+
+  @Ignore()
   BestGames: BoardGameEntity[] = [];
 
   @Ignore()

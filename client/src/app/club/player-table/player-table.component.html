@@ -6,7 +6,7 @@
     [stripedRows]="true"
     scrollHeight="flex"
     class="p-datatable-striped p-datatable-sm"
-    sortField="Wins.length"
+    sortField="WinCount"
     [sortOrder]="-1"
     [tableStyle]="{ 'min-width': '50rem' }"
     [expandedRowKeys]="expandedRows">
@@ -14,10 +14,7 @@
       <tr>
         <th id="expansion" style="width: 0" id="blank"></th>
         @for (column of playerColumns; track column) {
-          <th
-            id="{{ column.field }}"
-            [pSortableColumn]="column.sort ? column.field : undefined"
-            [id]="column.field">
+          <th id="{{ column.field }}" [pSortableColumn]="column.sort ? column.field : undefined" [id]="column.field">
             {{ column.name }}
             @if (column.sort) {
               <p-sortIcon [field]="column.field" />
@@ -32,7 +29,7 @@
     <ng-template #body let-player let-expanded="expanded">
       <tr>
         <td>
-          @if (player.Wins.length > 0) {
+          @if (player.WinCount > 0) {
             <p-button
               type="button"
               pRipple
@@ -41,64 +38,65 @@
               [rounded]="true"
               [plain]="true"
               [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-            }
-          </td>
-          <td>
-            {{ player.Name }}
-            @if (player.hasMostWins) {
-              <i class="pi pi-crown" style="color: gold"></i>
-            }
-          </td>
-          <td>
-            <span>{{ player.Wins.length | hide: '0' | number: '1.0-0' }}</span>
-            @if (player.Wins.length > 0) {
-              <div
-                class="bar-percent"
-              [ngStyle]="{ width: (player.Wins.length / (mostWins.value || 1)) * 100 + '%' }"></div>
-            }
-          </td>
-          <td>{{ player.BestGames | array: 'Name' }}</td>
-          <td>{{ player.BestGameWins | hide: '0' | number: '1.0-0' }}</td>
-          <td>{{ player.FirstSeen | date: 'MM/dd/yy' }}</td>
-          @if (canEdit) {
-            <td>
-              <p-button (onClick)="playerEdit.emit(player)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
-            </td>
           }
-        </tr>
-      </ng-template>
-
-      <!-- Row Expansion -->
-      <ng-template #expandedrow let-player>
-        <tr>
-          <td></td>
-          <td [attr.colspan]="playerColumns.length">
-            <p-table [value]="player.Wins" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
-              <ng-template #header>
-                <tr>
-                  <th id="date">Date</th>
-                  <th id="game">Game</th>
-                  <th id="points">Points</th>
-                </tr>
-              </ng-template>
-              <ng-template #body let-playerGame>
-                <tr>
-                  <td>
-                    {{ playerGame.Game.Date | date: 'MM/dd/yy' }}
-                  </td>
-                  <td>
-                    {{ playerGame.Game.BoardGame.Name }}
-                  </td>
-                  <td>
-                    @if (showScore(playerGame.Game)) {
-                      {{ playerGame.Points | number: '1.0-3' | score: playerGame.Game.BoardGame }}
-                    }
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
+        </td>
+        <td>
+          {{ player.Name }}
+          @if (player.hasMostWins) {
+            <i class="pi pi-crown" style="color: gold"></i>
+          }
+        </td>
+        <td>
+          <span>{{ player.WinCount | hide: '0' | number: '1.0-0' }}</span>
+          @if (player.WinCount > 0) {
+            <div class="bar-percent" [ngStyle]="{ width: (player.WinCount / (mostWins.value || 1)) * 100 + '%' }"></div>
+          }
+        </td>
+        <td>
+          <span>{{ player.LossCount | hide: '0' | number: '1.0-0' }}</span>
+        </td>
+        <td>{{ player.BestGames | array: 'Name' }}</td>
+        <td>{{ player.BestGameWins | hide: '0' | number: '1.0-0' }}</td>
+        <td>{{ player.FirstSeen | date: 'MM/dd/yy' }}</td>
+        @if (canEdit) {
+          <td>
+            <p-button (onClick)="playerEdit.emit(player)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
           </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
+        }
+      </tr>
+    </ng-template>
+
+    <!-- Row Expansion -->
+    <ng-template #expandedrow let-player>
+      <tr>
+        <td></td>
+        <td [attr.colspan]="playerColumns.length">
+          <p-table [value]="player.Wins" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
+            <ng-template #header>
+              <tr>
+                <th id="date">Date</th>
+                <th id="game">Game</th>
+                <th id="points">Points</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-playerGame>
+              <tr>
+                <td>
+                  {{ playerGame.Game.Date | date: 'MM/dd/yy' }}
+                </td>
+                <td>
+                  {{ playerGame.Game.BoardGame.Name }}
+                </td>
+                <td>
+                  @if (showScore(playerGame.Game)) {
+                    {{ playerGame.Points | number: '1.0-3' | score: playerGame.Game.BoardGame }}
+                  }
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
