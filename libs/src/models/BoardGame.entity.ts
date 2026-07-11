@@ -92,20 +92,22 @@ export class BoardGameEntity extends BaseEntity {
     this.assign(partial, BoardGameEntity, copyIgnored);
   }
 
-  calculateFields() {
+  calculate() {
     this.calculateChampion();
     this.calculatePlayers();
     this.calculateScore();
+    this.calculated = true;
   }
 
   calculateChampion() {
-    const winners = this.Games.flatMap((x) => x.calculateWinner())
-      .map((x) => x.Player!);
+    this.calculationsComplete(this.Games);
+
+    const winners = this.Games.flatMap((x) => x.Winners);
     this.Champions = Mode(winners, (x) => x.PlayerId ?? '');
     if (this.Champions.length > 0) {
       this.ChampionWins = winners.reduce(
         (wins, winner) => wins + (winner.PlayerId === this.Champions[0].PlayerId ? 1 : 0),
-        0
+        0,
       );
     } else {
       this.ChampionWins = 0;
@@ -122,8 +124,7 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   calculateScore() {
-    const scores = this.Games.flatMap((g) => g.Scores)
-      .filter((x) => !!x.Points);
+    const scores = this.Games.flatMap((g) => g.Scores).filter((x) => !!x.Points);
     if (this.ScoreType === 'points') {
       this.MaxScore = Math.max(...scores.map((pg) => pg.Points ?? 0), 0);
 
@@ -133,8 +134,7 @@ export class BoardGameEntity extends BaseEntity {
         this.AverageScore = 0;
       }
 
-      const winners = this.Games.flatMap((g) => g.calculateWinner())
-        .filter((x) => !!x.Points);
+      const winners = this.Games.flatMap((g) => g.calculateWinner()).filter((x) => !!x.Points);
       if (winners.length > 0) {
         this.AverageWinningScore = winners.reduce((sum, score) => sum + score.Points!, 0) / winners.length;
       } else {

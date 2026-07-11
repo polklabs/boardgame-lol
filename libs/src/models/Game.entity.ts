@@ -87,9 +87,10 @@ export class GameEntity extends BaseEntity {
     this.DateObj = new Date(this.DateObj.getTime() + userTimezoneOffset);
   }
 
-  calculateFields() {
+  calculate() {
     this.Winners = this.calculateWinner().map((x) => x.Player!);
     this.HighScore = this.calculateWinner()?.[0]?.Points ?? null;
+    this.calculated = true;
   }
 
   calculateWinner(): PlayerGameEntity[] {

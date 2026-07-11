@@ -50,11 +50,12 @@ export class PlayerEntity extends BaseEntity {
     this.assign(partial, PlayerEntity, copyIgnored);
   }
 
-  calculateFields() {
+  calculate() {
     this.calculateWins();
     this.calculateBestGames();
     this.calculateBestGameWins();
     this.calculateFirstSeen();
+    this.calculated = true;
   }
 
   calculateWins() {
@@ -100,7 +101,7 @@ export class PlayerEntity extends BaseEntity {
         // continue
       }
 
-      p.hasMostWins = p.Wins.length >= maxWins;
+      p.hasMostWins = p.Wins.length > 0 && p.Wins.length >= maxWins;
     });
   }
 }

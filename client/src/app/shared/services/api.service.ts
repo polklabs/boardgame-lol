@@ -213,6 +213,7 @@ export class ApiService {
     if (result) {
       this.unloadClub();
       this.club = result;
+      this.publicClubs = [...this.publicClubs, result];
       return true;
     } else {
       return false;
@@ -356,6 +357,8 @@ export class ApiService {
 
     if (result) {
       this.boardGameList = this._boardGameListFull.filter((x) => x.BoardGameId !== boardGameId);
+      this.gameList = this._gameListFull.filter((x) => x.BoardGameId !== boardGameId);
+      this.playerGameList = this._playerGameListFull.filter((x) => x.Game?.BoardGameId !== boardGameId);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -396,8 +399,8 @@ export class ApiService {
     this._filteredStartDate = startDate;
     this._includeDNF = dnf;
     this._filterEnabled = enabled;
-    this.filterEnabled$.next(enabled);
     this.updateReferences();
+    this.filterEnabled$.next(enabled);
     this.dataUpdate$.next();
   }
 
@@ -455,10 +458,24 @@ export class ApiService {
       p.PlayerGames = this.playerGameList.filter((x) => x.PlayerId === p.PlayerId);
     });
 
-    this.gameList.forEach((x) => x.calculateFields());
-    this.playerGameList.forEach((x) => x.calculateFields());
-    this.boardGameList.forEach((x) => x.calculateFields());
-    this.playerList.forEach((x) => x.calculateFields());
+    this.calculatedFields();
+  }
+
+  private calculatedFields() {
+    this.club?.resetCalculated(new ClubEntity(), ClubEntity);
+    this.publicClubs.forEach((x) => x.resetCalculated(new ClubEntity(), ClubEntity));
+    this.gameList.forEach((x) => x.resetCalculated(new GameEntity(), GameEntity));
+    this.playerGameList.forEach((x) => x.resetCalculated(new PlayerGameEntity(), PlayerGameEntity));
+    this.boardGameList.forEach((x) => x.resetCalculated(new BoardGameEntity(), BoardGameEntity));
+    this.playerList.forEach((x) => x.resetCalculated(new PlayerEntity(), PlayerEntity));
+
+    this.club?.calculate();
+    this.publicClubs.forEach((x) => x.calculate());
+    this.gameList.forEach((x) => x.calculate());
+    this.playerGameList.forEach((x) => x.calculate());
+    this.boardGameList.forEach((x) => x.calculate());
+    this.playerList.forEach((x) => x.calculate());
+
     PlayerEntity.postCalculate(this.playerList);
     GameEntity.postCalculate(this.gameList);
   }

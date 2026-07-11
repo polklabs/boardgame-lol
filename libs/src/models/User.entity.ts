@@ -45,7 +45,7 @@ export class UserEntity extends BaseEntity {
     this.assign(partial, UserEntity, copyIgnored);
   }
 
-  calculateFields() {
-    // Stub
+  calculate() {
+    this.calculated = true;
   }
 }

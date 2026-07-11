@@ -27,7 +27,7 @@ export class ClubEntity extends BaseEntity {
     this.assign(partial, ClubEntity, copyIgnored);
   }
 
-  calculateFields() {
-    // Stub
+  calculate(): void {
+    this.calculated = true;
   }
 }
