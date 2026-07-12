@@ -65,7 +65,10 @@ export class PlayerEntity extends BaseEntity {
   }
 
   calculateWins() {
-    this.Wins = this.PlayerGames.filter((pg) => pg.Game?.calculateWinner().includes(pg)).reverse();
+    this.calculationsComplete(this.PlayerGames.map((x) => x.Game));
+    this.Wins = this.PlayerGames.filter((pg) => pg.Game?.place(0).includes(pg)).reverse();
+    this.WinCount = this.Wins.length;
+    this.LossCount = this.PlayerGames.length - this.WinCount;
   }
 
   calculateBestGames() {

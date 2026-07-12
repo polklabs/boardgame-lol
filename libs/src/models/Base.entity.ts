@@ -68,12 +68,12 @@ export abstract class BaseEntity {
     }
   }
 
-  calculationsComplete<T extends BaseEntity>(item: T | T[]) {
+  calculationsComplete<T extends BaseEntity>(item?: T | (T | null)[] | null) {
     let complete: boolean;
     if (Array.isArray(item)) {
-      complete = item.every((x) => x.calculated);
+      complete = item.every((x) => x?.calculated ?? false);
     } else {
-      complete = item.calculated;
+      complete = item?.calculated ?? false;
     }
 
     console.assert(complete, 'Calculations incomplete:', item);

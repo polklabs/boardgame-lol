@@ -124,6 +124,8 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   calculateScore() {
+    this.calculationsComplete(this.Games);
+    
     const scores = this.Games.flatMap((g) => g.Scores).filter((x) => !!x.Points);
     if (this.ScoreType === 'points') {
       this.MaxScore = Math.max(...scores.map((pg) => pg.Points ?? 0), 0);
@@ -134,7 +136,7 @@ export class BoardGameEntity extends BaseEntity {
         this.AverageScore = 0;
       }
 
-      const winners = this.Games.flatMap((g) => g.calculateWinner()).filter((x) => !!x.Points);
+      const winners = this.Games.flatMap((g) => g.place(0)).filter((x) => !!x.Points);
       if (winners.length > 0) {
         this.AverageWinningScore = winners.reduce((sum, score) => sum + score.Points!, 0) / winners.length;
       } else {

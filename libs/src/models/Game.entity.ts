@@ -76,6 +76,9 @@ export class GameEntity extends BaseEntity {
   HighScore: number | null = null;
 
   @Ignore()
+  private Places: Record<number, Set<PlayerGameEntity>> = {};
+
+  @Ignore()
   Winners: PlayerEntity[] = [];
 
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
@@ -87,49 +90,58 @@ export class GameEntity extends BaseEntity {
     this.DateObj = new Date(this.DateObj.getTime() + userTimezoneOffset);
   }
 
+  findPlace(pg: PlayerGameEntity): number | null {
+    for (const key of Object.keys(this.Places)) {
+      if (this.Places[+key].has(pg)) {
+        return +key;
+      }
+    }
+    return null;
+  }
+
+  place(place: number): PlayerGameEntity[] {
+    if (place in this.Places) {
+      return [...this.Places[place]];
+    } else {
+      return [];
+    }
+  }
+
+  placePlayers(place: number): PlayerEntity[] {
+    if (place in this.Places) {
+      return [...this.Places[place]].map((x) => x.Player).filter((x) => x !== null);
+    } else {
+      return [];
+    }
+  }
+
   calculate() {
-    this.Winners = this.calculateWinner().map((x) => x.Player!);
-    this.HighScore = this.calculateWinner()?.[0]?.Points ?? null;
+    this.calculateWinners();
+    this.Winners = this.placePlayers(0);
+    this.HighScore = this.place(0).at(0)?.Points ?? null;
     this.calculated = true;
   }
 
-  calculateWinner(): PlayerGameEntity[] {
-    switch (this.BoardGame?.ScoreType) {
-      case 'points':
-        if (this.Scores.length > 0) {
-          return this.Scores.reduce((max, playerGame) => {
-            if ((playerGame.Points ?? 0) > (max[0]?.Points ?? 0)) {
-              return [playerGame];
-            } else if ((playerGame.Points ?? 0) === (max[0]?.Points ?? 0)) {
-              max.push(playerGame);
-              return max;
-            } else {
-              return max;
-            }
-          }, [] as PlayerGameEntity[]);
-        } else {
-          return [];
-        }
-      case 'rank':
-        if (this.Scores.length > 0) {
-          return this.Scores.reduce((max, playerGame) => {
-            if ((playerGame.Points ?? 0) < (max[0]?.Points ?? Infinity)) {
-              return [playerGame];
-            } else if ((playerGame.Points ?? 0) === (max[0]?.Points ?? Infinity)) {
-              max.push(playerGame);
-              return max;
-            } else {
-              return max;
-            }
-          }, [] as PlayerGameEntity[]);
-        } else {
-          return [];
-        }
-      case 'win-lose':
-        return this.Scores.filter((x) => x.Points === 1);
-      default:
-        return [];
+  calculateWinners() {
+    this.Places = {};
+    const scoreBuckets = [...new Set(this.Scores.map((x) => x.Points))].filter((x) => x !== null);
+
+    new Array(scoreBuckets.length).fill(0).forEach((_, i) => {
+      this.Places[i] = new Set();
+    });
+
+    if (this.BoardGame?.ScoreType === 'rank') {
+      scoreBuckets.sort((a, b) => a - b);
+    } else {
+      scoreBuckets.sort((a, b) => b - a);
     }
+
+    this.Scores.forEach((s) => {
+      if (s.Points !== null) {
+        const bucket = scoreBuckets.indexOf(s.Points);
+        this.Places[bucket].add(s);
+      }
+    });
   }
 
   static postCalculate(games: GameEntity[]) {
