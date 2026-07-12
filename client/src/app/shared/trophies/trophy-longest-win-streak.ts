@@ -3,7 +3,7 @@ import { ITrophy } from './trophy.model';
 
 export class TrophyLongestWinStreak extends ITrophy {
   constructor() {
-    super('🔥', 'The Hot Streak', 'Longest Win Streak');
+    super('🔥', 'The Hot Streak', ['Try to keep up'], 'Longest Win Streak');
   }
 
   calculate(players: PlayerEntity[], games: GameEntity[]) {

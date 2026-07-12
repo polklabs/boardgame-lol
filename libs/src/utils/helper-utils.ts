@@ -32,6 +32,14 @@ export function Mode<T>(arr: Array<T>, predicate: (elem: T) => string | number) 
   }
 }
 
+export function GetRandom<T>(list: T[]): T | undefined {
+  if (list.length > 0) {
+    return list[Math.floor(Math.random() * list.length)];
+  } else {
+    return undefined;
+  }
+}
+
 export function UnicodeToEmoji(unicode: string): string {
   const codePoints = unicode
     .trim()

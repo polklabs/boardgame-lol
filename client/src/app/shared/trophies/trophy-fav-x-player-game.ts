@@ -6,7 +6,8 @@ export class TrophyFavXPlayerGame extends ITrophy {
     super(
       'U+003{FavXPlayerCount} U+FE0F U+20E3',
       'Favorite {FavXPlayerCount} Player Game',
-      'Game played most with {FavXPlayerCount} players',
+      ["Oh, it's you {FavXPlayerCount} again..."],
+      'Player # mode; Max # of plays with player #',
     );
   }
 

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ITrophy } from '../trophies/trophy.model';
 import { TrophyMostWins } from '../trophies/trophy-most-wins';
-import { TrophyBestComeback } from '../trophies/trophy-best-comeback';
+import { TrophyComebackKid } from '../trophies/trophy-comeback-kid';
 import { TrophyLongestWinStreak } from '../trophies/trophy-longest-win-streak';
 import { TrophyMaxUniqueWins } from '../trophies/trophy-max-unique-wins';
 import { TrophyMostTies } from '../trophies/trophy-most-ties';
@@ -14,6 +14,9 @@ import { TrophyUniqueOpponents } from '../trophies/trophy-unique-opponents';
 import { TrophyMostLosses } from '../trophies/trophy-most-losses';
 import { ApiService } from './api.service';
 import { BehaviorSubject } from 'rxjs';
+import { TrophySnail } from '../trophies/trophy-snail';
+import { TrophyRivals } from '../trophies/trophy-rivals';
+import { TrophyBestFriends } from '../trophies/trophy-best-friends';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +24,7 @@ import { BehaviorSubject } from 'rxjs';
 export class TrophyService {
   private _trophies: { [key: string]: ITrophy } = {
     MostWins: new TrophyMostWins(),
-    BestComeback: new TrophyBestComeback(),
+    BestComeback: new TrophyComebackKid(),
     LongestWinStreak: new TrophyLongestWinStreak(),
     MaxUniqueWins: new TrophyMaxUniqueWins(),
     MostTies: new TrophyMostTies(),
@@ -32,6 +35,9 @@ export class TrophyService {
     LastGroupWin: new TrophyLastGroupWin(),
     UniqueOpponents: new TrophyUniqueOpponents(),
     MostLosses: new TrophyMostLosses(),
+    FirstWinDelay: new TrophySnail(),
+    Rivals: new TrophyRivals(),
+    BestFriends: new TrophyBestFriends(),
   } as const;
 
   readonly trophies$ = new BehaviorSubject<ITrophy[]>([]);

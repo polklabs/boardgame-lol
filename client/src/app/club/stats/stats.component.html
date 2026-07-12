@@ -8,7 +8,7 @@
       }
     </div>
 
-    <ng-template #trophy let-emoji="emoji" let-title="title" let-info="info" let-array="array" let-value="value">
+    <ng-template #trophy let-emoji="emoji" let-title="title" let-subtitle="subtitle" let-array="array" let-value="value">
       <div class="trophy">
         <div class="trophy-details">
           <span class="trophy-icon">{{ emoji }}</span>
@@ -18,7 +18,7 @@
               <span class="trophy-winner">{{ array | array: ['Nickname', 'Name'] }}</span>
             </div>
             <div class="trophy-info">
-              <small>{{ info }}</small>
+              <small>{{ subtitle }}</small>
             </div>
           </div>
         </div>

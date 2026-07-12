@@ -1,9 +1,9 @@
-import { BoardGameEntity, GameEntity, PlayerEntity, UnicodeToEmoji } from 'libs/index';
+import { BoardGameEntity, GameEntity, GetRandom, PlayerEntity, UnicodeToEmoji } from 'libs/index';
 
 export type Trophy = {
   emoji: string;
   title: string;
-  info: string;
+  subtitle: string;
   value: number;
   array: unknown[];
 };
@@ -11,25 +11,31 @@ export type Trophy = {
 export abstract class ITrophy {
   emoji: string;
   title: string;
-  info: string;
+  subtitle: string[];
+  formula?: string;
   array: unknown[] = [];
   value: number = 0;
 
   extra: Record<string, string | number> = {};
 
-  constructor(emoji: string, title: string, info: string) {
+  constructor(emoji: string, title: string, subtitle: string[], formula?: string) {
     this.emoji = emoji;
     this.title = title;
-    this.info = info;
+    this.subtitle = subtitle;
+    this.formula = formula;
   }
 
   abstract calculate(players: PlayerEntity[], games: GameEntity[], boardGames: BoardGameEntity[]): void;
 
   update(players: PlayerEntity[], games: GameEntity[], boardGames: BoardGameEntity[]) {
+    this.value = 0;
+    this.array = [];
     this.calculate(players, games, boardGames);
   }
 
   export(): Trophy {
+    this.extra['value'] = this.value;
+
     let emoji = this.textReplace(this.emoji);
     if (emoji.includes('U+')) {
       emoji = UnicodeToEmoji(emoji);
@@ -40,7 +46,7 @@ export abstract class ITrophy {
     return {
       emoji,
       title: this.textReplace(this.title),
-      info: this.textReplace(this.info),
+      subtitle: this.textReplace(GetRandom(this.subtitle) ?? ''),
       value: this.value ?? 0,
       array: this.array ?? [],
     };

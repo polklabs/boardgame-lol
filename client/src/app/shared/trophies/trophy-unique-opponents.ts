@@ -3,7 +3,7 @@ import { ITrophy } from './trophy.model';
 
 export class TrophyUniqueOpponents extends ITrophy {
   constructor() {
-    super('🦋', 'Social Butterfly', 'Most unique opponents');
+    super('🦋', 'The Social Butterfly', ["I'm just here to make friends."], 'Most unique opponents');
   }
 
   calculate(players: PlayerEntity[]) {

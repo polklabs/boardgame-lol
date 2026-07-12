@@ -76,9 +76,7 @@ export class StatsComponent implements OnInit {
   }
 
   calculateTrophies(trophies: ITrophy[]) {
-    this.trophies = trophies
-      .map((x) => x.export())
-      .filter((x) => x.array.length > 0 && x.array.length <= 2 && x.value !== Math.abs(Infinity));
+    this.trophies = trophies.map((x) => x.export()).filter((x) => x.array.length > 0 && x.value !== Math.abs(Infinity));
     this.trophies.sort((a, b) => {
       return b.value - a.value;
     });
@@ -232,7 +230,7 @@ export class StatsComponent implements OnInit {
     } else {
       // Create chart
     }
-    
+
     const spots = 5;
     const ranks = ['5th', '4th', '3rd', '2nd', '1st'];
 

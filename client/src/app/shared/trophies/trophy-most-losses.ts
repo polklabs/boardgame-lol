@@ -3,27 +3,26 @@ import { ITrophy } from './trophy.model';
 
 export class TrophyMostLosses extends ITrophy {
   constructor() {
-    super('🏅', 'Participation Trophy', 'Most Losses');
+    super('🏅', 'The Participator', ['At least you tried'], '{value} = Losses - Wins; {value} > 0');
   }
 
   calculate(players: PlayerEntity[]) {
     const loser = players.reduce((prev: PlayerEntity | undefined, curr) => {
       let prevLosses = 0;
       if (prev) {
-        prevLosses = prev.PlayerGames.length - prev.Wins.length;
+        prevLosses = prev.LossCount - prev.WinCount;
       } else {
         // continue
       }
-      const currLosses = curr.PlayerGames.length - curr.Wins.length;
 
-      if (prevLosses >= currLosses) {
+      if (prevLosses >= curr.LossCount - curr.WinCount) {
         return prev;
       } else {
         return curr;
       }
     }, undefined);
 
-    this.value = (loser?.PlayerGames.length ?? 0) - (loser?.Wins.length ?? 0);
-    this.array = players.filter((x) => x.PlayerGames.length - x.Wins.length === this.value);
+    this.value = (loser?.LossCount ?? 0) - (loser?.WinCount ?? 0);
+    this.array = players.filter((x) => this.value > 0 && x.LossCount - x.WinCount === this.value);
   }
 }

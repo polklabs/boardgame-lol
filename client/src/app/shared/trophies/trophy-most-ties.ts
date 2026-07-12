@@ -3,7 +3,7 @@ import { ITrophy } from './trophy.model';
 
 export class TrophyMostTies extends ITrophy {
   constructor() {
-    super('🤝', 'The Great Compromiser', 'Most Tied Wins');
+    super('🤝', 'The Great Compromiser', ['Call it a truce?'], 'Most tied wins');
   }
 
   calculate(players: PlayerEntity[]) {

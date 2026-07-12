@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 
 export class TrophyMostWeekendWins extends ITrophy {
   constructor() {
-    super('🥋', 'The Weekend Warrior', 'Most Wins On the Weekend');
+    super('🥋', 'The Weekend Warrior', ['Work hard, play harder'], 'Most Wins On the Weekend');
   }
 
   calculate(players: PlayerEntity[], games: GameEntity[]) {

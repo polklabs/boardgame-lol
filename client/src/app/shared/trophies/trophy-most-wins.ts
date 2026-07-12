@@ -3,7 +3,7 @@ import { ITrophy } from './trophy.model';
 
 export class TrophyMostWins extends ITrophy {
   constructor() {
-    super('👑', 'The Game Master', 'Most Wins');
+    super('👑', 'The Game Master', ['Goats can play boardgames?'], 'Most Wins');
   }
 
   calculate(players: PlayerEntity[]) {

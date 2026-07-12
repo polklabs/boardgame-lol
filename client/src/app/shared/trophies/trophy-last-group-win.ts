@@ -4,7 +4,7 @@ import { differenceInDays, max } from 'date-fns';
 
 export class TrophyLastGroupWin extends ITrophy {
   constructor() {
-    super('📆', "We're All In This Together", 'Days since everyone playing the game won');
+    super('📆', 'As A Family', ["We're All In This Together"], 'Days since everyone playing the game won');
   }
 
   calculate(_players: PlayerEntity[], games: GameEntity[]) {
@@ -12,7 +12,7 @@ export class TrophyLastGroupWin extends ITrophy {
     const maxDate = max(groupWins.map((x) => x.DateObj));
 
     this.array = groupWins
-      .filter((x) => x.DateObj === maxDate)
+      .filter((x) => x.DateObj.getTime() === maxDate.getTime())
       .map((x) => x.BoardGame)
       .filter((x) => x !== null) as BoardGameEntity[];
 
