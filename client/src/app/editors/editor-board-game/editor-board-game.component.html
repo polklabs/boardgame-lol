@@ -18,28 +18,36 @@
           [options]="scoreTypes"
           optionLabel="label"
           optionValue="value"
-        [showClear]="false"></app-dropdown>
+          [showClear]="false"></app-dropdown>
         <div class="flex-grow gap-8 width-100">
           <app-textinput
             formControlName="ScorePrefix"
             label="Score Prefix"
             [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-textinput>
+            [hiddenFields]="hideFields"></app-textinput>
           <app-textinput
             formControlName="ScoreSuffix"
             label="Score Suffix"
             [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-textinput>
+            [hiddenFields]="hideFields"></app-textinput>
           <app-textinput
             formControlName="exampleScore"
             label="Example Score"
             [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-textinput>
+            [hiddenFields]="hideFields"></app-textinput>
         </div>
+
+        <app-tags
+          formControlName="Tags"
+          label="Tags"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"
+          [options]="tagOptions"></app-tags>
+
         <app-textinput
           formControlName="BoardGameGeekId"
           [entityType]="entityType"
-        [hiddenFields]="hideFields"></app-textinput>
+          [hiddenFields]="hideFields"></app-textinput>
         <div class="dialog-footer">
           <div>
             <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>

@@ -17,7 +17,7 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
   }
 
   put(userId: string, entity: BoardGameEntity, resetID = true, transact = false) {
-    const tags = entity.tags;
+    const tags = entity.Tags;
     entity = this.new(entity);
     if (resetID) {
       entity.BoardGameId = newGuid();
@@ -49,7 +49,7 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
   }
 
   patch(userId: string, entity: BoardGameEntity) {
-    const tags = entity.tags;
+    const tags = entity.Tags;
     entity = this.new(entity);
 
     this.clubUserManager.hasAccess(userId, entity.ClubId);

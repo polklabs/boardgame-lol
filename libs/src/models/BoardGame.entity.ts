@@ -13,6 +13,7 @@ import { GameEntity } from './Game.entity';
 import { PlayerEntity } from './Player.entity';
 import { Mode } from '../utils/helper-utils';
 import { TagEntity } from './Tag.entity';
+import { TagBoardGameEntity } from './TagBoardGame.entity';
 
 export const ScoreTypes = ['points', 'rank', 'win-lose'] as const;
 export type ScoreType = (typeof ScoreTypes)[number];
@@ -21,6 +22,12 @@ export const ScoreTypeMapping: Record<ScoreType, string> = {
   rank: 'Ranked',
   'win-lose': 'Win/Lose',
 } as const;
+
+export type BoardGameReturn = {
+  BoardGame: BoardGameEntity;
+  Tags: TagEntity[];
+  TagBoardGames: TagBoardGameEntity[];
+};
 
 @TableName('BoardGame')
 export class BoardGameEntity extends BaseEntity {
@@ -62,7 +69,7 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   @Ignore()
-  tags: TagEntity[] = [];
+  Tags: TagEntity[] = [];
 
   @Ignore()
   exampleScore = '';
@@ -129,7 +136,7 @@ export class BoardGameEntity extends BaseEntity {
 
   calculateScore() {
     this.calculationsComplete(this.Games);
-    
+
     const scores = this.Games.flatMap((g) => g.Scores).filter((x) => !!x.Points);
     if (this.ScoreType === 'points') {
       this.MaxScore = Math.max(...scores.map((pg) => pg.Points ?? 0), 0);

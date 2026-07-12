@@ -1,5 +1,15 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, inject } from '@angular/core';
-import { BoardGameEntity, ScoreTypeMapping } from 'libs/index';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
+import { BoardGameEntity, ScoreTypeMapping, TagEntity } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -13,6 +23,7 @@ import { Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
 import { Subscription } from 'rxjs';
+import { TagsComponent } from '../../shared/components/tags/tags.component';
 
 type EntityType = BoardGameEntity;
 
@@ -26,8 +37,9 @@ type EntityType = BoardGameEntity;
     TextInputComponent,
     CheckboxModule,
     DialogModule,
-    TooltipModule
-],
+    TooltipModule,
+    TagsComponent,
+  ],
   templateUrl: './editor-board-game.component.html',
   styleUrl: './editor-board-game.component.scss',
 })
@@ -56,6 +68,8 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
   scoreTypeMapping = ScoreTypeMapping;
   scoreTypes = Object.entries(this.scoreTypeMapping).map(([value, label]) => ({ value, label }));
 
+  tagOptions: TagEntity[] = [];
+
   subscriptions = new Subscription();
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -68,9 +82,13 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
         this.isNew = false;
       }
 
+      this.grabLists();
+
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new BoardGameEntity());
-      this.formGroup.patchValue(new BoardGameEntity(this.boardGame));
+      const instance = new BoardGameEntity(this.boardGame);
+      instance.Tags = [...this.boardGame.Tags];
+      this.formGroup.patchValue(instance);
       this.updatePrefixSuffix();
 
       this.subscriptions.add(
@@ -100,6 +118,10 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
 
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
+  }
+
+  grabLists() {
+    this.tagOptions = this.apiService.tagList;
   }
 
   updatePrefixSuffix() {

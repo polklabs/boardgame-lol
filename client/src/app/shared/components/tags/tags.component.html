@@ -1,0 +1,21 @@
+<app-control-wrapper
+  #ControlWrapper
+  [label]="label"
+  [controlName]="formControlName"
+  [formGroup]="formGroup"
+  [entityType]="entityType"
+  [hiddenFields]="hiddenFields"
+  textInputType="dropdown">
+  <p-multiselect
+    inputId="{{ formControlName }}"
+    formControlName="{{ formControlName }}"
+    display="chip"
+    [options]="options"
+    [showClear]="showClear"
+    [filter]="showFilter"
+    (onChange)="onModelChange($event.value)"
+    [optionLabel]="'Text'"
+    appendTo="body"
+    placeholder="{{ placeholder ?? label ?? '' }}"
+    [ngClass]="{ 'ng-invalid ng-dirty': false }"></p-multiselect>
+</app-control-wrapper>

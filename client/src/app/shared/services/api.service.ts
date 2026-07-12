@@ -3,6 +3,7 @@ import { HttpService } from './http.service';
 import { BehaviorSubject } from 'rxjs';
 import {
   BoardGameEntity,
+  BoardGameReturn,
   ClubEntity,
   ConvertListToDict,
   GameEntity,
@@ -287,7 +288,7 @@ export class ApiService {
   }
 
   async postBoardGame(isNew: boolean, entity: BoardGameEntity) {
-    let result: BoardGameEntity | null = null;
+    let result: BoardGameReturn | null = null;
     if (isNew) {
       result = await this.httpService.put(['api', 'board-game'], entity);
     } else {
@@ -296,11 +297,13 @@ export class ApiService {
 
     if (result) {
       this.boardGameList = this.upsertEntry(
-        result,
+        result.BoardGame,
         (x) => x.BoardGameId,
         this.boardGameList$.value,
         this._boardGameDict,
       );
+      this.tagList = result.Tags;
+      this.tagBoardGameList = result.TagBoardGames;
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -477,6 +480,10 @@ export class ApiService {
 
     this.boardGameList.forEach((bg) => {
       bg.Games = this.gameList.filter((x) => x.BoardGameId === bg.BoardGameId);
+      bg.Tags = this.tagBoardGameList
+        .filter((x) => x.BoardGameId === bg.BoardGameId)
+        .map((t) => this.getTag(t.TagId))
+        .filter((x) => x !== null);
     });
 
     this.playerList.forEach((p) => {

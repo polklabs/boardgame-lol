@@ -24,7 +24,7 @@ export class TagManager extends BaseManager<TagEntity> {
         .filter((x) => x !== null),
     );
     tags.forEach((tag) => {
-      const TagId = tag.TagId;
+      let TagId = tag.TagId;
       if (TagId === null) {
         return;
       } else {
@@ -39,10 +39,12 @@ export class TagManager extends BaseManager<TagEntity> {
         if (dbTags.has(TagId)) {
           // Skip put
         } else {
-          transactions.push(this.put(userId, tag));
+          TagId = newGuid();
+          tag.TagId = TagId;
+          transactions.push(this.put(userId, tag, false));
         }
 
-        transactions.push(this.getTagLinkPut(tagLink, userId, TagId, linkId));
+        transactions.push(this.getTagLinkPut(tagLink, userId, clubId, TagId, linkId));
       }
     });
     oldTags.forEach((tagId) => {
@@ -57,10 +59,10 @@ export class TagManager extends BaseManager<TagEntity> {
         throw new NotImplementedException();
     }
   }
-  private getTagLinkPut(tagLink: TagLink, userId: string, TagId: string, linkId: string): unknown {
+  private getTagLinkPut(tagLink: TagLink, userId: string, ClubId: string, TagId: string, linkId: string): unknown {
     switch (tagLink) {
       case 'boardGame':
-        return this.tagBoardGame.put(userId, new TagBoardGameEntity({ TagId, BoardGameId: linkId }));
+        return this.tagBoardGame.put(userId, new TagBoardGameEntity({ TagId, ClubId, BoardGameId: linkId }));
       default:
         throw new NotImplementedException();
     }

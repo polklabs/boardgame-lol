@@ -2,7 +2,7 @@ import { BaseManager } from './Base.manager';
 import { DbService } from 'src/services/db.service';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
-import { newGuid, TagBoardGameEntity } from 'libs/index';
+import { TagBoardGameEntity } from 'libs/index';
 
 @Injectable()
 export class TagBoardGameManager extends BaseManager<TagBoardGameEntity> {
@@ -10,13 +10,8 @@ export class TagBoardGameManager extends BaseManager<TagBoardGameEntity> {
     super(TagBoardGameEntity);
   }
 
-  put(userId: string, entity: TagBoardGameEntity, resetID = true) {
+  put(userId: string, entity: TagBoardGameEntity) {
     entity = this.new(entity);
-    if (resetID) {
-      entity.TagId = newGuid();
-    } else {
-      // Continue
-    }
 
     this.SanitizeInputs(entity);
     this.Validate(entity);
