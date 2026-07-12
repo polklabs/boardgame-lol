@@ -11,7 +11,7 @@ import { Ignore } from '../decorators/ignore.decorator';
 
 @TableName('PlayerGame')
 export class PlayerGameEntity extends BaseEntity {
-  @PrimaryKey
+  @PrimaryKey()
   PlayerGameId: string | null = null;
 
   @SecondaryKey

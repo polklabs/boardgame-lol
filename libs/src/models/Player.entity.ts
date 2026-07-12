@@ -12,7 +12,7 @@ import { Mode } from '../utils/helper-utils';
 
 @TableName('Player')
 export class PlayerEntity extends BaseEntity {
-  @PrimaryKey
+  @PrimaryKey()
   PlayerId: string | null = null;
 
   @SecondaryKey

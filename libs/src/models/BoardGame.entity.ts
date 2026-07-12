@@ -12,6 +12,7 @@ import { Ignore } from '../decorators/ignore.decorator';
 import { GameEntity } from './Game.entity';
 import { PlayerEntity } from './Player.entity';
 import { Mode } from '../utils/helper-utils';
+import { TagEntity } from './Tag.entity';
 
 export const ScoreTypes = ['points', 'rank', 'win-lose'] as const;
 export type ScoreType = (typeof ScoreTypes)[number];
@@ -23,7 +24,7 @@ export const ScoreTypeMapping: Record<ScoreType, string> = {
 
 @TableName('BoardGame')
 export class BoardGameEntity extends BaseEntity {
-  @PrimaryKey
+  @PrimaryKey()
   BoardGameId: string | null = null;
 
   @SecondaryKey
@@ -59,6 +60,9 @@ export class BoardGameEntity extends BaseEntity {
       return null;
     }
   }
+
+  @Ignore()
+  tags: TagEntity[] = [];
 
   @Ignore()
   exampleScore = '';

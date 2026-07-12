@@ -8,8 +8,11 @@ export * from './models/Game.entity';
 export * from './models/BoardGame.entity';
 export * from './models/PlayerGame.entity';
 export * from './models/User.entity';
-export * from './models/ClubUser.entity'
+export * from './models/ClubUser.entity';
+export * from './models/Tag.entity';
+export * from './models/TagBoardGame.entity';
 export * from './models/jwt.model';
+export * from './models/ITag';
 
 // Decorators
 export * from './decorators/enum.decorator';

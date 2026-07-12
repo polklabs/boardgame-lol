@@ -1,5 +1,6 @@
 import 'reflect-metadata'; // This must be imported here for the prod build to work
 import { getIgnore, Ignore } from '../decorators/ignore.decorator';
+import { Exclude } from 'class-transformer';
 
 export abstract class BaseEntity {
   // These fields are all required but will be assigned by the Base.Manager
@@ -11,6 +12,7 @@ export abstract class BaseEntity {
   LastModifiedBy?: string = 'ANON';
 
   @Ignore()
+  @Exclude()
   calculated = false;
 
   abstract calculate(): void;

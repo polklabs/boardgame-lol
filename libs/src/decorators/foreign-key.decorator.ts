@@ -1,4 +1,4 @@
-import { getPrimaryKey } from './primary-key.decorator';
+import { getPrimaryKeys } from './primary-key.decorator';
 import { getSecondaryKey } from './secondary-key.decorator';
 import { getTableName } from './table-name.decorator';
 
@@ -23,7 +23,7 @@ export function getForeignKey(target: any, propertyKey: string) {
   const toReturn = Reflect.getMetadata(foreignKey, target.constructor) ?? {};
   const fk = toReturn[propertyKey];
   if (fk) {
-    return { tableName: getTableName(fk), primaryKey: getPrimaryKey(fk), secondaryKey: getSecondaryKey(fk) };
+    return { tableName: getTableName(fk), primaryKeys: getPrimaryKeys(fk), secondaryKey: getSecondaryKey(fk) };
   } else {
     return undefined;
   }

@@ -8,6 +8,7 @@ import { BoardGameManager } from './BoardGame.manager';
 import { PlayerGameManager } from './PlayerGame.manager';
 import { PlayerManager } from './Player.manager';
 import { ClubUserManager } from './ClubUser.manager';
+import { TagManager } from './Tag.manager';
 
 @Injectable()
 export class GameManager extends BaseManager<GameEntity> {
@@ -17,6 +18,7 @@ export class GameManager extends BaseManager<GameEntity> {
     protected playerGameManager: PlayerGameManager,
     protected playerManager: PlayerManager,
     protected clubUserManager: ClubUserManager,
+    protected tagManager: TagManager,
   ) {
     super(GameEntity);
   }
@@ -72,6 +74,8 @@ export class GameManager extends BaseManager<GameEntity> {
       BoardGames: this.boardGameManager.loadMany('ClubId', entity.ClubId),
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId, 'ClubId', entity.ClubId),
       Players: this.playerManager.loadMany('ClubId', entity.ClubId),
+      Tags: this.tagManager.loadMany('ClubId', entity.ClubId),
+      TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
     };
   }
 
@@ -137,6 +141,8 @@ export class GameManager extends BaseManager<GameEntity> {
       BoardGames: this.boardGameManager.loadMany('ClubId', entity.ClubId),
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId, 'ClubId', entity.ClubId),
       Players: this.playerManager.loadMany('ClubId', entity.ClubId),
+      Tags: this.tagManager.loadMany('ClubId', entity.ClubId),
+      TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
     };
   }
 

@@ -29,7 +29,7 @@ export type GameReturn = {
 
 @TableName('Game')
 export class GameEntity extends BaseEntity {
-  @PrimaryKey
+  @PrimaryKey()
   GameId: string | null = null;
 
   @SecondaryKey

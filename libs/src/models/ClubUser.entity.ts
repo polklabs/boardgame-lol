@@ -7,7 +7,7 @@ import { UserEntity } from './User.entity';
 
 @TableName('ClubUser')
 export class ClubUserEntity extends BaseEntity {
-  @PrimaryKey
+  @PrimaryKey()
   ClubUserId: string | null = null;
 
   @SecondaryKey
