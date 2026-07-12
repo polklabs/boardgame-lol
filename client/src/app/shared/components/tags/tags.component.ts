@@ -8,12 +8,12 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { TagEntity } from 'libs/index';
+import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { newGuid, TagEntity } from 'libs/index';
 
 @Component({
   selector: 'app-tags',
-  imports: [MultiSelectModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
+  imports: [AutoCompleteModule, AutoComplete, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
   templateUrl: './tags.component.html',
   styleUrl: './tags.component.scss',
   providers: [
@@ -34,10 +34,11 @@ export class TagsComponent implements ControlValueAccessor {
   @Input() options: TagEntity[] = [];
   @Input() placeholder?: string;
   @Input() showClear = false;
-  @Input() showFilter = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();
+
+  items: TagEntity[] = [];
 
   get formGroup() {
     return this.formGroupDirective.form;
@@ -51,5 +52,42 @@ export class TagsComponent implements ControlValueAccessor {
 
   onModelChange(value: unknown): void {
     this.changed.emit(value);
+  }
+
+  onKeydown(event: Event, autocomplete: AutoComplete) {
+    if (autocomplete.overlayVisible) {
+      this.search({
+        query: (event.target as HTMLInputElement).value,
+        originalEvent: event,
+      });
+    } else {
+      // Skip
+    }
+  }
+
+  search(event: AutoCompleteCompleteEvent) {
+    const control = this.formGroup.controls[this.formControlName];
+    const values = control.value as TagEntity[];
+    if (event.query) {
+      this.items = this.options.filter(
+        (x) => !values.includes(x) && x.Text?.toLowerCase().includes(event.query.toLowerCase()),
+      );
+    } else {
+      this.items = this.options.filter((x) => !values.includes(x));
+    }
+  }
+
+  add() {
+    const control = this.formGroup.controls[this.formControlName];
+    const values = control.value;
+    control.setValue(
+      values.map((v: string | TagEntity) => {
+        if (typeof v === 'string') {
+          return new TagEntity({ Text: v, TagId: newGuid() });
+        } else {
+          return v;
+        }
+      }),
+    );
   }
 }

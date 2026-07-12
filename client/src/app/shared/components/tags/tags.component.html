@@ -6,16 +6,20 @@
   [entityType]="entityType"
   [hiddenFields]="hiddenFields"
   textInputType="dropdown">
-  <p-multiselect
+  <p-autocomplete
+    #autocomplete
     inputId="{{ formControlName }}"
     formControlName="{{ formControlName }}"
-    display="chip"
-    [options]="options"
-    [showClear]="showClear"
-    [filter]="showFilter"
-    (onChange)="onModelChange($event.value)"
+    multiple
+    [suggestions]="items"
     [optionLabel]="'Text'"
-    appendTo="body"
-    placeholder="{{ placeholder ?? label ?? '' }}"
-    [ngClass]="{ 'ng-invalid ng-dirty': false }"></p-multiselect>
+    (completeMethod)="search($event)"
+    (onAdd)="add()"
+    (onInputKeydown)="onKeydown($event, autocomplete)"
+    [dropdown]="true"
+    [dropdownMode]="'current'"
+    [typeahead]="false"
+    [addOnTab]="true"
+    separator=","
+    placeholder="Use Tab, or Comma to add items..." />
 </app-control-wrapper>

@@ -24,14 +24,13 @@ export class TagManager extends BaseManager<TagEntity> {
         .filter((x) => x !== null),
     );
     tags.forEach((tag) => {
+      tag.ClubId = clubId;
       let TagId = tag.TagId;
       if (TagId === null) {
         return;
       } else {
         // Continue
       }
-
-      oldTags.delete(TagId);
 
       if (oldTags.has(TagId)) {
         // Do nothing
@@ -46,6 +45,7 @@ export class TagManager extends BaseManager<TagEntity> {
 
         transactions.push(this.getTagLinkPut(tagLink, userId, clubId, TagId, linkId));
       }
+      oldTags.delete(TagId);
     });
     oldTags.forEach((tagId) => {
       transactions.push(this.getTagLinkDelete(tagLink, clubId, tagId, linkId));
