@@ -1,0 +1,31 @@
+<p-dialog
+  [header]="title"
+  [visible]="editorVisible"
+  (visibleChange)="closeEditor.emit()"
+  [modal]="true"
+  [style]="{ width: '650px', 'min-width': '300px' }"
+  [draggable]="false"
+  position="bottom">
+  <div class="flex gap-8">
+    @for (t of tags$ | async; track t) {
+      <p-tag (click)="buildForm(t)" severity="contrast" [value]="t.Text ?? ''" />
+    }
+  </div>
+  @if (formGroup && tag) {
+    <div class="form">
+      <form [formGroup]="formGroup" (ngSubmit)="submit()">
+        <app-textinput formControlName="Text" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
+
+        <div class="dialog-footer">
+          <div>
+            <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
+          </div>
+          <div>
+            <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="cancelEdit()"></p-button>
+            <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+          </div>
+        </div>
+      </form>
+    </div>
+  }
+</p-dialog>

@@ -27,6 +27,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { TabsModule } from 'primeng/tabs';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SortPipe } from '../shared/pipes/sort.pipe';
+import { EditorTagsComponent } from '../editors/editor-tags/editor-tags.component';
 
 @Component({
   selector: 'app-club',
@@ -36,6 +37,7 @@ import { SortPipe } from '../shared/pipes/sort.pipe';
     EditorBoardGameComponent,
     EditorPlayerComponent,
     EditorClubComponent,
+    EditorTagsComponent,
     CommonModule,
     TableModule,
     ButtonModule,
@@ -78,6 +80,8 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   editorClubVisible = false;
   editClub?: ClubEntity;
+
+  editorTagsVisible = false;
 
   games$?: Observable<GameEntity[]>;
   boardGames$?: Observable<BoardGameEntity[]>;
@@ -165,6 +169,11 @@ export class ClubComponent implements OnInit, OnDestroy {
   clubEdit() {
     this.editClub = this.apiService.club;
     this.editorClubVisible = true;
+  }
+
+  tagsEdit() {
+    console.log('Edit Tags')
+    this.editorTagsVisible = true;
   }
 
   moveUp(game: GameEntity) {

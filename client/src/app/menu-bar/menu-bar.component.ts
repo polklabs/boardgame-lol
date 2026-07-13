@@ -34,6 +34,8 @@ export class MenuBarComponent implements OnInit, OnDestroy {
 
   @Output() newGame = new EventEmitter();
 
+  @Output() editTags = new EventEmitter();
+
   canEdit = false;
   loggedIn$: Observable<boolean> = of(false);
 
@@ -46,6 +48,13 @@ export class MenuBarComponent implements OnInit, OnDestroy {
       icon: 'pi pi-pencil',
       command: () => {
         this.editClub.emit();
+      },
+    },
+    {
+      label: 'Tags',
+      icon: 'pi pi-pencil',
+      command: () => {
+        this.editTags.emit();
       },
     },
   ];
@@ -96,6 +105,13 @@ export class MenuBarComponent implements OnInit, OnDestroy {
         this.editClub.emit();
       },
     },
+    {
+      label: 'Tags',
+      icon: 'pi pi-pencil',
+      command: () => {
+        this.editTags.emit();
+      },
+    },
   ];
 
   editPlayerItems = [
@@ -113,6 +129,13 @@ export class MenuBarComponent implements OnInit, OnDestroy {
         this.editClub.emit();
       },
     },
+    {
+      label: 'Tags',
+      icon: 'pi pi-pencil',
+      command: () => {
+        this.editTags.emit();
+      },
+    },
   ];
 
   editBoardGameItems = [
@@ -128,6 +151,13 @@ export class MenuBarComponent implements OnInit, OnDestroy {
       icon: 'pi pi-pencil',
       command: () => {
         this.editClub.emit();
+      },
+    },
+    {
+      label: 'Tags',
+      icon: 'pi pi-pencil',
+      command: () => {
+        this.editTags.emit();
       },
     },
   ];

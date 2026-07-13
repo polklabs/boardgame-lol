@@ -1,0 +1,19 @@
+:host ::ng-deep {
+  .p-floatlabel {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    gap: 16px;
+    > div {
+      display: flex;
+      justify-content: start;
+      gap: 16px;
+    }
+  }
+}
