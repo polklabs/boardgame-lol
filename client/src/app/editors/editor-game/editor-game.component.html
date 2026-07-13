@@ -119,6 +119,14 @@
             inputType="number"></app-textinput>
         </div>
         <app-checkbox formControlName="DidNotFinish" label="Did Not Finish Game"></app-checkbox>
+
+        <app-tags
+          formControlName="Tags"
+          label="Tags"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"
+          [options]="tags"></app-tags>
+
         <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
       </form>
       <div class="flex dialog-footer">

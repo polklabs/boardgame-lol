@@ -68,7 +68,11 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
   scoreTypeMapping = ScoreTypeMapping;
   scoreTypes = Object.entries(this.scoreTypeMapping).map(([value, label]) => ({ value, label }));
 
-  tagOptions: TagEntity[] = [];
+  private tagList: TagEntity[] = [];
+
+  get tags() {
+    return this.tagList;
+  }
 
   subscriptions = new Subscription();
 
@@ -121,7 +125,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
   }
 
   grabLists() {
-    this.tagOptions = this.apiService.tagList;
+    this.tagList = this.apiService.tagList.toSorted((a, b) => a.Text?.localeCompare(b.Text ?? '') ?? 0);
   }
 
   updatePrefixSuffix() {

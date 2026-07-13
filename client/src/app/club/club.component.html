@@ -118,11 +118,6 @@
               <label for="username">Days of Week</label>
             </p-floatLabel>
 
-            <div class="flex items-center">
-              <p-checkbox inputId="dnf" [(ngModel)]="dnf" [binary]="true" />
-              <label for="dnf" class="ml-2">Include Did Not Finish</label>
-            </div>
-
             @if ((filterEnabled$ | async) === true) {
               <div
                 class="flex gap-8 justify-content-space-between"

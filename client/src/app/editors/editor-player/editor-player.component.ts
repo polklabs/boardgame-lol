@@ -1,15 +1,24 @@
-
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { buildForm } from '../../shared/form.utils';
-import { PlayerEntity } from 'libs/index';
+import { PlayerEntity, TagEntity } from 'libs/index';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ApiService } from '../../shared/services/api.service';
 import { Router } from '@angular/router';
 import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { TagsComponent } from '../../shared/components/tags/tags.component';
 
 type EntityType = PlayerEntity;
 
@@ -21,8 +30,9 @@ type EntityType = PlayerEntity;
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    CheckboxComponent
-],
+    CheckboxComponent,
+    TagsComponent,
+  ],
   templateUrl: './editor-player.component.html',
   styleUrl: './editor-player.component.scss',
 })
@@ -50,6 +60,12 @@ export class EditorPlayerComponent implements OnChanges {
 
   subtypes: string[] = [];
 
+  private tagList: TagEntity[] = [];
+
+  get tags() {
+    return this.tagList;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if ('player' in changes && this.player) {
       if (this.player.PlayerId === null) {
@@ -60,9 +76,13 @@ export class EditorPlayerComponent implements OnChanges {
         this.isNew = false;
       }
 
+      this.grabLists();
+
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerEntity());
-      this.formGroup.patchValue(new PlayerEntity(this.player));
+      const instance = new PlayerEntity(this.player);
+      instance.Tags = [...this.player.Tags];
+      this.formGroup.patchValue(instance);
     } else {
       // No Changes
     }
@@ -71,6 +91,10 @@ export class EditorPlayerComponent implements OnChanges {
 
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
+  }
+
+  grabLists() {
+    this.tagList = this.apiService.tagList.toSorted((a, b) => a.Text?.localeCompare(b.Text ?? '') ?? 0);
   }
 
   async submit() {

@@ -10,7 +10,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BoardGameEntity, GameEntity, isGuid, PlayerEntity, PlayerGameEntity } from 'libs/index';
+import { BoardGameEntity, GameEntity, isGuid, PlayerEntity, PlayerGameEntity, TagEntity } from 'libs/index';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
@@ -33,6 +33,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { TagsComponent } from '../../shared/components/tags/tags.component';
 
 type EntityType = GameEntity;
 
@@ -58,6 +59,7 @@ type EntityType = GameEntity;
     InputGroupModule,
     InputGroupAddonModule,
     InputNumberModule,
+    TagsComponent,
   ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
@@ -80,6 +82,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   private playerList: PlayerEntity[] = [];
   private boardGameList: BoardGameEntity[] = [];
+  private tagList: TagEntity[] = [];
 
   protected selectedPlayerGame?: PlayerGameEntity;
 
@@ -94,6 +97,10 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   get players() {
     return [...this.playerList, ...this.newPlayers].sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
+  }
+
+  get tags() {
+    return this.tagList;
   }
 
   playerGames: PlayerGameEntity[] = [];
@@ -143,7 +150,9 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
-      this.formGroup.patchValue(new GameEntity(this.game));
+      const instance = new GameEntity(this.game);
+      instance.Tags = [...this.game.Tags];
+      this.formGroup.patchValue(instance);
 
       this.subscription = this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
         console.log(value);
@@ -163,6 +172,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   grabLists() {
     this.playerList = this.apiService.playerList;
     this.boardGameList = this.apiService.boardGameList;
+    this.tagList = this.apiService.tagList.toSorted((a, b) => a.Text?.localeCompare(b.Text ?? '') ?? 0);
 
     this.playerGames = this.apiService.playerGameList
       .filter((x) => x.GameId === this.game?.GameId)

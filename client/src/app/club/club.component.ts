@@ -94,7 +94,6 @@ export class ClubComponent implements OnInit, OnDestroy {
   dow = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   gameIds: string[] = [];
   playerIds: string[] = [];
-  dnf = true;
   daysOfWeek = [...this.dow];
   months: string[] = [];
   startDate: Date | null = null;
@@ -126,7 +125,6 @@ export class ClubComponent implements OnInit, OnDestroy {
       this.apiService.dataUpdate$.subscribe(() => {
         this.gameIds = this.apiService.boardGameList.map((x) => x.BoardGameId ?? '');
         this.playerIds = this.apiService.playerList.map((x) => x.PlayerId ?? '');
-        this.dnf = true;
       }),
     );
   }
@@ -179,12 +177,12 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   enableFilter(filter: Popover) {
     filter.hide();
-    this.apiService.filter(true, this.playerIds, this.gameIds, this.daysOfWeek, this.startDate, this.dnf);
+    this.apiService.filter(true, this.playerIds, this.gameIds, this.daysOfWeek, this.startDate);
   }
 
   disableFilter(filter: Popover) {
     filter.hide();
-    this.apiService.filter(false, [], [], [], null, true);
+    this.apiService.filter(false, [], [], [], null);
   }
 
   onTabChange(event?: string | number) {

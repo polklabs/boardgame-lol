@@ -40,15 +40,22 @@ export class TagsComponent implements ControlValueAccessor {
 
   items: TagEntity[] = [];
 
+  private onChange: (value: TagEntity[]) => void = () => {};
+  private onTouched: () => void = () => {};
+
   get formGroup() {
     return this.formGroupDirective.form;
   }
 
   writeValue(): void {}
 
-  registerOnChange(): void {}
+  registerOnChange(fn: (value: TagEntity[]) => void): void {
+    this.onChange = fn;
+  }
 
-  registerOnTouched(): void {}
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
 
   onModelChange(value: unknown): void {
     this.changed.emit(value);
@@ -79,15 +86,14 @@ export class TagsComponent implements ControlValueAccessor {
 
   add() {
     const control = this.formGroup.controls[this.formControlName];
-    const values = control.value;
-    control.setValue(
-      values.map((v: string | TagEntity) => {
-        if (typeof v === 'string') {
-          return new TagEntity({ Text: v, TagId: newGuid() });
-        } else {
-          return v;
-        }
-      }),
-    );
+    const values = control.value.map((v: string | TagEntity) => {
+      if (typeof v === 'string') {
+        return new TagEntity({ Text: v, TagId: newGuid() });
+      } else {
+        return v;
+      }
+    });
+    control.setValue(values);
+    control.updateValueAndValidity();
   }
 }
