@@ -22,6 +22,7 @@ export * from './decorators/nullable.decorator';
 export * from './decorators/primary-key.decorator';
 export * from './decorators/secondary-key.decorator';
 export * from './decorators/table-name.decorator';
+export * from './decorators/pattern.decorator';
 
 // Constants
 export * from './constants';
@@ -30,3 +31,4 @@ export * from './constants';
 export * from './utils/guid-utils';
 export * from './utils/entity-utils';
 export * from './utils/helper-utils';
+export * from './utils/color-utils';

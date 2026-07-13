@@ -1,8 +1,7 @@
-
 import { Component, Input } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
 import { getIgnore } from 'libs/decorators/ignore.decorator';
-import { getMinMax, getNullable } from 'libs/index';
+import { getMinMax, getNullable, getPattern } from 'libs/index';
 import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
@@ -77,6 +76,9 @@ export class ControlWrapperComponent {
         } else {
           return '';
         }
+      } else if (control.errors?.['pattern']) {
+        const pattern = getPattern(this.entityType)[this.controlName];
+        return `Does not match ${pattern.desc}`;
       } else if (control.errors?.['passwordCommon']) {
         return 'Do not use common passwords';
       } else if (control.errors?.['unavailable']) {

@@ -1,5 +1,9 @@
 import { getPrimaryKeys } from '../decorators/primary-key.decorator';
 
+export function clamp(num: number, min: number, max: number): number {
+  return Math.min(Math.max(num, min), max);
+}
+
 export function Mode<T>(arr: Array<T>, predicate: (elem: T) => string | number) {
   const counts: { [key: string | number]: { e: T; count: number } } = {};
   arr.forEach(function (e) {
