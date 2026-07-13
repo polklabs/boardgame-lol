@@ -72,7 +72,7 @@ export class BoardGameEntity extends BaseEntity {
   Tags: TagEntity[] = [];
 
   @Ignore()
-  exampleScore = '';
+  ExampleScore = 42;
 
   @Ignore()
   Games: GameEntity[] = [];

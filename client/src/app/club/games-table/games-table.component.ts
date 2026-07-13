@@ -10,6 +10,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
+import { TagComponent } from '../../shared/components/tag/tag.component';
 
 const COLUMNS: { field: keyof GameEntity; name: string; sort: boolean }[] = [
   { field: 'dateSortOrder', name: 'Date', sort: true },
@@ -32,6 +33,7 @@ const COLUMNS: { field: keyof GameEntity; name: string; sort: boolean }[] = [
     InputIconModule,
     ArrayPipe,
     ScorePipe,
+    TagComponent,
   ],
   templateUrl: './games-table.component.html',
   styleUrl: './games-table.component.scss',

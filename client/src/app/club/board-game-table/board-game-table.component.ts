@@ -10,6 +10,7 @@ import { HidePipe } from '../../shared/pipes/hide.pipe';
 import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
 import { TagModule } from 'primeng/tag';
+import { TagComponent } from "../../shared/components/tag/tag.component";
 
 const COLUMNS: { field: keyof BoardGameEntity; name: string; sort: boolean }[] = [
   { field: 'Name', name: 'Game', sort: true },
@@ -25,7 +26,7 @@ const COLUMNS: { field: keyof BoardGameEntity; name: string; sort: boolean }[] =
 
 @Component({
   selector: 'app-board-game-table',
-  imports: [TableModule, ButtonModule, TagModule, CommonModule, ScorePipe, HidePipe, ArrayPipe],
+  imports: [TableModule, ButtonModule, TagModule, CommonModule, ScorePipe, HidePipe, ArrayPipe, TagComponent],
   templateUrl: './board-game-table.component.html',
   styleUrl: './board-game-table.component.scss',
 })

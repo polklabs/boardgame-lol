@@ -142,7 +142,7 @@ export class ApiService {
     return this.getFromDict(key, this._tagDict);
   }
   private set tagList(tagList: TagEntity[]) {
-    tagList = tagList.map((x) => new TagEntity(x));
+    tagList = tagList.map((x) => new TagEntity(x)).toSorted((a, b) => a.Text.localeCompare(b.Text));
     this._tagDict = ConvertListToDict(tagList, TagEntity);
     this.tagList$.next(tagList);
   }
@@ -590,6 +590,10 @@ export class ApiService {
     this.playerGameList.forEach((x) => x.calculate());
     this.boardGameList.forEach((x) => x.calculate());
     this.playerList.forEach((x) => x.calculate());
+    this.tagList.forEach((x) => x.calculate());
+    this.tagBoardGameList.forEach((x) => x.calculate());
+    this.tagGameList.forEach((x) => x.calculate());
+    this.tagPlayerList.forEach((x) => x.calculate());
 
     PlayerEntity.postCalculate(this.playerList);
     GameEntity.postCalculate(this.gameList);

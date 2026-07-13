@@ -2,6 +2,7 @@ import { FormBuilder } from '@angular/forms';
 import { BaseEntity } from 'libs/index';
 import { nullableValidator } from './validators/nullable.validator';
 import { minMaxValidator } from './validators/min-max.validator';
+import { patternValidator } from './validators/pattern.validator';
 
 export function buildForm<T extends BaseEntity>(
   fb: FormBuilder,
@@ -17,7 +18,11 @@ export function buildForm<T extends BaseEntity>(
   propertyNames.forEach((propertyName) => {
     formControlsConfig[String(propertyName)] = [
       entity[propertyName],
-      [nullableValidator(entityType, propertyName), minMaxValidator(entityType, propertyName)],
+      [
+        nullableValidator(entityType, propertyName),
+        minMaxValidator(entityType, propertyName),
+        patternValidator(entityType, propertyName),
+      ],
     ];
   });
 

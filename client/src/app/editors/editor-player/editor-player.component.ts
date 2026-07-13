@@ -19,6 +19,7 @@ import { ApiService } from '../../shared/services/api.service';
 import { Router } from '@angular/router';
 import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 import { TagsComponent } from '../../shared/components/tags/tags.component';
+import { Observable, of } from 'rxjs';
 
 type EntityType = PlayerEntity;
 
@@ -60,11 +61,7 @@ export class EditorPlayerComponent implements OnChanges {
 
   subtypes: string[] = [];
 
-  private tagList: TagEntity[] = [];
-
-  get tags() {
-    return this.tagList;
-  }
+  tagList$: Observable<TagEntity[]> = of([]);
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('player' in changes && this.player) {
@@ -94,7 +91,7 @@ export class EditorPlayerComponent implements OnChanges {
   }
 
   grabLists() {
-    this.tagList = this.apiService.tagList.toSorted((a, b) => a.Text.localeCompare(b.Text) ?? 0);
+    this.tagList$ = this.apiService.tagList$;
   }
 
   async submit() {

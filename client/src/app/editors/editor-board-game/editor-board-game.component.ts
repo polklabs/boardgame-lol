@@ -22,8 +22,9 @@ import { DialogModule } from 'primeng/dialog';
 import { Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
-import { Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { TagsComponent } from '../../shared/components/tags/tags.component';
+import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
 
 type EntityType = BoardGameEntity;
 
@@ -39,6 +40,7 @@ type EntityType = BoardGameEntity;
     DialogModule,
     TooltipModule,
     TagsComponent,
+    NumberInputComponent,
   ],
   templateUrl: './editor-board-game.component.html',
   styleUrl: './editor-board-game.component.scss',
@@ -68,11 +70,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
   scoreTypeMapping = ScoreTypeMapping;
   scoreTypes = Object.entries(this.scoreTypeMapping).map(([value, label]) => ({ value, label }));
 
-  private tagList: TagEntity[] = [];
-
-  get tags() {
-    return this.tagList;
-  }
+  tagList$: Observable<TagEntity[]> = of([]);
 
   subscriptions = new Subscription();
 
@@ -125,7 +123,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
   }
 
   grabLists() {
-    this.tagList = this.apiService.tagList.toSorted((a, b) => a.Text?.localeCompare(b.Text ?? '') ?? 0);
+    this.tagList$ = this.apiService.tagList$;
   }
 
   updatePrefixSuffix() {
@@ -133,16 +131,10 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
     if (score?.value === 'points') {
       this.hideFields.delete('ScorePrefix');
       this.hideFields.delete('ScoreSuffix');
-      this.hideFields.delete('exampleScore');
     } else {
       this.hideFields.add('ScorePrefix');
       this.hideFields.add('ScoreSuffix');
-      this.hideFields.add('exampleScore');
     }
-    this.getControl('exampleScore')?.setValue(
-      `${this.getControl('ScorePrefix')?.value ?? ''}42${this.getControl('ScoreSuffix')?.value ?? ''}`,
-    );
-    this.getControl('exampleScore')?.disable();
   }
 
   async submit() {

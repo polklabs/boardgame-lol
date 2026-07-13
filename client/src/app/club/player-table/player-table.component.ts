@@ -10,6 +10,7 @@ import { HidePipe } from '../../shared/pipes/hide.pipe';
 import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
 import { TagModule } from 'primeng/tag';
+import { TagComponent } from '../../shared/components/tag/tag.component';
 
 const COLUMNS: { field: keyof PlayerEntity; name: string; sort: boolean }[] = [
   { field: 'Name', name: 'Name', sort: true },
@@ -23,7 +24,7 @@ const COLUMNS: { field: keyof PlayerEntity; name: string; sort: boolean }[] = [
 
 @Component({
   selector: 'app-player-table',
-  imports: [TableModule, ButtonModule, TagModule, CommonModule, HidePipe, ArrayPipe, ScorePipe],
+  imports: [TableModule, ButtonModule, TagModule, CommonModule, HidePipe, ArrayPipe, ScorePipe, TagComponent],
   templateUrl: './player-table.component.html',
   styleUrl: './player-table.component.scss',
 })

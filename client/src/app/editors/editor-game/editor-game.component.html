@@ -33,7 +33,7 @@
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit()">
         <!-- BoardGame -->
-        <div class="flex gap-4 align-items-end justify-content-space-between">
+        <div class="flex gap-4 justify-content-space-between">
           <app-dropdown
             style="flex-grow: 1"
             formControlName="BoardGameId"
@@ -124,7 +124,7 @@
           label="Tags"
           [entityType]="entityType"
           [hiddenFields]="hideFields"
-          [options]="tags"></app-tags>
+          [options$]="tagList$"></app-tags>
 
         <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
       </form>
@@ -145,7 +145,7 @@
 
 <ng-template #orderListItem let-playerGame>
   <div class="list-items" (click)="onPlayerSelection(playerGame)">
-    <div class="flex-column">
+    <div class="flex-column-100">
       <div class="flex gap-8 justify-content-space-between">
         <span class="font-bold flex-nowrap gap-8">
           @switch (game?.BoardGame?.ScoreType) {
@@ -157,6 +157,8 @@
                 buttonLayout="horizontal"
                 [prefix]="game?.BoardGame?.ScorePrefix ?? undefined"
                 [suffix]="game?.BoardGame?.ScoreSuffix ?? undefined"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="10"
                 [ngModel]="playerGame.Points"
                 [ngModelOptions]="{ standalone: true }"
                 (ngModelChange)="setPoints(playerGame, $event)">

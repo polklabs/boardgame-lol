@@ -9,7 +9,7 @@
   @if (formGroup && playerGame) {
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit()">
-        <div class="flex gap-4 align-items-end justify-content-space-between">
+        <div class="flex gap-4 justify-content-space-between">
           <app-dropdown
             style="flex-grow: 1"
             formControlName="PlayerId"
@@ -19,19 +19,19 @@
             [options]="players"
             optionLabel="Name"
             optionValue="PlayerId"
-          [showClear]="false"></app-dropdown>
+            [showClear]="false"></app-dropdown>
           @if (canEditPlayer()) {
             <p-button (onClick)="editPlayer.emit(selectedPlayer)" icon="pi pi-pencil"></p-button>
           }
           <p-button (onClick)="editPlayer.emit()" pTooltip="New Player" icon="pi pi-plus"></p-button>
         </div>
         @if (scoreType === 'points') {
-          <app-textinput
+          <app-number-input
             formControlName="Points"
             label="Points"
             [entityType]="entityType"
             [hiddenFields]="hideFields"
-          inputType="number"></app-textinput>
+            [boardGame]="playerGame.Game?.BoardGame"></app-number-input>
         }
         @if (scoreType === 'win-lose') {
           <app-checkbox formControlName="Points" label="Won Game" [hiddenFields]="hideFields"></app-checkbox>

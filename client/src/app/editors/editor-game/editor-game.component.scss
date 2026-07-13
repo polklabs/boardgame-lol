@@ -1,17 +1,4 @@
 :host ::ng-deep {
-  form {
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .p-floatlabel {
-    margin-top: 32px;
-    display: flex;
-    flex-direction: column;
-  }
-
   .p-select {
     width: 100%;
   }
@@ -23,20 +10,8 @@
     }
   }
 
-  .dialog-footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 24px;
-    gap: 16px;
-    > div {
-      display: flex;
-      justify-content: start;
-      gap: 16px;
-    }
-  }
-
   .p-orderlist {
-    margin-top: 18px;
+    margin-bottom: 18px;
   }
 
   .p-listbox-header {
@@ -92,7 +67,7 @@
       }
     }
   }
-  
+
   .empty-list {
     text-align: center;
     margin-top: 4rem;
@@ -111,10 +86,5 @@
     .list-items {
       cursor: ns-resize;
     }
-  }
-
-  .DNF {
-    text-decoration: line-through;
-    color: dimgray;
   }
 }

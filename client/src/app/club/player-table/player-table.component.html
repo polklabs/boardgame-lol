@@ -75,7 +75,7 @@
               @case ('Tags') {
                 <div class="tag-wrapper">
                 @for (tag of player.Tags; track tag.TagId) {
-                  <p-tag severity="contrast" [value]="tag.Text" />
+                  <app-tag [tag]="tag"></app-tag>
                 }
                 </div>
               }

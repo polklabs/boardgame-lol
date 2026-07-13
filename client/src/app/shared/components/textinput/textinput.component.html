@@ -13,5 +13,6 @@
     type="{{ inputType }}"
     pInputText
     formControlName="{{ formControlName }}"
+    [value]="formGroup.value[formControlName]"
     [ngClass]="{ 'ng-invalid ng-dirty': ControlWrapper.isFieldInvalid() }" />
 </app-control-wrapper>

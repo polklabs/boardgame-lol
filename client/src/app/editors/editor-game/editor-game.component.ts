@@ -25,7 +25,7 @@ import { DropdownComponent } from '../../shared/components/dropdown/dropdown.com
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-game.component';
 import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
-import { Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { format } from 'date-fns';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -33,6 +33,7 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TagsComponent } from '../../shared/components/tags/tags.component';
+import { TooltipModule } from 'primeng/tooltip';
 
 type EntityType = GameEntity;
 
@@ -58,6 +59,7 @@ type EntityType = GameEntity;
     InputGroupAddonModule,
     InputNumberModule,
     TagsComponent,
+    TooltipModule,
   ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
@@ -80,7 +82,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   private playerList: PlayerEntity[] = [];
   private boardGameList: BoardGameEntity[] = [];
-  private tagList: TagEntity[] = [];
+  tagList$: Observable<TagEntity[]> = of([]);
 
   protected selectedPlayerGame?: PlayerGameEntity;
 
@@ -95,10 +97,6 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   get players() {
     return [...this.playerList, ...this.newPlayers].sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
-  }
-
-  get tags() {
-    return this.tagList;
   }
 
   playerGames: PlayerGameEntity[] = [];
@@ -170,7 +168,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   grabLists() {
     this.playerList = this.apiService.playerList;
     this.boardGameList = this.apiService.boardGameList;
-    this.tagList = this.apiService.tagList.toSorted((a, b) => a.Text?.localeCompare(b.Text ?? '') ?? 0);
+    this.tagList$ = this.apiService.tagList$;
 
     this.playerGames = this.apiService.playerGameList
       .filter((x) => x.GameId === this.game?.GameId)

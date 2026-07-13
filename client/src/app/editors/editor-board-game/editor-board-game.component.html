@@ -30,11 +30,13 @@
             label="Score Suffix"
             [entityType]="entityType"
             [hiddenFields]="hideFields"></app-textinput>
-          <app-textinput
-            formControlName="exampleScore"
+          <app-number-input
+            formControlName="ExampleScore"
             label="Example Score"
+            [prefix]="formGroup.value.ScorePrefix"
+            [suffix]="formGroup.value.ScoreSuffix"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-textinput>
+            [hiddenFields]="hideFields"></app-number-input>
         </div>
 
         <app-tags
@@ -42,7 +44,7 @@
           label="Tags"
           [entityType]="entityType"
           [hiddenFields]="hideFields"
-          [options]="tags"></app-tags>
+          [options$]="tagList$"></app-tags>
 
         <app-textinput
           formControlName="BoardGameGeekId"

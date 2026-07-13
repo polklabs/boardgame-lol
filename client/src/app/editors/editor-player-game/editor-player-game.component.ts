@@ -1,16 +1,25 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { isGuid, PlayerEntity, PlayerGameEntity, ScoreType } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
 
 import { ButtonModule } from 'primeng/button';
-import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
 
 type EntityType = PlayerGameEntity;
 
@@ -21,12 +30,12 @@ type EntityType = PlayerGameEntity;
     ReactiveFormsModule,
     DropdownComponent,
     ButtonModule,
-    TextInputComponent,
     CheckboxModule,
     DialogModule,
     TooltipModule,
-    CheckboxComponent
-],
+    CheckboxComponent,
+    NumberInputComponent,
+  ],
   templateUrl: './editor-player-game.component.html',
   styleUrl: './editor-player-game.component.scss',
 })
