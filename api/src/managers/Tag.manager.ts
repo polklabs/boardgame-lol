@@ -25,7 +25,6 @@ export class TagManager extends BaseManager<TagEntity> {
   }
 
   upsert(tagLink: TagLink, userId: string, clubId: string, tags: TagEntity[], linkId: string, transactions: unknown[]) {
-    const dbTags = new Set(this.loadMany('ClubId', [clubId]).map((x) => x.TagId));
     const oldTags = new Set(
       this.getTagLinks(tagLink, linkId)
         .map((x) => x.TagId)
@@ -33,7 +32,7 @@ export class TagManager extends BaseManager<TagEntity> {
     );
     tags.forEach((tag) => {
       tag.ClubId = clubId;
-      let TagId = tag.TagId;
+      const TagId = tag.TagId;
       if (TagId === null) {
         return;
       } else {
@@ -43,14 +42,6 @@ export class TagManager extends BaseManager<TagEntity> {
       if (oldTags.has(TagId)) {
         // Do nothing
       } else {
-        if (dbTags.has(TagId)) {
-          // Skip put
-        } else {
-          TagId = newGuid();
-          tag.TagId = TagId;
-          transactions.push(this.put(userId, tag, false, true));
-        }
-
         transactions.push(this.getTagLinkPut(tagLink, userId, clubId, TagId, linkId));
       }
       oldTags.delete(TagId);
