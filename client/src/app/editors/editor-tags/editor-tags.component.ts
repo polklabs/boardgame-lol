@@ -72,13 +72,14 @@ export class EditorTagsComponent {
     if (this.formGroup.invalid || !this.tag) {
       return;
     } else {
-      // const result = await this.apiService.postPlayer(this.tag.TagId === null, this.formGroup.getRawValue());
-      // if (result) {
-      //   this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Tag' });
-      //   this.closeEditor.emit();
-      // } else {
-      //   // Do nothing
-      // }
+      const result = await this.apiService.postTag(this.tag.TagId === '', this.formGroup.getRawValue());
+      if (result) {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Tag' });
+        this.tag = undefined;
+        this.title = 'Manage Tags';
+      } else {
+        // Do nothing
+      }
     }
   }
 
@@ -91,14 +92,14 @@ export class EditorTagsComponent {
       rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       accept: async () => {
-        // const result = await this.apiService.deletePlayer(this.tag!.TagId);
-        // if (result) {
-        //   this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Player' });
-        //   this.closeEditor.emit();
-        //   this.router.navigateByUrl(`/club/${this.apiService.club?.ClubId}`);
-        // } else {
-        //   // Do nothing
-        // }
+        const result = await this.apiService.deleteTag(this.tag!.TagId);
+        if (result) {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Tag' });
+          this.tag = undefined;
+          this.title = 'Manage Tags';
+        } else {
+          // Do nothing
+        }
       },
     });
   }

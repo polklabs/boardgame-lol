@@ -348,6 +348,24 @@ export class ApiService {
     }
   }
 
+  async postTag(isNew: boolean, entity: TagEntity) {
+    let result: TagEntity | null = null;
+    if (isNew) {
+      result = await this.httpService.put(['api', 'tag'], entity);
+    } else {
+      result = await this.httpService.patch(['api', 'tag'], entity);
+    }
+
+    if (result) {
+      this.tagList = this.upsertEntry(result, (x) => x.TagId, this.tagList, this._tagDict);
+      this.updateReferences();
+      this.dataUpdate$.next();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async deleteGame(gameId: string) {
     if (gameId === '') {
       console.log('gameId is empty');
@@ -422,6 +440,26 @@ export class ApiService {
       this.boardGameList = this.boardGameList$.value.filter((x) => x.BoardGameId !== boardGameId);
       this.gameList = this.gameList$.value.filter((x) => x.BoardGameId !== boardGameId);
       this.playerGameList = this.playerGameList$.value.filter((x) => x.Game?.BoardGameId !== boardGameId);
+      this.updateReferences();
+      this.dataUpdate$.next();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async deleteTag(tagId: string) {
+    if (tagId === '') {
+      console.log('tagId is empty');
+      return false;
+    } else {
+      // continue
+    }
+
+    const result = await this.httpService.delete(['api', 'tag', this.clubId, tagId]);
+
+    if (result) {
+      this.tagList = this.tagList.filter((x) => x.TagId !== tagId);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;

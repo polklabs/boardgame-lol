@@ -8,6 +8,7 @@ import { TagGameManager } from './TagGame.manager';
 import { TagPlayerManager } from './TagPlayer.manager';
 import { TagGameEntity } from 'libs/models/TagGame.entity';
 import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
+import { ClubUserManager } from './ClubUser.manager';
 
 type TagLink = 'boardGame' | 'game' | 'player';
 
@@ -15,6 +16,7 @@ type TagLink = 'boardGame' | 'game' | 'player';
 export class TagManager extends BaseManager<TagEntity> {
   constructor(
     protected db: DbService,
+    protected clubUserManager: ClubUserManager,
     public tagBoardGame: TagBoardGameManager,
     public tagGame: TagGameManager,
     public tagPlayer: TagPlayerManager,
@@ -46,7 +48,7 @@ export class TagManager extends BaseManager<TagEntity> {
         } else {
           TagId = newGuid();
           tag.TagId = TagId;
-          transactions.push(this.put(userId, tag, false));
+          transactions.push(this.put(userId, tag, false, true));
         }
 
         transactions.push(this.getTagLinkPut(tagLink, userId, clubId, TagId, linkId));
@@ -94,7 +96,7 @@ export class TagManager extends BaseManager<TagEntity> {
     }
   }
 
-  put(userId: string, entity: TagEntity, resetID = true) {
+  put(userId: string, entity: TagEntity, resetID = true, transact = false) {
     entity = this.new(entity);
     if (resetID) {
       entity.TagId = newGuid();
@@ -107,7 +109,13 @@ export class TagManager extends BaseManager<TagEntity> {
 
     this.CheckForeignKeys(entity);
 
-    return this.runInsert(userId, entity, true);
+    if (transact) {
+      return this.runInsert(userId, entity, true);
+    } else {
+      this.clubUserManager.hasAccess(userId, entity.ClubId);
+      this.runInsert(userId, entity, false);
+      return this.loadOne(entity.TagId);
+    }
   }
 
   patch(userId: string, entity: TagEntity) {
@@ -118,10 +126,13 @@ export class TagManager extends BaseManager<TagEntity> {
 
     this.CheckForeignKeys(entity);
 
-    return this.runUpdate(userId, entity, true);
+    this.runUpdate(userId, entity, false);
+
+    return this.loadOne(entity.TagId);
   }
 
-  delete(primaryId: string, secondaryId: string) {
+  delete(userId: string, primaryId: string, secondaryId: string) {
+    this.clubUserManager.hasAccess(userId, secondaryId);
     return this.runDelete([primaryId], secondaryId, true);
   }
 
