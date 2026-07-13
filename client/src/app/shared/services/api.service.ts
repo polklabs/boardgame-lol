@@ -348,9 +348,9 @@ export class ApiService {
     }
   }
 
-  async deleteGame(gameId: string | null) {
-    if (gameId === null) {
-      console.log('gameId is null');
+  async deleteGame(gameId: string) {
+    if (gameId === '') {
+      console.log('gameId is empty');
       return false;
     } else {
       // continue
@@ -388,9 +388,9 @@ export class ApiService {
     }
   }
 
-  async deletePlayer(playerId: string | null) {
-    if (playerId === null) {
-      console.log('playerId is null');
+  async deletePlayer(playerId: string) {
+    if (playerId === '') {
+      console.log('playerId is empty');
       return false;
     } else {
       // continue
@@ -408,9 +408,9 @@ export class ApiService {
     }
   }
 
-  async deleteBoardGame(boardGameId: string | null) {
-    if (boardGameId === null) {
-      console.log('boardGameId is null');
+  async deleteBoardGame(boardGameId: string) {
+    if (boardGameId === '') {
+      console.log('boardGameId is empty');
       return false;
     } else {
       // continue
@@ -430,9 +430,9 @@ export class ApiService {
     }
   }
 
-  async deleteClub(clubId: string | null) {
-    if (clubId === null) {
-      console.log('clubId');
+  async deleteClub(clubId: string) {
+    if (clubId === '') {
+      console.log('clubId is empty');
       return false;
     } else {
       // continue
@@ -463,16 +463,14 @@ export class ApiService {
     if (this.filterEnabled$.value) {
       this.fGameList = this.gameList$.value.filter((x) => {
         return (
-          this._filteredBoardGameIds.has(x.BoardGameId ?? '') &&
+          this._filteredBoardGameIds.has(x.BoardGameId) &&
           this._filteredDaysOfWeek.has(format(x.DateObj, 'cccc')) &&
           (this._filteredStartDate === null || new Date(x.DateObj).getTime() >= this._filteredStartDate.getTime())
         );
       });
-      this.fBoardGameList = this.boardGameList$.value.filter((x) =>
-        this._filteredBoardGameIds.has(x.BoardGameId ?? ''),
-      );
-      this.fPlayerGameList = this.playerGameList$.value.filter((x) => this._filteredPlayerIds.has(x.PlayerId ?? ''));
-      this.fPlayerList = this.playerList$.value.filter((x) => this._filteredPlayerIds.has(x.PlayerId ?? ''));
+      this.fBoardGameList = this.boardGameList$.value.filter((x) => this._filteredBoardGameIds.has(x.BoardGameId));
+      this.fPlayerGameList = this.playerGameList$.value.filter((x) => this._filteredPlayerIds.has(x.PlayerId));
+      this.fPlayerList = this.playerList$.value.filter((x) => this._filteredPlayerIds.has(x.PlayerId));
     } else {
       this.fGameList = this.gameList$.value;
       this.fBoardGameList = this.boardGameList$.value;

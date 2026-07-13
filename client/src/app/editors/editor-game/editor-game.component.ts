@@ -126,7 +126,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if ('game' in changes && this.game) {
       this.game = new GameEntity(this.game, true);
-      if (this.game.GameId === null) {
+      if (this.game.GameId === '') {
         this.title = 'New Play';
         this.isNew = true;
       } else {
@@ -263,7 +263,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     } else {
       this.playerGameEdit = new PlayerGameEntity({ ClubId: this.game?.ClubId, GameId: '-1' });
       const existingPlayers = new Set(this.playerGames.map((x) => x.PlayerId));
-      this.playerGameEdit.PlayerId = this.players.find((x) => !existingPlayers.has(x.PlayerId))?.PlayerId ?? null;
+      this.playerGameEdit.PlayerId = this.players.find((x) => !existingPlayers.has(x.PlayerId))?.PlayerId ?? '';
     }
     this.playerGameEditorVisible = true;
   }
@@ -312,7 +312,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       while (this.newPlayers.some((x) => x.PlayerId === `${nextId}`)) {
         nextId++;
       }
-      this.playerEdit = new PlayerEntity({ PlayerId: `${nextId}`, ClubId: this.game?.ClubId });
+      this.playerEdit = new PlayerEntity({ PlayerId: `${nextId}`, ClubId: this.apiService.clubId });
     }
     this.playerEditorVisible = true;
   }
@@ -351,7 +351,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   canEditBoardGame() {
     const value = this.getControl('BoardGameId')?.value;
-    if (isGuid(value) || value === null || value === undefined) {
+    if (isGuid(value) || value === '' || value === undefined) {
       return false;
     } else {
       return true;
@@ -433,7 +433,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
         // Continue
       }
 
-      const result = await this.apiService.postGame(this.game.GameId === null, {
+      const result = await this.apiService.postGame(this.game.GameId === '', {
         Game: gameData,
         PlayerGames: this.playerGames.map((x) => new PlayerGameEntity(x)),
         BoardGames: this.newBoardGames,

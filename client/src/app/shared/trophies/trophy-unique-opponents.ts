@@ -13,10 +13,10 @@ export class TrophyUniqueOpponents extends ITrophy {
       const friendSet = new Set<string>();
       player.PlayerGames.forEach((pg) =>
         pg.Game?.Scores.forEach((score) => {
-          friendSet.add(score.PlayerId ?? '');
+          friendSet.add(score.PlayerId);
         }),
       );
-      friendSet.delete(player.PlayerId ?? '');
+      friendSet.delete(player.PlayerId);
       friendSet.delete('');
 
       butterflies.push({ player, friends: friendSet.size });

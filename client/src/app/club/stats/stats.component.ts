@@ -336,9 +336,7 @@ export class StatsComponent implements OnInit {
       // Continue
     }
 
-    const pIds = this.apiService.playerList
-      .filter((x) => x.IsRealPerson && x.Wins.length > 0)
-      .map((x) => x.PlayerId ?? '');
+    const pIds = this.apiService.playerList.filter((x) => x.IsRealPerson && x.Wins.length > 0).map((x) => x.PlayerId);
 
     const gameDayDict: Record<string, GameEntity[]> = {};
     const dateSet = new Set<string>();
@@ -385,10 +383,10 @@ export class StatsComponent implements OnInit {
 
     gameList.forEach((game) => {
       const day = format(game.DateObj, 'eeee');
-      if (counts[game.BoardGame?.ScoreType ?? ''][day] === undefined) {
-        counts[game.BoardGame?.ScoreType ?? ''][day] = 1;
+      if (counts[game.ScoreType][day] === undefined) {
+        counts[game.ScoreType][day] = 1;
       } else {
-        counts[game.BoardGame?.ScoreType ?? ''][day]++;
+        counts[game.ScoreType][day]++;
       }
     });
 
@@ -467,7 +465,7 @@ export class StatsComponent implements OnInit {
       } else {
         // Continue
       }
-      const scoreTypeCount = counts[game.BoardGame?.ScoreType ?? ''];
+      const scoreTypeCount = counts[game.ScoreType];
       if (scoreTypeCount[month] === undefined) {
         scoreTypeCount[month] = 1;
       } else {

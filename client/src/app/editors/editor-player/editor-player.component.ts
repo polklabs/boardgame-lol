@@ -68,7 +68,7 @@ export class EditorPlayerComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('player' in changes && this.player) {
-      if (this.player.PlayerId === null) {
+      if (this.player.PlayerId === '') {
         this.title = 'New Player';
         this.isNew = true;
       } else {
@@ -94,7 +94,7 @@ export class EditorPlayerComponent implements OnChanges {
   }
 
   grabLists() {
-    this.tagList = this.apiService.tagList.toSorted((a, b) => a.Text?.localeCompare(b.Text ?? '') ?? 0);
+    this.tagList = this.apiService.tagList.toSorted((a, b) => a.Text.localeCompare(b.Text) ?? 0);
   }
 
   async submit() {
@@ -102,7 +102,7 @@ export class EditorPlayerComponent implements OnChanges {
     if (this.formGroup.invalid || !this.player) {
       return;
     } else if (this.standalone) {
-      const result = await this.apiService.postPlayer(this.player.PlayerId === null, this.formGroup.getRawValue());
+      const result = await this.apiService.postPlayer(this.player.PlayerId === '', this.formGroup.getRawValue());
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Player' });
         this.closeEditor.emit();

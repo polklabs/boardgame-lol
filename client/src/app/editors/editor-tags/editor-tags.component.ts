@@ -44,7 +44,7 @@ export class EditorTagsComponent {
 
   buildForm(tag: TagEntity) {
     this.tag = tag;
-    if (this.tag?.TagId === null) {
+    if (this.tag?.TagId === '') {
       this.title = 'New Tag';
       this.isNew = true;
     } else {

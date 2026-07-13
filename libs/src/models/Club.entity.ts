@@ -9,7 +9,7 @@ import { Sanitize } from '../decorators/sanitize.decorator';
 @TableName('Club')
 export class ClubEntity extends BaseEntity {
   @PrimaryKey()
-  ClubId: string | null = null;
+  ClubId: string = '';
 
   @MinMax(1, CHARACTER_LIMIT_SHORT, 'string')
   @Sanitize()

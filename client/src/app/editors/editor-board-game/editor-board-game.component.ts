@@ -78,7 +78,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('boardGame' in changes && this.boardGame) {
-      if (this.boardGame.BoardGameId === null) {
+      if (this.boardGame.BoardGameId === '') {
         this.title = 'New BoardGame';
         this.isNew = true;
       } else {
@@ -151,7 +151,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
       return;
     } else if (this.standalone) {
       const result = await this.apiService.postBoardGame(
-        this.boardGame.BoardGameId === null,
+        this.boardGame.BoardGameId === '',
         this.formGroup.getRawValue(),
       );
       if (result) {

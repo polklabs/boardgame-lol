@@ -32,14 +32,14 @@ export type BoardGameReturn = {
 @TableName('BoardGame')
 export class BoardGameEntity extends BaseEntity {
   @PrimaryKey()
-  BoardGameId: string | null = null;
+  BoardGameId: string = '';
 
   @SecondaryKey
-  ClubId: string | null = null;
+  ClubId: string = '';
 
   @MinMax(1, CHARACTER_LIMIT_SHORT, 'string')
   @Sanitize()
-  Name: string | null = null;
+  Name: string = '';
 
   @Enum(ScoreTypes)
   ScoreType: ScoreType = 'points';
@@ -118,7 +118,7 @@ export class BoardGameEntity extends BaseEntity {
     this.calculationsComplete(this.Games);
 
     const winners = this.Games.flatMap((x) => x.Winners);
-    this.Champions = Mode(winners, (x) => x.PlayerId ?? '');
+    this.Champions = Mode(winners, (x) => x.PlayerId);
     if (this.Champions.length > 0) {
       this.ChampionWins = winners.reduce(
         (wins, winner) => wins + (winner.PlayerId === this.Champions[0].PlayerId ? 1 : 0),

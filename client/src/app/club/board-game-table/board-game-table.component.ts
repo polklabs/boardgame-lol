@@ -96,7 +96,7 @@ export class BoardGameTableComponent implements OnChanges {
           winRow.totalPoints = this.getPoints(pg, winRow.totalPoints);
         } else {
           this.WinCounts[boardGameId].push({
-            playerId: player.PlayerId ?? '',
+            playerId: player.PlayerId,
             name: player.Name ?? 'Unknown',
             wins: won ? 1 : 0,
             plays: 1,
@@ -121,6 +121,6 @@ export class BoardGameTableComponent implements OnChanges {
   }
 
   showExpansion(boardGame: BoardGameEntity) {
-    return (this.WinCounts[boardGame.BoardGameId ?? '']?.length ?? 0) > 0;
+    return (this.WinCounts[boardGame.BoardGameId]?.length ?? 0) > 0;
   }
 }

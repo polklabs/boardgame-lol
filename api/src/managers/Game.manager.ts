@@ -39,14 +39,9 @@ export class GameManager extends BaseManager<GameEntity> {
     this.tagManager.upsert('game', userId, entity.ClubId!, tags, entity.GameId!, transactions);
 
     wrapper.BoardGames?.forEach((boardGame) => {
-      const oldGuid = boardGame.BoardGameId;
       const guid = newGuid();
       boardGame.BoardGameId = guid;
-      if (entity.BoardGameId === oldGuid) {
-        entity.BoardGameId = guid;
-      } else {
-        // Skip
-      }
+      entity.BoardGameId = guid;
 
       transactions.push(this.boardGameManager.put(userId, boardGame, false, true));
     });

@@ -21,14 +21,14 @@ export type PlayerReturn = {
 @TableName('Player')
 export class PlayerEntity extends BaseEntity {
   @PrimaryKey()
-  PlayerId: string | null = null;
+  PlayerId: string = '';
 
   @SecondaryKey
-  ClubId: string | null = null;
+  ClubId: string = '';
 
   @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
   @Sanitize()
-  Name: string | null = null;
+  Name: string = '';
 
   IsRealPerson: boolean = true;
 
@@ -85,7 +85,7 @@ export class PlayerEntity extends BaseEntity {
   calculateBestGames() {
     this.BestGames = Mode(
       this.Wins.filter((x) => x.Game).map((x) => x.Game!.BoardGame!),
-      (x) => x.BoardGameId ?? '',
+      (x) => x.BoardGameId,
     ).filter(Boolean);
   }
 

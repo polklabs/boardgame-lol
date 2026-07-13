@@ -8,7 +8,7 @@ import { MinMax } from '../decorators/min-max.decorator';
 @TableName('User')
 export class UserEntity extends BaseEntity {
   @PrimaryKey()
-  UserId: string | null = null;
+  UserId: string = '';
 
   @MinMax(4, 32, 'string')
   Username: string = '';

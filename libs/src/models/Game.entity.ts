@@ -38,13 +38,13 @@ export type GameReturn = {
 @TableName('Game')
 export class GameEntity extends BaseEntity {
   @PrimaryKey()
-  GameId: string | null = null;
+  GameId: string = '';
 
   @SecondaryKey
-  ClubId: string | null = null;
+  ClubId: string = '';
 
   @ForeignKey(BoardGameEntity)
-  BoardGameId: string | null = null;
+  BoardGameId: string = '';
 
   Date: Date | string = new Date().toISOString();
 
@@ -61,6 +61,10 @@ export class GameEntity extends BaseEntity {
 
   get dateSortOrder() {
     return `${this.Date}T${String(this.SortIndex).padStart(6, '0')}`;
+  }
+
+  get ScoreType() {
+    return this.BoardGame?.ScoreType ?? '';
   }
 
   @Ignore()

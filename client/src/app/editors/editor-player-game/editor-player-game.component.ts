@@ -60,7 +60,7 @@ export class EditorPlayerGameComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('playerGame' in changes && this.playerGame) {
-      if (this.playerGame.PlayerGameId === null) {
+      if (this.playerGame.PlayerGameId === '') {
         this.title = 'Add Player';
         this.isNew = true;
       } else {
@@ -125,7 +125,7 @@ export class EditorPlayerGameComponent implements OnChanges {
 
   canEditPlayer() {
     const value = this.formGroup.controls['PlayerId'].value;
-    if (isGuid(value) || value === null || value === undefined) {
+    if (isGuid(value) || value === '' || value === undefined) {
       return false;
     } else {
       return true;

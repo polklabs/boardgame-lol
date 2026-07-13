@@ -11,15 +11,15 @@ import { PlayerEntity } from './Player.entity';
 @TableName('TagPlayer')
 export class TagPlayerEntity extends BaseEntity implements ITag {
   @SecondaryKey
-  ClubId: string | null = null;
+  ClubId: string = '';
 
   @PrimaryKey()
   @ForeignKey(TagEntity)
-  TagId: string | null = null;
+  TagId: string = '';
 
   @PrimaryKey()
   @ForeignKey(PlayerEntity)
-  PlayerId: string | null = null;
+  PlayerId: string = '';
 
   @Ignore()
   Tag: TagEntity | null = null;

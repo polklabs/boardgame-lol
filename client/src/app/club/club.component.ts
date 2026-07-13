@@ -127,8 +127,8 @@ export class ClubComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.apiService.dataUpdate$.subscribe(() => {
-        this.gameIds = this.apiService.boardGameList.map((x) => x.BoardGameId ?? '');
-        this.playerIds = this.apiService.playerList.map((x) => x.PlayerId ?? '');
+        this.gameIds = this.apiService.boardGameList.map((x) => x.BoardGameId);
+        this.playerIds = this.apiService.playerList.map((x) => x.PlayerId);
       }),
     );
   }

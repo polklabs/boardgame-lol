@@ -8,7 +8,7 @@
   position="bottom">
   <div class="flex gap-8">
     @for (t of tags$ | async; track t) {
-      <p-tag (click)="buildForm(t)" severity="contrast" [value]="t.Text ?? ''" />
+      <p-tag (click)="buildForm(t)" severity="contrast" [value]="t.Text" />
     }
   </div>
   @if (formGroup && tag) {

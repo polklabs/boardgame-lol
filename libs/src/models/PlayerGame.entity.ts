@@ -12,16 +12,16 @@ import { Ignore } from '../decorators/ignore.decorator';
 @TableName('PlayerGame')
 export class PlayerGameEntity extends BaseEntity {
   @PrimaryKey()
-  PlayerGameId: string | null = null;
+  PlayerGameId: string = '';
 
   @SecondaryKey
-  ClubId: string | null = null;
+  ClubId: string = '';
 
   @ForeignKey(PlayerEntity)
-  PlayerId: string | null = null;
+  PlayerId: string = '';
 
   @ForeignKey(GameEntity)
-  GameId: string | null = null;
+  GameId: string = '';
 
   @MinMax(-999999999, 999999999, 'number')
   @Nullable()

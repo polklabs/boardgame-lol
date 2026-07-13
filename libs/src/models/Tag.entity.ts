@@ -11,10 +11,10 @@ import { Nullable } from '../decorators/nullable.decorator';
 @TableName('Tag')
 export class TagEntity extends BaseEntity implements ITag {
   @PrimaryKey()
-  TagId: string | null = null;
+  TagId: string = '';
 
   @SecondaryKey
-  ClubId: string | null = null;
+  ClubId: string = '';
 
   @Sanitize()
   @Nullable()
@@ -23,7 +23,7 @@ export class TagEntity extends BaseEntity implements ITag {
 
   @MinMax(1, CHARACTER_LIMIT_BYTE * 2, 'string')
   @Sanitize()
-  Text: string | null = null;
+  Text: string = '';
 
   constructor(partial: Partial<TagEntity> = {}, copyIgnored = false) {
     super(partial, TagEntity);

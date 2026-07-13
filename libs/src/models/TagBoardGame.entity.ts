@@ -11,15 +11,15 @@ import { PrimaryKey } from '../decorators/primary-key.decorator';
 @TableName('TagBoardGame')
 export class TagBoardGameEntity extends BaseEntity implements ITag {
   @SecondaryKey
-  ClubId: string | null = null;
+  ClubId: string = '';
 
   @PrimaryKey()
   @ForeignKey(TagEntity)
-  TagId: string | null = null;
+  TagId: string = '';
 
   @PrimaryKey()
   @ForeignKey(BoardGameEntity)
-  BoardGameId: string | null = null;
+  BoardGameId: string = '';
 
   @Ignore()
   Tag: TagEntity | null = null;
