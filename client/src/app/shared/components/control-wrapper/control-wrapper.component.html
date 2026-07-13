@@ -1,5 +1,5 @@
 @if (isShown()) {
-  <p-floatlabel class="p-input-icon-{{ iconPosition }}">
+  <p-floatlabel variant="on" class="p-input-icon-{{ iconPosition }}">
     <ng-content></ng-content>
     <label for="{{ controlName }}">{{ getFieldLabel() }} {{ isRequired() ? '*' : '' }}</label>
     @if (isFieldInvalid()) {

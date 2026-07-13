@@ -89,7 +89,7 @@
     <div class="flex flex-column gap-8 filter-wrapper">
       <h3>Filter</h3>
 
-      <p-floatLabel>
+      <p-floatLabel variant="on">
         <p-multiSelect
           [options]="(ogBoardGames$ | async) ?? [] | sort: 'Name'"
           [(ngModel)]="gameIds"
@@ -101,7 +101,7 @@
         <label for="username">Board Games</label>
       </p-floatLabel>
 
-      <p-floatLabel>
+      <p-floatLabel variant="on">
         <p-multiSelect
           [options]="(ogPlayers$ | async) ?? [] | sort: 'Name'"
           [(ngModel)]="playerIds"
@@ -113,7 +113,7 @@
         <label for="username">Players</label>
       </p-floatLabel>
 
-      <p-floatLabel>
+      <p-floatLabel variant="on">
         <p-multiSelect
           [options]="dow"
           [(ngModel)]="daysOfWeek"
