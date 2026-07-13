@@ -1,7 +1,10 @@
 <div style="height: calc(100dvh - 140px)">
+  @let games = (games$ | async) ?? [];
+  @let cols = filterColumns(games);
   <p-table
     #gameTable
-    [value]="(games$ | async) ?? []"
+    [value]="games"
+    [columns]="cols"
     dataKey="GameId"
     [scrollable]="true"
     [stripedRows]="true"
@@ -27,10 +30,10 @@
         </p-iconfield>
       </div>
     </ng-template>
-    <ng-template #header>
+    <ng-template #header let-columns>
       <tr>
         <th id="expansion" style="width: 0"></th>
-        @for (column of gameColumns; track column) {
+        @for (column of columns; track column) {
           <th id="{{ column.field }}" [pSortableColumn]="column.sort ? column.field : undefined">
             <span>
               {{ column.name }}
@@ -45,7 +48,7 @@
         }
       </tr>
     </ng-template>
-    <ng-template #body let-game let-expanded="expanded">
+    <ng-template #body let-game let-columns="columns" let-expanded="expanded">
       <tr>
         <td>
           @if (game.Scores.length > game.Winners.length) {
@@ -59,20 +62,37 @@
               [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
           }
         </td>
-        <td>{{ game.Date | date: 'MM/dd/yy' }}</td>
-        <td>{{ game.BoardGame.Name }}</td>
-        <td>{{ game.Winners | array: 'Nickname' }}</td>
-        <td>
-          @if (showScore(game)) {
-            {{ game.HighScore | number: '1.0-3' | score: game.BoardGame }}
-          }
-        </td>
-        <td>{{ game.Players | number: '1.0-0' }}</td>
-        <td>
-          @if (game.DidNotFinish) {
-            <p-tag value="Did Not Finish" severity="danger" />
-          }
-        </td>
+
+        @for (column of columns; track column) {
+          <td>
+
+            @switch (column.field) {
+              @case ('dateSortOrder') {
+                {{ game.Date | date: 'MM/dd/yy' }}
+              }
+              @case ('BoardGame') {
+                {{ game.BoardGame.Name }}
+              }
+              @case ('Winners') {
+                {{ game.Winners | array: 'Nickname' }}
+              }
+              @case ('HighScore') {
+                @if (showScore(game)) {
+                  {{ game.HighScore | number: '1.0-3' | score: game.BoardGame }}
+                }
+              }
+              @case ('Players') {
+                {{ game.Players | number: '1.0-0' }}
+              }
+              @case ('Tags') {
+                @for (tag of game.Tags; track tag.TagId) {
+                  <p-tag severity="contrast" [value]="tag.Text" />
+                }
+              }
+            }
+
+          </td>
+        }
         @if (canEdit) {
           <td>
             <div class="flex-nowrap">
@@ -99,7 +119,7 @@
     <ng-template #expandedrow let-game>
       <tr>
         <td></td>
-        <td [attr.colspan]="gameColumns.length">
+        <td [attr.colspan]="cols.length">
           <p-table [value]="game.Scores" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
             <ng-template #header>
               <tr>

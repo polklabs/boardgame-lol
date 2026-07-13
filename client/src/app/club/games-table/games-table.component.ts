@@ -11,6 +11,15 @@ import { InputIconModule } from 'primeng/inputicon';
 import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
 
+const COLUMNS: { field: keyof GameEntity; name: string; sort: boolean }[] = [
+  { field: 'dateSortOrder', name: 'Date', sort: true },
+  { field: 'BoardGame', name: 'Game', sort: true },
+  { field: 'Winners', name: 'Winner(s)', sort: false },
+  { field: 'HighScore', name: 'Points', sort: true },
+  { field: 'Players', name: 'Players', sort: true },
+  { field: 'Tags', name: 'Tags', sort: true },
+];
+
 @Component({
   selector: 'app-games-table',
   imports: [
@@ -36,17 +45,22 @@ export class GamesTableComponent {
   @Output() moveDown = new EventEmitter<GameEntity>();
 
   expandedRows = {};
-  gameColumns = [
-    { field: 'dateSortOrder', name: 'Date', sort: true },
-    { field: 'BoardGame.Name', name: 'Game', sort: true },
-    { field: 'Winners', name: 'Winner(s)', sort: false },
-    { field: 'HighScore', name: 'Points', sort: true },
-    { field: 'Players', name: 'Players', sort: true },
-    { field: 'DidNotFinish', name: 'Did Not Finish', sort: true },
-  ];
 
   filterTable(table: Table, filter: Event): void {
     table.filterGlobal((filter.target as HTMLInputElement).value, 'contains');
+  }
+
+  filterColumns(games: GameEntity[]) {
+    return COLUMNS.filter((col) =>
+      games.some((row) => {
+        const data = row[col.field];
+        if (col.field === 'HighScore') {
+          return this.showScore(row) && !!data;
+        } else {
+          return Array.isArray(data) ? data.length > 0 : !!data;
+        }
+      }),
+    );
   }
 
   showScore(game: GameEntity): boolean {

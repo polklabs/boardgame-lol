@@ -1,6 +1,9 @@
 <div style="height: calc(100dvh - 140px)">
+  @let players = (players$ | async) ?? [];
+  @let cols = filterColumns(players);
   <p-table
-    [value]="(players$ | async) ?? []"
+    [value]="players"
+    [columns]="cols"
     dataKey="PlayerId"
     [scrollable]="true"
     [stripedRows]="true"
@@ -10,10 +13,10 @@
     [sortOrder]="-1"
     [tableStyle]="{ 'min-width': '50rem' }"
     [expandedRowKeys]="expandedRows">
-    <ng-template #header>
+    <ng-template #header let-columns>
       <tr>
         <th id="expansion" style="width: 0" id="blank"></th>
-        @for (column of playerColumns; track column) {
+        @for (column of columns; track column) {
           <th id="{{ column.field }}" [pSortableColumn]="column.sort ? column.field : undefined" [id]="column.field">
             {{ column.name }}
             @if (column.sort) {
@@ -26,7 +29,7 @@
         }
       </tr>
     </ng-template>
-    <ng-template #body let-player let-expanded="expanded">
+    <ng-template #body let-player let-columns="columns" let-expanded="expanded">
       <tr>
         <td>
           @if (player.WinCount > 0) {
@@ -40,24 +43,43 @@
               [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
           }
         </td>
-        <td>
-          {{ player.Name }}
-          @if (player.hasMostWins) {
-            <i class="pi pi-crown" style="color: gold"></i>
-          }
-        </td>
-        <td>
-          <span>{{ player.WinCount | hide: '0' | number: '1.0-0' }}</span>
-          @if (player.WinCount > 0) {
-            <div class="bar-percent" [ngStyle]="{ width: (player.WinCount / (mostWins.value || 1)) * 100 + '%' }"></div>
-          }
-        </td>
-        <td>
-          <span>{{ player.LossCount | hide: '0' | number: '1.0-0' }}</span>
-        </td>
-        <td>{{ player.BestGames | array: 'Name' }}</td>
-        <td>{{ player.BestGameWins | hide: '0' | number: '1.0-0' }}</td>
-        <td>{{ player.FirstSeen | date: 'MM/dd/yy' }}</td>
+        @for (column of columns; track column) {
+          <td>
+            @switch (column.field) {
+              @case ('Name') {
+                {{ player.Name }}
+                @if (player.hasMostWins) {
+                  <i class="pi pi-crown" style="color: gold"></i>
+                }
+              }
+              @case ('WinCount') {
+                <span>{{ player.WinCount | hide: '0' | number: '1.0-0' }}</span>
+                @if (player.WinCount > 0) {
+                  <div
+                    class="bar-percent"
+                    [ngStyle]="{ width: (player.WinCount / (mostWins.value || 1)) * 100 + '%' }"></div>
+                }
+              }
+              @case ('LossCount') {
+                {{ player.LossCount | hide: '0' | number: '1.0-0' }}
+              }
+              @case ('BestGames') {
+                {{ player.BestGames | array: 'Name' }}
+              }
+              @case ('BestGameWins') {
+                {{ player.BestGameWins | hide: '0' | number: '1.0-0' }}
+              }
+              @case ('FirstSeen') {
+                {{ player.FirstSeen | date: 'MM/dd/yy' }}
+              }
+              @case ('Tags') {
+                @for (tag of player.Tags; track tag.TagId) {
+                  <p-tag severity="contrast" [value]="tag.Text" />
+                }
+              }
+            }
+          </td>
+        }
         @if (canEdit) {
           <td>
             <p-button (onClick)="playerEdit.emit(player)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
@@ -70,7 +92,7 @@
     <ng-template #expandedrow let-player>
       <tr>
         <td></td>
-        <td [attr.colspan]="playerColumns.length">
+        <td [attr.colspan]="cols.length">
           <p-table [value]="player.Wins" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
             <ng-template #header>
               <tr>

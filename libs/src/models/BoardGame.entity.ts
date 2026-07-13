@@ -78,6 +78,9 @@ export class BoardGameEntity extends BaseEntity {
   Games: GameEntity[] = [];
 
   @Ignore()
+  PlayCount = 0;
+
+  @Ignore()
   Champions: PlayerEntity[] = [];
 
   @Ignore()
@@ -107,6 +110,7 @@ export class BoardGameEntity extends BaseEntity {
     this.calculateChampion();
     this.calculatePlayers();
     this.calculateScore();
+    this.PlayCount = this.Games.length;
     this.calculated = true;
   }
 
