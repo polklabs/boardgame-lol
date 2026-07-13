@@ -6,20 +6,46 @@
   [entityType]="entityType"
   [hiddenFields]="hiddenFields"
   textInputType="dropdown">
-  <p-autocomplete
-    #autocomplete
+  <p-multiselect
+    #dropdown
     inputId="{{ formControlName }}"
     formControlName="{{ formControlName }}"
-    multiple
-    [suggestions]="items"
-    [optionLabel]="'Text'"
-    (completeMethod)="search($event)"
-    (onAdd)="add()"
-    (onInputKeydown)="onKeydown($event, autocomplete)"
-    [dropdown]="true"
-    [dropdownMode]="'current'"
-    [typeahead]="false"
-    [addOnTab]="true"
-    separator=","
-    placeholder="Use Tab, or Comma to add items..." />
+    [options]="(options$ | async) ?? []"
+    optionLabel="Text"
+    appendTo="body"
+    display="chip">
+    <ng-template let-tag #item>
+      <app-tag [tag]="tag"></app-tag>
+    </ng-template>
+    <ng-template let-items #selecteditems>
+      @for (tag of items; track tag) {
+        <app-tag [tag]="tag"></app-tag>
+      }
+    </ng-template>
+    <ng-template #dropdownicon>
+      <i class="pi pi-tags"></i>
+    </ng-template>
+    <ng-template #footer>
+      <div class="p-3 flex justify-content-space-between">
+        <p-button
+          (onClick)="editorTagsVisible = true"
+          label="Manage Tags"
+          severity="secondary"
+          text
+          size="small"
+          icon="pi pi-th-large" />
+        <p-button
+          (onClick)="dropdown.updateModel([], $event)"
+          label="Remove All"
+          severity="danger"
+          text
+          size="small"
+          icon="pi pi-times" />
+      </div>
+    </ng-template>
+  </p-multiselect>
 </app-control-wrapper>
+
+@if (editorTagsVisible) {
+  <app-editor-tags [editorVisible]="editorTagsVisible" (closeEditor)="editorTagsVisible = false"></app-editor-tags>
+}

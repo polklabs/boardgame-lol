@@ -52,7 +52,7 @@ export class MenuBarComponent implements OnInit, OnDestroy {
     },
     {
       label: 'Tags',
-      icon: 'pi pi-pencil',
+      icon: 'pi pi-th-large',
       command: () => {
         this.editTags.emit();
       },
@@ -107,7 +107,7 @@ export class MenuBarComponent implements OnInit, OnDestroy {
     },
     {
       label: 'Tags',
-      icon: 'pi pi-pencil',
+      icon: 'pi pi-th-large',
       command: () => {
         this.editTags.emit();
       },
@@ -131,7 +131,7 @@ export class MenuBarComponent implements OnInit, OnDestroy {
     },
     {
       label: 'Tags',
-      icon: 'pi pi-pencil',
+      icon: 'pi pi-th-large',
       command: () => {
         this.editTags.emit();
       },
@@ -155,7 +155,7 @@ export class MenuBarComponent implements OnInit, OnDestroy {
     },
     {
       label: 'Tags',
-      icon: 'pi pi-pencil',
+      icon: 'pi pi-th-large',
       command: () => {
         this.editTags.emit();
       },

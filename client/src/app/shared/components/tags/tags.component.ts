@@ -8,12 +8,25 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
-import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
-import { newGuid, TagEntity } from 'libs/index';
+import { TagEntity } from 'libs/index';
+import { ButtonModule } from 'primeng/button';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { Observable, of } from 'rxjs';
+import { TagComponent } from '../tag/tag.component';
+import { EditorTagsComponent } from '../../../editors/editor-tags/editor-tags.component';
 
 @Component({
   selector: 'app-tags',
-  imports: [AutoCompleteModule, AutoComplete, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
+  imports: [
+    MultiSelectModule,
+    ButtonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    CommonModule,
+    ControlWrapperComponent,
+    TagComponent,
+    EditorTagsComponent,
+  ],
   templateUrl: './tags.component.html',
   styleUrl: './tags.component.scss',
   providers: [
@@ -31,14 +44,14 @@ export class TagsComponent implements ControlValueAccessor {
   @Input() label?: string;
   @Input() entityType: unknown;
   @Input() hiddenFields = new Set<string>();
-  @Input() options: TagEntity[] = [];
+  @Input() options$: Observable<TagEntity[]> = of([]);
   @Input() placeholder?: string;
   @Input() showClear = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();
 
-  items: TagEntity[] = [];
+  editorTagsVisible = false;
 
   private onChange: (value: TagEntity[]) => void = () => {};
   private onTouched: () => void = () => {};
@@ -47,7 +60,9 @@ export class TagsComponent implements ControlValueAccessor {
     return this.formGroupDirective.form;
   }
 
-  writeValue(): void {}
+  writeValue(): void {
+    // Stub
+  }
 
   registerOnChange(fn: (value: TagEntity[]) => void): void {
     this.onChange = fn;
@@ -59,41 +74,5 @@ export class TagsComponent implements ControlValueAccessor {
 
   onModelChange(value: unknown): void {
     this.changed.emit(value);
-  }
-
-  onKeydown(event: Event, autocomplete: AutoComplete) {
-    if (autocomplete.overlayVisible) {
-      this.search({
-        query: (event.target as HTMLInputElement).value,
-        originalEvent: event,
-      });
-    } else {
-      // Skip
-    }
-  }
-
-  search(event: AutoCompleteCompleteEvent) {
-    const control = this.formGroup.controls[this.formControlName];
-    const values = control.value as TagEntity[];
-    if (event.query) {
-      this.items = this.options.filter(
-        (x) => !values.includes(x) && x.Text?.toLowerCase().includes(event.query.toLowerCase()),
-      );
-    } else {
-      this.items = this.options.filter((x) => !values.includes(x));
-    }
-  }
-
-  add() {
-    const control = this.formGroup.controls[this.formControlName];
-    const values = control.value.map((v: string | TagEntity) => {
-      if (typeof v === 'string') {
-        return new TagEntity({ Text: v, TagId: newGuid() });
-      } else {
-        return v;
-      }
-    });
-    control.setValue(values);
-    control.updateValueAndValidity();
   }
 }

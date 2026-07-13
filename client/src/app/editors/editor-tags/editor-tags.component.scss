@@ -1,19 +1,23 @@
-:host ::ng-deep {
-  .p-floatlabel {
-    margin-top: 32px;
-    display: flex;
-    flex-direction: column;
+::ng-deep .tag-editor-dialog {
+  .p-colorpicker {
+    align-self: flex-end;
   }
 
-  .dialog-footer {
+  .tag-display {
     display: flex;
-    justify-content: space-between;
-    margin-top: 24px;
-    gap: 16px;
-    > div {
-      display: flex;
-      justify-content: start;
-      gap: 16px;
+    justify-content: center;
+    height: 60px;
+    .p-tag {
+      transform: scale(1.75);
+    }
+  }
+
+  .color-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    app-textinput {
+      flex-grow: 1;
     }
   }
 }
