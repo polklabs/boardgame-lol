@@ -9,6 +9,14 @@ import { Ignore } from '../decorators/ignore.decorator';
 import { PlayerGameEntity } from './PlayerGame.entity';
 import { BoardGameEntity } from './BoardGame.entity';
 import { Mode } from '../utils/helper-utils';
+import { TagEntity } from './Tag.entity';
+import { TagPlayerEntity } from './TagPlayer.entity';
+
+export type PlayerReturn = {
+  Player: PlayerEntity;
+  Tags: TagEntity[];
+  TagPlayers: TagPlayerEntity[];
+};
 
 @TableName('Player')
 export class PlayerEntity extends BaseEntity {
@@ -23,6 +31,9 @@ export class PlayerEntity extends BaseEntity {
   Name: string | null = null;
 
   IsRealPerson: boolean = true;
+
+  @Ignore()
+  Tags: TagEntity[] = [];
 
   @Ignore()
   PlayerGames: PlayerGameEntity[] = [];

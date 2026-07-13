@@ -11,10 +11,13 @@ import {
   GameWrapper,
   PlayerEntity,
   PlayerGameEntity,
+  PlayerReturn,
   TagBoardGameEntity,
   TagEntity,
 } from 'libs/index';
 import { format } from 'date-fns';
+import { TagGameEntity } from 'libs/models/TagGame.entity';
+import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +35,8 @@ export class ApiService {
   readonly gameList$ = new BehaviorSubject<GameEntity[]>([]);
   readonly tagList$ = new BehaviorSubject<TagEntity[]>([]);
   readonly tagBoardGameList$ = new BehaviorSubject<TagBoardGameEntity[]>([]);
+  readonly tagGameList$ = new BehaviorSubject<TagGameEntity[]>([]);
+  readonly tagPlayerList$ = new BehaviorSubject<TagPlayerEntity[]>([]);
 
   // Maps
   private _boardGameDict: Record<string, BoardGameEntity> = {};
@@ -151,6 +156,24 @@ export class ApiService {
     this.tagBoardGameList$.next(tagBoardGameList);
   }
 
+  // Tag Games
+  get tagGameList() {
+    return this.tagGameList$.value;
+  }
+  private set tagGameList(tagGameList: TagGameEntity[]) {
+    tagGameList = tagGameList.map((x) => new TagGameEntity(x));
+    this.tagGameList$.next(tagGameList);
+  }
+
+  // Tag Players
+  get tagPlayerList() {
+    return this.tagPlayerList$.value;
+  }
+  private set tagPlayerList(tagPlayerList: TagPlayerEntity[]) {
+    tagPlayerList = tagPlayerList.map((x) => new TagPlayerEntity(x));
+    this.tagPlayerList$.next(tagPlayerList);
+  }
+
   // Public Clubs
   get publicClubs() {
     return this.publicClubs$.value;
@@ -170,6 +193,10 @@ export class ApiService {
     this.fGameList = [];
     this.playerGameList = [];
     this.fPlayerGameList = [];
+    this.tagList = [];
+    this.tagBoardGameList = [];
+    this.tagGameList = [];
+    this.tagPlayerList = [];
   }
 
   async fetchPublicClubs() {
@@ -202,6 +229,8 @@ export class ApiService {
       Players: PlayerEntity[];
       Tags: TagEntity[];
       TagBoardGames: TagBoardGameEntity[];
+      TagGames: TagGameEntity[];
+      TagPlayers: TagPlayerEntity[];
     }>(['api', 'club', clubId]);
 
     if (data?.Club) {
@@ -218,6 +247,8 @@ export class ApiService {
     this.playerGameList = data.PlayerGames;
     this.tagList = data.Tags;
     this.tagBoardGameList = data.TagBoardGames;
+    this.tagGameList = data.TagGames;
+    this.tagPlayerList = data.TagPlayers;
     this.updateReferences();
     this.dataUpdate$.next();
   }
@@ -261,6 +292,9 @@ export class ApiService {
       });
       this.boardGameList = result.BoardGames;
       this.playerList = result.Players;
+      this.tagBoardGameList = result.TagBoardGames;
+      this.tagGameList = result.TagGames;
+      this.tagPlayerList = result.TagPlayers;
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -270,7 +304,7 @@ export class ApiService {
   }
 
   async postPlayer(isNew: boolean, entity: PlayerEntity) {
-    let result: PlayerEntity | null = null;
+    let result: PlayerReturn | null = null;
     if (isNew) {
       result = await this.httpService.put(['api', 'player'], entity);
     } else {
@@ -278,7 +312,9 @@ export class ApiService {
     }
 
     if (result) {
-      this.playerList = this.upsertEntry(result, (x) => x.PlayerId, this.playerList$.value, this._playerDict);
+      this.playerList = this.upsertEntry(result.Player, (x) => x.PlayerId, this.playerList$.value, this._playerDict);
+      this.tagList = result.Tags;
+      this.tagPlayerList = result.TagPlayers;
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -412,19 +448,11 @@ export class ApiService {
     }
   }
 
-  filter(
-    enabled: boolean,
-    playerIds: string[],
-    boardGameIds: string[],
-    daysOfWeek: string[],
-    startDate: Date | null,
-    dnf: boolean,
-  ) {
+  filter(enabled: boolean, playerIds: string[], boardGameIds: string[], daysOfWeek: string[], startDate: Date | null) {
     this._filteredBoardGameIds = new Set(boardGameIds);
     this._filteredPlayerIds = new Set(playerIds);
     this._filteredDaysOfWeek = new Set(daysOfWeek);
     this._filteredStartDate = startDate;
-    this._includeDNF = dnf;
     this.filterEnabled$.next(enabled);
     this.updateReferences();
     this.dataUpdate$.next();
@@ -437,8 +465,7 @@ export class ApiService {
         return (
           this._filteredBoardGameIds.has(x.BoardGameId ?? '') &&
           this._filteredDaysOfWeek.has(format(x.DateObj, 'cccc')) &&
-          (this._filteredStartDate === null || new Date(x.DateObj).getTime() >= this._filteredStartDate.getTime()) &&
-          (this._includeDNF ? true : x.DidNotFinish === false)
+          (this._filteredStartDate === null || new Date(x.DateObj).getTime() >= this._filteredStartDate.getTime())
         );
       });
       this.fBoardGameList = this.boardGameList$.value.filter((x) =>
@@ -471,6 +498,10 @@ export class ApiService {
               return (b.Points ?? 0) - (a.Points ?? 0);
           }
         });
+      game.Tags = this.tagGameList
+        .filter((x) => x.GameId === game.GameId)
+        .map((t) => this.getTag(t.TagId))
+        .filter((x) => x !== null);
     });
 
     this.playerGameList.forEach((pg) => {
@@ -488,9 +519,21 @@ export class ApiService {
 
     this.playerList.forEach((p) => {
       p.PlayerGames = this.playerGameList.filter((x) => x.PlayerId === p.PlayerId);
+      p.Tags = this.tagPlayerList
+        .filter((x) => x.PlayerId === p.PlayerId)
+        .map((t) => this.getTag(t.TagId))
+        .filter((x) => x !== null);
     });
 
     this.tagBoardGameList.forEach((t) => {
+      t.Tag = this.getTag(t.TagId);
+    });
+
+    this.tagGameList.forEach((t) => {
+      t.Tag = this.getTag(t.TagId);
+    });
+
+    this.tagPlayerList.forEach((t) => {
       t.Tag = this.getTag(t.TagId);
     });
 

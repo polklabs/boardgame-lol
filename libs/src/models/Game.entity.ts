@@ -12,6 +12,10 @@ import { Nullable } from '../decorators/nullable.decorator';
 import { CHARACTER_LIMIT_LONG } from '../constants';
 import { max } from 'date-fns/max';
 import { min } from 'date-fns/min';
+import { TagEntity } from './Tag.entity';
+import { TagGameEntity } from './TagGame.entity';
+import { TagBoardGameEntity } from './TagBoardGame.entity';
+import { TagPlayerEntity } from './TagPlayer.entity';
 
 export type GameWrapper = {
   Game: GameEntity;
@@ -25,6 +29,10 @@ export type GameReturn = {
   BoardGames: BoardGameEntity[];
   PlayerGames: PlayerGameEntity[];
   Players: PlayerEntity[];
+  Tags: TagEntity[];
+  TagGames: TagGameEntity[];
+  TagBoardGames: TagBoardGameEntity[];
+  TagPlayers: TagPlayerEntity[];
 };
 
 @TableName('Game')
@@ -47,8 +55,6 @@ export class GameEntity extends BaseEntity {
   @MinMax(1, 99999, 'number')
   Players: number = 0;
 
-  DidNotFinish: boolean = false;
-
   @Nullable()
   @MinMax(0, CHARACTER_LIMIT_LONG, 'string')
   Notes: string | null = null;
@@ -56,6 +62,9 @@ export class GameEntity extends BaseEntity {
   get dateSortOrder() {
     return `${this.Date}T${String(this.SortIndex).padStart(6, '0')}`;
   }
+
+  @Ignore()
+  Tags: TagEntity[] = [];
 
   @Ignore()
   newest = false;

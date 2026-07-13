@@ -3,7 +3,7 @@ import { BaseManager } from './Base.manager';
 import { Injectable } from '@nestjs/common';
 import { newGuid } from 'libs/utils/guid-utils';
 import { ValidationError } from 'src/errors/validation.error';
-import { GameEntity, GameWrapper } from 'libs/index';
+import { GameEntity, GameReturn, GameWrapper } from 'libs/index';
 import { BoardGameManager } from './BoardGame.manager';
 import { PlayerGameManager } from './PlayerGame.manager';
 import { PlayerManager } from './Player.manager';
@@ -23,7 +23,8 @@ export class GameManager extends BaseManager<GameEntity> {
     super(GameEntity);
   }
 
-  put(userId: string, wrapper: GameWrapper) {
+  put(userId: string, wrapper: GameWrapper): GameReturn {
+    const tags = wrapper.Game.Tags;
     const entity = this.new(wrapper.Game);
     entity.GameId = newGuid();
 
@@ -34,6 +35,8 @@ export class GameManager extends BaseManager<GameEntity> {
     this.SanitizeInputs(entity);
 
     const transactions: unknown[] = [];
+
+    this.tagManager.upsert('game', userId, entity.ClubId!, tags, entity.GameId!, transactions);
 
     wrapper.BoardGames?.forEach((boardGame) => {
       const oldGuid = boardGame.BoardGameId;
@@ -70,16 +73,19 @@ export class GameManager extends BaseManager<GameEntity> {
     this.db.Transact(transactions);
 
     return {
-      Game: this.loadOne(entity.GameId),
+      Game: this.loadOne(entity.GameId)!,
       BoardGames: this.boardGameManager.loadMany('ClubId', entity.ClubId),
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId, 'ClubId', entity.ClubId),
       Players: this.playerManager.loadMany('ClubId', entity.ClubId),
       Tags: this.tagManager.loadMany('ClubId', entity.ClubId),
       TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
+      TagGames: this.tagManager.tagGame.loadMany('ClubId', entity.ClubId),
+      TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', entity.ClubId),
     };
   }
 
-  patch(userId: string, wrapper: GameWrapper) {
+  patch(userId: string, wrapper: GameWrapper): GameReturn {
+    const tags = wrapper.Game.Tags;
     const entity = this.new(wrapper.Game);
 
     this.AssertClubIds(wrapper);
@@ -89,6 +95,8 @@ export class GameManager extends BaseManager<GameEntity> {
     this.SanitizeInputs(entity);
 
     const transactions: unknown[] = [];
+
+    this.tagManager.upsert('game', userId, entity.ClubId!, tags, entity.GameId!, transactions);
 
     wrapper.BoardGames?.forEach((boardGame) => {
       const oldGuid = boardGame.BoardGameId;
@@ -137,12 +145,14 @@ export class GameManager extends BaseManager<GameEntity> {
     this.runUpdate(userId, entity, false, transactions);
 
     return {
-      Game: this.loadOne(entity.GameId),
+      Game: this.loadOne(entity.GameId)!,
       BoardGames: this.boardGameManager.loadMany('ClubId', entity.ClubId),
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId, 'ClubId', entity.ClubId),
       Players: this.playerManager.loadMany('ClubId', entity.ClubId),
       Tags: this.tagManager.loadMany('ClubId', entity.ClubId),
       TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
+      TagGames: this.tagManager.tagGame.loadMany('ClubId', entity.ClubId),
+      TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', entity.ClubId),
     };
   }
 

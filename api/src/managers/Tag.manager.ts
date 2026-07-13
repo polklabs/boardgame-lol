@@ -4,14 +4,20 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
 import { ITag, newGuid, TagBoardGameEntity, TagEntity } from 'libs/index';
 import { TagBoardGameManager } from './TagBoardGame.manager';
+import { TagGameManager } from './TagGame.manager';
+import { TagPlayerManager } from './TagPlayer.manager';
+import { TagGameEntity } from 'libs/models/TagGame.entity';
+import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
 
-type TagLink = 'boardGame';
+type TagLink = 'boardGame' | 'game' | 'player';
 
 @Injectable()
 export class TagManager extends BaseManager<TagEntity> {
   constructor(
     protected db: DbService,
     public tagBoardGame: TagBoardGameManager,
+    public tagGame: TagGameManager,
+    public tagPlayer: TagPlayerManager,
   ) {
     super(TagEntity);
   }
@@ -55,6 +61,10 @@ export class TagManager extends BaseManager<TagEntity> {
     switch (tagLink) {
       case 'boardGame':
         return this.tagBoardGame.loadMany('BoardGameId', [linkId]);
+      case 'game':
+        return this.tagGame.loadMany('GameId', [linkId]);
+      case 'player':
+        return this.tagPlayer.loadMany('PlayerId', [linkId]);
       default:
         throw new NotImplementedException();
     }
@@ -63,6 +73,10 @@ export class TagManager extends BaseManager<TagEntity> {
     switch (tagLink) {
       case 'boardGame':
         return this.tagBoardGame.put(userId, new TagBoardGameEntity({ TagId, ClubId, BoardGameId: linkId }));
+      case 'game':
+        return this.tagGame.put(userId, new TagGameEntity({ TagId, ClubId, GameId: linkId }));
+      case 'player':
+        return this.tagPlayer.put(userId, new TagPlayerEntity({ TagId, ClubId, PlayerId: linkId }));
       default:
         throw new NotImplementedException();
     }
@@ -71,6 +85,10 @@ export class TagManager extends BaseManager<TagEntity> {
     switch (tagLink) {
       case 'boardGame':
         return this.tagBoardGame.delete(tagId, linkId, clubId);
+      case 'game':
+        return this.tagGame.delete(tagId, linkId, clubId);
+      case 'player':
+        return this.tagPlayer.delete(tagId, linkId, clubId);
       default:
         throw new NotImplementedException();
     }

@@ -2,7 +2,7 @@ import { BaseManager } from './Base.manager';
 import { DbService } from 'src/services/db.service';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
-import { BoardGameEntity, newGuid } from 'libs/index';
+import { BoardGameEntity, BoardGameReturn, newGuid } from 'libs/index';
 import { ClubUserManager } from './ClubUser.manager';
 import { TagManager } from './Tag.manager';
 
@@ -16,7 +16,7 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
     super(BoardGameEntity);
   }
 
-  put(userId: string, entity: BoardGameEntity, resetID = true, transact = false) {
+  put(userId: string, entity: BoardGameEntity, resetID = true, transact = false): BoardGameReturn {
     const tags = entity.Tags;
     entity = this.new(entity);
     if (resetID) {
@@ -41,14 +41,14 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
       this.clubUserManager.hasAccess(userId, entity.ClubId);
       this.runInsert(userId, entity, false, transactions);
       return {
-        BoardGame: this.loadOne(entity.BoardGameId),
+        BoardGame: this.loadOne(entity.BoardGameId)!,
         Tags: this.tagManager.loadMany('ClubId', entity.ClubId),
         TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
       };
     }
   }
 
-  patch(userId: string, entity: BoardGameEntity) {
+  patch(userId: string, entity: BoardGameEntity): BoardGameReturn {
     const tags = entity.Tags;
     entity = this.new(entity);
 
@@ -67,7 +67,7 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
     this.runUpdate(userId, entity, false, transactions);
 
     return {
-      BoardGame: this.loadOne(entity.BoardGameId),
+      BoardGame: this.loadOne(entity.BoardGameId)!,
       Tags: this.tagManager.loadMany('ClubId', entity.ClubId),
       TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
     };

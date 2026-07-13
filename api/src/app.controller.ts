@@ -26,7 +26,6 @@ import { PlayerGameManager } from './managers/PlayerGame.manager';
 import { PlayerManager } from './managers/Player.manager';
 import { BoardGameEntity, GameWrapper, ClubEntity, PlayerEntity } from 'libs/index';
 import { TagManager } from './managers/Tag.manager';
-import { TagBoardGameManager } from './managers/TagBoardGame.manager';
 
 const publicThrottle = { default: { limit: 200, ttl: 600000 } };
 const authThrottle = { default: { limit: 15, ttl: 30000 } };
@@ -41,7 +40,6 @@ export class AppController {
     private playerGameManager: PlayerGameManager,
     private playerManager: PlayerManager,
     private tagManager: TagManager,
-    private tagBoardGameManager: TagBoardGameManager,
   ) {}
 
   getUserId(request: any) {
@@ -84,7 +82,9 @@ export class AppController {
       BoardGames: this.boardGameManager.loadMany('ClubId', params.clubId),
       Players: this.playerManager.loadMany('ClubId', params.clubId),
       Tags: this.tagManager.loadMany('ClubId', params.clubId),
-      TagBoardGames: this.tagBoardGameManager.loadMany('ClubId', params.clubId),
+      TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', params.clubId),
+      TagGames: this.tagManager.tagGame.loadMany('ClubId', params.clubId),
+      TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', params.clubId),
     };
   }
 
