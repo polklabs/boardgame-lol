@@ -73,9 +73,11 @@
                 {{ player.FirstSeen | date: 'MM/dd/yy' }}
               }
               @case ('Tags') {
+                <div class="tag-wrapper">
                 @for (tag of player.Tags; track tag.TagId) {
                   <p-tag severity="contrast" [value]="tag.Text" />
                 }
+                </div>
               }
             }
           </td>

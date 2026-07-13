@@ -28,7 +28,6 @@ import { CalendarComponent } from '../../shared/components/calendar/calendar.com
 import { Subscription } from 'rxjs';
 import { format } from 'date-fns';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
-import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
@@ -46,7 +45,6 @@ type EntityType = GameEntity;
     TextareaComponent,
     TextInputComponent,
     CalendarComponent,
-    CheckboxComponent,
     CheckboxModule,
     ButtonModule,
     ButtonGroupModule,

@@ -3,4 +3,9 @@
     width: unset !important;
     min-width: 200px !important;
   }
+
+  .tag-wrapper {
+    display: flex;
+    gap: 4px;
+  }
 }

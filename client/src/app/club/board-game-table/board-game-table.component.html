@@ -76,9 +76,11 @@
                  {{ boardGame.AverageWinningScore | hide: '0' | number: '1.0-1' | score: boardGame }}
               }
               @case ('Tags') {
+                <div class="tag-wrapper">
                 @for (tag of boardGame.Tags; track tag.TagId) {
                     <p-tag severity="contrast" [value]="tag.Text" />
                 }
+                </div>
               }
             }
 
