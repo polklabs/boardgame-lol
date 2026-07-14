@@ -6,28 +6,17 @@ import { ApiService } from '../shared/services/api.service';
 import { CommonModule } from '@angular/common';
 import { BoardGameEntity, ClubEntity, GameEntity, PlayerEntity } from 'libs/index';
 import { EditorBoardGameComponent } from '../editors/editor-board-game/editor-board-game.component';
-import { combineLatest, Observable, of, Subscription } from 'rxjs';
+import { combineLatest, Observable, Subscription } from 'rxjs';
 import { EditorPlayerComponent } from '../editors/editor-player/editor-player.component';
-import { TableModule } from 'primeng/table';
 import { UserService } from '../shared/services/user.service';
-import { ButtonModule } from 'primeng/button';
-import { Popover, PopoverModule } from 'primeng/popover';
-import { InputTextModule } from 'primeng/inputtext';
 import { GamesTableComponent } from './games-table/games-table.component';
 import { PlayerTableComponent } from './player-table/player-table.component';
 import { BoardGameTableComponent } from './board-game-table/board-game-table.component';
-import { CardModule } from 'primeng/card';
 import { StatsComponent } from './stats/stats.component';
 import { EditorClubComponent } from '../editors/editor-club/editor-club.component';
-import { FormsModule } from '@angular/forms';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { BadgeModule } from 'primeng/badge';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { CheckboxModule } from 'primeng/checkbox';
 import { TabsModule } from 'primeng/tabs';
-import { DatePickerModule } from 'primeng/datepicker';
-import { SortPipe } from '../shared/pipes/sort.pipe';
 import { EditorTagsComponent } from '../editors/editor-tags/editor-tags.component';
+import { FilterComponent } from './filter/filter.component';
 
 @Component({
   selector: 'app-club',
@@ -39,23 +28,12 @@ import { EditorTagsComponent } from '../editors/editor-tags/editor-tags.componen
     EditorClubComponent,
     EditorTagsComponent,
     CommonModule,
-    TableModule,
-    ButtonModule,
     TabsModule,
-    InputTextModule,
-    CardModule,
     GamesTableComponent,
     PlayerTableComponent,
     BoardGameTableComponent,
     StatsComponent,
-    PopoverModule,
-    FormsModule,
-    MultiSelectModule,
-    BadgeModule,
-    FloatLabelModule,
-    CheckboxModule,
-    DatePickerModule,
-    SortPipe,
+    FilterComponent,
   ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
@@ -91,17 +69,6 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   subscriptions = new Subscription();
 
-  // Filter
-  filterEnabled$: Observable<boolean> = of(false);
-  ogBoardGames$?: Observable<BoardGameEntity[]>;
-  ogPlayers$?: Observable<PlayerEntity[]>;
-  dow = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  gameIds: string[] = [];
-  playerIds: string[] = [];
-  daysOfWeek = [...this.dow];
-  months: string[] = [];
-  startDate: Date | null = null;
-
   ngOnInit(): void {
     this.subscriptions.add(
       this.route.params.subscribe((x) => {
@@ -112,25 +79,17 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.activeTab = this.route.snapshot.fragment ?? 'overview';
 
     this.subscriptions.add(
-      combineLatest([this.apiService.club$, this.userService.accessIds$]).subscribe(([club, access]) => {
-        this.title = club?.Name ?? '';
-        this.canEdit = access.some((x) => x.id === club?.ClubId);
-      }),
+      combineLatest([this.apiService.club$, this.userService.accessIds$, this.apiService.filterEnabled$]).subscribe(
+        ([club, access, filter]) => {
+          this.title = club?.Name ?? '';
+          this.canEdit = access.some((x) => x.id === club?.ClubId) && !filter;
+        },
+      ),
     );
 
     this.games$ = this.apiService.filteredGameList$;
     this.boardGames$ = this.apiService.filteredBoardGameList$;
     this.players$ = this.apiService.filteredPlayerList$;
-    this.ogBoardGames$ = this.apiService.boardGameList$;
-    this.ogPlayers$ = this.apiService.playerList$;
-    this.filterEnabled$ = this.apiService.filterEnabled$;
-
-    this.subscriptions.add(
-      this.apiService.dataUpdate$.subscribe(() => {
-        this.gameIds = this.apiService.boardGameList.map((x) => x.BoardGameId);
-        this.playerIds = this.apiService.playerList.map((x) => x.PlayerId);
-      }),
-    );
   }
 
   ngOnDestroy(): void {
@@ -172,7 +131,7 @@ export class ClubComponent implements OnInit, OnDestroy {
   }
 
   tagsEdit() {
-    console.log('Edit Tags')
+    console.log('Edit Tags');
     this.editorTagsVisible = true;
   }
 
@@ -182,16 +141,6 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   moveDown(game: GameEntity) {
     this.apiService.updateGameIndex(game.GameId, -1);
-  }
-
-  enableFilter(filter: Popover) {
-    filter.hide();
-    this.apiService.filter(true, this.playerIds, this.gameIds, this.daysOfWeek, this.startDate);
-  }
-
-  disableFilter(filter: Popover) {
-    filter.hide();
-    this.apiService.filter(false, [], [], [], null);
   }
 
   onTabChange(event?: string | number) {

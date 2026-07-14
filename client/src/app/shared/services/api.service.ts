@@ -51,7 +51,7 @@ export class ApiService {
   private _filteredBoardGameIds = new Set<string>();
   private _filteredPlayerIds = new Set<string>();
   private _filteredDaysOfWeek = new Set<string>();
-  private _filteredStartDate: Date | null = null;
+  private _filteredExcludeTagIds = new Set<string>();
 
   // Filtered Observables
   readonly filteredBoardGameList$ = new BehaviorSubject<BoardGameEntity[]>([]);
@@ -327,7 +327,6 @@ export class ApiService {
 
     if (result) {
       this.playerList = this.upsertEntry(result.Player, (x) => x.PlayerId, this.playerList$.value, this._playerDict);
-      this.tagList = result.Tags;
       this.tagPlayerList = result.TagPlayers;
       this.updateReferences();
       this.dataUpdate$.next();
@@ -352,7 +351,6 @@ export class ApiService {
         this.boardGameList$.value,
         this._boardGameDict,
       );
-      this.tagList = result.Tags;
       this.tagBoardGameList = result.TagBoardGames;
       this.updateReferences();
       this.dataUpdate$.next();
@@ -500,14 +498,24 @@ export class ApiService {
     }
   }
 
-  filter(enabled: boolean, playerIds: string[], boardGameIds: string[], daysOfWeek: string[], startDate: Date | null) {
+  filter(
+    enabled: boolean,
+    playerIds: string[],
+    boardGameIds: string[],
+    daysOfWeek: string[],
+    excludedTagIds: string[],
+  ) {
     this._filteredBoardGameIds = new Set(boardGameIds);
     this._filteredPlayerIds = new Set(playerIds);
     this._filteredDaysOfWeek = new Set(daysOfWeek);
-    this._filteredStartDate = startDate;
+    this._filteredExcludeTagIds = new Set(excludedTagIds);
     this.filterEnabled$.next(enabled);
     this.updateReferences();
     this.dataUpdate$.next();
+  }
+
+  filterTags(tags: TagEntity[]): boolean {
+    return !tags.some((t) => this._filteredExcludeTagIds.has(t.TagId));
   }
 
   private updateReferences() {
@@ -517,12 +525,18 @@ export class ApiService {
         return (
           this._filteredBoardGameIds.has(x.BoardGameId) &&
           this._filteredDaysOfWeek.has(format(x.DateObj, 'cccc')) &&
-          (this._filteredStartDate === null || new Date(x.DateObj).getTime() >= this._filteredStartDate.getTime())
+          this.filterTags(x.Tags)
         );
       });
-      this.fBoardGameList = this.boardGameList$.value.filter((x) => this._filteredBoardGameIds.has(x.BoardGameId));
-      this.fPlayerGameList = this.playerGameList$.value.filter((x) => this._filteredPlayerIds.has(x.PlayerId));
-      this.fPlayerList = this.playerList$.value.filter((x) => this._filteredPlayerIds.has(x.PlayerId));
+      this.fBoardGameList = this.boardGameList$.value.filter(
+        (x) => this._filteredBoardGameIds.has(x.BoardGameId) && this.filterTags(x.Tags),
+      );
+      this.fPlayerGameList = this.playerGameList$.value.filter(
+        (x) => this._filteredPlayerIds.has(x.PlayerId) && this.filterTags(x.Tags),
+      );
+      this.fPlayerList = this.playerList$.value.filter(
+        (x) => this._filteredPlayerIds.has(x.PlayerId) && this.filterTags(x.Tags),
+      );
     } else {
       this.fGameList = this.gameList$.value;
       this.fBoardGameList = this.boardGameList$.value;

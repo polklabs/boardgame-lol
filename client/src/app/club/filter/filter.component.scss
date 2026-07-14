@@ -1,0 +1,39 @@
+:host ::ng-deep {
+  .filter-box {
+    input {
+      padding: 4px;
+      padding-left: 2.5rem;
+    }
+  }
+
+  i {
+    font-size: inherit;
+  }
+
+  .filter-button {
+    position: absolute;
+    top: 100px;
+    left: 4px;
+    padding: 0.5rem;
+    cursor: pointer;
+
+    .p-button {
+      width: 2rem;
+      padding: 0.25rem 0;
+    }
+  }
+}
+
+::ng-deep {
+  .filter-wrapper {
+    width: min(calc(100vw - 64px), 450px);
+    h3 {
+      margin: 0;
+      text-align: center;
+    }
+
+    p-floatlabel {
+      max-width: 100%;
+    }
+  }
+}

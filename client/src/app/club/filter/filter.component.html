@@ -1,0 +1,75 @@
+<div (click)="filter.toggle($event)" class="filter-button">
+  <i
+    class="pi pi-filter p-text-secondary"
+    pBadge
+    [badgeDisabled]="(filterEnabled$ | async) === false"
+    severity="danger"></i>
+</div>
+
+<p-popover #filter>
+  <div class="flex flex-column gap-8 filter-wrapper">
+    <h3>Filter</h3>
+
+    @let games = (ogBoardGames$ | async) ?? [] | sort: 'Name';
+    @let players = (ogPlayers$ | async) ?? [] | sort: 'Name';
+    @let tags = (tags$ | async) ?? [] | sort: 'Text';
+
+    <p-floatLabel variant="on">
+      <p-multiSelect
+        [options]="games"
+        [(ngModel)]="gameIds"
+        selectedItemsLabel="{0}/{{games.length}} games selected"
+        appendTo="body"
+        optionLabel="Name"
+        optionValue="BoardGameId"
+        placeholder="Select Board Games" />
+      <label for="username">Board Games</label>
+    </p-floatLabel>
+
+    <p-floatLabel variant="on">
+      <p-multiSelect
+        [options]="players"
+        [(ngModel)]="playerIds"
+        selectedItemsLabel="{0}/{{players.length}} players selected"
+        appendTo="body"
+        optionLabel="Name"
+        optionValue="PlayerId"
+        placeholder="Select Players" />
+      <label for="username">Players</label>
+    </p-floatLabel>
+
+    <p-floatLabel variant="on">
+      <p-multiSelect
+        [options]="dow"
+        [(ngModel)]="daysOfWeek"
+        selectedItemsLabel="{0}/{{dow.length}} days selected"
+        appendTo="body"
+        placeholder="Select Days" />
+      <label for="username">Days of Week</label>
+    </p-floatLabel>
+
+    <p-floatLabel variant="on">
+      <p-multiSelect
+        [options]="tags"
+        [(ngModel)]="excludeTagIds"
+        selectedItemsLabel="{0}/{{tags.length}} tag excluded"
+        appendTo="body"
+        optionLabel="Text"
+        optionValue="TagId"
+        placeholder="Exclude Tags" />
+      <label for="username">Exclude Tags</label>
+    </p-floatLabel>
+
+    @if ((filterEnabled$ | async) === true) {
+      <div class="flex gap-8 justify-content-space-between">
+        <p-button (onClick)="disableFilter(filter)" [outlined]="true" severity="secondary">Reset</p-button>
+        <p-button (onClick)="enableFilter(filter)" [outlined]="true">Update</p-button>
+      </div>
+    } @else {
+      <div class="flex gap-8 justify-content-space-between">
+        <div></div>
+        <p-button (onClick)="enableFilter(filter)" [outlined]="true">Enable</p-button>
+      </div>
+    }
+  </div>
+</p-popover>
