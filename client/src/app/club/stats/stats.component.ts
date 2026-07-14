@@ -13,7 +13,7 @@ import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ChartData, ChartOptions } from 'chart.js';
 import { clone } from 'lodash-es';
 
-type DayItem = { color: string; tooltip: string; icon?: string };
+type DayItem = { color: string; tooltip?: string; icon?: string };
 
 @Component({
   selector: 'app-stats',
@@ -105,7 +105,10 @@ export class StatsComponent implements OnInit {
         const dateText = format(date, 'MMMM do, yyyy');
 
         const count = this.apiService.gameList.reduce((count, game) => count + (game.Date === dateStr ? 1 : 0), 0);
-        week.push({ color: this.getHeatmapColor(count), tooltip: `${count} games on ${dateText}` });
+        week.push({
+          color: this.getHeatmapColor(count),
+          tooltip: count > 0 ? `${count} game${count > 1 ? 's' : ''} on ${dateText}` : undefined,
+        });
         date = addDays(date, 1);
         if (date > today) {
           break;

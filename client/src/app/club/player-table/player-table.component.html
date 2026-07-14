@@ -25,7 +25,7 @@
           </th>
         }
         @if (canEdit) {
-          <th id="edit" class="edit-header" id="edit">Edit</th>
+          <th pFrozenColumn alignFrozen="right" id="edit" class="edit-header" id="edit">Edit</th>
         }
       </tr>
     </ng-template>
@@ -83,7 +83,7 @@
           </td>
         }
         @if (canEdit) {
-          <td>
+          <td pFrozenColumn alignFrozen="right">
             <p-button (onClick)="playerEdit.emit(player)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
           </td>
         }
