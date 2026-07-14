@@ -25,7 +25,6 @@ export const ScoreTypeMapping: Record<ScoreType, string> = {
 
 export type BoardGameReturn = {
   BoardGame: BoardGameEntity;
-  Tags: TagEntity[];
   TagBoardGames: TagBoardGameEntity[];
 };
 

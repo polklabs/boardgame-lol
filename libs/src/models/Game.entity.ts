@@ -30,7 +30,6 @@ export type GameReturn = {
   BoardGames: BoardGameEntity[];
   PlayerGames: PlayerGameEntity[];
   Players: PlayerEntity[];
-  Tags: TagEntity[];
   TagGames: TagGameEntity[];
   TagBoardGames: TagBoardGameEntity[];
   TagPlayers: TagPlayerEntity[];

@@ -42,7 +42,6 @@ export class PlayerManager extends BaseManager<PlayerEntity> {
       this.runInsert(userId, entity, false, transactions);
       return {
         Player: this.loadOne(entity.PlayerId)!,
-        Tags: this.tagManager.loadMany('ClubId', entity.ClubId),
         TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', entity.ClubId),
       };
     }
@@ -68,7 +67,6 @@ export class PlayerManager extends BaseManager<PlayerEntity> {
 
     return {
       Player: this.loadOne(entity.PlayerId)!,
-      Tags: this.tagManager.loadMany('ClubId', entity.ClubId),
       TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', entity.ClubId),
     };
   }

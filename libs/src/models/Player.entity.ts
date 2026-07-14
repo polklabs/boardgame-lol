@@ -14,7 +14,6 @@ import { TagPlayerEntity } from './TagPlayer.entity';
 
 export type PlayerReturn = {
   Player: PlayerEntity;
-  Tags: TagEntity[];
   TagPlayers: TagPlayerEntity[];
 };
 

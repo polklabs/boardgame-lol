@@ -42,7 +42,6 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
       this.runInsert(userId, entity, false, transactions);
       return {
         BoardGame: this.loadOne(entity.BoardGameId)!,
-        Tags: this.tagManager.loadMany('ClubId', entity.ClubId),
         TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
       };
     }
@@ -68,7 +67,6 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
 
     return {
       BoardGame: this.loadOne(entity.BoardGameId)!,
-      Tags: this.tagManager.loadMany('ClubId', entity.ClubId),
       TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
     };
   }
