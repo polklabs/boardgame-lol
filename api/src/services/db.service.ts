@@ -1,5 +1,5 @@
 import { Database } from 'better-sqlite3';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 type NullString = string | null;
 export type DbVars = NullString | NullString[] | { [key: string]: NullString };
@@ -111,13 +111,12 @@ export class DbService {
       return trans;
     } else {
       trans();
-      return;
     }
   }
 
   Update<T extends object>(
     tableName: string,
-    primaryKey: keyof T,
+    primaryKeys: (keyof T)[],
     secondaryKey: keyof T | undefined,
     entity: T,
     transaction: boolean,
@@ -131,8 +130,8 @@ export class DbService {
       // continue
     }
 
-    const PkValue = entity[primaryKey] as any;
-    const keys = Object.keys(entity).filter((key) => key !== primaryKey);
+    const PkValues = primaryKeys.map((p) => entity[p] as any);
+    const keys = Object.keys(entity).filter((key) => !primaryKeys.some((p) => p === key));
     const keyValuePlaceholder = keys.map((key) => `${key} = ?`);
     const values = keys.map((key) => {
       const value = (entity as any)[key];
@@ -145,9 +144,10 @@ export class DbService {
       }
     });
 
-    let queryString = `UPDATE ${tableName} SET ${keyValuePlaceholder.join(', ')} WHERE ${String(primaryKey)} = ?`;
+    const pkQuery = primaryKeys.map((p) => `${String(p)} = ?`).join(' AND ');
+    let queryString = `UPDATE ${tableName} SET ${keyValuePlaceholder.join(', ')} WHERE ${pkQuery}`;
 
-    const parameterValues = [...values, PkValue];
+    const parameterValues = [...values, ...PkValues];
     if (secondaryKey) {
       const secondaryKeyValue = entity[secondaryKey] as any;
       parameterValues.push(secondaryKeyValue);
@@ -172,14 +172,13 @@ export class DbService {
       return trans;
     } else {
       trans();
-      return;
     }
   }
 
   Delete(
     tableName: string,
-    primaryKey: string,
-    primaryKeyValue: string,
+    primaryKeys: string[],
+    primaryKeyValues: string[],
     secondaryKey: string | undefined,
     secondaryKeyValue: string | undefined,
     transaction: boolean,
@@ -193,9 +192,16 @@ export class DbService {
       // continue
     }
 
-    let queryString = `DELETE FROM ${tableName} WHERE ${primaryKey} = ?`;
+    if (primaryKeys.length !== primaryKeyValues.length) {
+      throw new BadRequestException(`Key length error: ${primaryKeys.length} !== ${[primaryKeyValues.length]}`);
+    } else {
+      // Continue
+    }
 
-    const parameterValues: any[] = [primaryKeyValue];
+    const pkString = primaryKeys.map((pk) => `${pk} = ?`).join(' AND ');
+    let queryString = `DELETE FROM ${tableName} WHERE ${pkString}`;
+
+    const parameterValues: any[] = [...primaryKeyValues];
     if (secondaryKey) {
       parameterValues.push(secondaryKeyValue);
       queryString += ` AND ${String(secondaryKey)} = ?`;
@@ -219,7 +225,6 @@ export class DbService {
       return trans;
     } else {
       trans();
-      return;
     }
   }
 
@@ -240,6 +245,5 @@ export class DbService {
     });
 
     trans();
-    return;
   }
 }

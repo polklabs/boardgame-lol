@@ -20,23 +20,16 @@
     "target": "ES2023",
     "module": "preserve",
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2023",
-      "dom"
-    ],
-    "types": [
-      "reflect-metadata"
-    ],
+    "lib": ["ES2023", "dom"],
+    "types": ["reflect-metadata"],
     "paths": {
-      "libs/*": [
-        "../libs/src/*"
-      ]
-    }
+      "libs/*": ["../libs/src/*"],
+    },
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
-  }
+    "strictTemplates": true,
+  },
 }

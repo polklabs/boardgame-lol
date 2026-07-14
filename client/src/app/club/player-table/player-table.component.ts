@@ -9,10 +9,22 @@ import { ITrophy } from '../../shared/trophies/trophy.model';
 import { HidePipe } from '../../shared/pipes/hide.pipe';
 import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
+import { TagModule } from 'primeng/tag';
+import { TagComponent } from '../../shared/components/tag/tag.component';
+
+const COLUMNS: { field: keyof PlayerEntity; name: string; sort: boolean }[] = [
+  { field: 'Name', name: 'Name', sort: true },
+  { field: 'WinCount', name: 'Wins', sort: true },
+  { field: 'LossCount', name: 'Losses', sort: true },
+  { field: 'BestGames', name: 'Best Game(s)', sort: false },
+  { field: 'BestGameWins', name: 'Best Game(s) Wins', sort: true },
+  { field: 'FirstSeen', name: 'First Seen', sort: true },
+  { field: 'Tags', name: 'Tags', sort: false },
+];
 
 @Component({
   selector: 'app-player-table',
-  imports: [TableModule, ButtonModule, CommonModule, HidePipe, ArrayPipe, ScorePipe],
+  imports: [TableModule, ButtonModule, TagModule, CommonModule, HidePipe, ArrayPipe, ScorePipe, TagComponent],
   templateUrl: './player-table.component.html',
   styleUrl: './player-table.component.scss',
 })
@@ -25,14 +37,6 @@ export class PlayerTableComponent {
   mostWins: ITrophy;
 
   expandedRows = {};
-  playerColumns = [
-    { field: 'Name', name: 'Name', sort: true },
-    { field: 'WinCount', name: 'Wins', sort: true },
-    { field: 'LossCount', name: 'Losses', sort: true },
-    { field: '', name: 'Best Game(s)', sort: false },
-    { field: 'BestGameWins', name: 'Best Game(s) Wins', sort: true },
-    { field: 'FirstSeen', name: 'First Seen', sort: true },
-  ];
 
   constructor() {
     const trophyService = inject(TrophyService);
@@ -42,5 +46,14 @@ export class PlayerTableComponent {
 
   showScore(game: GameEntity): boolean {
     return game.BoardGame?.ScoreType === 'points';
+  }
+
+  filterColumns(players: PlayerEntity[]) {
+    return COLUMNS.filter((col) =>
+      players.some((row) => {
+        const data = row[col.field];
+        return Array.isArray(data) ? data.length > 0 : !!data;
+      }),
+    );
   }
 }

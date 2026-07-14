@@ -70,7 +70,7 @@ export class EditorClubComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('club' in changes && this.club) {
-      if (this.club.ClubId === null) {
+      if (this.club.ClubId === '') {
         this.title = 'New Club';
         this.isNew = true;
       } else {
@@ -96,7 +96,7 @@ export class EditorClubComponent implements OnChanges {
     if (this.formGroup.invalid || !this.club) {
       return;
     } else {
-      const result = await this.apiService.postClub(this.club.ClubId === null, this.formGroup.getRawValue());
+      const result = await this.apiService.postClub(this.club.ClubId === '', this.formGroup.getRawValue());
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Club' });
         this.closeEditor.emit();

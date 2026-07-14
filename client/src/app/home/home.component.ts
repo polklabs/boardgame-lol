@@ -30,8 +30,12 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.clubList$ = this.userService.accessIds$;
     this.publicClubList$ = this.apiService.publicClubs$;
+    void this.loadData();
+  }
+
+  async loadData() {
     this.apiService.unloadClub();
-    this.apiService.fetchPublicClubs();
+    await this.apiService.fetchPublicClubs();
   }
 
   async navigateToClub(clubId: string | null) {

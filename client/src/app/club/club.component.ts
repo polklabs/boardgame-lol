@@ -27,6 +27,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { TabsModule } from 'primeng/tabs';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SortPipe } from '../shared/pipes/sort.pipe';
+import { EditorTagsComponent } from '../editors/editor-tags/editor-tags.component';
 
 @Component({
   selector: 'app-club',
@@ -36,6 +37,7 @@ import { SortPipe } from '../shared/pipes/sort.pipe';
     EditorBoardGameComponent,
     EditorPlayerComponent,
     EditorClubComponent,
+    EditorTagsComponent,
     CommonModule,
     TableModule,
     ButtonModule,
@@ -79,6 +81,8 @@ export class ClubComponent implements OnInit, OnDestroy {
   editorClubVisible = false;
   editClub?: ClubEntity;
 
+  editorTagsVisible = false;
+
   games$?: Observable<GameEntity[]>;
   boardGames$?: Observable<BoardGameEntity[]>;
   players$?: Observable<PlayerEntity[]>;
@@ -94,7 +98,6 @@ export class ClubComponent implements OnInit, OnDestroy {
   dow = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   gameIds: string[] = [];
   playerIds: string[] = [];
-  dnf = true;
   daysOfWeek = [...this.dow];
   months: string[] = [];
   startDate: Date | null = null;
@@ -124,9 +127,8 @@ export class ClubComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.apiService.dataUpdate$.subscribe(() => {
-        this.gameIds = this.apiService.boardGameList.map((x) => x.BoardGameId ?? '');
-        this.playerIds = this.apiService.playerList.map((x) => x.PlayerId ?? '');
-        this.dnf = true;
+        this.gameIds = this.apiService.boardGameList.map((x) => x.BoardGameId);
+        this.playerIds = this.apiService.playerList.map((x) => x.PlayerId);
       }),
     );
   }
@@ -169,6 +171,11 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.editorClubVisible = true;
   }
 
+  tagsEdit() {
+    console.log('Edit Tags')
+    this.editorTagsVisible = true;
+  }
+
   moveUp(game: GameEntity) {
     this.apiService.updateGameIndex(game.GameId, 1);
   }
@@ -179,12 +186,12 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   enableFilter(filter: Popover) {
     filter.hide();
-    this.apiService.filter(true, this.playerIds, this.gameIds, this.daysOfWeek, this.startDate, this.dnf);
+    this.apiService.filter(true, this.playerIds, this.gameIds, this.daysOfWeek, this.startDate);
   }
 
   disableFilter(filter: Popover) {
     filter.hide();
-    this.apiService.filter(false, [], [], [], null, true);
+    this.apiService.filter(false, [], [], [], null);
   }
 
   onTabChange(event?: string | number) {

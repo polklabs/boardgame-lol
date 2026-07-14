@@ -1,22 +1,23 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { getIgnore } from 'libs/decorators/ignore.decorator';
-import { getNullable, getPrimaryKey, getSecondaryKey } from 'libs/index';
+import { getNullable, getPrimaryKeys, getSecondaryKey } from 'libs/index';
 
 export function nullableValidator<T>(entityType: new (partial: Partial<T>) => T, propertyKey: keyof T): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
-    const pk = getPrimaryKey(entityType);
+    const pk = getPrimaryKeys(entityType) as (string | number | symbol)[];
     const sk = getSecondaryKey(entityType);
 
     // PK and SK are allowed to be null,
     // DB will throw error if it hasn't been filled in before saving
-    if (propertyKey === pk || propertyKey === sk) {
+    if (pk.includes(propertyKey) || propertyKey === sk) {
       return null;
     } else {
       // continue
     }
 
-    const isNullable = getNullable(entityType).includes(String(propertyKey)) || getIgnore(entityType).includes(String(propertyKey));
+    const isNullable =
+      getNullable(entityType).includes(String(propertyKey)) || getIgnore(entityType).includes(String(propertyKey));
 
     if (isNullable) {
       return null;

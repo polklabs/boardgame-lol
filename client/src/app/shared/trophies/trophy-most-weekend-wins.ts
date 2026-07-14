@@ -14,10 +14,10 @@ export class TrophyMostWeekendWins extends ITrophy {
       .filter((x) => weekend.has(format(x.DateObj, 'eee')))
       .forEach((g) => {
         g.Winners.forEach((w) => {
-          if (winCount[w.PlayerId ?? ''] === undefined) {
-            winCount[w.PlayerId ?? ''] = 0;
+          if (winCount[w.PlayerId] === undefined) {
+            winCount[w.PlayerId] = 0;
           } else {
-            winCount[w.PlayerId ?? '']++;
+            winCount[w.PlayerId]++;
           }
         });
       });

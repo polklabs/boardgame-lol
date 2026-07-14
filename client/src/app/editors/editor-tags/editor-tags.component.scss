@@ -1,0 +1,23 @@
+::ng-deep .tag-editor-dialog {
+  .p-colorpicker {
+    align-self: flex-end;
+  }
+
+  .tag-display {
+    display: flex;
+    justify-content: center;
+    height: 60px;
+    .p-tag {
+      transform: scale(1.75);
+    }
+  }
+
+  .color-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    app-textinput {
+      flex-grow: 1;
+    }
+  }
+}

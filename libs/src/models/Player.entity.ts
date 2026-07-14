@@ -9,20 +9,31 @@ import { Ignore } from '../decorators/ignore.decorator';
 import { PlayerGameEntity } from './PlayerGame.entity';
 import { BoardGameEntity } from './BoardGame.entity';
 import { Mode } from '../utils/helper-utils';
+import { TagEntity } from './Tag.entity';
+import { TagPlayerEntity } from './TagPlayer.entity';
+
+export type PlayerReturn = {
+  Player: PlayerEntity;
+  Tags: TagEntity[];
+  TagPlayers: TagPlayerEntity[];
+};
 
 @TableName('Player')
 export class PlayerEntity extends BaseEntity {
-  @PrimaryKey
-  PlayerId: string | null = null;
+  @PrimaryKey()
+  PlayerId: string = '';
 
   @SecondaryKey
-  ClubId: string | null = null;
+  ClubId: string = '';
 
   @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
   @Sanitize()
-  Name: string | null = null;
+  Name: string = '';
 
   IsRealPerson: boolean = true;
+
+  @Ignore()
+  Tags: TagEntity[] = [];
 
   @Ignore()
   PlayerGames: PlayerGameEntity[] = [];
@@ -74,7 +85,7 @@ export class PlayerEntity extends BaseEntity {
   calculateBestGames() {
     this.BestGames = Mode(
       this.Wins.filter((x) => x.Game).map((x) => x.Game!.BoardGame!),
-      (x) => x.BoardGameId ?? '',
+      (x) => x.BoardGameId,
     ).filter(Boolean);
   }
 

@@ -12,7 +12,7 @@ export class TrophyBestFriends extends ITrophy {
     this.array = [];
 
     players.forEach((p) => {
-      const id = p.PlayerId ?? '';
+      const id = p.PlayerId;
       winList[id] = [];
 
       p.PlayerGames.forEach((pg) => {
@@ -31,7 +31,7 @@ export class TrophyBestFriends extends ITrophy {
     });
 
     Object.keys(winList).forEach((k) => {
-      const mode = Mode(winList[k], (x) => x.PlayerId ?? '');
+      const mode = Mode(winList[k], (x) => x.PlayerId);
       if (mode.length > 0) {
         const modeCount = winList[k].filter((x) => x.PlayerId === mode[0].PlayerId).length;
         if (modeCount > this.value) {

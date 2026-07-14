@@ -24,7 +24,8 @@ import { GameManager } from './managers/Game.manager';
 import { BoardGameManager } from './managers/BoardGame.manager';
 import { PlayerGameManager } from './managers/PlayerGame.manager';
 import { PlayerManager } from './managers/Player.manager';
-import { BoardGameEntity, GameWrapper, ClubEntity, PlayerEntity } from 'libs/index';
+import { BoardGameEntity, GameWrapper, ClubEntity, PlayerEntity, TagEntity } from 'libs/index';
+import { TagManager } from './managers/Tag.manager';
 
 const publicThrottle = { default: { limit: 200, ttl: 600000 } };
 const authThrottle = { default: { limit: 15, ttl: 30000 } };
@@ -38,6 +39,7 @@ export class AppController {
     private boardGameManager: BoardGameManager,
     private playerGameManager: PlayerGameManager,
     private playerManager: PlayerManager,
+    private tagManager: TagManager,
   ) {}
 
   getUserId(request: any) {
@@ -66,7 +68,7 @@ export class AppController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('clubs')
   getPublicClubs() {
-    return this.clubManager.loadMany('Public', '1');
+    return this.clubManager.loadMany('Public', ['1']);
   }
 
   @Throttle(publicThrottle)
@@ -79,6 +81,11 @@ export class AppController {
       PlayerGames: this.playerGameManager.loadMany('ClubId', params.clubId),
       BoardGames: this.boardGameManager.loadMany('ClubId', params.clubId),
       Players: this.playerManager.loadMany('ClubId', params.clubId),
+      Tags: this.tagManager.loadMany('ClubId', params.clubId),
+      TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', params.clubId),
+      TagGames: this.tagManager.tagGame.loadMany('ClubId', params.clubId),
+      TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', params.clubId),
+      TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', params.clubId),
     };
   }
 
@@ -232,6 +239,46 @@ export class AppController {
   deleteBoardGame(@Request() req: any, @Param() params: { clubId: string; boardGameId: string }) {
     try {
       this.boardGameManager.delete(this.getUserId(req), params.boardGameId, params.clubId);
+    } catch (e) {
+      this.handleErrors(e);
+    }
+    return HttpStatus.OK;
+  }
+
+  /// --------------------------------------------------------------------------------
+  /// Tags
+  /// --------------------------------------------------------------------------------
+  @Throttle(authThrottle)
+  @UseGuards(AuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Put('tag')
+  addTag(@Request() req: any, @Body() entity: TagEntity) {
+    try {
+      return this.tagManager.put(this.getUserId(req), entity);
+    } catch (e) {
+      this.handleErrors(e);
+    }
+  }
+
+  @Throttle(authThrottle)
+  @UseGuards(AuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch('tag')
+  updateTag(@Request() req: any, @Body() entity: TagEntity) {
+    try {
+      return this.tagManager.patch(this.getUserId(req), entity);
+    } catch (e) {
+      this.handleErrors(e);
+    }
+  }
+
+  @Throttle(authThrottle)
+  @UseGuards(AuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Delete('tag/:clubId/:tagId')
+  deleteTag(@Request() req: any, @Param() params: { clubId: string; tagId: string }) {
+    try {
+      this.tagManager.delete(this.getUserId(req), params.tagId, params.clubId);
     } catch (e) {
       this.handleErrors(e);
     }

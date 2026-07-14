@@ -1,5 +1,15 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, inject } from '@angular/core';
-import { BoardGameEntity, ScoreTypeMapping } from 'libs/index';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
+import { BoardGameEntity, ScoreTypeMapping, TagEntity } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -12,7 +22,9 @@ import { DialogModule } from 'primeng/dialog';
 import { Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
-import { Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
+import { TagsComponent } from '../../shared/components/tags/tags.component';
+import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
 
 type EntityType = BoardGameEntity;
 
@@ -26,8 +38,10 @@ type EntityType = BoardGameEntity;
     TextInputComponent,
     CheckboxModule,
     DialogModule,
-    TooltipModule
-],
+    TooltipModule,
+    TagsComponent,
+    NumberInputComponent,
+  ],
   templateUrl: './editor-board-game.component.html',
   styleUrl: './editor-board-game.component.scss',
 })
@@ -56,11 +70,13 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
   scoreTypeMapping = ScoreTypeMapping;
   scoreTypes = Object.entries(this.scoreTypeMapping).map(([value, label]) => ({ value, label }));
 
+  tagList$: Observable<TagEntity[]> = of([]);
+
   subscriptions = new Subscription();
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('boardGame' in changes && this.boardGame) {
-      if (this.boardGame.BoardGameId === null) {
+      if (this.boardGame.BoardGameId === '') {
         this.title = 'New BoardGame';
         this.isNew = true;
       } else {
@@ -68,9 +84,13 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
         this.isNew = false;
       }
 
+      this.grabLists();
+
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new BoardGameEntity());
-      this.formGroup.patchValue(new BoardGameEntity(this.boardGame));
+      const instance = new BoardGameEntity(this.boardGame);
+      instance.Tags = [...this.boardGame.Tags];
+      this.formGroup.patchValue(instance);
       this.updatePrefixSuffix();
 
       this.subscriptions.add(
@@ -102,21 +122,19 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
     return this.formGroup.get(key);
   }
 
+  grabLists() {
+    this.tagList$ = this.apiService.tagList$;
+  }
+
   updatePrefixSuffix() {
     const score = this.getControl('ScoreType');
     if (score?.value === 'points') {
       this.hideFields.delete('ScorePrefix');
       this.hideFields.delete('ScoreSuffix');
-      this.hideFields.delete('exampleScore');
     } else {
       this.hideFields.add('ScorePrefix');
       this.hideFields.add('ScoreSuffix');
-      this.hideFields.add('exampleScore');
     }
-    this.getControl('exampleScore')?.setValue(
-      `${this.getControl('ScorePrefix')?.value ?? ''}42${this.getControl('ScoreSuffix')?.value ?? ''}`,
-    );
-    this.getControl('exampleScore')?.disable();
   }
 
   async submit() {
@@ -125,7 +143,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
       return;
     } else if (this.standalone) {
       const result = await this.apiService.postBoardGame(
-        this.boardGame.BoardGameId === null,
+        this.boardGame.BoardGameId === '',
         this.formGroup.getRawValue(),
       );
       if (result) {

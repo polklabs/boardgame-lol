@@ -1,0 +1,17 @@
+<app-control-wrapper
+  #ControlWrapper
+  [label]="label"
+  [controlName]="formControlName"
+  [formGroup]="formGroup"
+  [entityType]="entityType"
+  [hiddenFields]="hiddenFields"
+  textInputType="number">
+  <p-inputnumber
+    id="{{ formControlName }}"
+    formControlName="{{ formControlName }}"
+    [ngClass]="{ 'ng-invalid ng-dirty': ControlWrapper.isFieldInvalid() }"
+    [minFractionDigits]="0"
+    [maxFractionDigits]="10"
+    [prefix]="boardGame?.ScorePrefix ?? prefix ?? ''"
+    [suffix]="boardGame?.ScoreSuffix ?? suffix ?? ''" />
+</app-control-wrapper>

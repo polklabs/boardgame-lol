@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { BehaviorSubject, catchError, firstValueFrom, map, of } from 'rxjs';
+import { BehaviorSubject, catchError, delay, firstValueFrom, map, of } from 'rxjs';
 import { MessageService } from 'primeng/api';
 
 type URL = (string | number | null | undefined)[];
@@ -16,7 +16,11 @@ export class HttpService {
   private baseUrl = environment.baseUrl;
   private loadingSpinner = 0;
 
-  readonly loadingSpinner$ = new BehaviorSubject(false);
+  readonly _loadingSpinner$ = new BehaviorSubject(false);
+
+  get loadingSpinner$() {
+    return this._loadingSpinner$.pipe(delay(0));
+  }
 
   get<T>(url: URL, showSpinner = true) {
     this.addSpinner(showSpinner);
@@ -90,7 +94,7 @@ export class HttpService {
   private addSpinner(showSpinner: boolean) {
     if (showSpinner === true) {
       this.loadingSpinner++;
-      this.loadingSpinner$.next(this.loadingSpinner > 0);
+      this._loadingSpinner$.next(this.loadingSpinner > 0);
     } else {
       // nothing
     }
@@ -99,7 +103,7 @@ export class HttpService {
   private removeSpinner(showSpinner: boolean) {
     if (showSpinner === true) {
       this.loadingSpinner--;
-      this.loadingSpinner$.next(this.loadingSpinner > 0);
+      this._loadingSpinner$.next(this.loadingSpinner > 0);
     } else {
       // nothing
     }

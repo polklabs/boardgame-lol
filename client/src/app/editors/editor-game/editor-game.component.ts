@@ -10,7 +10,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BoardGameEntity, GameEntity, isGuid, PlayerEntity, PlayerGameEntity } from 'libs/index';
+import { BoardGameEntity, GameEntity, isGuid, PlayerEntity, PlayerGameEntity, TagEntity } from 'libs/index';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
@@ -25,14 +25,16 @@ import { DropdownComponent } from '../../shared/components/dropdown/dropdown.com
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-game.component';
 import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
-import { Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { format } from 'date-fns';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
-import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { TagsComponent } from '../../shared/components/tags/tags.component';
+import { TooltipModule } from 'primeng/tooltip';
+import { TagComponent } from '../../shared/components/tag/tag.component';
 
 type EntityType = GameEntity;
 
@@ -45,7 +47,6 @@ type EntityType = GameEntity;
     TextareaComponent,
     TextInputComponent,
     CalendarComponent,
-    CheckboxComponent,
     CheckboxModule,
     ButtonModule,
     ButtonGroupModule,
@@ -58,6 +59,9 @@ type EntityType = GameEntity;
     InputGroupModule,
     InputGroupAddonModule,
     InputNumberModule,
+    TagsComponent,
+    TooltipModule,
+    TagComponent,
   ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
@@ -80,6 +84,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   private playerList: PlayerEntity[] = [];
   private boardGameList: BoardGameEntity[] = [];
+  tagList$: Observable<TagEntity[]> = of([]);
 
   protected selectedPlayerGame?: PlayerGameEntity;
 
@@ -119,7 +124,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if ('game' in changes && this.game) {
       this.game = new GameEntity(this.game, true);
-      if (this.game.GameId === null) {
+      if (this.game.GameId === '') {
         this.title = 'New Play';
         this.isNew = true;
       } else {
@@ -143,7 +148,9 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
-      this.formGroup.patchValue(new GameEntity(this.game));
+      const instance = new GameEntity(this.game);
+      instance.Tags = [...this.game.Tags];
+      this.formGroup.patchValue(instance);
 
       this.subscription = this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
         console.log(value);
@@ -163,6 +170,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   grabLists() {
     this.playerList = this.apiService.playerList;
     this.boardGameList = this.apiService.boardGameList;
+    this.tagList$ = this.apiService.tagList$;
 
     this.playerGames = this.apiService.playerGameList
       .filter((x) => x.GameId === this.game?.GameId)
@@ -253,7 +261,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     } else {
       this.playerGameEdit = new PlayerGameEntity({ ClubId: this.game?.ClubId, GameId: '-1' });
       const existingPlayers = new Set(this.playerGames.map((x) => x.PlayerId));
-      this.playerGameEdit.PlayerId = this.players.find((x) => !existingPlayers.has(x.PlayerId))?.PlayerId ?? null;
+      this.playerGameEdit.PlayerId = this.players.find((x) => !existingPlayers.has(x.PlayerId))?.PlayerId ?? '';
     }
     this.playerGameEditorVisible = true;
   }
@@ -302,7 +310,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       while (this.newPlayers.some((x) => x.PlayerId === `${nextId}`)) {
         nextId++;
       }
-      this.playerEdit = new PlayerEntity({ PlayerId: `${nextId}`, ClubId: this.game?.ClubId });
+      this.playerEdit = new PlayerEntity({ PlayerId: `${nextId}`, ClubId: this.apiService.clubId });
     }
     this.playerEditorVisible = true;
   }
@@ -341,7 +349,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   canEditBoardGame() {
     const value = this.getControl('BoardGameId')?.value;
-    if (isGuid(value) || value === null || value === undefined) {
+    if (isGuid(value) || value === '' || value === undefined) {
       return false;
     } else {
       return true;
@@ -423,9 +431,13 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
         // Continue
       }
 
-      const result = await this.apiService.postGame(this.game.GameId === null, {
+      const result = await this.apiService.postGame(this.game.GameId === '', {
         Game: gameData,
-        PlayerGames: this.playerGames.map((x) => new PlayerGameEntity(x)),
+        PlayerGames: this.playerGames.map((x) => {
+          const ent = new PlayerGameEntity(x);
+          ent.Tags = x.Tags;
+          return ent;
+        }),
         BoardGames: this.newBoardGames,
         Players: this.newPlayers,
       });

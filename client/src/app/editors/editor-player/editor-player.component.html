@@ -13,8 +13,16 @@
           formControlName="Name"
           label="Player Name"
           [entityType]="entityType"
-        [hiddenFields]="hideFields"></app-textinput>
+          [hiddenFields]="hideFields"></app-textinput>
         <app-checkbox formControlName="IsRealPerson" label="Is Real Person"></app-checkbox>
+
+        <app-tags
+          formControlName="Tags"
+          label="Tags"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"
+          [options$]="tagList$"></app-tags>
+
         <div class="dialog-footer">
           <div>
             <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>

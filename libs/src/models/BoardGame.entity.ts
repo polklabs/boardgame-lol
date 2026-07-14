@@ -12,6 +12,8 @@ import { Ignore } from '../decorators/ignore.decorator';
 import { GameEntity } from './Game.entity';
 import { PlayerEntity } from './Player.entity';
 import { Mode } from '../utils/helper-utils';
+import { TagEntity } from './Tag.entity';
+import { TagBoardGameEntity } from './TagBoardGame.entity';
 
 export const ScoreTypes = ['points', 'rank', 'win-lose'] as const;
 export type ScoreType = (typeof ScoreTypes)[number];
@@ -21,17 +23,23 @@ export const ScoreTypeMapping: Record<ScoreType, string> = {
   'win-lose': 'Win/Lose',
 } as const;
 
+export type BoardGameReturn = {
+  BoardGame: BoardGameEntity;
+  Tags: TagEntity[];
+  TagBoardGames: TagBoardGameEntity[];
+};
+
 @TableName('BoardGame')
 export class BoardGameEntity extends BaseEntity {
-  @PrimaryKey
-  BoardGameId: string | null = null;
+  @PrimaryKey()
+  BoardGameId: string = '';
 
   @SecondaryKey
-  ClubId: string | null = null;
+  ClubId: string = '';
 
   @MinMax(1, CHARACTER_LIMIT_SHORT, 'string')
   @Sanitize()
-  Name: string | null = null;
+  Name: string = '';
 
   @Enum(ScoreTypes)
   ScoreType: ScoreType = 'points';
@@ -61,10 +69,16 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   @Ignore()
-  exampleScore = '';
+  Tags: TagEntity[] = [];
+
+  @Ignore()
+  ExampleScore = 42;
 
   @Ignore()
   Games: GameEntity[] = [];
+
+  @Ignore()
+  PlayCount = 0;
 
   @Ignore()
   Champions: PlayerEntity[] = [];
@@ -96,6 +110,7 @@ export class BoardGameEntity extends BaseEntity {
     this.calculateChampion();
     this.calculatePlayers();
     this.calculateScore();
+    this.PlayCount = this.Games.length;
     this.calculated = true;
   }
 
@@ -103,7 +118,7 @@ export class BoardGameEntity extends BaseEntity {
     this.calculationsComplete(this.Games);
 
     const winners = this.Games.flatMap((x) => x.Winners);
-    this.Champions = Mode(winners, (x) => x.PlayerId ?? '');
+    this.Champions = Mode(winners, (x) => x.PlayerId);
     if (this.Champions.length > 0) {
       this.ChampionWins = winners.reduce(
         (wins, winner) => wins + (winner.PlayerId === this.Champions[0].PlayerId ? 1 : 0),
@@ -125,7 +140,7 @@ export class BoardGameEntity extends BaseEntity {
 
   calculateScore() {
     this.calculationsComplete(this.Games);
-    
+
     const scores = this.Games.flatMap((g) => g.Scores).filter((x) => !!x.Points);
     if (this.ScoreType === 'points') {
       this.MaxScore = Math.max(...scores.map((pg) => pg.Points ?? 0), 0);

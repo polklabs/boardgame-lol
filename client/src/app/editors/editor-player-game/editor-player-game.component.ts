@@ -1,16 +1,28 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
-import { isGuid, PlayerEntity, PlayerGameEntity, ScoreType } from 'libs/index';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
+import { isGuid, PlayerEntity, PlayerGameEntity, ScoreType, TagEntity } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
 
 import { ButtonModule } from 'primeng/button';
-import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
+import { TagsComponent } from '../../shared/components/tags/tags.component';
+import { ApiService } from '../../shared/services/api.service';
+import { Observable, of } from 'rxjs';
 
 type EntityType = PlayerGameEntity;
 
@@ -21,17 +33,19 @@ type EntityType = PlayerGameEntity;
     ReactiveFormsModule,
     DropdownComponent,
     ButtonModule,
-    TextInputComponent,
     CheckboxModule,
     DialogModule,
     TooltipModule,
-    CheckboxComponent
-],
+    CheckboxComponent,
+    NumberInputComponent,
+    TagsComponent,
+  ],
   templateUrl: './editor-player-game.component.html',
   styleUrl: './editor-player-game.component.scss',
 })
 export class EditorPlayerGameComponent implements OnChanges {
   private fb = inject(FormBuilder);
+  private apiService = inject(ApiService);
   private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -58,9 +72,11 @@ export class EditorPlayerGameComponent implements OnChanges {
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
+  tagList$: Observable<TagEntity[]> = of([]);
+
   ngOnChanges(changes: SimpleChanges): void {
     if ('playerGame' in changes && this.playerGame) {
-      if (this.playerGame.PlayerGameId === null) {
+      if (this.playerGame.PlayerGameId === '') {
         this.title = 'Add Player';
         this.isNew = true;
       } else {
@@ -68,9 +84,13 @@ export class EditorPlayerGameComponent implements OnChanges {
         this.isNew = false;
       }
 
+      this.grabLists();
+
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerGameEntity());
-      this.formGroup.patchValue(new PlayerGameEntity(this.playerGame));
+      const instance = new PlayerGameEntity(this.playerGame);
+      instance.Tags = [...this.playerGame.Tags];
+      this.formGroup.patchValue(instance);
 
       if (this.scoreType === 'win-lose') {
         this.getControl('Points')?.setValue(this.playerGame.Points === null ? true : this.playerGame.Points === 1);
@@ -85,6 +105,10 @@ export class EditorPlayerGameComponent implements OnChanges {
 
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
+  }
+
+  grabLists() {
+    this.tagList$ = this.apiService.tagList$;
   }
 
   async submit() {
@@ -125,7 +149,7 @@ export class EditorPlayerGameComponent implements OnChanges {
 
   canEditPlayer() {
     const value = this.formGroup.controls['PlayerId'].value;
-    if (isGuid(value) || value === null || value === undefined) {
+    if (isGuid(value) || value === '' || value === undefined) {
       return false;
     } else {
       return true;

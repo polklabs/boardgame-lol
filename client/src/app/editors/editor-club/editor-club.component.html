@@ -14,21 +14,17 @@
           formControlName="Name"
           label="Club Name"
           [entityType]="entityType"
-        [hiddenFields]="hideFields"></app-textinput>
+          [hiddenFields]="hideFields"></app-textinput>
         <app-checkbox formControlName="Public" label="Is Public"></app-checkbox>
         <app-textarea
           formControlName="Summary"
           label="Summary"
           [entityType]="entityType"
-        [hiddenFields]="hideFields"></app-textarea>
+          [hiddenFields]="hideFields"></app-textarea>
         <div class="dialog-footer">
           <div>
-            @if ((adminIds | async)?.includes(club.ClubId ?? '')) {
-              <p-button
-                label="Delete"
-                [outlined]="true"
-                severity="danger"
-              (onClick)="toDeleteEntity()"></p-button>
+            @if ((adminIds | async)?.includes(club.ClubId)) {
+              <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
             }
           </div>
           <div>

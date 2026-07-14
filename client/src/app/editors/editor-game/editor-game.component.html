@@ -33,7 +33,7 @@
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit()">
         <!-- BoardGame -->
-        <div class="flex gap-4 align-items-end justify-content-space-between">
+        <div class="flex gap-4 justify-content-space-between">
           <app-dropdown
             style="flex-grow: 1"
             formControlName="BoardGameId"
@@ -118,7 +118,14 @@
             [hiddenFields]="hideFields"
             inputType="number"></app-textinput>
         </div>
-        <app-checkbox formControlName="DidNotFinish" label="Did Not Finish Game"></app-checkbox>
+
+        <app-tags
+          formControlName="Tags"
+          label="Tags"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"
+          [options$]="tagList$"></app-tags>
+
         <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
       </form>
       <div class="flex dialog-footer">
@@ -138,7 +145,7 @@
 
 <ng-template #orderListItem let-playerGame>
   <div class="list-items" (click)="onPlayerSelection(playerGame)">
-    <div class="flex-column">
+    <div class="flex-column-100">
       <div class="flex gap-8 justify-content-space-between">
         <span class="font-bold flex-nowrap gap-8">
           @switch (game?.BoardGame?.ScoreType) {
@@ -150,6 +157,8 @@
                 buttonLayout="horizontal"
                 [prefix]="game?.BoardGame?.ScorePrefix ?? undefined"
                 [suffix]="game?.BoardGame?.ScoreSuffix ?? undefined"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="10"
                 [ngModel]="playerGame.Points"
                 [ngModelOptions]="{ standalone: true }"
                 (ngModelChange)="setPoints(playerGame, $event)">
@@ -195,6 +204,23 @@
           }
         </span>
         <div class="flex gap-8 edit-btns">
+          @if (playerGame.Tags.length > 1) {
+            <p-button
+              [pTooltip]="tooltipContent"
+              severity="help"
+              [rounded]="true"
+              [text]="true"
+              icon="pi pi-tags"></p-button>
+            <ng-template #tooltipContent>
+              <div class="flex items-center">
+                @for (tag of playerGame.Tags; track tag) {
+                  <app-tag [tag]="tag"></app-tag>
+                }
+              </div>
+            </ng-template>
+          } @else if (playerGame.Tags.length > 0) {
+            <app-tag [tag]="playerGame.Tags[0]"></app-tag>
+          }
           <p-button
             (onClick)="editPlayerGame(playerGame)"
             [rounded]="true"

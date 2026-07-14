@@ -1,4 +1,8 @@
-import { getPrimaryKey } from '../decorators/primary-key.decorator';
+import { getPrimaryKeys } from '../decorators/primary-key.decorator';
+
+export function clamp(num: number, min: number, max: number): number {
+  return Math.min(Math.max(num, min), max);
+}
 
 export function Mode<T>(arr: Array<T>, predicate: (elem: T) => string | number) {
   const counts: { [key: string | number]: { e: T; count: number } } = {};
@@ -51,10 +55,11 @@ export function UnicodeToEmoji(unicode: string): string {
 
 export function ConvertListToDict<T>(list: T[], entityType: new (partial: Partial<T>) => T): Record<string, T> {
   const toReturn: Record<string, T> = {};
-  const primaryKey = getPrimaryKey(entityType) as keyof T;
+  const primaryKey = getPrimaryKeys(entityType) as (keyof T)[];
 
   list.forEach((item) => {
-    toReturn[(item[primaryKey] as string) ?? ''] = item;
+    const key = primaryKey.map((p) => (item[p] as string) ?? '').join(';');
+    toReturn[key] = item;
   });
 
   return toReturn;

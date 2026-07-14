@@ -4,7 +4,7 @@
   <app-editor-club
     [editorVisible]="editorClubVisible"
     [club]="editClub"
-  (closeEditor)="editorClubVisible = false"></app-editor-club>
+    (closeEditor)="editorClubVisible = false"></app-editor-club>
 }
 
 @if (((clubList$ | async)?.length ?? 0) > 0) {
@@ -31,7 +31,7 @@
 
 <h1>Public Groups</h1>
 <div class="club-wrapper">
-  @for (club of publicClubList$ | async; track club) {
+  @for (club of publicClubList$ | async; track club.ClubId) {
     <div>
       <p-card
         [header]="club.Name"

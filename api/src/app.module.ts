@@ -19,6 +19,11 @@ import { PlayerManager } from './managers/Player.manager';
 import { PlayerGameManager } from './managers/PlayerGame.manager';
 import { UserManager } from './managers/User.manager';
 import { ClubUserManager } from './managers/ClubUser.manager';
+import { TagManager } from './managers/Tag.manager';
+import { TagBoardGameManager } from './managers/TagBoardGame.manager';
+import { TagGameManager } from './managers/TagGame.manager';
+import { TagPlayerManager } from './managers/TagPlayer.manager';
+import { TagPlayerGameManager } from './managers/TagPlayerGame.manager';
 
 const clientPath = process.env.CLIENT_PATH ?? join(__dirname, '../../../../dist/client/browser');
 
@@ -33,6 +38,11 @@ const clientPath = process.env.CLIENT_PATH ?? join(__dirname, '../../../../dist/
     PlayerGameManager,
     UserManager,
     ClubUserManager,
+    TagManager,
+    TagBoardGameManager,
+    TagGameManager,
+    TagPlayerManager,
+    TagPlayerGameManager,
     AuthService,
     EmailService,
     EmojiService,

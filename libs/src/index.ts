@@ -8,8 +8,12 @@ export * from './models/Game.entity';
 export * from './models/BoardGame.entity';
 export * from './models/PlayerGame.entity';
 export * from './models/User.entity';
-export * from './models/ClubUser.entity'
+export * from './models/ClubUser.entity';
+export * from './models/Tag.entity';
+export * from './models/TagBoardGame.entity';
+export * from './models/TagPlayerGame.entity';
 export * from './models/jwt.model';
+export * from './models/ITag';
 
 // Decorators
 export * from './decorators/enum.decorator';
@@ -19,6 +23,7 @@ export * from './decorators/nullable.decorator';
 export * from './decorators/primary-key.decorator';
 export * from './decorators/secondary-key.decorator';
 export * from './decorators/table-name.decorator';
+export * from './decorators/pattern.decorator';
 
 // Constants
 export * from './constants';
@@ -27,3 +32,4 @@ export * from './constants';
 export * from './utils/guid-utils';
 export * from './utils/entity-utils';
 export * from './utils/helper-utils';
+export * from './utils/color-utils';

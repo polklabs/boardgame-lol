@@ -9,10 +9,24 @@ import { TrophyService } from '../../shared/services/trophy.service';
 import { HidePipe } from '../../shared/pipes/hide.pipe';
 import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
+import { TagModule } from 'primeng/tag';
+import { TagComponent } from "../../shared/components/tag/tag.component";
+
+const COLUMNS: { field: keyof BoardGameEntity; name: string; sort: boolean }[] = [
+  { field: 'Name', name: 'Game', sort: true },
+  { field: 'PlayCount', name: 'Plays', sort: true },
+  { field: 'ChampionWins', name: 'Champion(s)', sort: true },
+  { field: 'MaxPlayers', name: 'Max Players', sort: true },
+  { field: 'AveragePlayers', name: 'Avg Players', sort: true },
+  { field: 'MaxScore', name: 'High Score', sort: false },
+  { field: 'AverageScore', name: 'Average Score', sort: false },
+  { field: 'AverageWinningScore', name: 'Average Winning Score', sort: false },
+  { field: 'Tags', name: 'Tags', sort: false },
+];
 
 @Component({
   selector: 'app-board-game-table',
-  imports: [TableModule, ButtonModule, CommonModule, ScorePipe, HidePipe, ArrayPipe],
+  imports: [TableModule, ButtonModule, TagModule, CommonModule, ScorePipe, HidePipe, ArrayPipe, TagComponent],
   templateUrl: './board-game-table.component.html',
   styleUrl: './board-game-table.component.scss',
 })
@@ -35,16 +49,6 @@ export class BoardGameTableComponent implements OnChanges {
   } = {};
 
   expandedRows = {};
-  boardGameColumns = [
-    { field: 'Name', name: 'Game', sort: true },
-    { field: 'Games.length', name: 'Plays', sort: true },
-    { field: 'ChampionWins', name: 'Champion(s)', sort: true },
-    { field: 'MaxPlayers', name: 'Max Players', sort: true },
-    { field: 'AveragePlayers', name: 'Avg Players', sort: true },
-    { field: 'MaxScore', name: 'High Score', sort: false },
-    { field: 'AverageScore', name: 'Average Score', sort: false },
-    { field: 'AverageWinningScore', name: 'Average Winning Score', sort: false },
-  ];
 
   mostPlays: ITrophy;
 
@@ -60,6 +64,15 @@ export class BoardGameTableComponent implements OnChanges {
     } else {
       this.WinCounts = {};
     }
+  }
+
+  filterColumns(boardGames: BoardGameEntity[]) {
+    return COLUMNS.filter((col) =>
+      boardGames.some((row) => {
+        const data = row[col.field];
+        return Array.isArray(data) ? data.length > 0 : !!data;
+      }),
+    );
   }
 
   calculateWinCounts(players: PlayerEntity[]) {
@@ -84,7 +97,7 @@ export class BoardGameTableComponent implements OnChanges {
           winRow.totalPoints = this.getPoints(pg, winRow.totalPoints);
         } else {
           this.WinCounts[boardGameId].push({
-            playerId: player.PlayerId ?? '',
+            playerId: player.PlayerId,
             name: player.Name ?? 'Unknown',
             wins: won ? 1 : 0,
             plays: 1,
@@ -109,6 +122,6 @@ export class BoardGameTableComponent implements OnChanges {
   }
 
   showExpansion(boardGame: BoardGameEntity) {
-    return (this.WinCounts[boardGame.BoardGameId ?? '']?.length ?? 0) > 0;
+    return (this.WinCounts[boardGame.BoardGameId]?.length ?? 0) > 0;
   }
 }

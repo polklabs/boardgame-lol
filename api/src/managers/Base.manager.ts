@@ -2,7 +2,7 @@ import { DbService, DbVars } from 'src/services/db.service';
 import { getForeignKey, getForeignKeys } from 'libs/decorators/foreign-key.decorator';
 import { MinMax, getMinMax } from 'libs/decorators/min-max.decorator';
 import { getNullable } from 'libs/decorators/nullable.decorator';
-import { getPrimaryKey } from 'libs/decorators/primary-key.decorator';
+import { getPrimaryKeys } from 'libs/decorators/primary-key.decorator';
 import { getTableName } from 'libs/decorators/table-name.decorator';
 import { BaseEntity } from 'libs/models/Base.entity';
 import { isGuid } from 'libs/utils/guid-utils';
@@ -12,13 +12,14 @@ import { ValidationError } from 'src/errors/validation.error';
 import { SanitizeTags, getSanitize } from 'libs/decorators/sanitize.decorator';
 import sanitizeHtml from 'sanitize-html';
 import { getIgnore } from 'libs/decorators/ignore.decorator';
+import { BadRequestException } from '@nestjs/common';
 
 export abstract class BaseManager<T extends BaseEntity> {
   protected abstract db: DbService;
 
   public readonly new: (data: T) => T;
 
-  protected primaryKey: keyof T;
+  protected primaryKeys: (keyof T)[];
   protected secondaryKey: keyof T | undefined;
   protected tableName: string;
   protected foreignKeys: (keyof T)[];
@@ -31,7 +32,7 @@ export abstract class BaseManager<T extends BaseEntity> {
   constructor(entityType: new (partial: Partial<T>) => T) {
     this.new = (data: T) => new entityType(data);
 
-    this.primaryKey = getPrimaryKey(entityType) as keyof T;
+    this.primaryKeys = getPrimaryKeys(entityType) as (keyof T)[];
     this.secondaryKey = getSecondaryKey(entityType) as keyof T;
     this.tableName = getTableName(entityType) as string;
     this.foreignKeys = getForeignKeys(entityType) as (keyof T)[];
@@ -73,30 +74,46 @@ export abstract class BaseManager<T extends BaseEntity> {
    */
   loadMany<K, M>(
     target: (new (partial: Partial<K>) => K) | keyof T,
-    targetId: string | null,
+    targetIds: string | null | (string | null)[],
     secondaryTarget?: (new (partial: Partial<M>) => M) | keyof T,
-    secondaryTargetId?: string | null,
+    secondaryTargetIds?: string | null | (string | null)[],
   ): T[] {
-    let targetPK;
-    if (typeof target === 'string') {
-      targetPK = target;
+    targetIds = Array.isArray(targetIds) ? targetIds : [targetIds];
+    if (secondaryTargetIds) {
+      secondaryTargetIds = Array.isArray(secondaryTargetIds) ? secondaryTargetIds : [secondaryTargetIds];
     } else {
-      targetPK = getPrimaryKey(target);
+      secondaryTargetIds = [];
     }
 
-    let query = `${this.getBaseSelect()}${this.getBaseJoin()} WHERE ${this.tableName}.${targetPK} = ?`;
-    const vars = [targetId];
+    let targetPKs: string;
+    let expectedPkCount = 0;
+    if (typeof target === 'string') {
+      targetPKs = `${this.tableName}.${target} = ?`;
+      expectedPkCount = 1;
+    } else {
+      const pks = getPrimaryKeys(target);
+      targetPKs = pks.map((p) => `${this.tableName}.${p} = ?`).join(' AND ');
+      expectedPkCount = pks.length;
+    }
 
-    if (secondaryTarget && secondaryTargetId) {
-      let secondaryTargetPk;
+    if (expectedPkCount !== targetIds.length) {
+      throw new BadRequestException(`Key length error: ${expectedPkCount} !== ${[targetIds.length]}`);
+    } else {
+      // Continue
+    }
+
+    let query = `${this.getBaseSelect()}${this.getBaseJoin()} WHERE ${targetPKs}`;
+    const vars = targetIds;
+
+    if (secondaryTarget && (secondaryTargetIds?.length ?? 0) > 0 && secondaryTargetIds?.every((x) => x !== null)) {
       if (typeof secondaryTarget === 'string') {
-        secondaryTargetPk = secondaryTarget;
+        query += ` AND ${this.tableName}.${secondaryTarget} = ?`;
       } else {
-        secondaryTargetPk = getPrimaryKey(secondaryTarget);
+        const spks = getPrimaryKeys(secondaryTarget);
+        query += spks.map((p) => ` AND ${this.tableName}.${p} = ?`).join('');
       }
 
-      query += ` AND ${this.tableName}.${secondaryTargetPk} = ?`;
-      vars.push(secondaryTargetId);
+      vars.push(...secondaryTargetIds);
     } else {
       // No secondary key
     }
@@ -115,15 +132,24 @@ export abstract class BaseManager<T extends BaseEntity> {
     ) as unknown as K[];
   }
 
-  loadOne(id: string | null): T | undefined {
-    if (id === null) {
+  loadOne(ids: string | null | (string | null)[]): T | undefined {
+    ids = Array.isArray(ids) ? ids : [ids];
+
+    if (this.primaryKeys.length !== ids.length) {
+      throw new BadRequestException(`Key length error: ${this.primaryKeys.length} !== ${[ids.length]}`);
+    } else {
+      // Continue
+    }
+
+    if (ids.includes(null)) {
       return undefined;
     } else {
+      const query = this.primaryKeys.map((p) => `${this.tableName}.${String(p)} = ?`).join(' AND ');
       return this.db.Get(
         `${this.getBaseSelect()}
       ${this.getBaseJoin()}
-      WHERE ${this.tableName}.${String(this.primaryKey)} = ? LIMIT 1`,
-        id,
+      WHERE ${query} LIMIT 1`,
+        ids,
         this.new,
       );
     }
@@ -158,7 +184,7 @@ export abstract class BaseManager<T extends BaseEntity> {
   }
 
   runUpdate(userId: string, entity: T, transaction = false, transactions: any[] = [], runTransactionsFirst = false) {
-    if (!this.tableName || !this.primaryKey) {
+    if (!this.tableName || this.primaryKeys.length <= 0) {
       return;
     } else {
       // Continue
@@ -176,7 +202,7 @@ export abstract class BaseManager<T extends BaseEntity> {
 
     return this.db.Update(
       this.tableName,
-      this.primaryKey,
+      this.primaryKeys,
       this.secondaryKey,
       entity,
       transaction,
@@ -186,13 +212,14 @@ export abstract class BaseManager<T extends BaseEntity> {
   }
 
   runDelete(
-    primaryId: string,
+    primaryIds: string | string[],
     secondaryId: string | undefined,
     transaction = false,
     transactions: any[] = [],
     runTransactionsFirst = false,
   ) {
-    if (!this.tableName || !this.primaryKey) {
+    primaryIds = Array.isArray(primaryIds) ? primaryIds : [primaryIds];
+    if (!this.tableName || this.primaryKeys.length <= 0) {
       return;
     } else {
       // continue
@@ -200,8 +227,8 @@ export abstract class BaseManager<T extends BaseEntity> {
 
     return this.db.Delete(
       this.tableName,
-      String(this.primaryKey),
-      primaryId,
+      this.primaryKeys.map(String),
+      primaryIds,
       String(this.secondaryKey),
       secondaryId,
       transaction,
@@ -224,8 +251,17 @@ export abstract class BaseManager<T extends BaseEntity> {
         const skValue = entity[this.secondaryKey] as any;
 
         const fk = getForeignKey(entity, String(key));
-        if (fk?.tableName && fk.primaryKey && fk.secondaryKey) {
-          const result = this.db.GetRaw(`SELECT * FROM ${fk.tableName} WHERE ${fk.primaryKey} = ?`, [fkValue]) as any;
+
+        if ((fk?.primaryKeys.length ?? 0) > 1) {
+          throw new ValidationError(['Too many primary keys', fk?.primaryKeys.join(',') ?? '']);
+        } else {
+          // Continue
+        }
+
+        if (fk?.tableName && fk.primaryKeys.length > 0 && fk.secondaryKey) {
+          const result = this.db.GetRaw(`SELECT * FROM ${fk.tableName} WHERE ${fk.primaryKeys[0]} = ?`, [
+            fkValue,
+          ]) as any;
           if (result === undefined) {
             // Possibly from transaction
           } else {
@@ -288,7 +324,7 @@ export abstract class BaseManager<T extends BaseEntity> {
       }
 
       // Check that all primary and foreign keys are valid Guids
-      if (key === this.primaryKey || key === this.secondaryKey || this.foreignKeys.includes(key)) {
+      if (this.primaryKeys.includes(key) || key === this.secondaryKey || this.foreignKeys.includes(key)) {
         if (!isGuid(value.toString())) {
           errors.push(`${keyString}: not a valid guid`);
         } else {

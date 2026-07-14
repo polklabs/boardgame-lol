@@ -9,6 +9,7 @@
         <p-button label="Play" (onClick)="newGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
         <p-button label="Player" (onClick)="newPlayer.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
         <p-button label="BoardGame" (onClick)="newBoardGame.emit()" icon="pi pi-plus" [outlined]="true"></p-button>
+        <p-button label="Tags" (onClick)="editTags.emit()" icon="pi pi-th-large" [outlined]="true"></p-button>
       }
 
       @case ('board-game') {

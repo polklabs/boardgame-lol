@@ -1,0 +1,48 @@
+import { CommonModule } from '@angular/common';
+import { Component, Input, forwardRef, inject } from '@angular/core';
+import {
+  ControlValueAccessor,
+  FormGroupDirective,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
+import { BoardGameEntity } from 'libs/index';
+import { InputNumberModule } from 'primeng/inputnumber';
+
+@Component({
+  selector: 'app-number-input',
+  imports: [InputNumberModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
+  templateUrl: './number-input.component.html',
+  styleUrl: './number-input.component.scss',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => NumberInputComponent),
+      multi: true,
+    },
+  ],
+})
+export class NumberInputComponent implements ControlValueAccessor {
+  private formGroupDirective = inject(FormGroupDirective);
+
+  @Input() formControlName!: string;
+  @Input() label?: string;
+  @Input() entityType: unknown;
+  @Input() hiddenFields = new Set<string>();
+
+  @Input() boardGame?: BoardGameEntity | null;
+  @Input() prefix?: string | null;
+  @Input() suffix?: string | null;
+
+  get formGroup() {
+    return this.formGroupDirective.form;
+  }
+
+  writeValue(): void {}
+
+  registerOnChange(): void {}
+
+  registerOnTouched(): void {}
+}
