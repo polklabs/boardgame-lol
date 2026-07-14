@@ -17,7 +17,7 @@
   }
 
   .p-orderlist {
-    margin-bottom: 18px;
+    margin-bottom: 0.8rem;
   }
 
   .p-listbox-header {
@@ -46,17 +46,12 @@
     width: 100%;
   }
 
-  .p-listbox-option {
-    cursor: default;
-  }
-
   .order-list-header,
   .pick-list-header,
   .list-items {
     display: flex;
     position: relative;
     width: 100%;
-    cursor: default;
 
     .player-name {
       flex-shrink: 0;

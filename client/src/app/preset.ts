@@ -55,7 +55,7 @@ export const LaraDark = definePreset(Lara, {
     },
     dialog: {
       header: {
-        padding: '1rem 1rem 4px',
+        padding: '0.5rem 1rem 4px',
       },
       content: {
         padding: '0 1rem 1rem',

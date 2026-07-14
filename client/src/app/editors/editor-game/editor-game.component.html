@@ -51,10 +51,12 @@
         </div>
         <p-orderList
           [value]="playerGames"
-          [dragdrop]="true"
+          [selection]="selectedPlayerGames"
+          [dragdrop]="game?.BoardGame?.ScoreType === 'rank'"
           [responsive]="true"
-          [metaKeySelection]="true"
+          [metaKeySelection]="false"
           (onReorder)="updateOrdering()"
+          (selectionChange)="onPlayerSelection($event)"
           [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
           <ng-template #header>
             <div class="order-list-header flex justify-content-space-between">
@@ -62,51 +64,19 @@
               <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
             </div>
             <div class="flex justify-content-center">
-              @if (selectedPlayerGame && game?.BoardGame?.ScoreType === 'points') {
+              @if (selectedPlayerGames.length > 0 && game?.BoardGame?.ScoreType === 'points') {
                 <p-buttongroup class="point-add-group">
                   <div class="flex-nowrap">
-                    <p-button
-                      label="-100"
-                      variant="outlined"
-                      severity="warn"
-                      (onClick)="addPoints(selectedPlayerGame, -100)" />
-                    <p-button
-                      label="-50"
-                      variant="outlined"
-                      severity="warn"
-                      (onClick)="addPoints(selectedPlayerGame, -50)" />
-                    <p-button
-                      label="-10"
-                      variant="outlined"
-                      severity="warn"
-                      (onClick)="addPoints(selectedPlayerGame, -10)" />
-                    <p-button
-                      label="-1"
-                      variant="outlined"
-                      severity="warn"
-                      (onClick)="addPoints(selectedPlayerGame, -1)" />
+                    <p-button label="-100" variant="outlined" severity="warn" (onClick)="addPoints(-100)" />
+                    <p-button label="-50" variant="outlined" severity="warn" (onClick)="addPoints(-50)" />
+                    <p-button label="-10" variant="outlined" severity="warn" (onClick)="addPoints(-10)" />
+                    <p-button label="-1" variant="outlined" severity="warn" (onClick)="addPoints(-1)" />
                   </div>
                   <div class="flex-nowrap">
-                    <p-button
-                      label="+1"
-                      variant="outlined"
-                      severity="success"
-                      (onClick)="addPoints(selectedPlayerGame, 1)" />
-                    <p-button
-                      label="+10"
-                      variant="outlined"
-                      severity="success"
-                      (onClick)="addPoints(selectedPlayerGame, 10)" />
-                    <p-button
-                      label="+50"
-                      variant="outlined"
-                      severity="success"
-                      (onClick)="addPoints(selectedPlayerGame, 50)" />
-                    <p-button
-                      label="+100"
-                      variant="outlined"
-                      severity="success"
-                      (onClick)="addPoints(selectedPlayerGame, 100)" />
+                    <p-button label="+1" variant="outlined" severity="success" (onClick)="addPoints(1)" />
+                    <p-button label="+10" variant="outlined" severity="success" (onClick)="addPoints(10)" />
+                    <p-button label="+50" variant="outlined" severity="success" (onClick)="addPoints(50)" />
+                    <p-button label="+100" variant="outlined" severity="success" (onClick)="addPoints(100)" />
                   </div>
                 </p-buttongroup>
               }
@@ -160,7 +130,7 @@
 </p-dialog>
 
 <ng-template #orderListItem let-playerGame>
-  <div class="list-items" (click)="onPlayerSelection(playerGame)">
+  <div class="list-items">
     <div class="flex-column-100">
       <div class="flex gap-8 justify-content-space-between">
         <span class="font-bold flex-nowrap gap-8">

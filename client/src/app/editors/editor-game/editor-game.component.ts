@@ -84,7 +84,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   private boardGameList: BoardGameEntity[] = [];
   tagList$: Observable<TagEntity[]> = of([]);
 
-  protected selectedPlayerGame?: PlayerGameEntity;
+  protected selectedPlayerGames: PlayerGameEntity[] = [];
 
   get boardGames() {
     return [...this.boardGameList, ...this.newBoardGames].sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
@@ -180,8 +180,10 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     return this.formGroup.get(key);
   }
 
-  addPoints(playerGame: PlayerGameEntity, points: number) {
-    playerGame.Points = (playerGame.Points ?? 0) + points;
+  addPoints(points: number) {
+    this.selectedPlayerGames.forEach((p) => {
+      p.Points = (p.Points ?? 0) + points;
+    });
     this.updateScoring();
   }
 
@@ -190,8 +192,16 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     this.updateScoring();
   }
 
-  onPlayerSelection(event: PlayerGameEntity) {
-    this.selectedPlayerGame = event;
+  onPlayerSelection(event: PlayerGameEntity[]) {
+    for (const item of event) {
+      if (!this.selectedPlayerGames.includes(item)) {
+        this.selectedPlayerGames = [item];
+        return;
+      } else {
+        // Continue
+      }
+    }
+    this.selectedPlayerGames = [];
   }
 
   updateOrdering() {
@@ -297,7 +307,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
     this.playerGameEdit = undefined;
     this.playerGameEditorVisible = false;
-    this.selectedPlayerGame = undefined;
+    this.selectedPlayerGames = [];
   }
 
   editPlayer(player?: PlayerEntity) {

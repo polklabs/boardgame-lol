@@ -21,7 +21,5 @@ export class TrophyNewPlayer extends ITrophy {
 
     this.value = dataMap.reduce((prev, curr) => Math.min(prev, curr.total), Infinity);
     this.array = dataMap.filter((x) => this.value > 0 && x.total === this.value).map((x) => x.player);
-
-    console.log(this.value, this.array, dataMap);
   }
 }

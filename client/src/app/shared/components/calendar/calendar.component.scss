@@ -1,9 +1,5 @@
 :host ::ng-deep {
-  .p-floatlabel input:not(:focus):not(.p-filled) ~ label {
-    top: 1.4rem
-  }
-
-  input {
-    width: 100%;
+  .p-datepicker {
+    display: flex;
   }
 }

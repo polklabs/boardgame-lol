@@ -142,7 +142,7 @@ form {
 }
 
 .p-floatlabel {
-  margin-bottom: 1.6rem;
+  margin-bottom: 0.8rem;
   display: flex;
   flex-direction: column;
   input,
@@ -184,4 +184,10 @@ p-select {
 }
 .p-datatable-flex-scrollable > .p-datatable-table-container {
   flex: 0;
+}
+
+.p-listbox:not(.p-disabled) .p-listbox-option:not(.p-listbox-option-selected):not(.p-disabled):hover {
+  background: unset !important;
+  color: unset !important;
+  cursor: pointer;
 }
