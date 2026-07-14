@@ -13,7 +13,7 @@
         <form [formGroup]="loginFormGroup" (ngSubmit)="login()">
           <app-textinput formControlName="Username" label="Email/Username"></app-textinput>
           <app-password formControlName="Password" label="Password"></app-password>
-          <p-checkbox label="Keep Me Logged In" [binary]="true" formControlName="RememberMe"></p-checkbox>
+          <app-checkbox formControlName="RememberMe" label="Keep Me Logged In"></app-checkbox>
           <p-button label="Login" [outlined]="true" (onClick)="login()"></p-button>
         </form>
         <span class="sign-up">

@@ -13,7 +13,6 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { CheckboxModule } from 'primeng/checkbox';
 import { HttpService } from '../shared/services/http.service';
 import { MessageService } from 'primeng/api';
 import { DividerModule } from 'primeng/divider';
@@ -25,6 +24,7 @@ import { minMaxValidator } from '../shared/validators/min-max.validator';
 import { UserEntity } from 'libs/index';
 import { UserService } from '../shared/services/user.service';
 import { DialogModule } from 'primeng/dialog';
+import { CheckboxComponent } from '../shared/components/checkbox/checkbox.component';
 
 type LoginPost = { Username: string; Password: string; RememberMe: boolean; Verification?: string };
 type LoginResp = { ok: boolean; access_token?: string; emojis?: string[] };
@@ -44,12 +44,12 @@ type ResetPassResp = { ok: boolean; emojis?: string[] };
     ButtonModule,
     InputTextModule,
     PasswordModule,
-    CheckboxModule,
     DividerModule,
     TextInputComponent,
     PasswordComponent,
     CountdownModule,
     DialogModule,
+    CheckboxComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',

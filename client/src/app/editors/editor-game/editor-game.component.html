@@ -59,41 +59,57 @@
           <ng-template #header>
             <div class="order-list-header flex justify-content-space-between">
               <div class="p-orderlist-title">Players</div>
+              <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
+            </div>
+            <div class="flex justify-content-center">
               @if (selectedPlayerGame && game?.BoardGame?.ScoreType === 'points') {
-                <p-buttongroup>
-                  <p-button
-                    label="-100"
-                    variant="outlined"
-                    severity="warn"
-                    (onClick)="addPoints(selectedPlayerGame, -100)" />
-                  <p-button
-                    label="-50"
-                    variant="outlined"
-                    severity="warn"
-                    (onClick)="addPoints(selectedPlayerGame, -50)" />
-                  <p-button
-                    label="-10"
-                    variant="outlined"
-                    severity="warn"
-                    (onClick)="addPoints(selectedPlayerGame, -10)" />
-                  <p-button
-                    label="+10"
-                    variant="outlined"
-                    severity="success"
-                    (onClick)="addPoints(selectedPlayerGame, 10)" />
-                  <p-button
-                    label="+50"
-                    variant="outlined"
-                    severity="success"
-                    (onClick)="addPoints(selectedPlayerGame, 50)" />
-                  <p-button
-                    label="+100"
-                    variant="outlined"
-                    severity="success"
-                    (onClick)="addPoints(selectedPlayerGame, 100)" />
+                <p-buttongroup class="point-add-group">
+                  <div class="flex-nowrap">
+                    <p-button
+                      label="-100"
+                      variant="outlined"
+                      severity="warn"
+                      (onClick)="addPoints(selectedPlayerGame, -100)" />
+                    <p-button
+                      label="-50"
+                      variant="outlined"
+                      severity="warn"
+                      (onClick)="addPoints(selectedPlayerGame, -50)" />
+                    <p-button
+                      label="-10"
+                      variant="outlined"
+                      severity="warn"
+                      (onClick)="addPoints(selectedPlayerGame, -10)" />
+                    <p-button
+                      label="-1"
+                      variant="outlined"
+                      severity="warn"
+                      (onClick)="addPoints(selectedPlayerGame, -1)" />
+                  </div>
+                  <div class="flex-nowrap">
+                    <p-button
+                      label="+1"
+                      variant="outlined"
+                      severity="success"
+                      (onClick)="addPoints(selectedPlayerGame, 1)" />
+                    <p-button
+                      label="+10"
+                      variant="outlined"
+                      severity="success"
+                      (onClick)="addPoints(selectedPlayerGame, 10)" />
+                    <p-button
+                      label="+50"
+                      variant="outlined"
+                      severity="success"
+                      (onClick)="addPoints(selectedPlayerGame, 50)" />
+                    <p-button
+                      label="+100"
+                      variant="outlined"
+                      severity="success"
+                      (onClick)="addPoints(selectedPlayerGame, 100)" />
+                  </div>
                 </p-buttongroup>
               }
-              <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
             </div>
           </ng-template>
           <ng-template let-playerGame #item>
@@ -151,30 +167,14 @@
           @switch (game?.BoardGame?.ScoreType) {
             <!-- POINTS -->
             @case ('points') {
-              <p-inputNumber
-                class="point-editor"
-                [showButtons]="true"
-                buttonLayout="horizontal"
-                [prefix]="game?.BoardGame?.ScorePrefix ?? undefined"
-                [suffix]="game?.BoardGame?.ScoreSuffix ?? undefined"
-                [minFractionDigits]="0"
-                [maxFractionDigits]="10"
-                [ngModel]="playerGame.Points"
-                [ngModelOptions]="{ standalone: true }"
-                (ngModelChange)="setPoints(playerGame, $event)">
-                <ng-template #incrementbuttonicon>
-                  <span class="pi pi-plus"></span>
-                </ng-template>
-                <ng-template #decrementbuttonicon>
-                  <span class="pi pi-minus"></span>
-                </ng-template>
-              </p-inputNumber>
               @if (playerGame.Points === maxPoints) {
                 <i class="pi pi-trophy" style="color: gold"></i>
               } @else {
                 <div class="empty-trophy"></div>
               }
-              <span class="player-name">{{ playerGame.Player?.Name }}</span>
+              <span class="player-name">
+                {{ playerGame.Player?.Name }}: {{ playerGame.Points | score: game?.BoardGame }}
+              </span>
             }
             <!-- RANK -->
             @case ('rank') {

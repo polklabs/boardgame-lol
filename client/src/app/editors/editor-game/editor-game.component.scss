@@ -3,6 +3,12 @@
     width: 100%;
   }
 
+  .point-add-group {
+    .p-button {
+      padding: 8px;
+    }
+  }
+
   .media-sub-spread {
     justify-content: space-between;
     :nth-child(1) {
@@ -19,8 +25,16 @@
     border: solid var(--p-surface-600);
     border-width: 0 0 1px 0;
     padding: 8px;
+    flex-direction: column;
+    gap: 8px;
     .order-list-header {
       align-items: center;
+    }
+    .p-buttongroup {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
     }
   }
 
@@ -46,6 +60,10 @@
 
     .player-name {
       flex-shrink: 0;
+      max-width: calc(100vw - 200px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .point-editor {

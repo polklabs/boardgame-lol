@@ -29,12 +29,11 @@ import { Observable, of, Subscription } from 'rxjs';
 import { format } from 'date-fns';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
 import { CheckboxModule } from 'primeng/checkbox';
-import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { InputNumberModule } from 'primeng/inputnumber';
 import { TagsComponent } from '../../shared/components/tags/tags.component';
 import { TooltipModule } from 'primeng/tooltip';
 import { TagComponent } from '../../shared/components/tag/tag.component';
+import { ScorePipe } from '../../shared/pipes/score.pipe';
 
 type EntityType = GameEntity;
 
@@ -56,12 +55,11 @@ type EntityType = GameEntity;
     EditorBoardGameComponent,
     EditorPlayerGameComponent,
     OrderListModule,
-    InputGroupModule,
     InputGroupAddonModule,
-    InputNumberModule,
     TagsComponent,
     TooltipModule,
     TagComponent,
+    ScorePipe,
   ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',

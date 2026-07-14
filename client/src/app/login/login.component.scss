@@ -1,17 +1,4 @@
 :host ::ng-deep {
-  .p-floatlabel input:not(:focus):not(.p-filled) ~ label {
-    top: 1.4rem;
-  }
-  // .p-floatlabel .p-password input:not(:focus):not(.p-filled) ~ label {
-  //   top: 1.4rem
-  // }
-
-  span.p-floatlabel {
-    margin-top: 32px;
-    display: flex;
-    flex-direction: column;
-  }
-
   .p-dialog {
     max-width: 400px;
     margin: 64px auto 0px;
@@ -29,13 +16,8 @@
         width: 100%;
       }
 
-      p-checkbox {
-        margin-top: 24px;
-        margin-bottom: 4px;
-      }
-
       .p-button {
-        margin: 24px 0;
+        margin: 0 0 24px 0;
       }
 
       .sign-up {

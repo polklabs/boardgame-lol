@@ -54,6 +54,7 @@ body {
   flex-wrap: wrap;
   > * {
     flex-grow: 1;
+    flex-basis: 0;
   }
 }
 
@@ -144,7 +145,11 @@ form {
   margin-bottom: 1.6rem;
   display: flex;
   flex-direction: column;
-  input, textarea, p-select, p-multiselect, p-inputnumber {
+  input,
+  textarea,
+  p-select,
+  p-multiselect,
+  p-inputnumber {
     width: 100%;
   }
 }
@@ -176,4 +181,7 @@ p-select {
   border: 1px solid var(--p-surface-700);
   border-width: 0 0 1px 0;
   white-space: nowrap;
+}
+.p-datatable-flex-scrollable > .p-datatable-table-container {
+  flex: 0;
 }

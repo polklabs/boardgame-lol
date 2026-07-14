@@ -10,7 +10,7 @@ import {
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { TagEntity } from 'libs/index';
 import { ButtonModule } from 'primeng/button';
-import { MultiSelectModule } from 'primeng/multiselect';
+import { MultiSelectFocusEvent, MultiSelectModule } from 'primeng/multiselect';
 import { Observable, of } from 'rxjs';
 import { TagComponent } from '../tag/tag.component';
 import { EditorTagsComponent } from '../../../editors/editor-tags/editor-tags.component';
@@ -74,5 +74,11 @@ export class TagsComponent implements ControlValueAccessor {
 
   onModelChange(value: unknown): void {
     this.changed.emit(value);
+  }
+
+  onFocus(event: MultiSelectFocusEvent) {
+    // if (this.isMobile) {
+    event.originalEvent.stopImmediatePropagation();
+    // }
   }
 }
