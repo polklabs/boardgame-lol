@@ -11,6 +11,7 @@ export * from './models/User.entity';
 export * from './models/ClubUser.entity';
 export * from './models/Tag.entity';
 export * from './models/TagBoardGame.entity';
+export * from './models/TagPlayerGame.entity';
 export * from './models/jwt.model';
 export * from './models/ITag';
 

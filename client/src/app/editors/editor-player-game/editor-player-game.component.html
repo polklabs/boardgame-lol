@@ -38,6 +38,14 @@
         } @else if (scoreType === 'rank') {
           <app-checkbox formControlName="DNF" label="Did Not Finish" [hiddenFields]="hideFields"></app-checkbox>
         }
+
+        <app-tags
+          formControlName="Tags"
+          label="Tags"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"
+          [options$]="tagList$"></app-tags>
+
         <div class="dialog-footer">
           <div>
             <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>

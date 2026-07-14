@@ -100,6 +100,7 @@
               <tr>
                 <th id="date">Date</th>
                 <th id="game">Game</th>
+                <th id="tags">Tags</th>
                 <th id="points">Points</th>
               </tr>
             </ng-template>
@@ -110,6 +111,13 @@
                 </td>
                 <td>
                   {{ playerGame.Game.BoardGame.Name }}
+                </td>
+                <td>
+                  <div class="tag-wrapper">
+                  @for (tag of playerGame.Tags; track tag.TagId) {
+                    <app-tag [tag]="tag"></app-tag>
+                  }
+                  </div>
                 </td>
                 <td>
                   @if (showScore(playerGame.Game)) {

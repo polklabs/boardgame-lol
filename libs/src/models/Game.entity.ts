@@ -16,6 +16,7 @@ import { TagEntity } from './Tag.entity';
 import { TagGameEntity } from './TagGame.entity';
 import { TagBoardGameEntity } from './TagBoardGame.entity';
 import { TagPlayerEntity } from './TagPlayer.entity';
+import { TagPlayerGameEntity } from './TagPlayerGame.entity';
 
 export type GameWrapper = {
   Game: GameEntity;
@@ -33,6 +34,7 @@ export type GameReturn = {
   TagGames: TagGameEntity[];
   TagBoardGames: TagBoardGameEntity[];
   TagPlayers: TagPlayerEntity[];
+  TagPlayerGames: TagPlayerGameEntity[];
 };
 
 @TableName('Game')

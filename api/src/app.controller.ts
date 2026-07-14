@@ -85,6 +85,7 @@ export class AppController {
       TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', params.clubId),
       TagGames: this.tagManager.tagGame.loadMany('ClubId', params.clubId),
       TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', params.clubId),
+      TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', params.clubId),
     };
   }
 

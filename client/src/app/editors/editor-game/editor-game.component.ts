@@ -34,6 +34,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TagsComponent } from '../../shared/components/tags/tags.component';
 import { TooltipModule } from 'primeng/tooltip';
+import { TagComponent } from '../../shared/components/tag/tag.component';
 
 type EntityType = GameEntity;
 
@@ -60,6 +61,7 @@ type EntityType = GameEntity;
     InputNumberModule,
     TagsComponent,
     TooltipModule,
+    TagComponent,
   ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
@@ -431,7 +433,11 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
       const result = await this.apiService.postGame(this.game.GameId === '', {
         Game: gameData,
-        PlayerGames: this.playerGames.map((x) => new PlayerGameEntity(x)),
+        PlayerGames: this.playerGames.map((x) => {
+          const ent = new PlayerGameEntity(x);
+          ent.Tags = x.Tags;
+          return ent;
+        }),
         BoardGames: this.newBoardGames,
         Players: this.newPlayers,
       });

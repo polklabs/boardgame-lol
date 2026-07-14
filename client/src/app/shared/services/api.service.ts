@@ -13,6 +13,7 @@ import {
   PlayerGameEntity,
   PlayerReturn,
   TagBoardGameEntity,
+  TagPlayerGameEntity,
   TagEntity,
 } from 'libs/index';
 import { format } from 'date-fns';
@@ -37,6 +38,7 @@ export class ApiService {
   readonly tagBoardGameList$ = new BehaviorSubject<TagBoardGameEntity[]>([]);
   readonly tagGameList$ = new BehaviorSubject<TagGameEntity[]>([]);
   readonly tagPlayerList$ = new BehaviorSubject<TagPlayerEntity[]>([]);
+  readonly tagPlayerGameList$ = new BehaviorSubject<TagPlayerGameEntity[]>([]);
 
   // Maps
   private _boardGameDict: Record<string, BoardGameEntity> = {};
@@ -50,7 +52,6 @@ export class ApiService {
   private _filteredPlayerIds = new Set<string>();
   private _filteredDaysOfWeek = new Set<string>();
   private _filteredStartDate: Date | null = null;
-  private _includeDNF = true; // Did not finish
 
   // Filtered Observables
   readonly filteredBoardGameList$ = new BehaviorSubject<BoardGameEntity[]>([]);
@@ -174,6 +175,15 @@ export class ApiService {
     this.tagPlayerList$.next(tagPlayerList);
   }
 
+  // Tag Player Games
+  get tagPlayerGameList() {
+    return this.tagPlayerGameList$.value;
+  }
+  private set tagPlayerGameList(tagPlayerGameList: TagPlayerGameEntity[]) {
+    tagPlayerGameList = tagPlayerGameList.map((x) => new TagPlayerGameEntity(x));
+    this.tagPlayerGameList$.next(tagPlayerGameList);
+  }
+
   // Public Clubs
   get publicClubs() {
     return this.publicClubs$.value;
@@ -197,6 +207,7 @@ export class ApiService {
     this.tagBoardGameList = [];
     this.tagGameList = [];
     this.tagPlayerList = [];
+    this.tagPlayerGameList = [];
   }
 
   async fetchPublicClubs() {
@@ -231,6 +242,7 @@ export class ApiService {
       TagBoardGames: TagBoardGameEntity[];
       TagGames: TagGameEntity[];
       TagPlayers: TagPlayerEntity[];
+      TagPlayerGames: TagPlayerGameEntity[];
     }>(['api', 'club', clubId]);
 
     if (data?.Club) {
@@ -249,6 +261,7 @@ export class ApiService {
     this.tagBoardGameList = data.TagBoardGames;
     this.tagGameList = data.TagGames;
     this.tagPlayerList = data.TagPlayers;
+    this.tagPlayerGameList = data.TagPlayerGames;
     this.updateReferences();
     this.dataUpdate$.next();
   }
@@ -295,6 +308,7 @@ export class ApiService {
       this.tagBoardGameList = result.TagBoardGames;
       this.tagGameList = result.TagGames;
       this.tagPlayerList = result.TagPlayers;
+      this.tagPlayerGameList = result.TagPlayerGames;
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -543,6 +557,10 @@ export class ApiService {
     this.playerGameList.forEach((pg) => {
       pg.Player = this.getPlayer(pg.PlayerId);
       pg.Game = this.getGame(pg.GameId);
+      pg.Tags = this.tagPlayerGameList
+        .filter((x) => x.PlayerGameId === pg.PlayerGameId)
+        .map((t) => this.getTag(t.TagId))
+        .filter((x) => x !== null);
     });
 
     this.boardGameList.forEach((bg) => {
@@ -573,6 +591,10 @@ export class ApiService {
       t.Tag = this.getTag(t.TagId);
     });
 
+    this.tagPlayerGameList.forEach((t) => {
+      t.Tag = this.getTag(t.TagId);
+    });
+
     this.calculatedFields();
   }
 
@@ -594,6 +616,7 @@ export class ApiService {
     this.tagBoardGameList.forEach((x) => x.calculate());
     this.tagGameList.forEach((x) => x.calculate());
     this.tagPlayerList.forEach((x) => x.calculate());
+    this.tagPlayerGameList.forEach((x) => x.calculate());
 
     PlayerEntity.postCalculate(this.playerList);
     GameEntity.postCalculate(this.gameList);

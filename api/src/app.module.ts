@@ -23,6 +23,7 @@ import { TagManager } from './managers/Tag.manager';
 import { TagBoardGameManager } from './managers/TagBoardGame.manager';
 import { TagGameManager } from './managers/TagGame.manager';
 import { TagPlayerManager } from './managers/TagPlayer.manager';
+import { TagPlayerGameManager } from './managers/TagPlayerGame.manager';
 
 const clientPath = process.env.CLIENT_PATH ?? join(__dirname, '../../../../dist/client/browser');
 
@@ -41,6 +42,7 @@ const clientPath = process.env.CLIENT_PATH ?? join(__dirname, '../../../../dist/
     TagBoardGameManager,
     TagGameManager,
     TagPlayerManager,
+    TagPlayerGameManager,
     AuthService,
     EmailService,
     EmojiService,

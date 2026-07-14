@@ -204,6 +204,23 @@
           }
         </span>
         <div class="flex gap-8 edit-btns">
+          @if (playerGame.Tags.length > 1) {
+            <p-button
+              [pTooltip]="tooltipContent"
+              severity="help"
+              [rounded]="true"
+              [text]="true"
+              icon="pi pi-tags"></p-button>
+            <ng-template #tooltipContent>
+              <div class="flex items-center">
+                @for (tag of playerGame.Tags; track tag) {
+                  <app-tag [tag]="tag"></app-tag>
+                }
+              </div>
+            </ng-template>
+          } @else if (playerGame.Tags.length > 0) {
+            <app-tag [tag]="playerGame.Tags[0]"></app-tag>
+          }
           <p-button
             (onClick)="editPlayerGame(playerGame)"
             [rounded]="true"

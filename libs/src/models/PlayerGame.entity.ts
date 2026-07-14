@@ -8,6 +8,7 @@ import { ForeignKey } from '../decorators/foreign-key.decorator';
 import { PlayerEntity } from './Player.entity';
 import { GameEntity } from './Game.entity';
 import { Ignore } from '../decorators/ignore.decorator';
+import { TagEntity } from './Tag.entity';
 
 @TableName('PlayerGame')
 export class PlayerGameEntity extends BaseEntity {
@@ -26,6 +27,9 @@ export class PlayerGameEntity extends BaseEntity {
   @MinMax(-999999999, 999999999, 'number')
   @Nullable()
   Points: number | null = null;
+
+  @Ignore()
+  Tags: TagEntity[] = [];
 
   @Ignore()
   Player: PlayerEntity | null = null;

@@ -76,6 +76,7 @@ export class GameManager extends BaseManager<GameEntity> {
       TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
       TagGames: this.tagManager.tagGame.loadMany('ClubId', entity.ClubId),
       TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', entity.ClubId),
+      TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', entity.ClubId),
     };
   }
 
@@ -148,6 +149,7 @@ export class GameManager extends BaseManager<GameEntity> {
       TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
       TagGames: this.tagManager.tagGame.loadMany('ClubId', entity.ClubId),
       TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', entity.ClubId),
+      TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', entity.ClubId),
     };
   }
 

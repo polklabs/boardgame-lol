@@ -51,7 +51,6 @@
     <ng-template #body let-game let-columns="columns" let-expanded="expanded">
       <tr>
         <td>
-          @if (game.Scores.length > game.Winners.length) {
             <p-button
               type="button"
               pRipple
@@ -60,7 +59,6 @@
               [rounded]="true"
               [plain]="true"
               [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-          }
         </td>
 
         @for (column of columns; track column) {
@@ -126,6 +124,7 @@
             <ng-template #header>
               <tr>
                 <th id="name">Name</th>
+                <th id="tags">Tags</th>
                 @if (showScore(game)) {
                   <th id="points">Points</th>
                 }
@@ -161,6 +160,13 @@
                     }
                   }
                   <span>{{ score.Player?.Name }}</span>
+                </td>
+                <td>
+                  <div class="tag-wrapper">
+                  @for (tag of score.Tags; track tag.TagId) {
+                    <app-tag [tag]="tag"></app-tag>
+                  }
+                  </div>
                 </td>
                 @if (showScore(game)) {
                   <td>{{ score.Points | number: '1.0-3' | score: game.BoardGame }}</td>

@@ -2,15 +2,16 @@ import { BaseManager } from './Base.manager';
 import { DbService } from 'src/services/db.service';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
-import { ITag, newGuid, TagBoardGameEntity, TagEntity } from 'libs/index';
+import { ITag, newGuid, TagBoardGameEntity, TagEntity, TagPlayerGameEntity } from 'libs/index';
 import { TagBoardGameManager } from './TagBoardGame.manager';
 import { TagGameManager } from './TagGame.manager';
 import { TagPlayerManager } from './TagPlayer.manager';
 import { TagGameEntity } from 'libs/models/TagGame.entity';
 import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
 import { ClubUserManager } from './ClubUser.manager';
+import { TagPlayerGameManager } from './TagPlayerGame.manager';
 
-type TagLink = 'boardGame' | 'game' | 'player';
+type TagLink = 'boardGame' | 'game' | 'player' | 'playerGame';
 
 @Injectable()
 export class TagManager extends BaseManager<TagEntity> {
@@ -20,6 +21,7 @@ export class TagManager extends BaseManager<TagEntity> {
     public tagBoardGame: TagBoardGameManager,
     public tagGame: TagGameManager,
     public tagPlayer: TagPlayerManager,
+    public tagPlayerGame: TagPlayerGameManager,
   ) {
     super(TagEntity);
   }
@@ -58,6 +60,8 @@ export class TagManager extends BaseManager<TagEntity> {
         return this.tagGame.loadMany('GameId', [linkId]);
       case 'player':
         return this.tagPlayer.loadMany('PlayerId', [linkId]);
+      case 'playerGame':
+        return this.tagPlayerGame.loadMany('PlayerGameId', [linkId]);
       default:
         throw new NotImplementedException();
     }
@@ -70,6 +74,8 @@ export class TagManager extends BaseManager<TagEntity> {
         return this.tagGame.put(userId, new TagGameEntity({ TagId, ClubId, GameId: linkId }));
       case 'player':
         return this.tagPlayer.put(userId, new TagPlayerEntity({ TagId, ClubId, PlayerId: linkId }));
+      case 'playerGame':
+        return this.tagPlayerGame.put(userId, new TagPlayerGameEntity({ TagId, ClubId, PlayerGameId: linkId }));
       default:
         throw new NotImplementedException();
     }
@@ -82,6 +88,8 @@ export class TagManager extends BaseManager<TagEntity> {
         return this.tagGame.delete(tagId, linkId, clubId);
       case 'player':
         return this.tagPlayer.delete(tagId, linkId, clubId);
+      case 'playerGame':
+        return this.tagPlayerGame.delete(tagId, linkId, clubId);
       default:
         throw new NotImplementedException();
     }

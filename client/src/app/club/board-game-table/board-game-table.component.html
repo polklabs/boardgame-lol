@@ -115,6 +115,9 @@
                   Name
                   <p-sortIcon field="name" />
                 </th>
+                <th id="tags">
+                  Tags
+                </th>
                 <th id="wins" pSortableColumn="wins">
                   Wins
                   <p-sortIcon field="wins" />
@@ -133,6 +136,13 @@
               <tr>
                 <td>
                   {{ player.name }}
+                </td>
+                <td>
+                  <div class="tag-wrapper">
+                  @for (tag of player.Tags; track tag.TagId) {
+                    <app-tag [tag]="tag"></app-tag>
+                  }
+                  </div>
                 </td>
                 <td>
                   {{ player.wins | number: '1.0-3' }}
