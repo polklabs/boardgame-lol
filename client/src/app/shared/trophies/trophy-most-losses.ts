@@ -2,8 +2,14 @@ import { PlayerEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
 
 export class TrophyMostLosses extends ITrophy {
-  constructor() {
-    super('🏅', 'The Participator', ['At least you tried'], '{value} = Losses - Wins; {value} > 0');
+  constructor(sortOrder: number | null = null) {
+    super(
+      sortOrder,
+      '🏅',
+      'The Participator',
+      ['At least you tried', "You'll get em next time"],
+      '{value} = Losses - Wins; {value} losses > 0',
+    );
   }
 
   calculate(players: PlayerEntity[]) {

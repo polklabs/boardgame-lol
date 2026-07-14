@@ -77,10 +77,7 @@ export class StatsComponent implements OnInit {
 
   calculateTrophies(trophies: ITrophy[]) {
     this.trophies = trophies.map((x) => x.export()).filter((x) => x.array.length > 0 && x.value !== Math.abs(Infinity));
-    this.trophies.sort((a, b) => {
-      return b.value - a.value;
-    });
-    this.trophies = this.trophies.slice(0, 9);
+    // this.trophies = this.trophies.slice(0, 9);
   }
 
   updateHeatmap() {

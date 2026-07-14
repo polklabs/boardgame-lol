@@ -1,30 +1,35 @@
 <div style="max-height: calc(100dvh - 140px); overflow: auto">
   <div style="display: flex; flex-direction: column; gap: 2rem">
     <div class="trophy-list">
-      <div class="trophy-header">🏆 Board Game Trophies 🏆</div>
+      <div class="trophy-header">🏆 Trophies 🏆</div>
 
-      @for (t of trophies; track $index) {
-        <ng-container *ngTemplateOutlet="trophy; context: t"></ng-container>
-      }
+      <table>
+        @for (t of trophies; track $index) {
+          <tr>
+            <td class="trophy-icon">
+              <span>{{ t.emoji }}</span>
+              @if (t.formula) {
+                <i class="info-icon pi pi-info-circle" [pTooltip]="t.formula"></i>
+              }
+            </td>
+            <td class="trophy-content">
+              <div>
+                <span class="trophy-title">{{ t.title }}</span>
+                <small>{{ t.subtitle }}</small>
+              </div>
+            </td>
+            <td>
+              <span class="trophy-winner">{{ t.array | array: ['Nickname', 'Name'] }}</span>
+            </td>
+            <td class="trophy-count">
+              @if (t.showValue) {
+                <span>{{ t.value | number }}</span>
+              }
+            </td>
+          </tr>
+        }
+      </table>
     </div>
-
-    <ng-template #trophy let-emoji="emoji" let-title="title" let-subtitle="subtitle" let-array="array" let-value="value">
-      <div class="trophy">
-        <div class="trophy-details">
-          <span class="trophy-icon">{{ emoji }}</span>
-          <div>
-            <div class="trophy-content">
-              <span class="trophy-title">{{ title }}</span>
-              <span class="trophy-winner">{{ array | array: ['Nickname', 'Name'] }}</span>
-            </div>
-            <div class="trophy-info">
-              <small>{{ subtitle }}</small>
-            </div>
-          </div>
-        </div>
-        <span class="trophy-count">{{ value }}</span>
-      </div>
-    </ng-template>
 
     <div class="heatmap-wrapper">
       <div class="flex gap-1 heatmap">

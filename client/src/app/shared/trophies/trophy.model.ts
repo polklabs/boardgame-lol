@@ -4,8 +4,10 @@ export type Trophy = {
   emoji: string;
   title: string;
   subtitle: string;
+  formula?: string;
   value: number;
   array: unknown[];
+  showValue: boolean;
 };
 
 export abstract class ITrophy {
@@ -13,12 +15,15 @@ export abstract class ITrophy {
   title: string;
   subtitle: string[];
   formula?: string;
+  sortOrder: number | null;
   array: unknown[] = [];
   value: number = 0;
+  showValue = true;
 
   extra: Record<string, string | number> = {};
 
-  constructor(emoji: string, title: string, subtitle: string[], formula?: string) {
+  constructor(sortOrder: number | null, emoji: string, title: string, subtitle: string[], formula?: string) {
+    this.sortOrder = sortOrder;
     this.emoji = emoji;
     this.title = title;
     this.subtitle = subtitle;
@@ -47,21 +52,17 @@ export abstract class ITrophy {
       emoji,
       title: this.textReplace(this.title),
       subtitle: this.textReplace(GetRandom(this.subtitle) ?? ''),
+      formula: this.formula ? this.textReplace(this.formula) : undefined,
       value: this.value ?? 0,
       array: this.array ?? [],
+      showValue: this.showValue,
     };
   }
 
   textReplace(text: string): string {
-    const regex = /\{(.+?)\}/gm;
-    const result = text.replaceAll(regex, (_, g1: string) => {
-      if (g1 in this.extra) {
-        return `${this.extra[g1] ?? ''}`;
-      } else {
-        return '';
-      }
-    });
-
-    return result;
+    for (const key of Object.keys(this.extra)) {
+      text = text.replaceAll(`{${key}}`, `${this.extra[key]}`);
+    }
+    return text;
   }
 }

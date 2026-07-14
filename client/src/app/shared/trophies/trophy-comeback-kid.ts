@@ -2,8 +2,14 @@ import { GameEntity, PlayerEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
 
 export class TrophyComebackKid extends ITrophy {
-  constructor() {
-    super('🕺', 'The Comeback Kid', ["Can't keep a good player down"], 'Max # of games played between wins.');
+  constructor(sortOrder: number | null = null) {
+    super(
+      sortOrder,
+      '🕺',
+      'The Comeback Kid',
+      ["Can't keep a good player down", "Guess who's back? Back again", 'Bringing boardgames back'],
+      'Max # of games played between wins.',
+    );
   }
 
   calculate(players: PlayerEntity[], games: GameEntity[]) {

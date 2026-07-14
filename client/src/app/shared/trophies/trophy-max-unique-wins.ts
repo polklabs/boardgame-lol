@@ -2,8 +2,8 @@ import { PlayerEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
 
 export class TrophyMaxUniqueWins extends ITrophy {
-  constructor() {
-    super('🧩', 'The Collector', ['A real Jack of All Trades'], 'Most unique board game wins.');
+  constructor(sortOrder: number | null = null) {
+    super(sortOrder, '🧩', 'The Collector', ['A real Jack of All Trades'], 'Most unique board game wins.');
   }
 
   calculate(players: PlayerEntity[]) {

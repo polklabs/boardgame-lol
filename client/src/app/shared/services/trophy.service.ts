@@ -17,27 +17,31 @@ import { BehaviorSubject } from 'rxjs';
 import { TrophySnail } from '../trophies/trophy-snail';
 import { TrophyRivals } from '../trophies/trophy-rivals';
 import { TrophyBestFriends } from '../trophies/trophy-best-friends';
+import { TrophyHoarder } from '../trophies/trophy-hoarder';
+import { TrophyNewPlayer } from '../trophies/trophy-new-player';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TrophyService {
   private _trophies: { [key: string]: ITrophy } = {
-    MostWins: new TrophyMostWins(),
-    BestComeback: new TrophyComebackKid(),
-    LongestWinStreak: new TrophyLongestWinStreak(),
-    MaxUniqueWins: new TrophyMaxUniqueWins(),
-    MostTies: new TrophyMostTies(),
-    MostWeekendWins: new TrophyMostWeekendWins(),
-    MostPlays: new TrophyMostPlays(),
-    MostPlaysOneDay: new TrophyMostPlaysOneDay(),
-    FavXPlayerGame: new TrophyFavXPlayerGame(),
-    LastGroupWin: new TrophyLastGroupWin(),
-    UniqueOpponents: new TrophyUniqueOpponents(),
-    MostLosses: new TrophyMostLosses(),
-    FirstWinDelay: new TrophySnail(),
-    Rivals: new TrophyRivals(),
-    BestFriends: new TrophyBestFriends(),
+    MostWins: new TrophyMostWins(4),
+    MostPlays: new TrophyMostPlays(4),
+    LongestWinStreak: new TrophyLongestWinStreak(4),
+    BestComeback: new TrophyComebackKid(4),
+    MaxUniqueWins: new TrophyMaxUniqueWins(3),
+    MostTies: new TrophyMostTies(3),
+    UniqueOpponents: new TrophyUniqueOpponents(3),
+    MostLosses: new TrophyMostLosses(2),
+    FirstWinDelay: new TrophySnail(2),
+    Rivals: new TrophyRivals(3),
+    BestFriends: new TrophyBestFriends(3),
+    Hoarder: new TrophyHoarder(2),
+    NewPlayer: new TrophyNewPlayer(3),
+    MostWeekendWins: new TrophyMostWeekendWins(1),
+    MostPlaysOneDay: new TrophyMostPlaysOneDay(1),
+    FavXPlayerGame: new TrophyFavXPlayerGame(1),
+    LastGroupWin: new TrophyLastGroupWin(1),
   } as const;
 
   readonly trophies$ = new BehaviorSubject<ITrophy[]>([]);
@@ -50,6 +54,7 @@ export class TrophyService {
       values.forEach((t) => {
         t.update(apiService.playerList, apiService.gameList, apiService.boardGameList);
       });
+      values.sort((a, b) => (b.sortOrder ?? 0) - (a.sortOrder ?? 0) || b.value - a.value);
       this.trophies$.next(values);
     });
   }

@@ -2,8 +2,9 @@ import { BoardGameEntity, GameEntity, Mode, PlayerEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
 
 export class TrophyFavXPlayerGame extends ITrophy {
-  constructor() {
+  constructor(sortOrder: number | null = null) {
     super(
+      sortOrder,
       'U+003{FavXPlayerCount} U+FE0F U+20E3',
       'Favorite {FavXPlayerCount} Player Game',
       ["Oh, it's you {FavXPlayerCount} again..."],

@@ -3,8 +3,8 @@ import { ITrophy } from './trophy.model';
 import { format } from 'date-fns';
 
 export class TrophyMostWeekendWins extends ITrophy {
-  constructor() {
-    super('🥋', 'The Weekend Warrior', ['Work hard, play harder'], 'Most Wins On the Weekend');
+  constructor(sortOrder: number | null = null) {
+    super(sortOrder, '🥋', 'The Weekend Warrior', ['Work hard, play harder'], 'Most Wins On the Weekend');
   }
 
   calculate(players: PlayerEntity[], games: GameEntity[]) {

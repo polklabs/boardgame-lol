@@ -2,8 +2,9 @@ import { Mode, PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
 
 export class TrophyRivals extends ITrophy {
-  constructor() {
+  constructor(sortOrder: number | null = null) {
     super(
+      sortOrder,
       '🏒',
       'The Rivals',
       ['Anything you can do, I can do better'],

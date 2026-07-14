@@ -2,8 +2,8 @@ import { PlayerEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
 
 export class TrophySnail extends ITrophy {
-  constructor() {
-    super('🐌', 'The Snail', ["Started from the bottom now I'm here"], 'Most games before first win');
+  constructor(sortOrder: number | null = null) {
+    super(sortOrder, '🐌', 'The Snail', ["Started from the bottom now I'm here"], 'Most games before first win');
   }
 
   calculate(players: PlayerEntity[]) {

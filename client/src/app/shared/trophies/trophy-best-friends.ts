@@ -2,8 +2,14 @@ import { Mode, PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
 
 export class TrophyBestFriends extends ITrophy {
-  constructor() {
-    super('🫂', 'The Best Friends', ["If I didn't have you"], '2 players that win together the most.');
+  constructor(sortOrder: number | null = null) {
+    super(
+      sortOrder,
+      '🫂',
+      'The Best Friends',
+      ["If I didn't have you", 'Did we just become best friends?'],
+      '2 players that win together the most.',
+    );
   }
 
   calculate(players: PlayerEntity[]) {
