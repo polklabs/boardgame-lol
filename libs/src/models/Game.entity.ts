@@ -14,25 +14,14 @@ import { max } from 'date-fns/max';
 import { min } from 'date-fns/min';
 import { TagEntity } from './Tag.entity';
 import { TagGameEntity } from './TagGame.entity';
-import { TagBoardGameEntity } from './TagBoardGame.entity';
-import { TagPlayerEntity } from './TagPlayer.entity';
 import { TagPlayerGameEntity } from './TagPlayerGame.entity';
-
-export type GameWrapper = {
-  Game: GameEntity;
-  PlayerGames: PlayerGameEntity[];
-  BoardGames?: BoardGameEntity[];
-  Players?: PlayerEntity[];
-};
+import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
 
 export type GameReturn = {
   Game: GameEntity;
-  BoardGames: BoardGameEntity[];
+  PlayerGamePlayers: PlayerGamePlayerEntity[];
   PlayerGames: PlayerGameEntity[];
-  Players: PlayerEntity[];
   TagGames: TagGameEntity[];
-  TagBoardGames: TagBoardGameEntity[];
-  TagPlayers: TagPlayerEntity[];
   TagPlayerGames: TagPlayerGameEntity[];
 };
 
@@ -123,7 +112,7 @@ export class GameEntity extends BaseEntity {
 
   placePlayers(place: number): PlayerEntity[] {
     if (place in this.Places) {
-      return [...this.Places[place]].map((x) => x.Player).filter((x) => x !== null);
+      return [...this.Places[place]].flatMap((x) => x.Players).filter((x) => x !== null);
     } else {
       return [];
     }

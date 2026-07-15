@@ -1,5 +1,5 @@
 import { TableName } from '../decorators/table-name.decorator';
-import { BaseEntity } from './Base.entity';
+import { BaseEntity, calculationsComplete } from './Base.entity';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
 import { CHARACTER_LIMIT_SHORT, CHARACTER_LIMIT_BYTE } from '../constants';
@@ -114,7 +114,7 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   calculateChampion() {
-    this.calculationsComplete(this.Games);
+    calculationsComplete(this.Games);
 
     const winners = this.Games.flatMap((x) => x.Winners);
     this.Champions = Mode(winners, (x) => x.PlayerId);
@@ -138,7 +138,7 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   calculateScore() {
-    this.calculationsComplete(this.Games);
+    calculationsComplete(this.Games);
 
     const scores = this.Games.flatMap((g) => g.Scores).filter((x) => !!x.Points);
     if (this.ScoreType === 'points') {

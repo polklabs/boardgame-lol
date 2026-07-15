@@ -2,6 +2,17 @@ import 'reflect-metadata'; // This must be imported here for the prod build to w
 import { getIgnore, Ignore } from '../decorators/ignore.decorator';
 import { Exclude } from 'class-transformer';
 
+export function calculationsComplete<T extends BaseEntity>(item?: T | (T | null)[] | null) {
+  let complete: boolean;
+  if (Array.isArray(item)) {
+    complete = item.every((x) => x?.calculated ?? false);
+  } else {
+    complete = item?.calculated ?? false;
+  }
+
+  console.assert(complete, 'Calculations incomplete:', item);
+}
+
 export abstract class BaseEntity {
   // These fields are all required but will be assigned by the Base.Manager
   // User should never have control over these values
@@ -59,7 +70,7 @@ export abstract class BaseEntity {
     }
   }
 
-  resetCalculated<T extends BaseEntity>(entity: T, entityType: new (partial: Partial<T>) => T) {
+  resetCalculated<T extends this>(entity: T, entityType: new (partial: Partial<T>) => T) {
     const ignored = getIgnore(entityType);
     for (const key in ignored) {
       if (key in entity && key in this) {
@@ -68,17 +79,6 @@ export abstract class BaseEntity {
         temp[key] = newInstance[key];
       }
     }
-  }
-
-  calculationsComplete<T extends BaseEntity>(item?: T | (T | null)[] | null) {
-    let complete: boolean;
-    if (Array.isArray(item)) {
-      complete = item.every((x) => x?.calculated ?? false);
-    } else {
-      complete = item?.calculated ?? false;
-    }
-
-    console.assert(complete, 'Calculations incomplete:', item);
   }
 
   protected booleanConverter<T>(partial: Partial<T>, propName: keyof T) {

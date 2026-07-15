@@ -1,24 +1,24 @@
 import { Injectable, inject } from '@angular/core';
 import { ITrophy } from '../trophies/trophy.model';
-import { TrophyMostWins } from '../trophies/trophy-most-wins';
-import { TrophyComebackKid } from '../trophies/trophy-comeback-kid';
-import { TrophyLongestWinStreak } from '../trophies/trophy-longest-win-streak';
-import { TrophyMaxUniqueWins } from '../trophies/trophy-max-unique-wins';
-import { TrophyMostTies } from '../trophies/trophy-most-ties';
-import { TrophyMostWeekendWins } from '../trophies/trophy-most-weekend-wins';
-import { TrophyMostPlays } from '../trophies/trophy-most-plays';
-import { TrophyMostPlaysOneDay } from '../trophies/trophy-most-plays-one-day';
-import { TrophyFavXPlayerGame } from '../trophies/trophy-fav-x-player-game';
-import { TrophyLastGroupWin } from '../trophies/trophy-last-group-win';
-import { TrophyUniqueOpponents } from '../trophies/trophy-unique-opponents';
-import { TrophyMostLosses } from '../trophies/trophy-most-losses';
 import { ApiService } from './api.service';
 import { BehaviorSubject } from 'rxjs';
-import { TrophySnail } from '../trophies/trophy-snail';
-import { TrophyRivals } from '../trophies/trophy-rivals';
-import { TrophyBestFriends } from '../trophies/trophy-best-friends';
-import { TrophyHoarder } from '../trophies/trophy-hoarder';
-import { TrophyNewPlayer } from '../trophies/trophy-new-player';
+import { TrophyMostWins } from '../trophies/trophy-most-wins';
+// import { TrophyComebackKid } from '../trophies/trophy-comeback-kid';
+// import { TrophyLongestWinStreak } from '../trophies/trophy-longest-win-streak';
+// import { TrophyMaxUniqueWins } from '../trophies/trophy-max-unique-wins';
+// import { TrophyMostTies } from '../trophies/trophy-most-ties';
+// import { TrophyMostWeekendWins } from '../trophies/trophy-most-weekend-wins';
+import { TrophyMostPlays } from '../trophies/trophy-most-plays';
+import { TrophyMostPlaysOneDay } from '../trophies/trophy-most-plays-one-day';
+// import { TrophyFavXPlayerGame } from '../trophies/trophy-fav-x-player-game';
+// import { TrophyLastGroupWin } from '../trophies/trophy-last-group-win';
+// import { TrophyUniqueOpponents } from '../trophies/trophy-unique-opponents';
+// import { TrophyMostLosses } from '../trophies/trophy-most-losses';
+// import { TrophySnail } from '../trophies/trophy-snail';
+// import { TrophyRivals } from '../trophies/trophy-rivals';
+// import { TrophyBestFriends } from '../trophies/trophy-best-friends';
+// import { TrophyHoarder } from '../trophies/trophy-hoarder';
+// import { TrophyNewPlayer } from '../trophies/trophy-new-player';
 
 @Injectable({
   providedIn: 'root',
@@ -27,21 +27,21 @@ export class TrophyService {
   private _trophies: { [key: string]: ITrophy } = {
     MostWins: new TrophyMostWins(4),
     MostPlays: new TrophyMostPlays(4),
-    LongestWinStreak: new TrophyLongestWinStreak(4),
-    BestComeback: new TrophyComebackKid(4),
-    MaxUniqueWins: new TrophyMaxUniqueWins(3),
-    MostTies: new TrophyMostTies(3),
-    UniqueOpponents: new TrophyUniqueOpponents(3),
-    MostLosses: new TrophyMostLosses(2),
-    FirstWinDelay: new TrophySnail(2),
-    Rivals: new TrophyRivals(3),
-    BestFriends: new TrophyBestFriends(3),
-    Hoarder: new TrophyHoarder(2),
-    NewPlayer: new TrophyNewPlayer(3),
-    MostWeekendWins: new TrophyMostWeekendWins(1),
+    // LongestWinStreak: new TrophyLongestWinStreak(4),
+    // BestComeback: new TrophyComebackKid(4),
+    // MaxUniqueWins: new TrophyMaxUniqueWins(3),
+    // MostTies: new TrophyMostTies(3),
+    // UniqueOpponents: new TrophyUniqueOpponents(3),
+    // MostLosses: new TrophyMostLosses(2),
+    // FirstWinDelay: new TrophySnail(2),
+    // Rivals: new TrophyRivals(3),
+    // BestFriends: new TrophyBestFriends(3),
+    // Hoarder: new TrophyHoarder(2),
+    // NewPlayer: new TrophyNewPlayer(3),
+    // MostWeekendWins: new TrophyMostWeekendWins(1),
     MostPlaysOneDay: new TrophyMostPlaysOneDay(1),
-    FavXPlayerGame: new TrophyFavXPlayerGame(1),
-    LastGroupWin: new TrophyLastGroupWin(1),
+    // FavXPlayerGame: new TrophyFavXPlayerGame(1),
+    // LastGroupWin: new TrophyLastGroupWin(1),
   } as const;
 
   readonly trophies$ = new BehaviorSubject<ITrophy[]>([]);

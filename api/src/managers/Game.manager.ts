@@ -3,18 +3,20 @@ import { BaseManager } from './Base.manager';
 import { Injectable } from '@nestjs/common';
 import { newGuid } from 'libs/utils/guid-utils';
 import { ValidationError } from 'src/errors/validation.error';
-import { GameEntity, GameReturn, GameWrapper } from 'libs/index';
+import { GameEntity, GameReturn } from 'libs/index';
 import { BoardGameManager } from './BoardGame.manager';
 import { PlayerGameManager } from './PlayerGame.manager';
 import { PlayerManager } from './Player.manager';
 import { ClubUserManager } from './ClubUser.manager';
 import { TagManager } from './Tag.manager';
+import { PlayerGamePlayerManager } from './PlayerGamePlayer.manager';
 
 @Injectable()
 export class GameManager extends BaseManager<GameEntity> {
   constructor(
     protected db: DbService,
     protected boardGameManager: BoardGameManager,
+    protected playerGamePlayerManager: PlayerGamePlayerManager,
     protected playerGameManager: PlayerGameManager,
     protected playerManager: PlayerManager,
     protected clubUserManager: ClubUserManager,
@@ -23,12 +25,15 @@ export class GameManager extends BaseManager<GameEntity> {
     super(GameEntity);
   }
 
-  put(userId: string, wrapper: GameWrapper): GameReturn {
-    const tags = wrapper.Game.Tags;
-    const entity = this.new(wrapper.Game);
+  put(userId: string, game: GameEntity): GameReturn {
+    const tags = game.Tags;
+    const entity = this.new(game);
     entity.GameId = newGuid();
 
-    this.AssertClubIds(wrapper);
+    const playerGames = game.Scores;
+    const playerGamePlayers = playerGames.flatMap((pg) => pg.PlayerLinks);
+
+    this.AssertClubIds(game);
 
     this.clubUserManager.hasAccess(userId, entity.ClubId);
 
@@ -37,53 +42,43 @@ export class GameManager extends BaseManager<GameEntity> {
     const transactions: unknown[] = [];
 
     this.tagManager.upsert('game', userId, entity.ClubId!, tags, entity.GameId!, transactions);
-
-    wrapper.BoardGames?.forEach((boardGame) => {
-      const guid = newGuid();
-      boardGame.BoardGameId = guid;
-      entity.BoardGameId = guid;
-
-      transactions.push(this.boardGameManager.put(userId, boardGame, false, true));
-    });
-
-    wrapper.Players?.forEach((player) => {
-      const oldGuid = player.PlayerId;
-      const guid = newGuid();
-      player.PlayerId = guid;
-      wrapper.PlayerGames.filter((x) => x.PlayerId === oldGuid).forEach((pg) => (pg.PlayerId = guid));
-
-      transactions.push(this.playerManager.put(userId, player, false, true));
-    });
 
     this.Validate(entity);
     this.CheckForeignKeys(entity);
 
     transactions.push(this.runInsert(userId, entity, true));
 
-    wrapper.PlayerGames.forEach((pg) => {
+    playerGames.forEach((pg) => {
+      pg.PlayerGameId = newGuid();
       pg.GameId = entity.GameId;
       transactions.push(this.playerGameManager.put(userId, pg));
+      pg.PlayerLinks.forEach((pgp) => (pgp.PlayerGameId = pg.PlayerGameId));
+    });
+
+    playerGamePlayers.forEach((pgp) => {
+      transactions.push(this.playerGamePlayerManager.put(userId, pgp));
     });
 
     this.db.Transact(transactions);
 
     return {
       Game: this.loadOne(entity.GameId)!,
-      BoardGames: this.boardGameManager.loadMany('ClubId', entity.ClubId),
+      //TODO: REFINE QUERY
+      PlayerGamePlayers: this.playerGamePlayerManager.loadMany('ClubId', entity.ClubId),
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId, 'ClubId', entity.ClubId),
-      Players: this.playerManager.loadMany('ClubId', entity.ClubId),
-      TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
       TagGames: this.tagManager.tagGame.loadMany('ClubId', entity.ClubId),
-      TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', entity.ClubId),
       TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', entity.ClubId),
     };
   }
 
-  patch(userId: string, wrapper: GameWrapper): GameReturn {
-    const tags = wrapper.Game.Tags;
-    const entity = this.new(wrapper.Game);
+  patch(userId: string, game: GameEntity): GameReturn {
+    const tags = game.Tags;
+    const entity = this.new(game);
 
-    this.AssertClubIds(wrapper);
+    const playerGames = game.Scores;
+    const playerGamePlayers = playerGames.flatMap((pg) => pg.PlayerLinks);
+
+    this.AssertClubIds(game);
 
     this.clubUserManager.hasAccess(userId, entity.ClubId);
 
@@ -93,44 +88,39 @@ export class GameManager extends BaseManager<GameEntity> {
 
     this.tagManager.upsert('game', userId, entity.ClubId!, tags, entity.GameId!, transactions);
 
-    wrapper.BoardGames?.forEach((boardGame) => {
-      const oldGuid = boardGame.BoardGameId;
-      const guid = newGuid();
-      boardGame.BoardGameId = guid;
-      if (entity.BoardGameId === oldGuid) {
-        entity.BoardGameId = guid;
-      } else {
-        // Skip
-      }
-
-      transactions.push(this.boardGameManager.put(userId, boardGame, false, true));
-    });
-
-    wrapper.Players?.forEach((player) => {
-      const oldGuid = player.PlayerId;
-      const guid = newGuid();
-      player.PlayerId = guid;
-      wrapper.PlayerGames.filter((x) => x.PlayerId === oldGuid).forEach((pg) => (pg.PlayerId = guid));
-
-      transactions.push(this.playerManager.put(userId, player, false, true));
-    });
-
+    const playerGameIds = new Set(playerGames.map((pg) => pg.PlayerGameId));
     const oldPlayerGames = new Set(this.playerGameManager.loadMany('GameId', entity.GameId).map((x) => x.PlayerGameId));
-    const newPlayerGames = new Set<string>();
-    wrapper.PlayerGames.forEach((pg) => {
+    playerGames.forEach((pg) => {
       pg.GameId = entity.GameId;
-      if (pg.PlayerGameId && oldPlayerGames.has(pg.PlayerGameId)) {
+      if (oldPlayerGames.has(pg.PlayerGameId)) {
         transactions.push(this.playerGameManager.patch(userId, pg));
-        newPlayerGames.add(pg.PlayerGameId);
+        oldPlayerGames.delete(pg.PlayerGameId);
       } else {
         transactions.push(this.playerGameManager.put(userId, pg));
       }
     });
     oldPlayerGames.forEach((pgId) => {
-      if (!pgId || newPlayerGames.has(pgId)) {
-        // Continue
+      transactions.push(this.playerGameManager.delete(pgId, entity.ClubId));
+    });
+
+    //TODO: REFINE QUERY
+    const oldPlayerGamePlayerRows = this.playerGamePlayerManager
+      .loadMany('ClubId', entity.ClubId)
+      .filter((x) => playerGameIds.has(x.PlayerGameId));
+    const oldPlayerGamePlayers = new Set(oldPlayerGamePlayerRows.map((x) => x.PlayerGameId));
+    playerGamePlayers.forEach((pgp) => {
+      if (oldPlayerGamePlayers.has(pgp.PlayerGameId)) {
+        transactions.push(this.playerGamePlayerManager.patch(userId, pgp));
+        oldPlayerGamePlayers.delete(pgp.PlayerGameId);
       } else {
-        transactions.push(this.playerGameManager.delete(pgId, entity.ClubId!));
+        transactions.push(this.playerGamePlayerManager.put(userId, pgp));
+      }
+    });
+    oldPlayerGamePlayerRows.forEach((pgp) => {
+      if (oldPlayerGamePlayers.has(pgp.PlayerGameId)) {
+        transactions.push(this.playerGamePlayerManager.delete(pgp.PlayerGameId, pgp.PlayerId, entity.ClubId));
+      } else {
+        // Skip
       }
     });
 
@@ -141,12 +131,10 @@ export class GameManager extends BaseManager<GameEntity> {
 
     return {
       Game: this.loadOne(entity.GameId)!,
-      BoardGames: this.boardGameManager.loadMany('ClubId', entity.ClubId),
+      //TODO: REFINE QUERY
+      PlayerGamePlayers: this.playerGamePlayerManager.loadMany('ClubId', entity.ClubId),
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId, 'ClubId', entity.ClubId),
-      Players: this.playerManager.loadMany('ClubId', entity.ClubId),
-      TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId),
       TagGames: this.tagManager.tagGame.loadMany('ClubId', entity.ClubId),
-      TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', entity.ClubId),
       TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', entity.ClubId),
     };
   }
@@ -201,12 +189,11 @@ export class GameManager extends BaseManager<GameEntity> {
     }
   }
 
-  private AssertClubIds(wrapper: GameWrapper) {
-    const id = wrapper.Game.ClubId;
+  private AssertClubIds(game: GameEntity) {
+    const id = game.ClubId;
     const valid = [
-      ...(wrapper.BoardGames?.map((x) => x.ClubId) ?? []),
-      ...(wrapper.PlayerGames?.map((x) => x.ClubId) ?? []),
-      ...(wrapper.Players?.map((x) => x.ClubId) ?? []),
+      ...game.Scores.flatMap((pg) => pg.PlayerLinks).map((x) => x.ClubId),
+      ...game.Scores.map((x) => x.ClubId),
     ].every((x) => x === id);
 
     if (valid) {

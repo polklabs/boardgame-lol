@@ -1,25 +1,16 @@
-<app-editor-player
-  [editorVisible]="playerEditorVisible"
-  [player]="playerEdit"
-  [standalone]="false"
-  (closeEditor)="savePlayer($event); playerGameEditor.playerSaved($event)"
-  (deleteEntity)="deletePlayer($event); playerGameEditor.playerDeleted($event)"></app-editor-player>
 <app-editor-board-game
   [editorVisible]="boardGameEditorVisible"
   [boardGame]="boardGameEdit"
-  [standalone]="false"
-  (closeEditor)="saveBoardGame($event)"
-  (deleteEntity)="deleteBoardGame($event)"></app-editor-board-game>
+  [standalone]="true"
+  (closeEditor)="boardGameEditorVisible = false"></app-editor-board-game>
 
 <app-editor-player-game
   #playerGameEditor
   [editorVisible]="playerGameEditorVisible"
   [playerGame]="playerGameEdit"
-  [players]="players"
   [scoreType]="game?.BoardGame?.ScoreType"
   (closeEditor)="savePlayerGame($event)"
-  (deleteEntity)="deletePlayerGame($event)"
-  (editPlayer)="editPlayer($event)"></app-editor-player-game>
+  (deleteEntity)="deletePlayerGame($event)"></app-editor-player-game>
 
 <p-dialog
   [header]="title"
@@ -40,14 +31,11 @@
             label="BoardGame"
             [entityType]="entityType"
             [hiddenFields]="hideFields"
-            [options]="boardGames"
+            [options]="(boardGameList$ | async) ?? []"
             [showClear]="false"
             optionLabel="Name"
             optionValue="BoardGameId"></app-dropdown>
-          @if (canEditBoardGame()) {
-            <p-button (onClick)="editBoardGame(selectedBoardGame)" icon="pi pi-pencil"></p-button>
-          }
-          <p-button (onClick)="editBoardGame()" pTooltip="New Game" icon="pi pi-plus"></p-button>
+          <p-button (onClick)="addBoardGame()" pTooltip="New Game" icon="pi pi-plus"></p-button>
         </div>
         <p-orderList
           [value]="playerGames"

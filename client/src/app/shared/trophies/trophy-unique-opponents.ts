@@ -13,7 +13,7 @@ export class TrophyUniqueOpponents extends ITrophy {
       const friendSet = new Set<string>();
       player.PlayerGames.forEach((pg) =>
         pg.Game?.Scores.forEach((score) => {
-          friendSet.add(score.PlayerId);
+          score.Players.map((x) => x.PlayerId).forEach((p) => friendSet.add(p));
         }),
       );
       friendSet.delete(player.PlayerId);

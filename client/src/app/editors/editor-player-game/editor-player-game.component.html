@@ -1,3 +1,9 @@
+<app-editor-player
+  [editorVisible]="playerEditorVisible"
+  [player]="playerEdit"
+  [standalone]="true"
+  (closeEditor)="playerEditorVisible = false"></app-editor-player>
+
 <p-dialog
   [header]="title"
   [visible]="editorVisible"
@@ -16,14 +22,11 @@
             label="Player"
             [entityType]="entityType"
             [hiddenFields]="hideFields"
-            [options]="players"
+            [options]="(playerList$ | async) ?? []"
             optionLabel="Name"
             optionValue="PlayerId"
             [showClear]="false"></app-dropdown>
-          @if (canEditPlayer()) {
-            <p-button (onClick)="editPlayer.emit(selectedPlayer)" icon="pi pi-pencil"></p-button>
-          }
-          <p-button (onClick)="editPlayer.emit()" pTooltip="New Player" icon="pi pi-plus"></p-button>
+          <p-button (onClick)="addPlayer()" pTooltip="New Player" icon="pi pi-plus"></p-button>
         </div>
         @if (scoreType === 'points') {
           <app-number-input
@@ -52,7 +55,7 @@
           </div>
           <div>
             <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-            <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+            <p-button label="Apply" [outlined]="true" (onClick)="submit()"></p-button>
           </div>
         </div>
       </form>

@@ -8,7 +8,7 @@ import {
   SimpleChanges,
   inject,
 } from '@angular/core';
-import { isGuid, PlayerEntity, PlayerGameEntity, ScoreType, TagEntity } from 'libs/index';
+import { PlayerEntity, PlayerGameEntity, ScoreType } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
@@ -22,7 +22,8 @@ import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.com
 import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
 import { TagsComponent } from '../../shared/components/tags/tags.component';
 import { ApiService } from '../../shared/services/api.service';
-import { Observable, of } from 'rxjs';
+import { EditorPlayerComponent } from '../editor-player/editor-player.component';
+import { AsyncPipe } from '@angular/common';
 
 type EntityType = PlayerGameEntity;
 
@@ -39,6 +40,8 @@ type EntityType = PlayerGameEntity;
     CheckboxComponent,
     NumberInputComponent,
     TagsComponent,
+    EditorPlayerComponent,
+    AsyncPipe,
   ],
   templateUrl: './editor-player-game.component.html',
   styleUrl: './editor-player-game.component.scss',
@@ -51,28 +54,24 @@ export class EditorPlayerGameComponent implements OnChanges {
 
   @Input() editorVisible = false;
   @Input() playerGame?: PlayerGameEntity;
-  @Input() players: PlayerEntity[] = [];
   @Input() scoreType?: ScoreType;
 
   @Output() closeEditor = new EventEmitter<PlayerGameEntity>();
   @Output() deleteEntity = new EventEmitter<PlayerGameEntity>();
-
-  @Output() editPlayer = new EventEmitter<PlayerEntity | undefined>();
-
-  get selectedPlayer() {
-    const id = this.formGroup.controls['PlayerId'].value;
-    return this.players.find((x) => x.PlayerId === id);
-  }
 
   title = '';
   isNew = false;
 
   entityType = PlayerGameEntity;
 
+  tagList$ = this.apiService.tagList$;
+  playerList$ = this.apiService.playerList$;
+
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
-  tagList$: Observable<TagEntity[]> = of([]);
+  playerEditorVisible = false;
+  playerEdit?: PlayerEntity;
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('playerGame' in changes && this.playerGame) {
@@ -83,8 +82,6 @@ export class EditorPlayerGameComponent implements OnChanges {
         this.title = 'Edit Player';
         this.isNew = false;
       }
-
-      this.grabLists();
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerGameEntity());
@@ -107,8 +104,9 @@ export class EditorPlayerGameComponent implements OnChanges {
     return this.formGroup.get(key);
   }
 
-  grabLists() {
-    this.tagList$ = this.apiService.tagList$;
+  addPlayer() {
+    this.playerEdit = new PlayerEntity({ PlayerId: '', ClubId: this.apiService.clubId });
+    this.playerEditorVisible = true;
   }
 
   async submit() {
@@ -124,7 +122,6 @@ export class EditorPlayerGameComponent implements OnChanges {
       console.log(this.formGroup.controls);
     } else {
       Object.assign(this.playerGame, this.formGroup.getRawValue());
-      this.playerGame.Player = this.players.find((x) => x.PlayerId === this.playerGame?.PlayerId) ?? null;
       this.closeEditor.emit(this.playerGame);
     }
   }
@@ -144,33 +141,6 @@ export class EditorPlayerGameComponent implements OnChanges {
       });
     } else {
       // do nothing
-    }
-  }
-
-  canEditPlayer() {
-    const value = this.formGroup.controls['PlayerId'].value;
-    if (isGuid(value) || value === '' || value === undefined) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  playerSaved(player?: PlayerEntity) {
-    this.formGroup.controls['PlayerId'].setValue(null);
-    if (player) {
-      this.formGroup.controls['PlayerId'].setValue(player.PlayerId);
-    } else {
-      // continue
-    }
-  }
-
-  playerDeleted(player?: PlayerEntity) {
-    const id = this.formGroup.controls['PlayerId'].value;
-    if (player?.PlayerId === id) {
-      this.formGroup.controls['PlayerId'].setValue(this.players[0]?.PlayerId ?? null);
-    } else {
-      // continue
     }
   }
 }

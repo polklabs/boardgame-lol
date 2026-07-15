@@ -13,6 +13,7 @@ import {
   Request,
   UseInterceptors,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ValidationError } from './errors/validation.error';
 import { AuthorizationError } from './errors/authorization.error';
@@ -24,8 +25,9 @@ import { GameManager } from './managers/Game.manager';
 import { BoardGameManager } from './managers/BoardGame.manager';
 import { PlayerGameManager } from './managers/PlayerGame.manager';
 import { PlayerManager } from './managers/Player.manager';
-import { BoardGameEntity, GameWrapper, ClubEntity, PlayerEntity, TagEntity } from 'libs/index';
+import { BoardGameEntity, ClubEntity, PlayerEntity, TagEntity, ClubReturn, GameEntity } from 'libs/index';
 import { TagManager } from './managers/Tag.manager';
+import { PlayerGamePlayerManager } from './managers/PlayerGamePlayer.manager';
 
 const publicThrottle = { default: { limit: 200, ttl: 600000 } };
 const authThrottle = { default: { limit: 15, ttl: 30000 } };
@@ -38,6 +40,7 @@ export class AppController {
     private gameManager: GameManager,
     private boardGameManager: BoardGameManager,
     private playerGameManager: PlayerGameManager,
+    private playerGamePlayerManager: PlayerGamePlayerManager,
     private playerManager: PlayerManager,
     private tagManager: TagManager,
   ) {}
@@ -74,19 +77,26 @@ export class AppController {
   @Throttle(publicThrottle)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('club/:clubId')
-  getClub(@Param() params: { clubId: string }) {
-    return {
-      Club: this.clubManager.loadOne(params.clubId),
-      Games: this.gameManager.loadMany('ClubId', params.clubId),
-      PlayerGames: this.playerGameManager.loadMany('ClubId', params.clubId),
-      BoardGames: this.boardGameManager.loadMany('ClubId', params.clubId),
-      Players: this.playerManager.loadMany('ClubId', params.clubId),
-      Tags: this.tagManager.loadMany('ClubId', params.clubId),
-      TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', params.clubId),
-      TagGames: this.tagManager.tagGame.loadMany('ClubId', params.clubId),
-      TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', params.clubId),
-      TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', params.clubId),
-    };
+  getClub(@Param() params: { clubId: string }): ClubReturn {
+    const clubId = params.clubId;
+    const Club = this.clubManager.loadOne(clubId);
+    if (Club) {
+      return {
+        Club,
+        Games: this.gameManager.loadMany('ClubId', clubId),
+        PlayerGamePlayers: this.playerGamePlayerManager.loadMany('ClubId', clubId),
+        PlayerGames: this.playerGameManager.loadMany('ClubId', clubId),
+        BoardGames: this.boardGameManager.loadMany('ClubId', clubId),
+        Players: this.playerManager.loadMany('ClubId', clubId),
+        Tags: this.tagManager.loadMany('ClubId', clubId),
+        TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', clubId),
+        TagGames: this.tagManager.tagGame.loadMany('ClubId', clubId),
+        TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', clubId),
+        TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', clubId),
+      };
+    } else {
+      throw new NotFoundException();
+    }
   }
 
   @Throttle(authThrottle)
@@ -120,7 +130,7 @@ export class AppController {
   @UseGuards(AuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Put('game')
-  addGame(@Request() req: any, @Body() wrapper: GameWrapper) {
+  addGame(@Request() req: any, @Body() wrapper: GameEntity) {
     try {
       return this.gameManager.put(this.getUserId(req), wrapper);
     } catch (e) {
@@ -132,7 +142,7 @@ export class AppController {
   @UseGuards(AuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Patch('game')
-  updateGame(@Request() req: any, @Body() wrapper: GameWrapper) {
+  updateGame(@Request() req: any, @Body() wrapper: GameEntity) {
     try {
       return this.gameManager.patch(this.getUserId(req), wrapper);
     } catch (e) {
