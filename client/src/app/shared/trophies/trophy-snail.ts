@@ -9,7 +9,9 @@ export class TrophySnail extends ITrophy {
   calculate(players: PlayerEntity[]) {
     players.forEach((p) => {
       const length = p.PlayerGames.findIndex((x) => x.Won);
-      if (length > this.value) {
+      if (length <= 0) {
+        // Skip
+      } else if (length > this.value) {
         this.value = length;
         this.array = [p];
       } else if (length === this.value) {

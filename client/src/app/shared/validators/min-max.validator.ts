@@ -15,7 +15,7 @@ export function minMaxValidator<T>(entityType: new (partial: Partial<T>) => T, p
 
     if (minMax) {
       let minMaxValid = true;
-      if (minMax.type === 'string') {
+      if (minMax.type === 'string' || minMax.type === 'array') {
         minMaxValid = value.length >= minMax.min && value.length <= minMax.max;
       } else if (minMax.type === 'number') {
         minMaxValid = +value >= minMax.min && +value <= minMax.max;

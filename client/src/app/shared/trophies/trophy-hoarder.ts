@@ -3,7 +3,7 @@ import { ITrophy } from './trophy.model';
 
 export class TrophyHoarder extends ITrophy {
   constructor(sortOrder: number | null = null) {
-    super(sortOrder, '💎', 'The Hoarder', ['Might be a dragon.', "It's all MINE!"], 'Highest point sum');
+    super(sortOrder, '💎', 'The Hoarder', ['Might be a dragon.', "It's all MINE!"], 'Highest point sum, excluding team plays');
   }
 
   calculate(players: PlayerEntity[]) {
@@ -12,7 +12,7 @@ export class TrophyHoarder extends ITrophy {
       pointTotals.push({
         player,
         total: player.PlayerGames.reduce(
-          (p, c) => p + ((c.Game?.BoardGame?.ScoreType ?? '') === 'points' ? c.Points ?? 0 : 0),
+          (p, c) => p + ((c.Game?.BoardGame?.ScoreType ?? '') === 'points' && !c.Team ? c.Points ?? 0 : 0),
           0,
         ),
       });

@@ -14,7 +14,7 @@ export class TrophyLastGroupWin extends ITrophy {
   }
 
   calculate(_players: PlayerEntity[], games: GameEntity[]) {
-    const groupWins = games.filter((x) => x.Winners.length === x.Players);
+    const groupWins = games.filter((x) => x.WinnerTeams.length === x.Scores.length);
     const maxDate = max(groupWins.map((x) => x.DateObj));
 
     this.array = groupWins

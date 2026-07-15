@@ -19,10 +19,10 @@ export class TrophyComebackKid extends ITrophy {
       const loseStreaks: number[] = [];
       let losses = 0;
       for (const game of games) {
-        if (game.place(0).some((x) => x.PlayerId === player.PlayerId)) {
+        if (game.place(0).some((x) => x.PlayerIds.has(player.PlayerId))) {
           loseStreaks.push(losses);
           losses = 0;
-        } else if (game.Scores.some((x) => x.PlayerId === player.PlayerId)) {
+        } else if (game.Scores.some((x) => x.PlayerIds.has(player.PlayerId))) {
           losses++;
         } else {
           // Did not play, streak continues
@@ -33,6 +33,6 @@ export class TrophyComebackKid extends ITrophy {
     }
 
     this.value = Math.max(0, ...streakPlayers.map((x) => x.streak));
-    this.array = streakPlayers.filter((x) => x.streak === this.value).map((x) => x.player);
+    this.array = streakPlayers.filter((x) => x.streak > 0 && x.streak === this.value).map((x) => x.player);
   }
 }
