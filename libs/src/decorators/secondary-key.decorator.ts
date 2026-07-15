@@ -5,5 +5,5 @@ export function SecondaryKey(target: any, propertyKey: string) {
 }
 
 export function getSecondaryKey(target: any): string | undefined {
-  return Reflect.getMetadata(secondaryKey, target);
+  return Reflect.getOwnMetadata(secondaryKey, target);
 }
