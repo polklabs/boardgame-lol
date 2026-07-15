@@ -59,6 +59,7 @@ export class ApiService {
   readonly filteredPlayerList$ = new BehaviorSubject<PlayerEntity[]>([]);
   readonly filteredGameList$ = new BehaviorSubject<GameEntity[]>([]);
   readonly filteredPlayerGameList$ = new BehaviorSubject<PlayerGameEntity[]>([]);
+  readonly filteredPlayerGamePlayerList$ = new BehaviorSubject<PlayerGamePlayerEntity[]>([]);
   readonly filterEnabled$ = new BehaviorSubject<boolean>(false);
 
   // Club
@@ -134,11 +135,14 @@ export class ApiService {
 
   // Player Game Players
   get playerGamePlayerList() {
-    return this.playerGamePlayerList$.value;
+    return this.filteredPlayerGamePlayerList$.value;
   }
   private set playerGamePlayerList(playerGamePlayerList: PlayerGamePlayerEntity[]) {
     playerGamePlayerList = playerGamePlayerList.map((x) => new PlayerGamePlayerEntity(x));
     this.playerGamePlayerList$.next(playerGamePlayerList);
+  }
+  private set fPlayerGamePlayerList(playerGamePlayerList: PlayerGamePlayerEntity[]) {
+    this.filteredPlayerGamePlayerList$.next(playerGamePlayerList);
   }
 
   // Tags
@@ -513,9 +517,6 @@ export class ApiService {
   filterTags(tags: TagEntity[]): boolean {
     return !tags.some((t) => this._filteredExcludeTagIds.has(t.TagId));
   }
-  filterPlayers(players: PlayerEntity[]): boolean {
-    return !players.some((p) => this._filteredPlayerIds.has(p.PlayerId));
-  }
 
   private updateReferences() {
     // Filter lists
@@ -530,9 +531,12 @@ export class ApiService {
       this.fBoardGameList = this.boardGameList$.value.filter(
         (x) => this._filteredBoardGameIds.has(x.BoardGameId) && this.filterTags(x.Tags),
       );
+      this.fPlayerGamePlayerList = this.playerGamePlayerList$.value.filter((x) =>
+        this._filteredPlayerIds.has(x.PlayerId),
+      );
       this.fPlayerGameList = this.playerGameList$.value.filter(
         (x) =>
-          this.filterPlayers(x.Players) &&
+          this.filteredPlayerGamePlayerList$.value.some((pgp) => pgp.PlayerGameId === x.PlayerGameId) &&
           this._filteredBoardGameIds.has(x.Game?.BoardGameId ?? '') &&
           this.filterTags(x.Tags),
       );
@@ -543,6 +547,7 @@ export class ApiService {
       this.fGameList = this.gameList$.value;
       this.fBoardGameList = this.boardGameList$.value;
       this.fPlayerGameList = this.playerGameList$.value;
+      this.fPlayerGamePlayerList = this.playerGamePlayerList$.value;
       this.fPlayerList = this.playerList$.value;
     }
 
