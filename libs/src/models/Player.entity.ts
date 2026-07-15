@@ -32,7 +32,7 @@ export class PlayerEntity extends BaseEntity {
   IsRealPerson: boolean = true;
 
   @Ignore()
-  @MinMax(1, 8, 'array')
+  @MinMax(0, 8, 'array')
   Tags: TagEntity[] = [];
 
   @Ignore()
@@ -68,6 +68,7 @@ export class PlayerEntity extends BaseEntity {
   constructor(partial: Partial<PlayerEntity> = {}, copyIgnored = false) {
     super(partial, PlayerEntity);
     this.assign(partial, PlayerEntity, copyIgnored);
+    this.Tags = partial.Tags ?? [];
   }
 
   calculate() {

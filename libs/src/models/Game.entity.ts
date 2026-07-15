@@ -58,7 +58,7 @@ export class GameEntity extends BaseEntity {
   }
 
   @Ignore()
-  @MinMax(1, 8, 'array')
+  @MinMax(0, 8, 'array')
   Tags: TagEntity[] = [];
 
   @Ignore()
@@ -86,12 +86,16 @@ export class GameEntity extends BaseEntity {
   Winners: PlayerEntity[] = [];
 
   @Ignore()
+  WinnerTeams: PlayerGameEntity[] = [];
+
+  @Ignore()
   calculated = false;
 
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
     super(partial, GameEntity);
     this.assign(partial, GameEntity, copyIgnored);
 
+    this.Tags = partial.Tags ?? [];
     this.DateObj = new Date(this.Date);
     const userTimezoneOffset = this.DateObj.getTimezoneOffset() * 60000;
     this.DateObj = new Date(this.DateObj.getTime() + userTimezoneOffset);
@@ -125,6 +129,7 @@ export class GameEntity extends BaseEntity {
   calculate() {
     this.calculateWinners();
     this.Winners = this.placePlayers(0);
+    this.WinnerTeams = this.place(0);
     this.HighScore = this.place(0).at(0)?.Points ?? null;
     this.calculated = true;
   }

@@ -68,7 +68,7 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   @Ignore()
-  @MinMax(1, 8, 'array')
+  @MinMax(0, 8, 'array')
   Tags: TagEntity[] = [];
 
   @Ignore()
@@ -107,6 +107,7 @@ export class BoardGameEntity extends BaseEntity {
   constructor(partial: Partial<BoardGameEntity> = {}, copyIgnored = false) {
     super(partial, BoardGameEntity);
     this.assign(partial, BoardGameEntity, copyIgnored);
+    this.Tags = partial.Tags ?? [];
   }
 
   calculate() {
