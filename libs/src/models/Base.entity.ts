@@ -22,9 +22,7 @@ export abstract class BaseEntity {
   LastModifiedDate?: string = new Date().toISOString();
   LastModifiedBy?: string = 'ANON';
 
-  @Ignore()
-  @Exclude()
-  calculated = false;
+  abstract calculated: boolean;
 
   abstract calculate(): void;
 

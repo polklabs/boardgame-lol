@@ -58,6 +58,7 @@ export class GameEntity extends BaseEntity {
   }
 
   @Ignore()
+  @MinMax(1, 8, 'array')
   Tags: TagEntity[] = [];
 
   @Ignore()
@@ -83,6 +84,9 @@ export class GameEntity extends BaseEntity {
 
   @Ignore()
   Winners: PlayerEntity[] = [];
+
+  @Ignore()
+  calculated = false;
 
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
     super(partial, GameEntity);

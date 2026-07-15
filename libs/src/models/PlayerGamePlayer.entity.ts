@@ -5,11 +5,17 @@ import { ForeignKey } from '../decorators/foreign-key.decorator';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { PlayerGameEntity } from './PlayerGame.entity';
 import { PlayerEntity } from './Player.entity';
+import { GameEntity } from './Game.entity';
+import { Ignore } from '../decorators/ignore.decorator';
 
 @TableName('PlayerGamePlayer')
 export class PlayerGamePlayerEntity extends BaseEntity {
   @SecondaryKey
   ClubId: string = '';
+
+  @PrimaryKey()
+  @ForeignKey(GameEntity)
+  GameId: string = '';
 
   @PrimaryKey()
   @ForeignKey(PlayerGameEntity)
@@ -18,6 +24,9 @@ export class PlayerGamePlayerEntity extends BaseEntity {
   @PrimaryKey()
   @ForeignKey(PlayerEntity)
   PlayerId: string = '';
+
+  @Ignore()
+  calculated = false;
 
   constructor(partial: Partial<PlayerGamePlayerEntity> = {}, copyIgnored = false) {
     super(partial, PlayerGamePlayerEntity);

@@ -4,6 +4,7 @@ import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { ForeignKey } from '../decorators/foreign-key.decorator';
 import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { UserEntity } from './User.entity';
+import { Ignore } from '../decorators/ignore.decorator';
 
 @TableName('ClubUser')
 export class ClubUserEntity extends BaseEntity {
@@ -17,6 +18,9 @@ export class ClubUserEntity extends BaseEntity {
   UserId: string = '';
 
   Admin: boolean = false;
+
+  @Ignore()
+  calculated = false;
 
   constructor(partial: Partial<ClubUserEntity> = {}, copyIgnored = false) {
     super(partial, ClubUserEntity);

@@ -15,6 +15,7 @@ import { TagGameEntity } from './TagGame.entity';
 import { TagPlayerEntity } from './TagPlayer.entity';
 import { TagPlayerGameEntity } from './TagPlayerGame.entity';
 import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
+import { Ignore } from '../decorators/ignore.decorator';
 
 export type ClubReturn = {
   Club: ClubEntity;
@@ -45,6 +46,9 @@ export class ClubEntity extends BaseEntity {
   @Sanitize()
   @MinMax(0, CHARACTER_LIMIT_LONG, 'string')
   Summary: string | null = null;
+
+  @Ignore()
+  calculated = false;
 
   constructor(partial: Partial<ClubEntity> = {}, copyIgnored = false) {
     super(partial, ClubEntity);

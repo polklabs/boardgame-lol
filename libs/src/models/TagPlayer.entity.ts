@@ -24,6 +24,9 @@ export class TagPlayerEntity extends BaseEntity implements ITag {
   @Ignore()
   Tag: TagEntity | null = null;
 
+  @Ignore()
+  calculated = false;
+
   constructor(partial: Partial<TagPlayerEntity> = {}, copyIgnored = false) {
     super(partial, TagPlayerEntity);
     this.assign(partial, TagPlayerEntity, copyIgnored);

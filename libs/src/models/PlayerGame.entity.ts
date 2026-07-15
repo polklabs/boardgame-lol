@@ -22,10 +22,6 @@ export class PlayerGameEntity extends BaseEntity {
   @SecondaryKey
   ClubId: string = '';
 
-  @ForeignKey(PlayerEntity)
-  @Nullable()
-  PlayerId: string | null = null;
-
   @ForeignKey(GameEntity)
   GameId: string = '';
 
@@ -39,13 +35,18 @@ export class PlayerGameEntity extends BaseEntity {
   Name: string | null = null;
 
   @Ignore()
+  @MinMax(1, 8, 'array')
   Tags: TagEntity[] = [];
 
   @Ignore()
+  @MinMax(1, 32, 'array')
   Players: PlayerEntity[] = [];
 
   @Ignore()
   PlayerLinks: PlayerGamePlayerEntity[] = [];
+
+  @Ignore()
+  PlayerIds = new Set<string>();
 
   @Ignore()
   Game: GameEntity | null = null;
@@ -56,9 +57,12 @@ export class PlayerGameEntity extends BaseEntity {
   @Ignore()
   Won = false;
 
+  @Ignore()
+  calculated = false;
+
   @Expose()
-  get DisplayName() {
-    return this.Name ?? this.Players.map((p) => p.Name).join(', ');
+  get DisplayName(): string {
+    return this.Name || this.Players?.map((p) => p.Name).join(', ');
   }
 
   constructor(partial: Partial<PlayerGameEntity> = {}, copyIgnored = false) {
@@ -72,7 +76,7 @@ export class PlayerGameEntity extends BaseEntity {
   calculate() {
     calculationsComplete(this.Game);
     this.DNF = this.Game?.BoardGame?.ScoreType === 'rank' && this.Points === null;
-    this.Won = this.Game?.place(0).some((x) => x.PlayerId === this.PlayerId) ?? false;
+    this.Won = this.Game?.place(0).includes(this) ?? false;
     this.calculated = true;
   }
 }

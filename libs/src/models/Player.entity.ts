@@ -32,6 +32,7 @@ export class PlayerEntity extends BaseEntity {
   IsRealPerson: boolean = true;
 
   @Ignore()
+  @MinMax(1, 8, 'array')
   Tags: TagEntity[] = [];
 
   @Ignore()
@@ -60,6 +61,9 @@ export class PlayerEntity extends BaseEntity {
 
   @Ignore()
   hasMostWins: boolean = false;
+
+  @Ignore()
+  calculated = false;
 
   constructor(partial: Partial<PlayerEntity> = {}, copyIgnored = false) {
     super(partial, PlayerEntity);

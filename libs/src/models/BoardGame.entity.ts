@@ -68,6 +68,7 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   @Ignore()
+  @MinMax(1, 8, 'array')
   Tags: TagEntity[] = [];
 
   @Ignore()
@@ -99,6 +100,9 @@ export class BoardGameEntity extends BaseEntity {
 
   @Ignore()
   AverageWinningScore = 0;
+
+  @Ignore()
+  calculated = false;
 
   constructor(partial: Partial<BoardGameEntity> = {}, copyIgnored = false) {
     super(partial, BoardGameEntity);

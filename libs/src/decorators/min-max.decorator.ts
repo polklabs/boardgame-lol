@@ -1,8 +1,10 @@
 const minmax = Symbol('minmax');
 
-export type MinMax = { [key: string]: { min: number; max: number; type: 'string' | 'number' } };
+type MinMaxTypes = 'string' | 'number' | 'array';
 
-export function MinMax(min: number, max: number, type: 'string' | 'number') {
+export type MinMax = { [key: string]: { min: number; max: number; type: MinMaxTypes } };
+
+export function MinMax(min: number, max: number, type: MinMaxTypes) {
   return function (target: any, propertyKey: string) {
     const keys: MinMax = Reflect.getOwnMetadata(minmax, target.constructor) ?? {};
     keys[propertyKey] = { min, max, type };
