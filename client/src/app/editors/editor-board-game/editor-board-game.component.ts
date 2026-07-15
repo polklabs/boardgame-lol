@@ -144,7 +144,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
     } else if (this.standalone) {
       const result = await this.apiService.postBoardGame(
         this.boardGame.BoardGameId === '',
-        this.formGroup.getRawValue(),
+        new BoardGameEntity(this.formGroup.getRawValue()),
       );
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved BoardGame' });

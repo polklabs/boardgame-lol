@@ -4,6 +4,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   Output,
   SimpleChanges,
   inject,
@@ -14,7 +15,6 @@ import { ConfirmationService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
 
 import { ButtonModule } from 'primeng/button';
-import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -23,7 +23,8 @@ import { NumberInputComponent } from '../../shared/components/number-input/numbe
 import { TagsComponent } from '../../shared/components/tags/tags.component';
 import { ApiService } from '../../shared/services/api.service';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
-import { AsyncPipe } from '@angular/common';
+import { MultiSelectComponent } from '../../shared/components/multi-select/multi-select.component';
+import { Subscription } from 'rxjs';
 
 type EntityType = PlayerGameEntity;
 
@@ -32,7 +33,6 @@ type EntityType = PlayerGameEntity;
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    DropdownComponent,
     ButtonModule,
     CheckboxModule,
     DialogModule,
@@ -41,12 +41,12 @@ type EntityType = PlayerGameEntity;
     NumberInputComponent,
     TagsComponent,
     EditorPlayerComponent,
-    AsyncPipe,
+    MultiSelectComponent,
   ],
   templateUrl: './editor-player-game.component.html',
   styleUrl: './editor-player-game.component.scss',
 })
-export class EditorPlayerGameComponent implements OnChanges {
+export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
   private fb = inject(FormBuilder);
   private apiService = inject(ApiService);
   private confirmationService = inject(ConfirmationService);
@@ -73,20 +73,21 @@ export class EditorPlayerGameComponent implements OnChanges {
   playerEditorVisible = false;
   playerEdit?: PlayerEntity;
 
+  subscription?: Subscription;
+
   ngOnChanges(changes: SimpleChanges): void {
     if ('playerGame' in changes && this.playerGame) {
       if (this.playerGame.PlayerGameId === '') {
-        this.title = 'Add Player';
         this.isNew = true;
       } else {
-        this.title = 'Edit Player';
         this.isNew = false;
       }
+      this.setTitle();
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerGameEntity());
       const instance = new PlayerGameEntity(this.playerGame);
-      instance.Tags = [...this.playerGame.Tags];
+      instance.Players = [...this.playerGame.Players];
       this.formGroup.patchValue(instance);
 
       if (this.scoreType === 'win-lose') {
@@ -94,14 +95,26 @@ export class EditorPlayerGameComponent implements OnChanges {
       } else {
         // Continue
       }
+
+      this.subscription = this.getControl('Players')?.valueChanges.subscribe(() => {
+        this.setTitle();
+      });
     } else {
       // No Changes
     }
     this.cdr.detectChanges();
   }
 
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
+
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
+  }
+
+  setTitle() {
+    this.title = `${this.playerGame?.PlayerGameId === '' ? 'Add' : 'Edit'} ${(this.playerGame?.Players.length ?? 0) > 1 ? 'Team' : 'Player'}`;
   }
 
   addPlayer() {

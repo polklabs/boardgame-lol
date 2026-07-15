@@ -96,7 +96,10 @@ export class EditorClubComponent implements OnChanges {
     if (this.formGroup.invalid || !this.club) {
       return;
     } else {
-      const result = await this.apiService.postClub(this.club.ClubId === '', this.formGroup.getRawValue());
+      const result = await this.apiService.postClub(
+        this.club.ClubId === '',
+        new ClubEntity(this.formGroup.getRawValue()),
+      );
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Club' });
         this.closeEditor.emit();

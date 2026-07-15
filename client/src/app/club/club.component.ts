@@ -131,7 +131,6 @@ export class ClubComponent implements OnInit, OnDestroy {
   }
 
   tagsEdit() {
-    console.log('Edit Tags');
     this.editorTagsVisible = true;
   }
 

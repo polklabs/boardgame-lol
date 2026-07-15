@@ -16,16 +16,14 @@
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit()">
         <div class="flex gap-4 justify-content-space-between">
-          <app-dropdown
+          <app-multi-select
             style="flex-grow: 1"
-            formControlName="PlayerId"
-            label="Player"
+            formControlName="Players"
+            label="Players"
             [entityType]="entityType"
             [hiddenFields]="hideFields"
-            [options]="(playerList$ | async) ?? []"
-            optionLabel="Name"
-            optionValue="PlayerId"
-            [showClear]="false"></app-dropdown>
+            [options$]="playerList$"
+            optionLabel="Name"></app-multi-select>
           <p-button (onClick)="addPlayer()" pTooltip="New Player" icon="pi pi-plus"></p-button>
         </div>
         @if (scoreType === 'points') {

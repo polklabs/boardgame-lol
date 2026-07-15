@@ -129,7 +129,7 @@ export class EditorTagsComponent {
     if (this.formGroup.invalid || !this.tag) {
       return;
     } else {
-      const result = await this.apiService.postTag(this.tag.TagId === '', this.formGroup.getRawValue());
+      const result = await this.apiService.postTag(this.tag.TagId === '', new TagEntity(this.formGroup.getRawValue()));
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Tag' });
         this.tag = undefined;

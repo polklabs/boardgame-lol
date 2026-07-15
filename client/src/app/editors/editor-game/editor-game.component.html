@@ -131,7 +131,7 @@
                 <div class="empty-trophy"></div>
               }
               <span class="player-name">
-                {{ playerGame.Player?.Name }}: {{ playerGame.Points | score: game?.BoardGame }}
+                {{ playerGame.DisplayName }}: {{ playerGame.Points | number: '1.0-3' | score: game?.BoardGame }}
               </span>
             }
             <!-- RANK -->
@@ -142,7 +142,7 @@
               @if (playerGame.Points >= 3) {
                 <div class="empty-trophy"></div>
               }
-              <span [ngClass]="{ DNF: playerGame.DNF }">{{ playerGame.Player?.Name }}</span>
+              <span [ngClass]="{ DNF: playerGame.DNF }">{{ playerGame.DisplayName }}</span>
             }
             <!-- WIN/LOSE -->
             @case ('win-lose') {
@@ -157,7 +157,7 @@
               @if (playerGame.Points !== 1) {
                 <div class="empty-trophy"></div>
               }
-              <span>{{ playerGame.Player?.Name }}</span>
+              <span>{{ playerGame.DisplayName }}</span>
             }
           }
         </span>

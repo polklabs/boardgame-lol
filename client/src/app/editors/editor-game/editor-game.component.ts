@@ -10,7 +10,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BoardGameEntity, GameEntity, PlayerGameEntity } from 'libs/index';
+import { BoardGameEntity, GameEntity, getMinMax, PlayerGameEntity } from 'libs/index';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
@@ -33,6 +33,7 @@ import { TagsComponent } from '../../shared/components/tags/tags.component';
 import { TooltipModule } from 'primeng/tooltip';
 import { TagComponent } from '../../shared/components/tag/tag.component';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
+import { PlayerGamePlayerEntity } from 'libs/models/PlayerGamePlayer.entity';
 
 type EntityType = GameEntity;
 
@@ -125,9 +126,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
-      const instance = new GameEntity(this.game);
-      instance.Tags = [...this.game.Tags];
-      this.formGroup.patchValue(instance);
+      this.formGroup.patchValue(new GameEntity(this.game));
 
       this.subscription = this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
         this.game!.BoardGame = this.apiService.getBoardGame(value);
@@ -155,8 +154,9 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   }
 
   addPoints(points: number) {
+    const minMax = getMinMax(PlayerGameEntity)['Points'];
     this.selectedPlayerGames.forEach((p) => {
-      p.Points = (p.Points ?? 0) + points;
+      p.Points = Math.max(minMax.min, Math.min(minMax.max, (p.Points ?? 0) + points));
     });
     this.updateScoring();
   }
@@ -260,7 +260,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       }
 
       this.updateScoring();
-      this.getControl('Players')?.setValue(this.playerGames.length);
+      this.updatePlayerCount();
     } else {
       // continue
     }
@@ -284,11 +284,17 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     this.playerGameEdit = undefined;
     this.playerGameEditorVisible = false;
     this.selectedPlayerGames = [];
+    this.updateScoring();
+    this.updatePlayerCount();
   }
 
   addBoardGame() {
     this.boardGameEdit = new BoardGameEntity({ BoardGameId: '', ClubId: this.game?.ClubId });
     this.boardGameEditorVisible = true;
+  }
+
+  updatePlayerCount() {
+    this.getControl('Players')?.setValue(this.playerGames.reduce((prev, curr) => prev + curr.Players.length, 0));
   }
 
   async submit() {
@@ -308,12 +314,46 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
         // Continue
       }
 
+      this.playerGames.forEach((pg) => {
+        if (pg.PlayerGameId === '') {
+          pg.PlayerLinks = pg.Players.map(
+            (p) =>
+              new PlayerGamePlayerEntity({
+                ClubId: this.apiService.clubId,
+                PlayerGameId: pg.PlayerGameId,
+                PlayerId: p.PlayerId,
+              }),
+          );
+        } else {
+          const linkIds = new Set(pg.PlayerLinks.map((x) => x.PlayerId));
+          pg.Players.forEach((p) => {
+            if (linkIds.has(p.PlayerId)) {
+              // Skip
+            } else {
+              pg.PlayerLinks.push(
+                new PlayerGamePlayerEntity({
+                  ClubId: this.apiService.clubId,
+                  PlayerGameId: pg.PlayerGameId,
+                  PlayerId: p.PlayerId,
+                }),
+              );
+            }
+            linkIds.delete(p.PlayerId);
+          });
+          pg.PlayerLinks = pg.PlayerLinks.filter((x) => !linkIds.has(x.PlayerId)).map(
+            (x) => new PlayerGamePlayerEntity(x),
+          );
+        }
+      });
+
       const game = new GameEntity(gameData);
-      game.Scores = this.playerGames;
+      game.Scores = this.playerGames.map((x) => new PlayerGameEntity(x));
+
+      console.log(game);
 
       const result = await this.apiService.postGame(this.game.GameId === '', game);
       if (result) {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Game' });
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Play' });
         this.closeEditor.emit();
       } else {
         // Do nothing
@@ -324,7 +364,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   toDeleteEntity() {
     this.confirmationService.confirm({
       message: 'Are you sure that you want to proceed?',
-      header: 'Deleting Game',
+      header: 'Deleting Play',
       icon: 'pi pi-exclamation-triangle',
       acceptIcon: 'none',
       rejectIcon: 'none',
@@ -332,7 +372,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       accept: async () => {
         const result = await this.apiService.deleteGame(this.game!.GameId);
         if (result) {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Game' });
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Play' });
           this.closeEditor.emit();
         } else {
           // Do nothing
