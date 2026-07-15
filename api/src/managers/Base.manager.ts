@@ -30,8 +30,6 @@ export abstract class BaseManager<T extends BaseEntity> {
   protected sanitize: SanitizeTags;
 
   constructor(entityType: new (partial: Partial<T>) => T) {
-    this.new = (data: T) => new entityType(data);
-
     this.primaryKeys = getPrimaryKeys(entityType) as (keyof T)[];
     this.secondaryKey = getSecondaryKey(entityType) as keyof T;
     this.tableName = getTableName(entityType) as string;
@@ -41,6 +39,14 @@ export abstract class BaseManager<T extends BaseEntity> {
     this.minMaxes = getMinMax(entityType) as MinMax;
     this.enums = getEnum(entityType) as EnumValue;
     this.sanitize = getSanitize(entityType) as SanitizeTags;
+
+    this.new = (data: T) => {
+      const e = new entityType(data);
+      this.ignore.forEach((i) => {
+        delete e[i];
+      });
+      return e;
+    };
   }
 
   private getBaseSelect() {
