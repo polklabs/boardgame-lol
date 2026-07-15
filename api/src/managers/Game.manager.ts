@@ -51,8 +51,11 @@ export class GameManager extends BaseManager<GameEntity> {
     playerGames.forEach((pg) => {
       pg.PlayerGameId = newGuid();
       pg.GameId = entity.GameId;
-      transactions.push(this.playerGameManager.put(userId, pg));
-      pg.PlayerLinks.forEach((pgp) => (pgp.PlayerGameId = pg.PlayerGameId));
+      transactions.push(this.playerGameManager.put(userId, pg, false));
+      pg.PlayerLinks.forEach((pgp) => {
+        pgp.PlayerGameId = pg.PlayerGameId;
+        pgp.GameId = pg.GameId;
+      });
     });
 
     playerGamePlayers.forEach((pgp) => {
@@ -63,9 +66,8 @@ export class GameManager extends BaseManager<GameEntity> {
 
     return {
       Game: this.loadOne(entity.GameId)!,
-      //TODO: REFINE QUERY
-      PlayerGamePlayers: this.playerGamePlayerManager.loadMany('ClubId', entity.ClubId),
-      PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId, 'ClubId', entity.ClubId),
+      PlayerGamePlayers: this.playerGamePlayerManager.loadMany('GameId', entity.GameId),
+      PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId),
       TagGames: this.tagManager.tagGame.loadMany('ClubId', entity.ClubId),
       TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', entity.ClubId),
     };
@@ -96,16 +98,20 @@ export class GameManager extends BaseManager<GameEntity> {
         transactions.push(this.playerGameManager.patch(userId, pg));
         oldPlayerGames.delete(pg.PlayerGameId);
       } else {
-        transactions.push(this.playerGameManager.put(userId, pg));
+        pg.PlayerGameId = newGuid();
+        transactions.push(this.playerGameManager.put(userId, pg, false));
       }
+      pg.PlayerLinks.forEach((pgp) => {
+        pgp.PlayerGameId = pg.PlayerGameId;
+        pgp.GameId = pg.GameId;
+      });
     });
     oldPlayerGames.forEach((pgId) => {
       transactions.push(this.playerGameManager.delete(pgId, entity.ClubId));
     });
 
-    //TODO: REFINE QUERY
     const oldPlayerGamePlayerRows = this.playerGamePlayerManager
-      .loadMany('ClubId', entity.ClubId)
+      .loadMany('GameId', entity.GameId)
       .filter((x) => playerGameIds.has(x.PlayerGameId));
     const oldPlayerGamePlayers = new Set(oldPlayerGamePlayerRows.map((x) => x.PlayerGameId));
     playerGamePlayers.forEach((pgp) => {
@@ -118,7 +124,9 @@ export class GameManager extends BaseManager<GameEntity> {
     });
     oldPlayerGamePlayerRows.forEach((pgp) => {
       if (oldPlayerGamePlayers.has(pgp.PlayerGameId)) {
-        transactions.push(this.playerGamePlayerManager.delete(pgp.PlayerGameId, pgp.PlayerId, entity.ClubId));
+        transactions.push(
+          this.playerGamePlayerManager.delete(pgp.GameId, pgp.PlayerGameId, pgp.PlayerId, entity.ClubId),
+        );
       } else {
         // Skip
       }
@@ -131,9 +139,8 @@ export class GameManager extends BaseManager<GameEntity> {
 
     return {
       Game: this.loadOne(entity.GameId)!,
-      //TODO: REFINE QUERY
-      PlayerGamePlayers: this.playerGamePlayerManager.loadMany('ClubId', entity.ClubId),
-      PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId, 'ClubId', entity.ClubId),
+      PlayerGamePlayers: this.playerGamePlayerManager.loadMany('GameId', entity.GameId),
+      PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId),
       TagGames: this.tagManager.tagGame.loadMany('ClubId', entity.ClubId),
       TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', entity.ClubId),
     };

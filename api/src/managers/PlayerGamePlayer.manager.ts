@@ -34,8 +34,8 @@ export class PlayerGamePlayerManager extends BaseManager<PlayerGamePlayerEntity>
     return this.runUpdate(userId, entity, true);
   }
 
-  delete(playerGameId: string, playerId: string, secondaryId: string) {
-    return this.runDelete([playerGameId, playerId], secondaryId, true);
+  delete(gameId: string, playerGameId: string, playerId: string, secondaryId: string) {
+    return this.runDelete([gameId, playerGameId, playerId], secondaryId, true);
   }
 
   public Validate(entity: PlayerGamePlayerEntity): string[] {
