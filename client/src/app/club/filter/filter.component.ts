@@ -47,8 +47,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.add(
       this.apiService.dataUpdate$.subscribe(() => {
-        this.gameIds = this.apiService.boardGameList$.value.map((x) => x.BoardGameId);
-        this.playerIds = this.apiService.playerList$.value.map((x) => x.PlayerId);
+        this.gameIds = this.apiService.boardGameList.map((x) => x.BoardGameId);
+        this.playerIds = this.apiService.playerList.map((x) => x.PlayerId);
       }),
     );
   }

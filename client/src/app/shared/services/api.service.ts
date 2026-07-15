@@ -532,7 +532,10 @@ export class ApiService {
         (x) => this._filteredBoardGameIds.has(x.BoardGameId) && this.filterTags(x.Tags),
       );
       this.fPlayerGameList = this.playerGameList$.value.filter(
-        (x) => this._filteredPlayerIds.has(x.PlayerId) && this.filterTags(x.Tags),
+        (x) =>
+          this._filteredPlayerIds.has(x.PlayerId) &&
+          this._filteredBoardGameIds.has(x.Game?.BoardGameId ?? '') &&
+          this.filterTags(x.Tags),
       );
       this.fPlayerList = this.playerList$.value.filter(
         (x) => this._filteredPlayerIds.has(x.PlayerId) && this.filterTags(x.Tags),
