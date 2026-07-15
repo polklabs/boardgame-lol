@@ -575,12 +575,9 @@ export class ApiService {
     });
 
     this.playerGameList.forEach((pg) => {
-      pg.Players = [
-        this.getPlayer(pg.PlayerId),
-        ...this.playerGamePlayerList
-          .filter((x) => x.PlayerGameId === pg.PlayerGameId)
-          .map((p) => this.getPlayer(p.PlayerId)),
-      ].filter((x) => x !== null);
+      pg.PlayerLinks = this.playerGamePlayerList.filter((x) => x.PlayerGameId === pg.PlayerGameId);
+      pg.Players = pg.PlayerLinks.map((p) => this.getPlayer(p.PlayerId)).filter((x) => x !== null);
+      pg.PlayerIds = new Set(pg.Players.map((x) => x.PlayerId));
       pg.Game = this.getGame(pg.GameId);
       pg.Tags = this.tagPlayerGameList
         .filter((x) => x.PlayerGameId === pg.PlayerGameId)
@@ -597,7 +594,7 @@ export class ApiService {
     });
 
     this.playerList.forEach((p) => {
-      p.PlayerGames = this.playerGameList.filter((x) => x.PlayerId === p.PlayerId);
+      p.PlayerGames = this.playerGameList.filter((x) => x.PlayerIds.has(p.PlayerId));
       p.Tags = this.tagPlayerList
         .filter((x) => x.PlayerId === p.PlayerId)
         .map((t) => this.getTag(t.TagId))
