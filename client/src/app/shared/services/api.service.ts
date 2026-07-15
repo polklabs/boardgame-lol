@@ -297,9 +297,11 @@ export class ApiService {
     if (result) {
       this.gameList = this.upsertEntry(result.Game, (x) => x.GameId, this.gameList$.value, this._gameDict);
 
+      this.playerGameList = this.playerGameList$.value.filter((x) => x.GameId !== result.Game.GameId);
       result.PlayerGames.forEach((pg) => {
         this.playerGameList = this.upsertEntry(pg, (x) => x.PlayerGameId, this.playerGameList$.value);
       });
+      this.playerGamePlayerList = this.playerGamePlayerList$.value.filter((x) => x.GameId !== result.Game.GameId);
       result.PlayerGamePlayers.forEach((team) => {
         this.playerGamePlayerList = this.upsertEntry(
           team,
