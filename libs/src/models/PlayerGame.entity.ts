@@ -64,7 +64,7 @@ export class PlayerGameEntity extends BaseEntity {
 
   @Expose()
   get DisplayName(): string {
-    return this.Name || this.Players?.map((p) => p.Name).join(', ');
+    return this.Name || this.Players?.map((p) => p.Nickname ?? p.Name).join(', ');
   }
 
   constructor(partial: Partial<PlayerGameEntity> = {}, copyIgnored = false) {
