@@ -10,6 +10,8 @@ export type Trophy = {
   showValue: boolean;
 };
 
+export type ApplyObj = { item: unknown; count: number }[];
+
 export abstract class ITrophy {
   emoji: string;
   title: string;
@@ -64,5 +66,10 @@ export abstract class ITrophy {
       text = text.replaceAll(`{${key}}`, `${this.extra[key]}`);
     }
     return text;
+  }
+
+  applyValues(objects: ApplyObj) {
+    this.value = objects.reduce((prev, curr) => Math.max(prev, curr.count), 0);
+    this.array = objects.filter((x) => x.count > 0 && x.count === this.value).map((x) => x.item);
   }
 }

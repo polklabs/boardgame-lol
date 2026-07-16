@@ -1,5 +1,5 @@
 import { PlayerEntity } from 'libs/index';
-import { ITrophy } from './trophy.model';
+import { ApplyObj, ITrophy } from './trophy.model';
 
 export class TrophyUniqueOpponents extends ITrophy {
   constructor(sortOrder: number | null = null) {
@@ -7,7 +7,7 @@ export class TrophyUniqueOpponents extends ITrophy {
   }
 
   calculate(players: PlayerEntity[]) {
-    const butterflies: { player: PlayerEntity; friends: number }[] = [];
+    const butterflies: ApplyObj = [];
 
     for (const player of players) {
       const friendSet = new Set<string>();
@@ -19,10 +19,9 @@ export class TrophyUniqueOpponents extends ITrophy {
       friendSet.delete(player.PlayerId);
       friendSet.delete('');
 
-      butterflies.push({ player, friends: friendSet.size });
+      butterflies.push({ item: player, count: friendSet.size });
     }
 
-    this.value = Math.max(0, ...butterflies.map((x) => x.friends));
-    this.array = butterflies.filter((x) => x.friends === this.value).map((x) => x.player);
+    this.applyValues(butterflies);
   }
 }

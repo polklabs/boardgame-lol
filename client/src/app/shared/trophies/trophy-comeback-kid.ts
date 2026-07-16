@@ -1,5 +1,5 @@
 import { GameEntity, PlayerEntity } from 'libs/index';
-import { ITrophy } from './trophy.model';
+import { ApplyObj, ITrophy } from './trophy.model';
 
 export class TrophyComebackKid extends ITrophy {
   constructor(sortOrder: number | null = null) {
@@ -13,7 +13,7 @@ export class TrophyComebackKid extends ITrophy {
   }
 
   calculate(players: PlayerEntity[], games: GameEntity[]) {
-    const streakPlayers: { player: PlayerEntity; streak: number }[] = [];
+    const streakPlayers: ApplyObj = [];
 
     for (const player of players) {
       const loseStreaks: number[] = [];
@@ -29,10 +29,9 @@ export class TrophyComebackKid extends ITrophy {
         }
       }
 
-      streakPlayers.push({ player, streak: Math.max(...loseStreaks) });
+      streakPlayers.push({ item: player, count: Math.max(...loseStreaks) });
     }
 
-    this.value = Math.max(0, ...streakPlayers.map((x) => x.streak));
-    this.array = streakPlayers.filter((x) => x.streak > 0 && x.streak === this.value).map((x) => x.player);
+    this.applyValues(streakPlayers)
   }
 }

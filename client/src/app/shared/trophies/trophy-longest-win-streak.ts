@@ -1,5 +1,5 @@
 import { PlayerEntity } from 'libs/index';
-import { ITrophy } from './trophy.model';
+import { ApplyObj, ITrophy } from './trophy.model';
 
 export class TrophyLongestWinStreak extends ITrophy {
   constructor(sortOrder: number | null = null) {
@@ -7,7 +7,7 @@ export class TrophyLongestWinStreak extends ITrophy {
   }
 
   calculate(players: PlayerEntity[]) {
-    const streakPlayers: { player: PlayerEntity; streak: number }[] = [];
+    const streakPlayers: ApplyObj = [];
 
     for (const player of players) {
       let maxStreak = 0;
@@ -22,10 +22,9 @@ export class TrophyLongestWinStreak extends ITrophy {
       });
       maxStreak = Math.max(maxStreak, streak);
 
-      streakPlayers.push({ player, streak: maxStreak });
+      streakPlayers.push({ item: player, count: maxStreak });
     }
 
-    this.value = Math.max(...streakPlayers.map((x) => x.streak));
-    this.array = streakPlayers.filter((x) => x.streak > 0 && x.streak === this.value).map((x) => x.player);
+    this.applyValues(streakPlayers);
   }
 }
