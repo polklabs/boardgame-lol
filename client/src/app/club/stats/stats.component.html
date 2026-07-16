@@ -32,6 +32,7 @@
     </div>
 
     <div class="heatmap-wrapper">
+      <h3 style="text-align: center">Plays</h3>
       <div class="flex gap-1 heatmap">
         <div class="flex-column dow">
           <span>Mon</span>
@@ -49,6 +50,15 @@
           </div>
         }
       </div>
+
+      @if (gameTypeMeter.length > 0) {
+        <h3 style="text-align: center">Scoring Types</h3>
+        <p-metergroup [value]="gameTypeMeter" [max]="gameTypeMeterMax" />
+      }
+      @if (boardGameMeter.length > 0) {
+        <h3 style="text-align: center">Games</h3>
+        <p-metergroup [value]="boardGameMeter" [max]="boardGameMeterMax" />
+      }
     </div>
 
     @if (ShowCharts) {
