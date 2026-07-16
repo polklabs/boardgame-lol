@@ -115,9 +115,6 @@
                   Name
                   <p-sortIcon field="name" />
                 </th>
-                <th id="tags">
-                  Tags
-                </th>
                 <th id="wins" pSortableColumn="wins">
                   Wins
                   <p-sortIcon field="wins" />
@@ -135,11 +132,10 @@
             <ng-template #body let-player>
               <tr>
                 <td>
-                  {{ player.name }}
-                </td>
-                <td>
                   <div class="tag-wrapper">
-                  @for (tag of player.Tags; track tag.TagId) {
+                  <span>{{ player.name }}</span>
+
+                  @for (tag of player.tags; track tag.TagId) {
                     <app-tag [tag]="tag"></app-tag>
                   }
                   </div>

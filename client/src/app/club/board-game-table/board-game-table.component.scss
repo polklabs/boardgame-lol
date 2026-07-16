@@ -4,13 +4,9 @@
     min-width: 200px !important;
   }
 
-  td:has(> .tag-wrapper) {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-  }
-
   .tag-wrapper {
     display: flex;
     gap: 4px;
+    align-items: center;
   }
 }
