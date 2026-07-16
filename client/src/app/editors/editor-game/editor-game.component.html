@@ -85,12 +85,12 @@
             label="Date"
             [entityType]="entityType"
             [hiddenFields]="hideFields"></app-calendar>
-          <app-textinput
+          <app-number-input
             formControlName="Players"
             label="Players"
             [entityType]="entityType"
             [hiddenFields]="hideFields"
-            inputType="number"></app-textinput>
+            [maxFractionDigits]="0"></app-number-input>
         </div>
 
         <app-tags

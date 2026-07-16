@@ -21,7 +21,6 @@ import { ButtonModule } from 'primeng/button';
 import { ButtonGroupModule } from 'primeng/buttongroup';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
 import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
-import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-game.component';
 import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
 import { Subscription } from 'rxjs';
@@ -34,6 +33,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TagComponent } from '../../shared/components/tag/tag.component';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
 import { PlayerGamePlayerEntity } from 'libs/models/PlayerGamePlayer.entity';
+import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
 
 type EntityType = GameEntity;
 
@@ -44,7 +44,6 @@ type EntityType = GameEntity;
     DialogModule,
     DropdownComponent,
     TextareaComponent,
-    TextInputComponent,
     CalendarComponent,
     CheckboxModule,
     ButtonModule,
@@ -55,6 +54,7 @@ type EntityType = GameEntity;
     EditorPlayerGameComponent,
     OrderListModule,
     InputGroupAddonModule,
+    NumberInputComponent,
     TagsComponent,
     TooltipModule,
     TagComponent,
