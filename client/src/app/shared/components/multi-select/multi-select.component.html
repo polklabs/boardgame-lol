@@ -5,18 +5,18 @@
   [formGroup]="formGroup"
   [entityType]="entityType"
   [hiddenFields]="hiddenFields"
-  textInputType="dropdown">
-  <p-select
+  textInputType="array">
+  <p-multiselect
+    #dropdown
     inputId="{{ formControlName }}"
     formControlName="{{ formControlName }}"
     [options]="options$ ? (options$ | async) ?? [] : options"
+    [optionLabel]="optionLabel"
+    [maxSelectedLabels]="maxSelectedLabels === -1 ? selectionLimit : maxSelectedLabels"
+    [selectionLimit]="selectionLimit"
     [showClear]="showClear"
     [filter]="showFilter"
-    (onChange)="onModelChange($event.value)"
-    (onShow)="onDropdownShow()"
-    [optionLabel]="optionLabel"
-    [optionValue]="optionValue"
     appendTo="body"
-    placeholder="{{ placeholder ?? label ?? '' }}"
-    [ngClass]="{ 'ng-invalid ng-dirty': false }"></p-select>
+    display="chip"
+    (onFocus)="onFocus($event)"></p-multiselect>
 </app-control-wrapper>

@@ -1,5 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ITrophy } from '../trophies/trophy.model';
+import { ApiService } from './api.service';
+import { BehaviorSubject } from 'rxjs';
 import { TrophyMostWins } from '../trophies/trophy-most-wins';
 import { TrophyComebackKid } from '../trophies/trophy-comeback-kid';
 import { TrophyLongestWinStreak } from '../trophies/trophy-longest-win-streak';
@@ -12,13 +14,12 @@ import { TrophyFavXPlayerGame } from '../trophies/trophy-fav-x-player-game';
 import { TrophyLastGroupWin } from '../trophies/trophy-last-group-win';
 import { TrophyUniqueOpponents } from '../trophies/trophy-unique-opponents';
 import { TrophyMostLosses } from '../trophies/trophy-most-losses';
-import { ApiService } from './api.service';
-import { BehaviorSubject } from 'rxjs';
 import { TrophySnail } from '../trophies/trophy-snail';
 import { TrophyRivals } from '../trophies/trophy-rivals';
 import { TrophyBestFriends } from '../trophies/trophy-best-friends';
 import { TrophyHoarder } from '../trophies/trophy-hoarder';
 import { TrophyNewPlayer } from '../trophies/trophy-new-player';
+import { TrophyTeamPlayer } from '../trophies/trophy-team-player';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +37,7 @@ export class TrophyService {
     FirstWinDelay: new TrophySnail(2),
     Rivals: new TrophyRivals(3),
     BestFriends: new TrophyBestFriends(3),
+    TeamPlayer: new TrophyTeamPlayer(3),
     Hoarder: new TrophyHoarder(2),
     NewPlayer: new TrophyNewPlayer(3),
     MostWeekendWins: new TrophyMostWeekendWins(1),

@@ -10,8 +10,10 @@ export type Trophy = {
   showValue: boolean;
 };
 
+export type ApplyObj = { item: unknown; count: number }[];
+
 export abstract class ITrophy {
-  emoji: string;
+  emoji: string[];
   title: string;
   subtitle: string[];
   formula?: string;
@@ -22,7 +24,7 @@ export abstract class ITrophy {
 
   extra: Record<string, string | number> = {};
 
-  constructor(sortOrder: number | null, emoji: string, title: string, subtitle: string[], formula?: string) {
+  constructor(sortOrder: number | null, emoji: string[], title: string, subtitle: string[], formula?: string) {
     this.sortOrder = sortOrder;
     this.emoji = emoji;
     this.title = title;
@@ -41,7 +43,7 @@ export abstract class ITrophy {
   export(): Trophy {
     this.extra['value'] = this.value;
 
-    let emoji = this.textReplace(this.emoji);
+    let emoji = this.textReplace(GetRandom(this.emoji) ?? '');
     if (emoji.includes('U+')) {
       emoji = UnicodeToEmoji(emoji);
     } else {
@@ -64,5 +66,10 @@ export abstract class ITrophy {
       text = text.replaceAll(`{${key}}`, `${this.extra[key]}`);
     }
     return text;
+  }
+
+  applyValues(objects: ApplyObj) {
+    this.value = objects.reduce((prev, curr) => Math.max(prev, curr.count), 0);
+    this.array = objects.filter((x) => x.count > 0 && x.count === this.value).map((x) => x.item);
   }
 }

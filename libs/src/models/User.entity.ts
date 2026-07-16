@@ -4,6 +4,7 @@ import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { Exclude } from 'class-transformer';
 import { Nullable } from '../decorators/nullable.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
+import { Ignore } from '../decorators/ignore.decorator';
 
 @TableName('User')
 export class UserEntity extends BaseEntity {
@@ -39,6 +40,9 @@ export class UserEntity extends BaseEntity {
   PasswordResetCodeDateTime: string | null = null;
 
   Deleted: boolean = false;
+
+  @Ignore()
+  calculated = false;
 
   constructor(partial: Partial<UserEntity> = {}, copyIgnored = false) {
     super(partial, UserEntity);

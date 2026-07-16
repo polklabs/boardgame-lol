@@ -12,12 +12,15 @@ import { TrophyService } from '../../shared/services/trophy.service';
 import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ChartData, ChartOptions } from 'chart.js';
 import { clone } from 'lodash-es';
+import { MeterGroupModule, MeterItem } from 'primeng/metergroup';
 
 type DayItem = { color: string; tooltip?: string; icon?: string };
 
+const COLORS = ['#0A84FF', '#FF3B30', '#30D158', '#5E5CE6', '#FFD60A', '#FF9F0A', '#64D2FF', '#BF5AF2', '#FF375F'];
+
 @Component({
   selector: 'app-stats',
-  imports: [TooltipModule, ChartModule, CommonModule, ArrayPipe],
+  imports: [TooltipModule, ChartModule, CommonModule, ArrayPipe, MeterGroupModule],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
 })
@@ -43,6 +46,16 @@ export class StatsComponent implements OnInit {
 
   trophies: Trophy[] = [];
 
+  gameTypeMeterMax = 0;
+  gameTypeMeter: MeterItem[] = [
+    { label: 'Win/Lose', color: COLORS[0], value: 0 },
+    { label: 'Point', color: COLORS[1], value: 0 },
+    { label: 'Rank', color: COLORS[2], value: 0 },
+  ];
+
+  boardGameMeterMax = 0;
+  boardGameMeter: MeterItem[] = [];
+
   private textColor = '--p-text-color';
   private textColorSecondary = '--p-surface-50';
   private surfaceBorder = 'transparent';
@@ -53,6 +66,7 @@ export class StatsComponent implements OnInit {
     this.calculateChartColors();
     this.subscriptions.add(
       this.apiService.dataUpdate$.subscribe(() => {
+        this.generateMeters();
         const [wins, dates] = this.generateWins();
         this.generateWinsOverTimeChart(wins, dates);
         this.generateRankOverTimeChart(wins, dates);
@@ -93,7 +107,9 @@ export class StatsComponent implements OnInit {
 
     let currentMonth = '';
     // eslint-disable-next-line no-constant-condition
+    let weekIndex = 0;
     while (date <= today) {
+      weekIndex++;
       const week: DayItem[] = [];
       const key = format(date, 'yyyy MM d');
 
@@ -119,6 +135,13 @@ export class StatsComponent implements OnInit {
         month = '';
       } else {
         currentMonth = month;
+
+        // Delete first month text if it only lasts one week.
+        if (weekIndex === 2) {
+          this.heatmap[0].month = '';
+        } else {
+          // Continue
+        }
       }
       this.heatmap.push({ days: week, month, key });
     }
@@ -141,6 +164,25 @@ export class StatsComponent implements OnInit {
     }
 
     return this.colors[index];
+  }
+
+  generateMeters() {
+    const plays = this.apiService.gameList;
+    this.gameTypeMeterMax = plays.length;
+    this.gameTypeMeter[0].value = plays.reduce((prev, curr) => prev + (curr.ScoreType === 'win-lose' ? 1 : 0), 0);
+    this.gameTypeMeter[1].value = plays.reduce((prev, curr) => prev + (curr.ScoreType === 'points' ? 1 : 0), 0);
+    this.gameTypeMeter[2].value = plays.reduce((prev, curr) => prev + (curr.ScoreType === 'rank' ? 1 : 0), 0);
+    this.gameTypeMeter.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+
+    const boardGames = this.apiService.boardGameList;
+    this.boardGameMeterMax = boardGames.reduce((prev, curr) => prev + curr.PlayCount, 0);
+    if (boardGames.length <= COLORS.length) {
+      this.boardGameMeter = boardGames
+        .map((b, i) => ({ label: b.Name, color: COLORS[i], value: b.PlayCount }))
+        .toSorted((a, b) => b.value - a.value);
+    } else {
+      this.boardGameMeter = [];
+    }
   }
 
   generateWinsOverTimeChart(wins: Record<string, number[]>, dates: string[]) {

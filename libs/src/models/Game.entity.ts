@@ -14,25 +14,14 @@ import { max } from 'date-fns/max';
 import { min } from 'date-fns/min';
 import { TagEntity } from './Tag.entity';
 import { TagGameEntity } from './TagGame.entity';
-import { TagBoardGameEntity } from './TagBoardGame.entity';
-import { TagPlayerEntity } from './TagPlayer.entity';
 import { TagPlayerGameEntity } from './TagPlayerGame.entity';
-
-export type GameWrapper = {
-  Game: GameEntity;
-  PlayerGames: PlayerGameEntity[];
-  BoardGames?: BoardGameEntity[];
-  Players?: PlayerEntity[];
-};
+import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
 
 export type GameReturn = {
   Game: GameEntity;
-  BoardGames: BoardGameEntity[];
+  PlayerGamePlayers: PlayerGamePlayerEntity[];
   PlayerGames: PlayerGameEntity[];
-  Players: PlayerEntity[];
   TagGames: TagGameEntity[];
-  TagBoardGames: TagBoardGameEntity[];
-  TagPlayers: TagPlayerEntity[];
   TagPlayerGames: TagPlayerGameEntity[];
 };
 
@@ -69,6 +58,7 @@ export class GameEntity extends BaseEntity {
   }
 
   @Ignore()
+  @MinMax(0, 8, 'array')
   Tags: TagEntity[] = [];
 
   @Ignore()
@@ -95,10 +85,17 @@ export class GameEntity extends BaseEntity {
   @Ignore()
   Winners: PlayerEntity[] = [];
 
+  @Ignore()
+  WinnerTeams: PlayerGameEntity[] = [];
+
+  @Ignore()
+  calculated = false;
+
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
     super(partial, GameEntity);
     this.assign(partial, GameEntity, copyIgnored);
 
+    this.Tags = partial.Tags ?? [];
     this.DateObj = new Date(this.Date);
     const userTimezoneOffset = this.DateObj.getTimezoneOffset() * 60000;
     this.DateObj = new Date(this.DateObj.getTime() + userTimezoneOffset);
@@ -123,7 +120,7 @@ export class GameEntity extends BaseEntity {
 
   placePlayers(place: number): PlayerEntity[] {
     if (place in this.Places) {
-      return [...this.Places[place]].map((x) => x.Player).filter((x) => x !== null);
+      return [...this.Places[place]].flatMap((x) => x.Players).filter((x) => x !== null);
     } else {
       return [];
     }
@@ -132,6 +129,7 @@ export class GameEntity extends BaseEntity {
   calculate() {
     this.calculateWinners();
     this.Winners = this.placePlayers(0);
+    this.WinnerTeams = this.place(0);
     this.HighScore = this.place(0).at(0)?.Points ?? null;
     this.calculated = true;
   }

@@ -5,7 +5,7 @@ export class TrophyFavXPlayerGame extends ITrophy {
   constructor(sortOrder: number | null = null) {
     super(
       sortOrder,
-      'U+003{FavXPlayerCount} U+FE0F U+20E3',
+      ['U+003{FavXPlayerCount} U+FE0F U+20E3'],
       'Favorite {FavXPlayerCount} Player Game',
       ["Oh, it's you {FavXPlayerCount} again..."],
       'Player # mode; Max # of plays with player #',

@@ -1,3 +1,9 @@
+<app-editor-player
+  [editorVisible]="playerEditorVisible"
+  [player]="playerEdit"
+  [standalone]="true"
+  (closeEditor)="playerEditorVisible = false"></app-editor-player>
+
 <p-dialog
   [header]="title"
   [visible]="editorVisible"
@@ -10,20 +16,37 @@
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit()">
         <div class="flex gap-4 justify-content-space-between">
-          <app-dropdown
+          <app-checkbox formControlName="Team" [hiddenFields]="hideFields"></app-checkbox>
+          <app-textinput
             style="flex-grow: 1"
-            formControlName="PlayerId"
-            label="Player"
+            formControlName="Name"
+            label="Team Name"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"
-            [options]="players"
-            optionLabel="Name"
-            optionValue="PlayerId"
-            [showClear]="false"></app-dropdown>
-          @if (canEditPlayer()) {
-            <p-button (onClick)="editPlayer.emit(selectedPlayer)" icon="pi pi-pencil"></p-button>
+            [hiddenFields]="hideFields"></app-textinput>
+        </div>
+
+        <div class="flex-nowrap align-items-start gap-4 justify-content-space-between">
+          @if (getValue('Team')) {
+            <app-multi-select
+              style="flex-grow: 1"
+              formControlName="Players"
+              label="Players"
+              [entityType]="entityType"
+              [hiddenFields]="hideFields"
+              [options$]="playerList$"
+              [maxSelectedLabels]="-1"
+              optionLabel="Name"></app-multi-select>
+          } @else {
+            <app-dropdown
+              style="flex-grow: 1"
+              formControlName="Players"
+              label="Player"
+              [entityType]="entityType"
+              [hiddenFields]="hideFields"
+              [options$]="playerList$"
+              optionLabel="Name"></app-dropdown>
           }
-          <p-button (onClick)="editPlayer.emit()" pTooltip="New Player" icon="pi pi-plus"></p-button>
+          <p-button (onClick)="addPlayer()" pTooltip="New Player" icon="pi pi-plus"></p-button>
         </div>
         @if (scoreType === 'points') {
           <app-number-input
@@ -52,7 +75,7 @@
           </div>
           <div>
             <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-            <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+            <p-button label="Apply" [outlined]="true" (onClick)="submit()"></p-button>
           </div>
         </div>
       </form>

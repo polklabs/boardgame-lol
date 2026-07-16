@@ -1,11 +1,11 @@
-import { Mode, PlayerEntity, PlayerGameEntity } from 'libs/index';
+import { Mode, PlayerEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
 
 export class TrophyBestFriends extends ITrophy {
   constructor(sortOrder: number | null = null) {
     super(
       sortOrder,
-      '🫂',
+      ['🫂'],
       'The Best Friends',
       ["If I didn't have you", 'Did we just become best friends?'],
       '2 players that win together the most.',
@@ -13,7 +13,7 @@ export class TrophyBestFriends extends ITrophy {
   }
 
   calculate(players: PlayerEntity[]) {
-    const winList: Record<string, PlayerGameEntity[]> = {};
+    const winList: Record<string, PlayerEntity[]> = {};
     this.value = 0;
     this.array = [];
 
@@ -29,7 +29,7 @@ export class TrophyBestFriends extends ITrophy {
         }
         const place = pg.Game?.findPlace(pg) ?? Infinity;
         if (place === 0) {
-          winList[id].push(...(pg.Game?.place(0) ?? []).filter((x) => x !== pg));
+          winList[id].push(...(pg.Game?.placePlayers(0) ?? []).filter((x) => !pg.PlayerIds.has(x.PlayerId)));
         } else {
           // Not in 1st or 2nd, skip
         }
@@ -42,7 +42,7 @@ export class TrophyBestFriends extends ITrophy {
         const modeCount = winList[k].filter((x) => x.PlayerId === mode[0].PlayerId).length;
         if (modeCount > this.value) {
           this.value = modeCount;
-          this.array = [players.find((x) => x.PlayerId === k), mode[0].Player];
+          this.array = [players.find((x) => x.PlayerId === k), mode[0]];
         } else {
           // Continue
         }

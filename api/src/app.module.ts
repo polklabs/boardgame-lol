@@ -24,6 +24,7 @@ import { TagBoardGameManager } from './managers/TagBoardGame.manager';
 import { TagGameManager } from './managers/TagGame.manager';
 import { TagPlayerManager } from './managers/TagPlayer.manager';
 import { TagPlayerGameManager } from './managers/TagPlayerGame.manager';
+import { PlayerGamePlayerManager } from './managers/PlayerGamePlayer.manager';
 
 const clientPath = process.env.CLIENT_PATH ?? join(__dirname, '../../../../dist/client/browser');
 
@@ -36,6 +37,7 @@ const clientPath = process.env.CLIENT_PATH ?? join(__dirname, '../../../../dist/
     ClubManager,
     PlayerManager,
     PlayerGameManager,
+    PlayerGamePlayerManager,
     UserManager,
     ClubUserManager,
     TagManager,

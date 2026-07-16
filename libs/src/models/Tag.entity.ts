@@ -35,6 +35,9 @@ export class TagEntity extends BaseEntity implements ITag {
   @Ignore()
   BackgroundColor: string = '';
 
+  @Ignore()
+  calculated = false;
+
   calculate() {
     this.BackgroundColor = getAccessibleBackground(this.Color ?? '');
     this.calculated = true;

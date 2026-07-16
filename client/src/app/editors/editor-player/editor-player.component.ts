@@ -99,7 +99,10 @@ export class EditorPlayerComponent implements OnChanges {
     if (this.formGroup.invalid || !this.player) {
       return;
     } else if (this.standalone) {
-      const result = await this.apiService.postPlayer(this.player.PlayerId === '', this.formGroup.getRawValue());
+      const result = await this.apiService.postPlayer(
+        this.player.PlayerId === '',
+        new PlayerEntity(this.formGroup.getRawValue()),
+      );
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Player' });
         this.closeEditor.emit();

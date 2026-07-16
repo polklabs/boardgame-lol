@@ -8,17 +8,18 @@ import {
   ConvertListToDict,
   GameEntity,
   GameReturn,
-  GameWrapper,
   PlayerEntity,
   PlayerGameEntity,
   PlayerReturn,
   TagBoardGameEntity,
   TagPlayerGameEntity,
   TagEntity,
+  ClubReturn,
 } from 'libs/index';
 import { format } from 'date-fns';
 import { TagGameEntity } from 'libs/models/TagGame.entity';
 import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
+import { PlayerGamePlayerEntity } from 'libs/models/PlayerGamePlayer.entity';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +33,7 @@ export class ApiService {
   readonly club$ = new BehaviorSubject<ClubEntity | undefined>(undefined);
   readonly boardGameList$ = new BehaviorSubject<BoardGameEntity[]>([]);
   readonly playerGameList$ = new BehaviorSubject<PlayerGameEntity[]>([]);
+  readonly playerGamePlayerList$ = new BehaviorSubject<PlayerGamePlayerEntity[]>([]);
   readonly playerList$ = new BehaviorSubject<PlayerEntity[]>([]);
   readonly gameList$ = new BehaviorSubject<GameEntity[]>([]);
   readonly tagList$ = new BehaviorSubject<TagEntity[]>([]);
@@ -44,7 +46,6 @@ export class ApiService {
   private _boardGameDict: Record<string, BoardGameEntity> = {};
   private _playerDict: Record<string, PlayerEntity> = {};
   private _gameDict: Record<string, GameEntity> = {};
-  private _playerGameDict: Record<string, PlayerGameEntity> = {};
   private _tagDict: Record<string, TagEntity> = {};
 
   // Filters
@@ -58,6 +59,7 @@ export class ApiService {
   readonly filteredPlayerList$ = new BehaviorSubject<PlayerEntity[]>([]);
   readonly filteredGameList$ = new BehaviorSubject<GameEntity[]>([]);
   readonly filteredPlayerGameList$ = new BehaviorSubject<PlayerGameEntity[]>([]);
+  readonly filteredPlayerGamePlayerList$ = new BehaviorSubject<PlayerGamePlayerEntity[]>([]);
   readonly filterEnabled$ = new BehaviorSubject<boolean>(false);
 
   // Club
@@ -123,16 +125,24 @@ export class ApiService {
   get playerGameList() {
     return this.filteredPlayerGameList$.value;
   }
-  getPlayerGame(key: string | null): PlayerGameEntity | null {
-    return this.getFromDict(key, this._playerGameDict);
-  }
   private set playerGameList(playerGameList: PlayerGameEntity[]) {
     playerGameList = playerGameList.map((x) => new PlayerGameEntity(x));
-    this._playerGameDict = ConvertListToDict(playerGameList, PlayerGameEntity);
     this.playerGameList$.next(playerGameList);
   }
   private set fPlayerGameList(playerGameList: PlayerGameEntity[]) {
     this.filteredPlayerGameList$.next(playerGameList);
+  }
+
+  // Player Game Players
+  get playerGamePlayerList() {
+    return this.filteredPlayerGamePlayerList$.value;
+  }
+  private set playerGamePlayerList(playerGamePlayerList: PlayerGamePlayerEntity[]) {
+    playerGamePlayerList = playerGamePlayerList.map((x) => new PlayerGamePlayerEntity(x));
+    this.playerGamePlayerList$.next(playerGamePlayerList);
+  }
+  private set fPlayerGamePlayerList(playerGamePlayerList: PlayerGamePlayerEntity[]) {
+    this.filteredPlayerGamePlayerList$.next(playerGamePlayerList);
   }
 
   // Tags
@@ -203,6 +213,8 @@ export class ApiService {
     this.fGameList = [];
     this.playerGameList = [];
     this.fPlayerGameList = [];
+    this.playerGamePlayerList = [];
+    this.fGameList = [];
     this.tagList = [];
     this.tagBoardGameList = [];
     this.tagGameList = [];
@@ -232,18 +244,7 @@ export class ApiService {
 
     this.unloadClub();
 
-    const data = await this.httpService.get<{
-      Club?: ClubEntity;
-      Games: GameEntity[];
-      PlayerGames: PlayerGameEntity[];
-      BoardGames: BoardGameEntity[];
-      Players: PlayerEntity[];
-      Tags: TagEntity[];
-      TagBoardGames: TagBoardGameEntity[];
-      TagGames: TagGameEntity[];
-      TagPlayers: TagPlayerEntity[];
-      TagPlayerGames: TagPlayerGameEntity[];
-    }>(['api', 'club', clubId]);
+    const data = await this.httpService.get<ClubReturn>(['api', 'club', clubId]);
 
     if (data?.Club) {
       // continue
@@ -257,6 +258,7 @@ export class ApiService {
     data.Games.sort((a, b) => (a.LastModifiedDate ?? '')?.localeCompare(b.LastModifiedDate ?? ''));
     this.gameList = data.Games;
     this.playerGameList = data.PlayerGames;
+    this.playerGamePlayerList = data.PlayerGamePlayers;
     this.tagList = data.Tags;
     this.tagBoardGameList = data.TagBoardGames;
     this.tagGameList = data.TagGames;
@@ -284,7 +286,7 @@ export class ApiService {
     }
   }
 
-  async postGame(isNew: boolean, data: GameWrapper) {
+  async postGame(isNew: boolean, data: GameEntity) {
     let result: GameReturn | null = null;
     if (isNew) {
       result = await this.httpService.put(['api', 'game'], data);
@@ -295,20 +297,30 @@ export class ApiService {
     if (result) {
       this.gameList = this.upsertEntry(result.Game, (x) => x.GameId, this.gameList$.value, this._gameDict);
 
-      result.PlayerGames.forEach((pg) => {
-        this.playerGameList = this.upsertEntry(
-          pg,
-          (x) => x.PlayerGameId,
-          this.playerGameList$.value,
-          this._playerGameDict,
-        );
-      });
-      this.boardGameList = result.BoardGames;
-      this.playerList = result.Players;
-      this.tagBoardGameList = result.TagBoardGames;
-      this.tagGameList = result.TagGames;
-      this.tagPlayerList = result.TagPlayers;
-      this.tagPlayerGameList = result.TagPlayerGames;
+      this.playerGameList = this.upsertEntry(
+        result.PlayerGames,
+        (x) => x.PlayerGameId,
+        this.playerGameList$.value.filter((x) => x.GameId !== result.Game.GameId),
+      );
+
+      this.playerGamePlayerList = this.upsertEntry(
+        result.PlayerGamePlayers,
+        (x) => `${x.PlayerGameId};${x.PlayerId}`,
+        this.playerGamePlayerList$.value.filter((x) => x.GameId !== result.Game.GameId),
+      );
+
+      this.tagGameList = this.upsertEntry(
+        result.TagGames,
+        (x) => `${x.GameId};${x.TagId}`,
+        this.tagGameList$.value.filter((x) => x.GameId !== result.Game.GameId),
+      );
+
+      const playerGameIds = new Set(result.PlayerGames.map((x) => x.PlayerGameId));
+      this.tagPlayerGameList = this.upsertEntry(
+        result.TagPlayerGames,
+        (x) => `${x.PlayerGameId};${x.TagId}`,
+        this.tagPlayerGameList$.value.filter((x) => !playerGameIds.has(x.PlayerGameId)),
+      );
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -327,7 +339,13 @@ export class ApiService {
 
     if (result) {
       this.playerList = this.upsertEntry(result.Player, (x) => x.PlayerId, this.playerList$.value, this._playerDict);
-      this.tagPlayerList = result.TagPlayers;
+
+      this.tagPlayerList = this.upsertEntry(
+        result.TagPlayers,
+        (x) => `${x.PlayerId};${x.TagId}`,
+        this.tagPlayerList$.value.filter((x) => x.PlayerId !== result.Player.PlayerId),
+      );
+
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -351,7 +369,13 @@ export class ApiService {
         this.boardGameList$.value,
         this._boardGameDict,
       );
-      this.tagBoardGameList = result.TagBoardGames;
+
+      this.tagBoardGameList = this.upsertEntry(
+        result.TagBoardGames,
+        (x) => `${x.BoardGameId};${x.TagId}`,
+        this.tagBoardGameList$.value.filter((x) => x.BoardGameId !== result.BoardGame.BoardGameId),
+      );
+
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -406,9 +430,7 @@ export class ApiService {
     );
 
     if (result) {
-      result.forEach((g) => {
-        this.gameList = this.upsertEntry(g, (x) => x.GameId, this.gameList$.value, this._gameDict);
-      });
+      this.gameList = this.upsertEntry(result, (x) => x.GameId, this.gameList$.value, this._gameDict);
       this.gameList = [...this.gameList$.value];
       this.updateReferences();
       this.dataUpdate$.next();
@@ -531,9 +553,12 @@ export class ApiService {
       this.fBoardGameList = this.boardGameList$.value.filter(
         (x) => this._filteredBoardGameIds.has(x.BoardGameId) && this.filterTags(x.Tags),
       );
+      this.fPlayerGamePlayerList = this.playerGamePlayerList$.value.filter((x) =>
+        this._filteredPlayerIds.has(x.PlayerId),
+      );
       this.fPlayerGameList = this.playerGameList$.value.filter(
         (x) =>
-          this._filteredPlayerIds.has(x.PlayerId) &&
+          this.filteredPlayerGamePlayerList$.value.some((pgp) => pgp.PlayerGameId === x.PlayerGameId) &&
           this._filteredBoardGameIds.has(x.Game?.BoardGameId ?? '') &&
           this.filterTags(x.Tags),
       );
@@ -544,6 +569,7 @@ export class ApiService {
       this.fGameList = this.gameList$.value;
       this.fBoardGameList = this.boardGameList$.value;
       this.fPlayerGameList = this.playerGameList$.value;
+      this.fPlayerGamePlayerList = this.playerGamePlayerList$.value;
       this.fPlayerList = this.playerList$.value;
     }
 
@@ -559,7 +585,6 @@ export class ApiService {
             case 'rank':
               return (a.Points ?? Infinity) - (b.Points ?? Infinity);
             case 'win-lose':
-              return (b.Points ?? 0) - (a.Points ?? 0);
             case 'points':
             default:
               return (b.Points ?? 0) - (a.Points ?? 0);
@@ -572,7 +597,9 @@ export class ApiService {
     });
 
     this.playerGameList.forEach((pg) => {
-      pg.Player = this.getPlayer(pg.PlayerId);
+      pg.PlayerLinks = this.playerGamePlayerList.filter((x) => x.PlayerGameId === pg.PlayerGameId);
+      pg.Players = pg.PlayerLinks.map((p) => this.getPlayer(p.PlayerId)).filter((x) => x !== null);
+      pg.PlayerIds = new Set(pg.Players.map((x) => x.PlayerId));
       pg.Game = this.getGame(pg.GameId);
       pg.Tags = this.tagPlayerGameList
         .filter((x) => x.PlayerGameId === pg.PlayerGameId)
@@ -589,7 +616,7 @@ export class ApiService {
     });
 
     this.playerList.forEach((p) => {
-      p.PlayerGames = this.playerGameList.filter((x) => x.PlayerId === p.PlayerId);
+      p.PlayerGames = this.playerGameList.filter((x) => x.PlayerIds.has(p.PlayerId));
       p.Tags = this.tagPlayerList
         .filter((x) => x.PlayerId === p.PlayerId)
         .map((t) => this.getTag(t.TagId))
@@ -620,6 +647,7 @@ export class ApiService {
     this.publicClubs.forEach((x) => x.resetCalculated(new ClubEntity(), ClubEntity));
     this.gameList.forEach((x) => x.resetCalculated(new GameEntity(), GameEntity));
     this.playerGameList.forEach((x) => x.resetCalculated(new PlayerGameEntity(), PlayerGameEntity));
+    this.playerGamePlayerList.forEach((x) => x.resetCalculated(new PlayerGamePlayerEntity(), PlayerGamePlayerEntity));
     this.boardGameList.forEach((x) => x.resetCalculated(new BoardGameEntity(), BoardGameEntity));
     this.playerList.forEach((x) => x.resetCalculated(new PlayerEntity(), PlayerEntity));
 
@@ -627,6 +655,7 @@ export class ApiService {
     this.publicClubs.forEach((x) => x.calculate());
     this.gameList.forEach((x) => x.calculate());
     this.playerGameList.forEach((x) => x.calculate());
+    this.playerGamePlayerList.forEach((x) => x.calculate());
     this.boardGameList.forEach((x) => x.calculate());
     this.playerList.forEach((x) => x.calculate());
     this.tagList.forEach((x) => x.calculate());
@@ -639,15 +668,22 @@ export class ApiService {
     GameEntity.postCalculate(this.gameList);
   }
 
-  private upsertEntry<T>(item: T, key: (item: T) => string | null, list: T[], dict: Record<string, T>): T[] {
-    dict[key(item) ?? ''] = item;
-    const pgIndex = list.findIndex((x) => key(x) === key(item));
-    if (pgIndex >= 0) {
-      list[pgIndex] = item;
-      return list;
-    } else {
-      return [...list, item];
+  private upsertEntry<T>(items: T | T[], key: (item: T) => string | null, list: T[], dict?: Record<string, T>): T[] {
+    items = Array.isArray(items) ? items : [items];
+    for (const item of items) {
+      if (dict) {
+        dict[key(item) ?? ''] = item;
+      } else {
+        // Skip dictionary insert
+      }
+      const pgIndex = list.findIndex((x) => key(x) === key(item));
+      if (pgIndex >= 0) {
+        list[pgIndex] = item;
+      } else {
+        list = [...list, item];
+      }
     }
+    return list;
   }
 
   private getFromDict<T>(key: string | null, dict: Record<string, T>): T | null {

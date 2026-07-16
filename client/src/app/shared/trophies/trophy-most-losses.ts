@@ -1,11 +1,11 @@
 import { PlayerEntity } from 'libs/index';
-import { ITrophy } from './trophy.model';
+import { ApplyObj, ITrophy } from './trophy.model';
 
 export class TrophyMostLosses extends ITrophy {
   constructor(sortOrder: number | null = null) {
     super(
       sortOrder,
-      '🏅',
+      ['🏅'],
       'The Participator',
       ['At least you tried', "You'll get em next time"],
       '{value} = Losses - Wins; {value} losses > 0',
@@ -13,22 +13,12 @@ export class TrophyMostLosses extends ITrophy {
   }
 
   calculate(players: PlayerEntity[]) {
-    const loser = players.reduce((prev: PlayerEntity | undefined, curr) => {
-      let prevLosses = 0;
-      if (prev) {
-        prevLosses = prev.LossCount - prev.WinCount;
-      } else {
-        // continue
-      }
+    const objects: ApplyObj = [];
 
-      if (prevLosses >= curr.LossCount - curr.WinCount) {
-        return prev;
-      } else {
-        return curr;
-      }
-    }, undefined);
+    players.forEach((player) => {
+      objects.push({ item: player, count: player.LossCount - player.WinCount });
+    });
 
-    this.value = (loser?.LossCount ?? 0) - (loser?.WinCount ?? 0);
-    this.array = players.filter((x) => this.value > 0 && x.LossCount - x.WinCount === this.value);
+    this.applyValues(objects);
   }
 }

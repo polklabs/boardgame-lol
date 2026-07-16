@@ -61,7 +61,7 @@ export class ControlWrapperComponent {
       } else if (control.errors?.['minMax']) {
         const value = control.value;
         const minMax = getMinMax(this.entityType)[this.controlName];
-        if (this.textInputType === 'text') {
+        if (this.textInputType === 'text' || this.textInputType === 'array') {
           if (value.length < minMax.min) {
             return `${value.length}/${minMax.max} Minimum Length: ${minMax.min}`;
           } else {
@@ -108,7 +108,7 @@ export class ControlWrapperComponent {
 
     const minMax = getMinMax(this.entityType)[this.controlName];
     const value = this.formGroup.get(this.controlName)?.value ?? '';
-    if (minMax && this.textInputType === 'text') {
+    if (minMax && this.textInputType === 'text' || this.textInputType === 'array') {
       return `${value.length}/${minMax.max}`;
     } else {
       return '';

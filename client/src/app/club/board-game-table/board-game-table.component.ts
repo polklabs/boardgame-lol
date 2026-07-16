@@ -3,7 +3,7 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { BoardGameEntity, PlayerEntity, PlayerGameEntity } from 'libs/index';
+import { BoardGameEntity, PlayerEntity, PlayerGameEntity, TagEntity } from 'libs/index';
 import { ITrophy } from '../../shared/trophies/trophy.model';
 import { TrophyService } from '../../shared/services/trophy.service';
 import { HidePipe } from '../../shared/pipes/hide.pipe';
@@ -40,6 +40,7 @@ export class BoardGameTableComponent implements OnChanges {
   WinCounts: {
     [boardGameId: string]: {
       playerId: string;
+      tags: TagEntity[];
       name: string;
       wins: number;
       plays: number;
@@ -99,6 +100,7 @@ export class BoardGameTableComponent implements OnChanges {
           this.WinCounts[boardGameId].push({
             playerId: player.PlayerId,
             name: player.Name ?? 'Unknown',
+            tags: player.Tags,
             wins: won ? 1 : 0,
             plays: 1,
             winPercent: won ? 100 : 0,

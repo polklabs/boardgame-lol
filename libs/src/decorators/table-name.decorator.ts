@@ -9,5 +9,5 @@ export function TableName(name: string) {
 
 export function getTableName(target: any): string | undefined {
   // Retrieve the table name from the metadata
-  return Reflect.getMetadata(tableName, target);
+  return Reflect.getOwnMetadata(tableName, target);
 }

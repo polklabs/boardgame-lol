@@ -3,7 +3,7 @@ import { ITrophy } from './trophy.model';
 
 export class TrophyMostPlaysOneDay extends ITrophy {
   constructor(sortOrder: number | null = null) {
-    super(sortOrder, '🕹️', 'Just One More Game', ["Can't Stop, Won't Stop"], 'Max games played in one day');
+    super(sortOrder, ['🕹️'], 'Just One More Game', ["Can't Stop, Won't Stop"], 'Max games played in one day');
   }
 
   override calculate(_players: PlayerEntity[], games: GameEntity[]): void {

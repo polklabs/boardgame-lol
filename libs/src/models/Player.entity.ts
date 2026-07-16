@@ -1,5 +1,5 @@
 import { TableName } from '../decorators/table-name.decorator';
-import { BaseEntity } from './Base.entity';
+import { BaseEntity, calculationsComplete } from './Base.entity';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
 import { CHARACTER_LIMIT_TINY } from '../constants';
@@ -32,6 +32,7 @@ export class PlayerEntity extends BaseEntity {
   IsRealPerson: boolean = true;
 
   @Ignore()
+  @MinMax(0, 8, 'array')
   Tags: TagEntity[] = [];
 
   @Ignore()
@@ -61,9 +62,13 @@ export class PlayerEntity extends BaseEntity {
   @Ignore()
   hasMostWins: boolean = false;
 
+  @Ignore()
+  calculated = false;
+
   constructor(partial: Partial<PlayerEntity> = {}, copyIgnored = false) {
     super(partial, PlayerEntity);
     this.assign(partial, PlayerEntity, copyIgnored);
+    this.Tags = partial.Tags ?? [];
   }
 
   calculate() {
@@ -75,7 +80,7 @@ export class PlayerEntity extends BaseEntity {
   }
 
   calculateWins() {
-    this.calculationsComplete(this.PlayerGames.map((x) => x.Game));
+    calculationsComplete(this.PlayerGames.map((x) => x.Game));
     this.Wins = this.PlayerGames.filter((pg) => pg.Game?.place(0).includes(pg)).reverse();
     this.WinCount = this.Wins.length;
     this.LossCount = this.PlayerGames.length - this.WinCount;

@@ -35,6 +35,7 @@ export class NumberInputComponent implements ControlValueAccessor {
   @Input() boardGame?: BoardGameEntity | null;
   @Input() prefix?: string | null;
   @Input() suffix?: string | null;
+  @Input() maxFractionDigits = 10;
 
   get formGroup() {
     return this.formGroupDirective.form;

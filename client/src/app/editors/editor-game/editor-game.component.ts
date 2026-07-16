@@ -10,7 +10,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BoardGameEntity, GameEntity, isGuid, PlayerEntity, PlayerGameEntity, TagEntity } from 'libs/index';
+import { BoardGameEntity, GameEntity, getMinMax, PlayerGameEntity } from 'libs/index';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
@@ -19,13 +19,11 @@ import { DialogModule } from 'primeng/dialog';
 import { OrderListModule } from 'primeng/orderlist';
 import { ButtonModule } from 'primeng/button';
 import { ButtonGroupModule } from 'primeng/buttongroup';
-import { EditorPlayerComponent } from '../editor-player/editor-player.component';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
 import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
-import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-game.component';
 import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
-import { Observable, of, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { format } from 'date-fns';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -34,6 +32,8 @@ import { TagsComponent } from '../../shared/components/tags/tags.component';
 import { TooltipModule } from 'primeng/tooltip';
 import { TagComponent } from '../../shared/components/tag/tag.component';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
+import { PlayerGamePlayerEntity } from 'libs/models/PlayerGamePlayer.entity';
+import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
 
 type EntityType = GameEntity;
 
@@ -44,18 +44,17 @@ type EntityType = GameEntity;
     DialogModule,
     DropdownComponent,
     TextareaComponent,
-    TextInputComponent,
     CalendarComponent,
     CheckboxModule,
     ButtonModule,
     ButtonGroupModule,
     FormsModule,
     ReactiveFormsModule,
-    EditorPlayerComponent,
     EditorBoardGameComponent,
     EditorPlayerGameComponent,
     OrderListModule,
     InputGroupAddonModule,
+    NumberInputComponent,
     TagsComponent,
     TooltipModule,
     TagComponent,
@@ -80,37 +79,18 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   entityType = GameEntity;
 
-  private playerList: PlayerEntity[] = [];
-  private boardGameList: BoardGameEntity[] = [];
-  tagList$: Observable<TagEntity[]> = of([]);
+  tagList$ = this.apiService.tagList$;
+  boardGameList$ = this.apiService.boardGameList$;
 
   protected selectedPlayerGames: PlayerGameEntity[] = [];
 
-  get boardGames() {
-    return [...this.boardGameList, ...this.newBoardGames].sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
-  }
-
-  get selectedBoardGame() {
-    const id = this.formGroup.controls['BoardGameId'].value;
-    return this.boardGames.find((x) => x.BoardGameId === id);
-  }
-
-  get players() {
-    return [...this.playerList, ...this.newPlayers].sort((a, b) => (a.Name ?? '').localeCompare(b.Name ?? ''));
-  }
-
   playerGames: PlayerGameEntity[] = [];
-  newPlayers: PlayerEntity[] = [];
-  newBoardGames: BoardGameEntity[] = [];
 
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
   playerGameEditorVisible = false;
   playerGameEdit?: PlayerGameEntity;
-
-  playerEditorVisible = false;
-  playerEdit?: PlayerEntity;
 
   boardGameEditorVisible = false;
   boardGameEdit?: BoardGameEntity;
@@ -133,7 +113,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       this.grabLists();
 
       if (this.isNew) {
-        const firstBoardGame = this.boardGames[0];
+        const firstBoardGame = this.apiService.boardGameList[0];
         const lastBoardGame = this.apiService.gameList[0]?.BoardGame;
         this.game.BoardGame = lastBoardGame ?? firstBoardGame ?? null;
         this.game.BoardGameId = this.game.BoardGame?.BoardGameId ?? null;
@@ -146,13 +126,10 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
-      const instance = new GameEntity(this.game);
-      instance.Tags = [...this.game.Tags];
-      this.formGroup.patchValue(instance);
+      this.formGroup.patchValue(new GameEntity(this.game));
 
       this.subscription = this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
-        console.log(value);
-        this.game!.BoardGame = this.boardGames.find((x) => x.BoardGameId === value) ?? null;
+        this.game!.BoardGame = this.apiService.getBoardGame(value);
         this.updateScoring();
       });
     } else {
@@ -166,10 +143,6 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   }
 
   grabLists() {
-    this.playerList = this.apiService.playerList;
-    this.boardGameList = this.apiService.boardGameList;
-    this.tagList$ = this.apiService.tagList$;
-
     this.playerGames = this.apiService.playerGameList
       .filter((x) => x.GameId === this.game?.GameId)
       .map((m) => new PlayerGameEntity(m, true));
@@ -181,8 +154,9 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   }
 
   addPoints(points: number) {
+    const minMax = getMinMax(PlayerGameEntity)['Points'];
     this.selectedPlayerGames.forEach((p) => {
-      p.Points = (p.Points ?? 0) + points;
+      p.Points = Math.max(minMax.min, Math.min(minMax.max, (p.Points ?? 0) + points));
     });
     this.updateScoring();
   }
@@ -268,23 +242,55 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       this.playerGameEdit = playerGame;
     } else {
       this.playerGameEdit = new PlayerGameEntity({ ClubId: this.game?.ClubId, GameId: '-1' });
-      const existingPlayers = new Set(this.playerGames.map((x) => x.PlayerId));
-      this.playerGameEdit.PlayerId = this.players.find((x) => !existingPlayers.has(x.PlayerId))?.PlayerId ?? '';
+      const existingPlayers = new Set(this.playerGames.flatMap((x) => x.Players.map((p) => p.PlayerId)));
+      this.playerGameEdit.Players = [this.apiService.playerList.find((x) => !existingPlayers.has(x.PlayerId))].filter(
+        (x) => x !== undefined,
+      );
     }
     this.playerGameEditorVisible = true;
   }
 
-  savePlayerGame(playerGame?: PlayerGameEntity) {
-    if (playerGame) {
-      const index = this.playerGames.indexOf(playerGame);
+  savePlayerGame(pg?: PlayerGameEntity) {
+    if (pg) {
+      const index = this.playerGames.indexOf(pg);
       if (index === -1) {
-        this.playerGames = [...this.playerGames, playerGame];
+        this.playerGames = [...this.playerGames, pg];
       } else {
         // continue
       }
 
+      if (pg.PlayerGameId === '') {
+        pg.PlayerLinks = pg.Players.map(
+          (p) =>
+            new PlayerGamePlayerEntity({
+              ClubId: this.apiService.clubId,
+              PlayerGameId: pg.PlayerGameId,
+              PlayerId: p.PlayerId,
+            }),
+        );
+      } else {
+        const linkIds = new Set(pg.PlayerLinks.map((x) => x.PlayerId));
+        pg.Players.forEach((p) => {
+          if (linkIds.has(p.PlayerId)) {
+            // Skip
+          } else {
+            pg.PlayerLinks.push(
+              new PlayerGamePlayerEntity({
+                ClubId: this.apiService.clubId,
+                PlayerGameId: pg.PlayerGameId,
+                PlayerId: p.PlayerId,
+              }),
+            );
+          }
+          linkIds.delete(p.PlayerId);
+        });
+        pg.PlayerLinks = pg.PlayerLinks.filter((x) => !linkIds.has(x.PlayerId)).map(
+          (x) => new PlayerGamePlayerEntity(x),
+        );
+      }
+
       this.updateScoring();
-      this.getControl('Players')?.setValue(this.playerGames.length);
+      this.updatePlayerCount();
     } else {
       // continue
     }
@@ -308,118 +314,17 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     this.playerGameEdit = undefined;
     this.playerGameEditorVisible = false;
     this.selectedPlayerGames = [];
+    this.updateScoring();
+    this.updatePlayerCount();
   }
 
-  editPlayer(player?: PlayerEntity) {
-    if (player) {
-      this.playerEdit = player;
-    } else {
-      let nextId = 0;
-      while (this.newPlayers.some((x) => x.PlayerId === `${nextId}`)) {
-        nextId++;
-      }
-      this.playerEdit = new PlayerEntity({ PlayerId: `${nextId}`, ClubId: this.apiService.clubId });
-    }
-    this.playerEditorVisible = true;
-  }
-
-  savePlayer(player?: PlayerEntity) {
-    if (player) {
-      const index = this.newPlayers.indexOf(player);
-      if (index === -1) {
-        this.newPlayers = [...this.newPlayers, player];
-      } else {
-        // continue
-      }
-    } else {
-      // continue
-    }
-    this.playerEdit = undefined;
-    this.playerEditorVisible = false;
-  }
-
-  deletePlayer(player?: PlayerEntity) {
-    if (player) {
-      const index = this.newPlayers.indexOf(player);
-      if (index === -1) {
-        // continue
-      } else {
-        this.newPlayers.splice(index, 1);
-        this.newPlayers = [...this.newPlayers];
-      }
-    } else {
-      // continue
-    }
-
-    this.playerEdit = undefined;
-    this.playerEditorVisible = false;
-  }
-
-  canEditBoardGame() {
-    const value = this.getControl('BoardGameId')?.value;
-    if (isGuid(value) || value === '' || value === undefined) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  editBoardGame(boardGame?: BoardGameEntity) {
-    if (boardGame) {
-      this.boardGameEdit = boardGame;
-    } else {
-      let nextId = 0;
-      while (this.newBoardGames.some((x) => x.BoardGameId === `${nextId}`)) {
-        nextId++;
-      }
-      this.boardGameEdit = new BoardGameEntity({ BoardGameId: `${nextId}`, ClubId: this.game?.ClubId });
-    }
+  addBoardGame() {
+    this.boardGameEdit = new BoardGameEntity({ BoardGameId: '', ClubId: this.game?.ClubId });
     this.boardGameEditorVisible = true;
   }
 
-  saveBoardGame(boardGame?: BoardGameEntity) {
-    this.getControl('BoardGameId')?.setValue(null);
-    if (boardGame) {
-      const index = this.newBoardGames.indexOf(boardGame);
-      if (index === -1) {
-        this.newBoardGames = [...this.newBoardGames, boardGame];
-      } else {
-        // continue
-      }
-      this.getControl('BoardGameId')?.setValue(boardGame.BoardGameId);
-      this.game!.BoardGame = boardGame;
-      this.updateScoring();
-    } else {
-      // continue
-    }
-    this.boardGameEdit = undefined;
-    this.boardGameEditorVisible = false;
-    this.cdr.detectChanges();
-  }
-
-  deleteBoardGame(boardGame?: BoardGameEntity) {
-    if (boardGame) {
-      const index = this.newBoardGames.indexOf(boardGame);
-      if (index === -1) {
-        // continue
-      } else {
-        this.newBoardGames.splice(index, 1);
-        this.newBoardGames = [...this.newBoardGames];
-      }
-    } else {
-      // continue
-    }
-
-    const id = this.getControl('BoardGameId')?.value;
-    if (boardGame?.BoardGameId === id) {
-      this.getControl('BoardGameId')?.setValue(this.boardGames[0]?.BoardGameId ?? null);
-      this.updateScoring();
-    } else {
-      // Continue
-    }
-
-    this.boardGameEdit = undefined;
-    this.boardGameEditorVisible = false;
+  updatePlayerCount() {
+    this.getControl('Players')?.setValue(this.playerGames.reduce((prev, curr) => prev + curr.Players.length, 0));
   }
 
   async submit() {
@@ -439,18 +344,12 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
         // Continue
       }
 
-      const result = await this.apiService.postGame(this.game.GameId === '', {
-        Game: gameData,
-        PlayerGames: this.playerGames.map((x) => {
-          const ent = new PlayerGameEntity(x);
-          ent.Tags = x.Tags;
-          return ent;
-        }),
-        BoardGames: this.newBoardGames,
-        Players: this.newPlayers,
-      });
+      const game = new GameEntity(gameData);
+      game.Scores = this.playerGames.map((x) => new PlayerGameEntity(x));
+
+      const result = await this.apiService.postGame(this.game.GameId === '', game);
       if (result) {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Game' });
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Play' });
         this.closeEditor.emit();
       } else {
         // Do nothing
@@ -461,7 +360,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   toDeleteEntity() {
     this.confirmationService.confirm({
       message: 'Are you sure that you want to proceed?',
-      header: 'Deleting Game',
+      header: 'Deleting Play',
       icon: 'pi pi-exclamation-triangle',
       acceptIcon: 'none',
       rejectIcon: 'none',
@@ -469,7 +368,7 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
       accept: async () => {
         const result = await this.apiService.deleteGame(this.game!.GameId);
         if (result) {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Game' });
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Play' });
           this.closeEditor.emit();
         } else {
           // Do nothing
