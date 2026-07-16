@@ -5,7 +5,7 @@ export class TrophyHoarder extends ITrophy {
   constructor(sortOrder: number | null = null) {
     super(
       sortOrder,
-      '💎',
+      ['💎'],
       'The Hoarder',
       ['Might be a dragon.', "It's all MINE!"],
       'Highest point sum, excluding team plays',

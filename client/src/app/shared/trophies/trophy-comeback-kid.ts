@@ -5,7 +5,7 @@ export class TrophyComebackKid extends ITrophy {
   constructor(sortOrder: number | null = null) {
     super(
       sortOrder,
-      '🕺',
+      ['🕺', '💃'],
       'The Comeback Kid',
       ["Can't keep a good player down", "Guess who's back? Back again", 'Bringing boardgames back'],
       'Max # of games played between wins.',

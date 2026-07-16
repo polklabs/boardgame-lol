@@ -19,6 +19,7 @@ import { TrophyRivals } from '../trophies/trophy-rivals';
 import { TrophyBestFriends } from '../trophies/trophy-best-friends';
 import { TrophyHoarder } from '../trophies/trophy-hoarder';
 import { TrophyNewPlayer } from '../trophies/trophy-new-player';
+import { TrophyTeamPlayer } from '../trophies/trophy-team-player';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +37,7 @@ export class TrophyService {
     FirstWinDelay: new TrophySnail(2),
     Rivals: new TrophyRivals(3),
     BestFriends: new TrophyBestFriends(3),
+    TeamPlayer: new TrophyTeamPlayer(3),
     Hoarder: new TrophyHoarder(2),
     NewPlayer: new TrophyNewPlayer(3),
     MostWeekendWins: new TrophyMostWeekendWins(1),

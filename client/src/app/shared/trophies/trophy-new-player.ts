@@ -4,7 +4,7 @@ import { differenceInDays, min } from 'date-fns';
 
 export class TrophyNewPlayer extends ITrophy {
   constructor(sortOrder: number | null = null) {
-    super(sortOrder, '🐣', 'The Newbie', ["We're so happy you're here"], 'Newest player');
+    super(sortOrder, ['🐣'], 'The Newbie', ["We're so happy you're here"], 'Newest player');
     this.showValue = false;
   }
 

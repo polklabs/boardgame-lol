@@ -6,7 +6,7 @@ export class TrophyLastGroupWin extends ITrophy {
   constructor(sortOrder: number | null = null) {
     super(
       sortOrder,
-      '📆',
+      ['📆', '👪'],
       'As A Family',
       ["We're All In This Together", ''],
       'Days since everyone playing the game won',

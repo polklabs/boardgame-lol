@@ -5,7 +5,7 @@ export class TrophyBestFriends extends ITrophy {
   constructor(sortOrder: number | null = null) {
     super(
       sortOrder,
-      '🫂',
+      ['🫂'],
       'The Best Friends',
       ["If I didn't have you", 'Did we just become best friends?'],
       '2 players that win together the most.',

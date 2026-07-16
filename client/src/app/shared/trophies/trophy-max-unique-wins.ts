@@ -3,7 +3,7 @@ import { ITrophy } from './trophy.model';
 
 export class TrophyMaxUniqueWins extends ITrophy {
   constructor(sortOrder: number | null = null) {
-    super(sortOrder, '🧩', 'The Collector', ['A real Jack of All Trades'], 'Most unique board game wins.');
+    super(sortOrder, ['🧩'], 'The Collector', ['A real Jack of All Trades'], 'Most unique board game wins.');
   }
 
   calculate(players: PlayerEntity[]) {
