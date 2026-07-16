@@ -113,17 +113,17 @@ export class GameManager extends BaseManager<GameEntity> {
     const oldPlayerGamePlayerRows = this.playerGamePlayerManager
       .loadMany('GameId', entity.GameId)
       .filter((x) => playerGameIds.has(x.PlayerGameId));
-    const oldPlayerGamePlayers = new Set(oldPlayerGamePlayerRows.map((x) => x.PlayerGameId));
+    const oldPlayerGamePlayers = new Set(oldPlayerGamePlayerRows.map((x) => x.PlayerId));
     playerGamePlayers.forEach((pgp) => {
-      if (oldPlayerGamePlayers.has(pgp.PlayerGameId)) {
+      if (oldPlayerGamePlayers.has(pgp.PlayerId)) {
         transactions.push(this.playerGamePlayerManager.patch(userId, pgp));
-        oldPlayerGamePlayers.delete(pgp.PlayerGameId);
+        oldPlayerGamePlayers.delete(pgp.PlayerId);
       } else {
         transactions.push(this.playerGamePlayerManager.put(userId, pgp));
       }
     });
     oldPlayerGamePlayerRows.forEach((pgp) => {
-      if (oldPlayerGamePlayers.has(pgp.PlayerGameId)) {
+      if (oldPlayerGamePlayers.has(pgp.PlayerId)) {
         transactions.push(
           this.playerGamePlayerManager.delete(pgp.GameId, pgp.PlayerGameId, pgp.PlayerId, entity.ClubId),
         );
