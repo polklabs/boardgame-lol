@@ -93,7 +93,9 @@ export class StatsComponent implements OnInit {
 
     let currentMonth = '';
     // eslint-disable-next-line no-constant-condition
+    let weekIndex = 0;
     while (date <= today) {
+      weekIndex++;
       const week: DayItem[] = [];
       const key = format(date, 'yyyy MM d');
 
@@ -119,6 +121,13 @@ export class StatsComponent implements OnInit {
         month = '';
       } else {
         currentMonth = month;
+
+        // Delete first month text if it only lasts one week.
+        if (weekIndex === 2) {
+          this.heatmap[0].month = '';
+        } else {
+          // Continue
+        }
       }
       this.heatmap.push({ days: week, month, key });
     }
