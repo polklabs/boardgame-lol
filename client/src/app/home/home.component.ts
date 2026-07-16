@@ -2,17 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ApiService } from '../shared/services/api.service';
 import { Router, RouterModule } from '@angular/router';
-import { CardModule } from 'primeng/card';
 import { MenuBarComponent } from '../menu-bar/menu-bar.component';
 import { AccessIds, UserService } from '../shared/services/user.service';
 import { Observable, of } from 'rxjs';
 import { ClubEntity } from 'libs/index';
-import { ButtonModule } from 'primeng/button';
 import { EditorClubComponent } from '../editors/editor-club/editor-club.component';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, CardModule, ButtonModule, MenuBarComponent, EditorClubComponent],
+  imports: [CommonModule, RouterModule, MenuBarComponent, EditorClubComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

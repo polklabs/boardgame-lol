@@ -162,7 +162,7 @@ export class AuthController {
     try {
       return this.clubUserManager
         .loadManyWithName(this.getUserId(req))
-        .map((x) => ({ id: x.ClubId, name: x.Name, summary: x.Summary, username: x.Username }));
+        .map((x) => ({ ClubId: x.ClubId, Name: x.Name, Summary: x.Summary, CreatedBy: x.Username }));
     } catch (e) {
       this.handleErrors(e);
     }

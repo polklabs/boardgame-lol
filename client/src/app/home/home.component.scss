@@ -1,23 +1,46 @@
 :host ::ng-deep {
-  .p-card {
+  .club-card {
+    width: 222px;
+    min-height: 300px;
     height: 100%;
-  }
-
-  .p-card .p-card-content {
-    padding: 0;
-  }
-  .p-card-body {
     cursor: pointer;
-    height: 100%;
+    box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+    background-color: var(--p-surface-800);
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    transition-property: background-color, box-shadow;
+    transition-duration: 0.5s;
+    transition-timing-function: ease;
+
+    &:hover {
+      background-color: var(--p-surface-700);
+      box-shadow: 10px 5px 5px var(--p-surface-800);
+    }
+
+    h2 {
+      color: var(--p-primary-500);
+      margin-top: 0;
+    }
+    p {
+      flex-grow: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    small {
+      display: block;
+      width: 100%;
+      text-align: right;
+      color: #b0bec5;
+    }
   }
 
   .club-wrapper {
     display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 12px;
     flex-wrap: wrap;
     justify-content: center;
   }

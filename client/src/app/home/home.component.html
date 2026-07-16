@@ -12,39 +12,21 @@
 }
 <div class="club-wrapper">
   @for (club of clubList$ | async; track club) {
-    <div>
-      <p-card
-        [header]="club.name"
-        subheader="Created By: {{ club.username }}"
-        [style]="{ width: '360px' }"
-        [routerLink]="'/club/' + club.id">
-        <p>{{ club.summary }}</p>
-        <ng-template #footer>
-          <div class="flex gap-3 mt-1">
-            <p-button label="View" class="w-full" styleClass="w-full" />
-          </div>
-        </ng-template>
-      </p-card>
-    </div>
+    <ng-container [ngTemplateOutlet]="card" [ngTemplateOutletContext]="{ club }"></ng-container>
   }
 </div>
 
 <h1>Public Groups</h1>
 <div class="club-wrapper">
   @for (club of publicClubList$ | async; track club.ClubId) {
-    <div>
-      <p-card
-        [header]="club.Name"
-        subheader="Created By: {{ club.CreatedBy }}"
-        [style]="{ width: '360px' }"
-        [routerLink]="'/club/' + club.ClubId">
-        <p>{{ club.Summary }}</p>
-        <ng-template #footer>
-          <div class="flex gap-3 mt-1">
-            <p-button label="View" class="w-full" styleClass="w-full" />
-          </div>
-        </ng-template>
-      </p-card>
-    </div>
+    <ng-container [ngTemplateOutlet]="card" [ngTemplateOutletContext]="{ club }"></ng-container>
   }
 </div>
+
+<ng-template #card let-club="club">
+  <div class="club-card" [routerLink]="'/club/' + club.ClubId">
+    <h2>{{ club.Name }}</h2>
+    <p>{{ club.Summary }}</p>
+    <small>Created by: {{ club.CreatedBy }}</small>
+  </div>
+</ng-template>
