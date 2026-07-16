@@ -297,20 +297,30 @@ export class ApiService {
     if (result) {
       this.gameList = this.upsertEntry(result.Game, (x) => x.GameId, this.gameList$.value, this._gameDict);
 
-      this.playerGameList = this.playerGameList$.value.filter((x) => x.GameId !== result.Game.GameId);
-      result.PlayerGames.forEach((pg) => {
-        this.playerGameList = this.upsertEntry(pg, (x) => x.PlayerGameId, this.playerGameList$.value);
-      });
-      this.playerGamePlayerList = this.playerGamePlayerList$.value.filter((x) => x.GameId !== result.Game.GameId);
-      result.PlayerGamePlayers.forEach((team) => {
-        this.playerGamePlayerList = this.upsertEntry(
-          team,
-          (x) => `${x.PlayerGameId};${x.PlayerId}`,
-          this.playerGamePlayerList$.value,
-        );
-      });
-      this.tagGameList = result.TagGames;
-      this.tagPlayerGameList = result.TagPlayerGames;
+      this.playerGameList = this.upsertEntry(
+        result.PlayerGames,
+        (x) => x.PlayerGameId,
+        this.playerGameList$.value.filter((x) => x.GameId !== result.Game.GameId),
+      );
+
+      this.playerGamePlayerList = this.upsertEntry(
+        result.PlayerGamePlayers,
+        (x) => `${x.PlayerGameId};${x.PlayerId}`,
+        this.playerGamePlayerList$.value.filter((x) => x.GameId !== result.Game.GameId),
+      );
+
+      this.tagGameList = this.upsertEntry(
+        result.TagGames,
+        (x) => `${x.GameId};${x.TagId}`,
+        this.tagGameList$.value.filter((x) => x.GameId !== result.Game.GameId),
+      );
+
+      const playerGameIds = new Set(result.PlayerGames.map((x) => x.PlayerGameId));
+      this.tagPlayerGameList = this.upsertEntry(
+        result.TagPlayerGames,
+        (x) => `${x.PlayerGameId};${x.TagId}`,
+        this.tagPlayerGameList$.value.filter((x) => !playerGameIds.has(x.PlayerGameId)),
+      );
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -329,7 +339,13 @@ export class ApiService {
 
     if (result) {
       this.playerList = this.upsertEntry(result.Player, (x) => x.PlayerId, this.playerList$.value, this._playerDict);
-      this.tagPlayerList = result.TagPlayers;
+
+      this.tagPlayerList = this.upsertEntry(
+        result.TagPlayers,
+        (x) => `${x.PlayerId};${x.TagId}`,
+        this.tagPlayerList$.value.filter((x) => x.PlayerId !== result.Player.PlayerId),
+      );
+
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -353,7 +369,13 @@ export class ApiService {
         this.boardGameList$.value,
         this._boardGameDict,
       );
-      this.tagBoardGameList = result.TagBoardGames;
+
+      this.tagBoardGameList = this.upsertEntry(
+        result.TagBoardGames,
+        (x) => `${x.BoardGameId};${x.TagId}`,
+        this.tagBoardGameList$.value.filter((x) => x.BoardGameId !== result.BoardGame.BoardGameId),
+      );
+
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -408,9 +430,7 @@ export class ApiService {
     );
 
     if (result) {
-      result.forEach((g) => {
-        this.gameList = this.upsertEntry(g, (x) => x.GameId, this.gameList$.value, this._gameDict);
-      });
+      this.gameList = this.upsertEntry(result, (x) => x.GameId, this.gameList$.value, this._gameDict);
       this.gameList = [...this.gameList$.value];
       this.updateReferences();
       this.dataUpdate$.next();
@@ -648,19 +668,22 @@ export class ApiService {
     GameEntity.postCalculate(this.gameList);
   }
 
-  private upsertEntry<T>(item: T, key: (item: T) => string | null, list: T[], dict?: Record<string, T>): T[] {
-    if (dict) {
-      dict[key(item) ?? ''] = item;
-    } else {
-      // Skip dictionary insert
+  private upsertEntry<T>(items: T | T[], key: (item: T) => string | null, list: T[], dict?: Record<string, T>): T[] {
+    items = Array.isArray(items) ? items : [items];
+    for (const item of items) {
+      if (dict) {
+        dict[key(item) ?? ''] = item;
+      } else {
+        // Skip dictionary insert
+      }
+      const pgIndex = list.findIndex((x) => key(x) === key(item));
+      if (pgIndex >= 0) {
+        list[pgIndex] = item;
+      } else {
+        list = [...list, item];
+      }
     }
-    const pgIndex = list.findIndex((x) => key(x) === key(item));
-    if (pgIndex >= 0) {
-      list[pgIndex] = item;
-      return list;
-    } else {
-      return [...list, item];
-    }
+    return list;
   }
 
   private getFromDict<T>(key: string | null, dict: Record<string, T>): T | null {

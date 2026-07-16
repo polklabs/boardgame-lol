@@ -82,7 +82,7 @@ export class ClubComponent implements OnInit, OnDestroy {
       combineLatest([this.apiService.club$, this.userService.accessIds$, this.apiService.filterEnabled$]).subscribe(
         ([club, access, filter]) => {
           this.title = club?.Name ?? '';
-          this.canEdit = access.some((x) => x.id === club?.ClubId) && !filter;
+          this.canEdit = access.some((x) => x.ClubId === club?.ClubId) && !filter;
         },
       ),
     );

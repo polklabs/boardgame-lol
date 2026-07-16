@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { JwtModel } from 'libs/index';
 import { HttpService } from './http.service';
 
-export type AccessIds = { id: string; name: string; summary: string; username: string };
+export type AccessIds = { ClubId: string; Name: string; Summary: string; CreatedBy: string };
 
 @Injectable({
   providedIn: 'root',

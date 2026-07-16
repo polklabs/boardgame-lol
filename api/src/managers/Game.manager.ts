@@ -3,7 +3,7 @@ import { BaseManager } from './Base.manager';
 import { Injectable } from '@nestjs/common';
 import { newGuid } from 'libs/utils/guid-utils';
 import { ValidationError } from 'src/errors/validation.error';
-import { GameEntity, GameReturn } from 'libs/index';
+import { GameEntity, GameReturn, PlayerGameEntity, T, TagPlayerGameEntity, TP } from 'libs/index';
 import { BoardGameManager } from './BoardGame.manager';
 import { PlayerGameManager } from './PlayerGame.manager';
 import { PlayerManager } from './Player.manager';
@@ -68,8 +68,12 @@ export class GameManager extends BaseManager<GameEntity> {
       Game: this.loadOne(entity.GameId)!,
       PlayerGamePlayers: this.playerGamePlayerManager.loadMany('GameId', entity.GameId),
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId),
-      TagGames: this.tagManager.tagGame.loadMany('ClubId', entity.ClubId),
-      TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', entity.ClubId),
+      TagGames: this.tagManager.tagGame.loadMany('GameId', entity.GameId),
+      TagPlayerGames: this.tagManager.tagPlayerGame.loadManyCustom(
+        `INNER JOIN ${T(PlayerGameEntity)} ON ${TP(PlayerGameEntity, 'PlayerGameId')} = ${TP(TagPlayerGameEntity, 'PlayerGameId')}`,
+        `WHERE ${TP(PlayerGameEntity, 'GameId')} = ?`,
+        [entity.GameId],
+      ),
     };
   }
 
@@ -141,8 +145,12 @@ export class GameManager extends BaseManager<GameEntity> {
       Game: this.loadOne(entity.GameId)!,
       PlayerGamePlayers: this.playerGamePlayerManager.loadMany('GameId', entity.GameId),
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId),
-      TagGames: this.tagManager.tagGame.loadMany('ClubId', entity.ClubId),
-      TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', entity.ClubId),
+      TagGames: this.tagManager.tagGame.loadMany('GameId', entity.GameId),
+      TagPlayerGames: this.tagManager.tagPlayerGame.loadManyCustom(
+        `INNER JOIN ${T(PlayerGameEntity)} ON ${TP(PlayerGameEntity, 'PlayerGameId')} = ${TP(TagPlayerGameEntity, 'PlayerGameId')}`,
+        `WHERE ${TP(PlayerGameEntity, 'GameId')} = ?`,
+        [entity.GameId],
+      ),
     };
   }
 
