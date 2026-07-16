@@ -9,10 +9,11 @@
   <p-select
     inputId="{{ formControlName }}"
     formControlName="{{ formControlName }}"
-    [options]="options"
+    [options]="options$ ? (options$ | async) ?? [] : options"
     [showClear]="showClear"
     [filter]="showFilter"
     (onChange)="onModelChange($event.value)"
+    (onShow)="onDropdownShow()"
     [optionLabel]="optionLabel"
     [optionValue]="optionValue"
     appendTo="body"

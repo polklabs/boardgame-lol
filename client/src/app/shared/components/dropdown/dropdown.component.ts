@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, forwardRef, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroupDirective,
@@ -8,7 +8,8 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
-import { SelectModule } from 'primeng/select';
+import { Select, SelectModule } from 'primeng/select';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dropdown',
@@ -23,14 +24,17 @@ import { SelectModule } from 'primeng/select';
     },
   ],
 })
-export class DropdownComponent implements ControlValueAccessor {
+export class DropdownComponent<T> implements ControlValueAccessor {
   private formGroupDirective = inject(FormGroupDirective);
+
+  @ViewChild(Select) dropdown!: Select;
 
   @Input() formControlName!: string;
   @Input() label?: string;
   @Input() entityType: unknown;
   @Input() hiddenFields = new Set<string>();
-  @Input() options: unknown[] = [];
+  @Input() options$?: Observable<T[]>;
+  @Input() options: T[] = [];
   @Input() optionLabel?: string;
   @Input() optionValue?: string;
   @Input() placeholder?: string;
@@ -52,5 +56,24 @@ export class DropdownComponent implements ControlValueAccessor {
 
   onModelChange(value: unknown): void {
     this.changed.emit(value);
+  }
+
+  onDropdownShow() {
+    // This event handler will fire when the items panel is about to be shown
+    setTimeout(() => {
+      const p: HTMLElement = this.dropdown.el.nativeElement.querySelector('.p-select-overlay');
+
+      if (p) {
+        let itemsPanelHeight = p.offsetHeight;
+
+        // Just to show what you can do
+        p.setAttribute('style', 'border: 1px solid red !important');
+
+        // Add a little space
+        itemsPanelHeight += 3;
+
+        p.style.top = '-' + itemsPanelHeight + 'px';
+      }
+    }, 1);
   }
 }

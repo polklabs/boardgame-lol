@@ -250,13 +250,43 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     this.playerGameEditorVisible = true;
   }
 
-  savePlayerGame(playerGame?: PlayerGameEntity) {
-    if (playerGame) {
-      const index = this.playerGames.indexOf(playerGame);
+  savePlayerGame(pg?: PlayerGameEntity) {
+    if (pg) {
+      const index = this.playerGames.indexOf(pg);
       if (index === -1) {
-        this.playerGames = [...this.playerGames, playerGame];
+        this.playerGames = [...this.playerGames, pg];
       } else {
         // continue
+      }
+
+      if (pg.PlayerGameId === '') {
+        pg.PlayerLinks = pg.Players.map(
+          (p) =>
+            new PlayerGamePlayerEntity({
+              ClubId: this.apiService.clubId,
+              PlayerGameId: pg.PlayerGameId,
+              PlayerId: p.PlayerId,
+            }),
+        );
+      } else {
+        const linkIds = new Set(pg.PlayerLinks.map((x) => x.PlayerId));
+        pg.Players.forEach((p) => {
+          if (linkIds.has(p.PlayerId)) {
+            // Skip
+          } else {
+            pg.PlayerLinks.push(
+              new PlayerGamePlayerEntity({
+                ClubId: this.apiService.clubId,
+                PlayerGameId: pg.PlayerGameId,
+                PlayerId: p.PlayerId,
+              }),
+            );
+          }
+          linkIds.delete(p.PlayerId);
+        });
+        pg.PlayerLinks = pg.PlayerLinks.filter((x) => !linkIds.has(x.PlayerId)).map(
+          (x) => new PlayerGamePlayerEntity(x),
+        );
       }
 
       this.updateScoring();
@@ -314,42 +344,8 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
         // Continue
       }
 
-      this.playerGames.forEach((pg) => {
-        if (pg.PlayerGameId === '') {
-          pg.PlayerLinks = pg.Players.map(
-            (p) =>
-              new PlayerGamePlayerEntity({
-                ClubId: this.apiService.clubId,
-                PlayerGameId: pg.PlayerGameId,
-                PlayerId: p.PlayerId,
-              }),
-          );
-        } else {
-          const linkIds = new Set(pg.PlayerLinks.map((x) => x.PlayerId));
-          pg.Players.forEach((p) => {
-            if (linkIds.has(p.PlayerId)) {
-              // Skip
-            } else {
-              pg.PlayerLinks.push(
-                new PlayerGamePlayerEntity({
-                  ClubId: this.apiService.clubId,
-                  PlayerGameId: pg.PlayerGameId,
-                  PlayerId: p.PlayerId,
-                }),
-              );
-            }
-            linkIds.delete(p.PlayerId);
-          });
-          pg.PlayerLinks = pg.PlayerLinks.filter((x) => !linkIds.has(x.PlayerId)).map(
-            (x) => new PlayerGamePlayerEntity(x),
-          );
-        }
-      });
-
       const game = new GameEntity(gameData);
       game.Scores = this.playerGames.map((x) => new PlayerGameEntity(x));
-
-      console.log(game);
 
       const result = await this.apiService.postGame(this.game.GameId === '', game);
       if (result) {

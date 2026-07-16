@@ -10,28 +10,13 @@
     #dropdown
     inputId="{{ formControlName }}"
     formControlName="{{ formControlName }}"
-    [options]="(options$ | async) ?? []"
+    [options]="options$ ? (options$ | async) ?? [] : options"
     [optionLabel]="optionLabel"
+    [maxSelectedLabels]="maxSelectedLabels === -1 ? selectionLimit : maxSelectedLabels"
+    [selectionLimit]="selectionLimit"
+    [showClear]="showClear"
+    [filter]="showFilter"
     appendTo="body"
     display="chip"
-    (onFocus)="onFocus($event)">
-    <!-- <ng-template #footer>
-      <div class="p-3 flex justify-content-space-between">
-        <p-button
-          (onClick)="editorTagsVisible = true"
-          label="Manage Tags"
-          severity="secondary"
-          text
-          size="small"
-          icon="pi pi-th-large" />
-        <p-button
-          (onClick)="dropdown.updateModel([], $event)"
-          label="Remove All"
-          severity="danger"
-          text
-          size="small"
-          icon="pi pi-times" />
-      </div>
-    </ng-template> -->
-  </p-multiselect>
+    (onFocus)="onFocus($event)"></p-multiselect>
 </app-control-wrapper>

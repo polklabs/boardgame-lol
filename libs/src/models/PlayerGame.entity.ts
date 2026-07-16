@@ -34,6 +34,8 @@ export class PlayerGameEntity extends BaseEntity {
   @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
   Name: string | null = null;
 
+  Team = false;
+
   @Ignore()
   @MinMax(0, 8, 'array')
   Tags: TagEntity[] = [];
@@ -58,9 +60,6 @@ export class PlayerGameEntity extends BaseEntity {
   Won = false;
 
   @Ignore()
-  Team = false;
-
-  @Ignore()
   calculated = false;
 
   @Expose()
@@ -80,7 +79,6 @@ export class PlayerGameEntity extends BaseEntity {
     calculationsComplete(this.Game);
     this.DNF = this.Game?.BoardGame?.ScoreType === 'rank' && this.Points === null;
     this.Won = this.Game?.place(0).includes(this) ?? false;
-    this.Team = this.Players.length > 1;
     this.calculated = true;
   }
 }

@@ -16,14 +16,36 @@
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit()">
         <div class="flex gap-4 justify-content-space-between">
-          <app-multi-select
+          <app-checkbox formControlName="Team" [hiddenFields]="hideFields"></app-checkbox>
+          <app-textinput
             style="flex-grow: 1"
-            formControlName="Players"
-            label="Players"
+            formControlName="Name"
+            label="Team Name"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"
-            [options$]="playerList$"
-            optionLabel="Name"></app-multi-select>
+            [hiddenFields]="hideFields"></app-textinput>
+        </div>
+
+        <div class="flex-nowrap align-items-start gap-4 justify-content-space-between">
+          @if (getValue('Team')) {
+            <app-multi-select
+              style="flex-grow: 1"
+              formControlName="Players"
+              label="Players"
+              [entityType]="entityType"
+              [hiddenFields]="hideFields"
+              [options$]="playerList$"
+              [maxSelectedLabels]="-1"
+              optionLabel="Name"></app-multi-select>
+          } @else {
+            <app-dropdown
+              style="flex-grow: 1"
+              formControlName="Players"
+              label="Player"
+              [entityType]="entityType"
+              [hiddenFields]="hideFields"
+              [options$]="playerList$"
+              optionLabel="Name"></app-dropdown>
+          }
           <p-button (onClick)="addPlayer()" pTooltip="New Player" icon="pi pi-plus"></p-button>
         </div>
         @if (scoreType === 'points') {

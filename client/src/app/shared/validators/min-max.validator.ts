@@ -15,13 +15,15 @@ export function minMaxValidator<T>(entityType: new (partial: Partial<T>) => T, p
 
     if (minMax) {
       let minMaxValid = true;
-      if (minMax.type === 'string' || minMax.type === 'array') {
+      if (
+        (minMax.type === 'string' && typeof value === 'string') ||
+        (minMax.type === 'array' && Array.isArray(value))
+      ) {
         minMaxValid = value.length >= minMax.min && value.length <= minMax.max;
       } else if (minMax.type === 'number') {
         minMaxValid = +value >= minMax.min && +value <= minMax.max;
       } else {
-        console.error(`${String(propertyKey)}: ${minMax.type} cannot have MinMax decorator`);
-        minMaxValid = false;
+        console.warn(`${String(propertyKey)}: ${minMax.type} cannot have MinMax decorator`);
       }
       return minMaxValid ? null : { minMax: true };
     } else {

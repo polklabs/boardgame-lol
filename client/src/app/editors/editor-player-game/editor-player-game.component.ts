@@ -25,6 +25,8 @@ import { ApiService } from '../../shared/services/api.service';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
 import { MultiSelectComponent } from '../../shared/components/multi-select/multi-select.component';
 import { Subscription } from 'rxjs';
+import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
+import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
 
 type EntityType = PlayerGameEntity;
 
@@ -42,6 +44,8 @@ type EntityType = PlayerGameEntity;
     TagsComponent,
     EditorPlayerComponent,
     MultiSelectComponent,
+    DropdownComponent,
+    TextInputComponent,
   ],
   templateUrl: './editor-player-game.component.html',
   styleUrl: './editor-player-game.component.scss',
@@ -82,27 +86,43 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
       } else {
         this.isNew = false;
       }
-      this.setTitle();
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerGameEntity());
       const instance = new PlayerGameEntity(this.playerGame);
       instance.Players = [...this.playerGame.Players];
       this.formGroup.patchValue(instance);
+      this.setTitle();
 
       if (this.scoreType === 'win-lose') {
         this.getControl('Points')?.setValue(this.playerGame.Points === null ? true : this.playerGame.Points === 1);
+      } else if (this.scoreType === 'points') {
+        this.getControl('Points')?.setValue(this.playerGame.Points || 0);
       } else {
         // Continue
       }
+      this.updateTeamName(instance.Team);
 
-      this.subscription = this.getControl('Players')?.valueChanges.subscribe(() => {
+      this.subscription = this.getControl('Team')?.valueChanges.subscribe((value) => {
         this.setTitle();
+        this.updateTeamName(value);
       });
     } else {
       // No Changes
     }
     this.cdr.detectChanges();
+  }
+
+  updateTeamName(team: boolean) {
+    const players = this.getValue('Players');
+    if (team) {
+      this.getControl('Players')?.setValue(Array.isArray(players) ? players : [players]);
+      this.hideFields.delete('Name');
+    } else {
+      this.getControl('Players')?.setValue(Array.isArray(players) ? players.at(0) ?? null : players);
+      this.getControl('Name')?.setValue(null);
+      this.hideFields.add('Name');
+    }
   }
 
   ngOnDestroy(): void {
@@ -113,8 +133,12 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
     return this.formGroup.get(key);
   }
 
+  getValue(key: keyof EntityType) {
+    return this.getControl(key)?.value;
+  }
+
   setTitle() {
-    this.title = `${this.playerGame?.PlayerGameId === '' ? 'Add' : 'Edit'} ${(this.playerGame?.Players.length ?? 0) > 1 ? 'Team' : 'Player'}`;
+    this.title = `${this.playerGame?.PlayerGameId === '' ? 'Add' : 'Edit'} ${this.getValue('Team') ? 'Team' : 'Player'}`;
   }
 
   addPlayer() {
@@ -130,11 +154,18 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
       // Continue
     }
 
+    const toReturn = this.formGroup.getRawValue();
+    if (toReturn.Team) {
+      // Continue
+    } else {
+      toReturn.Players = [toReturn.Players];
+    }
+
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.playerGame) {
       console.log(this.formGroup.controls);
     } else {
-      Object.assign(this.playerGame, this.formGroup.getRawValue());
+      Object.assign(this.playerGame, toReturn);
       this.closeEditor.emit(this.playerGame);
     }
   }
