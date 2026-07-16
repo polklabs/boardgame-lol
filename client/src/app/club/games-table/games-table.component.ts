@@ -15,7 +15,7 @@ import { TagComponent } from '../../shared/components/tag/tag.component';
 const COLUMNS: { field: keyof GameEntity; name: string; sort: boolean }[] = [
   { field: 'dateSortOrder', name: 'Date', sort: true },
   { field: 'BoardGame', name: 'Game', sort: true },
-  { field: 'Winners', name: 'Winner(s)', sort: false },
+  { field: 'WinnerTeams', name: 'Winner(s)', sort: false },
   { field: 'HighScore', name: 'Points', sort: true },
   { field: 'Players', name: 'Players', sort: true },
   { field: 'Tags', name: 'Tags', sort: true },

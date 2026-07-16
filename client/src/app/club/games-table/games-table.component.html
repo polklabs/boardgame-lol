@@ -71,8 +71,8 @@
               @case ('BoardGame') {
                 {{ game.BoardGame.Name }}
               }
-              @case ('Winners') {
-                {{ game.Winners | array: 'Nickname' }}
+              @case ('WinnerTeams') {
+                {{ game.WinnerTeams | array: 'DisplayName' }}
               }
               @case ('HighScore') {
                 @if (showScore(game)) {
