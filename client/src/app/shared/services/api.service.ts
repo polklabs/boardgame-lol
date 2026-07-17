@@ -587,7 +587,7 @@ export class ApiService {
             case 'win-lose':
             case 'points':
             default:
-              return (b.Points ?? 0) - (a.Points ?? 0);
+              return (b.VirtualPoints ?? 0) - (a.VirtualPoints ?? 0);
           }
         });
       game.Tags = this.tagGameList

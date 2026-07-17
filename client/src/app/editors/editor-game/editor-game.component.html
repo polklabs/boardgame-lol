@@ -150,10 +150,17 @@
           @switch (game?.BoardGame?.ScoreType) {
             <!-- POINTS -->
             @case ('points') {
-              @if (playerGame.Points === maxPoints) {
+              @if (playerGame.VirtualPoints === maxVirtualPoints) {
                 <i class="pi pi-trophy" style="color: gold"></i>
               } @else {
                 <div class="empty-trophy"></div>
+              }
+              @if (showTiebreaker && playerGame.Points === maxPoints) {
+                <p-checkbox
+                  pTooltip="Tie breaker winner."
+                  [ngModel]="playerGame.TieBreaker"
+                  (onChange)="tieBreak(playerGame, $event.checked)"
+                  [binary]="true" />
               }
               <span class="player-name">
                 {{ playerGame.DisplayName }}: {{ playerGame.Points | number: '1.0-3' | score: game?.BoardGame }}
@@ -163,8 +170,7 @@
             @case ('rank') {
               @if (playerGame.Points !== null && playerGame.Points < 3) {
                 <i class="pi pi-trophy" [ngStyle]="{ color: getTrophyColor(playerGame) }"></i>
-              }
-              @if (playerGame.Points >= 3) {
+              } @else {
                 <div class="empty-trophy"></div>
               }
               <span [ngClass]="{ DNF: playerGame.DNF }">{{ playerGame.DisplayName }}</span>
@@ -173,13 +179,11 @@
             @case ('win-lose') {
               <p-checkbox
                 [ngModel]="playerGame.Points === 1"
-                [ngModelOptions]="{ standalone: true }"
                 (onChange)="playerGame.Points = $event.checked ? 1 : 0; this.updateScoring()"
                 [binary]="true" />
               @if (playerGame.Points === 1) {
                 <i class="pi pi-trophy" style="color: gold"></i>
-              }
-              @if (playerGame.Points !== 1) {
+              } @else {
                 <div class="empty-trophy"></div>
               }
               <span>{{ playerGame.DisplayName }}</span>

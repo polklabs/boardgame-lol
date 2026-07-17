@@ -25,8 +25,9 @@ export class PlayerGameEntity extends BaseEntity {
   @ForeignKey(GameEntity)
   GameId: string = '';
 
-  @MinMax(-999999999, 999999999, 'number')
+  @MinMax(-1000000, 1000000, 'number')
   @Nullable()
+  /** Use for values to be displayed */
   Points: number | null = null;
 
   @Nullable()
@@ -35,6 +36,17 @@ export class PlayerGameEntity extends BaseEntity {
   Name: string | null = null;
 
   Team = false;
+
+  TieBreaker = false;
+
+  /** Use when comparing point values */
+  get VirtualPoints() {
+    if (this.Points === null) {
+      return null;
+    } else {
+      return this.Points * 2 + (this.TieBreaker ? 1 : 0);
+    }
+  }
 
   @Ignore()
   @MinMax(0, 8, 'array')

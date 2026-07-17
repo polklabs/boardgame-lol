@@ -134,7 +134,7 @@ export class GameEntity extends BaseEntity {
 
   calculateWinners() {
     this.Places = {};
-    const scoreBuckets = [...new Set(this.Scores.map((x) => x.Points))].filter((x) => x !== null);
+    const scoreBuckets: number[] = [...new Set(this.Scores.map((x) => x.VirtualPoints).filter((x) => x !== null))];
 
     new Array(scoreBuckets.length).fill(0).forEach((_, i) => {
       this.Places[i] = new Set();
@@ -147,8 +147,9 @@ export class GameEntity extends BaseEntity {
     }
 
     this.Scores.forEach((s) => {
-      if (s.Points !== null) {
-        const bucket = scoreBuckets.indexOf(s.Points);
+      const score = s.VirtualPoints;
+      if (score !== null) {
+        const bucket = scoreBuckets.indexOf(score);
         this.Places[bucket].add(s);
       }
     });

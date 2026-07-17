@@ -110,7 +110,9 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   showCustomPointsDialog = false;
   customPointAdjustment: number | null = null;
 
+  showTiebreaker = false;
   maxPoints = 0;
+  maxVirtualPoints = 0;
 
   pointGroupButtonValues: number[] = [];
 
@@ -263,6 +265,18 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  tieBreak(playerGame: PlayerGameEntity, checked: boolean) {
+    this.playerGames.forEach((pg) => {
+      if (pg.Points === playerGame.Points) {
+        pg.TieBreaker = false;
+      } else {
+        // Continue
+      }
+    });
+    playerGame.TieBreaker = checked;
+    this.updateScoring();
+  }
+
   updateScoring() {
     switch (this.game?.BoardGame?.ScoreType) {
       case 'rank':
@@ -280,7 +294,16 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
         break;
       case 'points':
         this.maxPoints = Math.max(...this.playerGames.map((x) => x.Points ?? 0));
-        this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
+        this.maxVirtualPoints = Math.max(...this.playerGames.map((x) => x.VirtualPoints ?? 0));
+        this.playerGames.sort((a, b) => (b.VirtualPoints ?? 0) - (a.VirtualPoints ?? 0));
+        this.showTiebreaker =
+          this.playerGames.reduce((prev, curr) => prev + (curr.Points === this.maxPoints ? 1 : 0), 0) > 1;
+
+        if (this.showTiebreaker) {
+          // continue
+        } else {
+          this.playerGames.forEach((pg) => (pg.TieBreaker = false));
+        }
         break;
       default:
         break;

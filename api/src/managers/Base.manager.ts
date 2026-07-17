@@ -305,7 +305,8 @@ export abstract class BaseManager<T extends BaseEntity> {
     });
   }
 
-  Validate(entity: T): string[] {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Validate(entity: T, _extra: unknown[] = []): string[] {
     const errors: string[] = [];
 
     const keys = Object.keys(entity) as (keyof T)[];
