@@ -63,11 +63,8 @@
               @case ('LossCount') {
                 {{ player.LossCount | hide: '0' | number: '1.0-0' }}
               }
-              @case ('BestGames') {
-                {{ player.BestGames | array: 'Name' }}
-              }
               @case ('BestGameWins') {
-                {{ player.BestGameWins | hide: '0' | number: '1.0-0' }}
+                {{ player.BestGameWins | hide: '0' | number: '1.0-0' }} - {{ player.BestGames | array: 'Name' }}
               }
               @case ('FirstSeen') {
                 {{ player.FirstSeen | date: 'yyyy/MM/dd' }}

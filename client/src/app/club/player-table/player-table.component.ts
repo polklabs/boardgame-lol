@@ -17,8 +17,7 @@ const COLUMNS: { field: keyof PlayerEntity; name: string; sort: boolean }[] = [
   { field: 'Name', name: 'Name', sort: true },
   { field: 'WinCount', name: 'Wins', sort: true },
   { field: 'LossCount', name: 'Losses', sort: true },
-  { field: 'BestGames', name: 'Best Game(s)', sort: false },
-  { field: 'BestGameWins', name: 'Best Game(s) Wins', sort: true },
+  { field: 'BestGameWins', name: 'Best Game(s)', sort: true },
   { field: 'FirstSeen', name: 'First Seen', sort: true },
   { field: 'Tags', name: 'Tags', sort: false },
 ];
