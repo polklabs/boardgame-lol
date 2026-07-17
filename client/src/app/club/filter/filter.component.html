@@ -45,7 +45,7 @@
           formControlName="excludedTagIds"
           label="Exclude Tags"
           [entityType]="entityType"
-          [options]="tags"
+          [options$]="tags$"
           optionLabel="Text"
           optionValue="TagId"
           selectedItemsLabel="{0} / {{ tags.length }} tag excluded"></app-multi-select>

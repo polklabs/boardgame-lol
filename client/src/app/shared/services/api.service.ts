@@ -653,7 +653,6 @@ export class ApiService {
     this.tagPlayerGameList.forEach((x) => x.calculate());
 
     PlayerEntity.postCalculate(this.playerList);
-    GameEntity.postCalculate(this.gameList);
   }
 
   private upsertEntry<T>(items: T | T[], key: (item: T) => string | null, list: T[], dict?: Record<string, T>): T[] {

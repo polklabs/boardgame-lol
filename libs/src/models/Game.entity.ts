@@ -60,12 +60,6 @@ export class GameEntity extends BaseEntity {
   Tags: TagEntity[] = [];
 
   @Ignore()
-  newest = false;
-
-  @Ignore()
-  oldest = false;
-
-  @Ignore()
   DateObj: Date;
 
   @Ignore()
@@ -152,21 +146,6 @@ export class GameEntity extends BaseEntity {
         const bucket = scoreBuckets.indexOf(score);
         this.Places[bucket].add(s);
       }
-    });
-  }
-
-  static postCalculate(games: GameEntity[]) {
-    const newestDate = games.reduce(
-      (prev, curr) => (prev > curr.dateSortOrder ? prev : curr.dateSortOrder),
-      games[0]?.dateSortOrder ?? '',
-    );
-    const oldestDate = games.reduce(
-      (prev, curr) => (prev < curr.dateSortOrder ? prev : curr.dateSortOrder),
-      games[0]?.dateSortOrder ?? '',
-    );
-    games.forEach((g) => {
-      g.newest = g.dateSortOrder === newestDate;
-      g.oldest = g.dateSortOrder === oldestDate;
     });
   }
 }
