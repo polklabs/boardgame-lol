@@ -96,6 +96,7 @@
         @if (canEdit) {
           <td pFrozenColumn alignFrozen="right">
             <div class="flex-nowrap">
+              <!-- TODO! ONLY SHOW WHEN NEIGHBOR ROW HAS SAME DATE -->
               @if (canAdjustOrder(gameTable)) {
                 <p-button
                   (onClick)="moveUp.emit(game)"
