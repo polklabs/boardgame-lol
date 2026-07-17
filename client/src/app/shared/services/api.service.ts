@@ -279,7 +279,7 @@ export class ApiService {
     if (result) {
       this.unloadClub();
       this.club = result;
-      this.publicClubs = [...this.publicClubs, result];
+      this.publicClubs = this.upsertEntry(result, (x) => x.ClubId, this.publicClubs);
       return true;
     } else {
       return false;
