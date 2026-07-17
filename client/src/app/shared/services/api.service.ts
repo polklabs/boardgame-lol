@@ -670,6 +670,7 @@ export class ApiService {
 
   private upsertEntry<T>(items: T | T[], key: (item: T) => string | null, list: T[], dict?: Record<string, T>): T[] {
     items = Array.isArray(items) ? items : [items];
+    
     for (const item of items) {
       if (dict) {
         dict[key(item) ?? ''] = item;
@@ -683,6 +684,20 @@ export class ApiService {
         list = [...list, item];
       }
     }
+    
+    if (dict) {
+      const keys = new Set(items.map(key));
+      Object.keys(dict).forEach((k) => {
+        if (keys.has(k)) {
+          // Continue
+        } else {
+          delete dict[k];
+        }
+      });
+    } else {
+      // Skip
+    }
+
     return list;
   }
 
