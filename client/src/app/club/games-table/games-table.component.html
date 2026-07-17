@@ -48,7 +48,15 @@
         }
       </tr>
     </ng-template>
-    <ng-template #body let-game let-columns="columns" let-expanded="expanded">
+    <ng-template #body let-game let-rowIndex="rowIndex" let-columns="columns" let-expanded="expanded">
+      @if (showYearRow(gameTable, games, rowIndex)){
+        <tr class="year-row">
+          <td></td>
+          <td [attr.colspan]="columns.length + 1">
+            {{getYearText(game)}}
+          </td>
+        </tr>
+      }
       <tr>
         <td>
             <p-button
@@ -66,7 +74,7 @@
 
             @switch (column.field) {
               @case ('dateSortOrder') {
-                {{ game.Date | date: 'MM/dd/yy' }}
+                {{ game.Date | date: 'yyyy/MM/dd' }}
               }
               @case ('BoardGame.Name') {
                 {{ game.BoardGame.Name }}
@@ -95,21 +103,20 @@
         }
         @if (canEdit) {
           <td pFrozenColumn alignFrozen="right">
-            <div class="flex-nowrap">
-              <!-- TODO! ONLY SHOW WHEN NEIGHBOR ROW HAS SAME DATE -->
-              @if (canAdjustOrder(gameTable)) {
+            <div class="flex-nowrap justify-content-end">
+              @if (canAdjustOrder(gameTable, games, rowIndex)) {
                 <p-button
                   (onClick)="moveUp.emit(game)"
                   icon="pi pi-arrow-up"
                   [rounded]="true"
                   [text]="true"
-                  [disabled]="game.newest"></p-button>
+                  [disabled]="!canAdjustUp(games, rowIndex)"></p-button>
                 <p-button
                   (onClick)="moveDown.emit(game)"
                   icon="pi pi-arrow-down"
                   [rounded]="true"
                   [text]="true"
-                  [disabled]="game.oldest"></p-button>
+                  [disabled]="!canAdjustDown(games, rowIndex)"></p-button>
               }
               <p-button (onClick)="gameEdit.emit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
             </div>

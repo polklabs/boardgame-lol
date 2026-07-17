@@ -12,6 +12,7 @@ import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
 import { TagComponent } from '../../shared/components/tag/tag.component';
 import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
+import { format, isSameYear } from 'date-fns';
 
 const COLUMNS: { field: string; name: string; sort: boolean }[] = [
   { field: 'dateSortOrder', name: 'Date', sort: true },
@@ -61,10 +62,10 @@ export class GamesTableComponent {
           return true;
         } else {
           const data = row[col.field as keyof GameEntity];
-        if (col.field === 'HighScore') {
-          return this.showScore(row) && !!data;
-        } else {
-          return Array.isArray(data) ? data.length > 0 : !!data;
+          if (col.field === 'HighScore') {
+            return this.showScore(row) && !!data;
+          } else {
+            return Array.isArray(data) ? data.length > 0 : !!data;
           }
         }
       }),
@@ -75,7 +76,35 @@ export class GamesTableComponent {
     return game.BoardGame?.ScoreType === 'points';
   }
 
-  canAdjustOrder(table: Table): boolean {
-    return table.sortField === 'dateSortOrder' && table.sortOrder === -1;
+  showYearRow(table: Table, games: GameEntity[], index: number) {
+    if (table.sortOrder === 1) {
+      index = games.length - index;
+    } else {
+      // Continue
+    }
+    return (
+      table.sortField === 'dateSortOrder' &&
+      !isSameYear(games.at(index - 1)?.DateObj ?? 0, games.at(index)?.DateObj ?? 0)
+    );
+  }
+
+  getYearText(game: GameEntity) {
+    return format(game.DateObj, 'yyyy');
+  }
+
+  canAdjustOrder(table: Table, games: GameEntity[], index: number): boolean {
+    if (table.sortField === 'dateSortOrder' && table.sortOrder === -1) {
+      return games.at(index - 1)?.Date === games[index].Date || games.at(index + 1)?.Date === games[index].Date;
+    } else {
+      return false;
+    }
+  }
+
+  canAdjustDown(games: GameEntity[], index: number): boolean {
+    return games.at(index + 1)?.Date === games[index].Date;
+  }
+
+  canAdjustUp(games: GameEntity[], index: number): boolean {
+    return games.at(index - 1)?.Date === games[index].Date;
   }
 }

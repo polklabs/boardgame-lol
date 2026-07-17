@@ -70,7 +70,7 @@
                 {{ player.BestGameWins | hide: '0' | number: '1.0-0' }}
               }
               @case ('FirstSeen') {
-                {{ player.FirstSeen | date: 'MM/dd/yy' }}
+                {{ player.FirstSeen | date: 'yyyy/MM/dd' }}
               }
               @case ('Tags') {
                 <div class="tag-wrapper">
@@ -110,7 +110,7 @@
                   <app-trophy-icon [score]="playerGame"></app-trophy-icon>
                 </td>
                 <td>
-                  {{ playerGame.Game.Date | date: 'MM/dd/yy' }}
+                  {{ playerGame.Game.Date | date: 'yyyy/MM/dd' }}
                 </td>
                 <td>
                   <div class="tag-wrapper">

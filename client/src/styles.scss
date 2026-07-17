@@ -125,6 +125,10 @@ body {
   justify-content: space-between;
 }
 
+.justify-content-end {
+  justify-content: end;
+}
+
 .p-picklist-item:not(.cdk-drag-disabled) {
   cursor: move;
   z-index: 99999 !important;

@@ -9,4 +9,8 @@
     gap: 4px;
     align-items: center;
   }
+
+  tr.year-row {
+    background: var(--p-surface-950) !important;
+  }
 }
