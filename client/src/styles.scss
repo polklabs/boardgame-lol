@@ -196,3 +196,22 @@ p-select {
   color: unset !important;
   cursor: pointer;
 }
+
+
+// FLOAT LABEL PLACEHOLDER FIX
+.p-floatlabel:not(:has(input:focus)) input::placeholder,
+.p-floatlabel:not(:has(input.p-filled)) input::placeholder,
+.p-floatlabel:not(:has(input:-webkit-autofill)) input::placeholder,
+.p-floatlabel:not(:has(textarea:focus)) textarea::placeholder,
+.p-floatlabel:not(:has(textarea.p-filled)) textarea::placeholder,
+.p-floatlabel:not(:has(.p-inputwrapper-focus)) .p-placeholder,
+.p-floatlabel:not(:has(.p-inputwrapper-filled)) .p-placeholder {
+    color: transparent !important;
+}
+
+.p-floatlabel:has(input:focus) input::placeholder,
+.p-floatlabel:has(input:-webkit-autofill) input::placeholder,
+.p-floatlabel:has(textarea:focus) input::placeholder,
+.p-floatlabel:has(.p-inputwrapper-focus) .p-placeholder {
+    color: var(--p-inputtext-placeholder-color) !important;
+}
