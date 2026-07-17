@@ -1,6 +1,7 @@
 :host ::ng-deep {
   .club-card {
     width: 222px;
+    max-width: calc(50% - 16px);
     min-height: 300px;
     height: 100%;
     cursor: pointer;
