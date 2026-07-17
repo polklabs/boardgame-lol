@@ -149,12 +149,8 @@ form {
   margin-bottom: 0.8rem;
   display: flex;
   flex-direction: column;
-  input,
-  textarea,
-  p-select,
-  p-multiselect,
-  p-inputnumber {
-    width: 100%;
+  > *:not(label) {
+    width: 100% !important;
   }
 }
 

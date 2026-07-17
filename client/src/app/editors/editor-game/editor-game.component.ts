@@ -391,7 +391,11 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updatePlayerCount() {
-    this.getControl('Players')?.setValue(this.playerGames.reduce((prev, curr) => prev + curr.Players.length, 0));
+    if (this.getControl('Players')?.disabled) {
+      this.getControl('Players')?.setValue(this.playerGames.reduce((prev, curr) => prev + curr.Players.length, 0));
+    } else {
+      // Skip
+    }
   }
 
   async submit() {

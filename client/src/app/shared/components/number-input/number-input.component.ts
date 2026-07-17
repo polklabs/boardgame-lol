@@ -31,6 +31,7 @@ export class NumberInputComponent implements ControlValueAccessor {
   @Input() label?: string;
   @Input() entityType: unknown;
   @Input() hiddenFields = new Set<string>();
+  @Input() locked = false;
 
   @Input() boardGame?: BoardGameEntity | null;
   @Input() prefix?: string | null;

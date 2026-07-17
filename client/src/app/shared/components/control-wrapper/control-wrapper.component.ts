@@ -1,16 +1,19 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
 import { getIgnore } from 'libs/decorators/ignore.decorator';
 import { getMinMax, getNullable, getPattern } from 'libs/index';
+import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 
 @Component({
   selector: 'app-control-wrapper',
-  imports: [FloatLabelModule],
+  imports: [FloatLabelModule, InputGroupModule, InputGroupAddonModule, ButtonModule],
   templateUrl: './control-wrapper.component.html',
   styleUrl: './control-wrapper.component.scss',
 })
-export class ControlWrapperComponent {
+export class ControlWrapperComponent implements OnInit {
   @Input() controlName!: string;
   @Input() formGroup!: FormGroup;
   @Input() label?: string;
@@ -18,8 +21,31 @@ export class ControlWrapperComponent {
   @Input() entityType?: unknown;
   @Input() textInputType = 'text';
   @Input() iconPosition = 'right';
+  @Input() locked = false;
+
+  lockSet = false;
 
   constructor() {}
+
+  ngOnInit(): void {
+    if (this.locked) {
+      this.formGroup.controls[this.controlName].disable();
+      this.lockSet = true;
+    } else {
+      // Do nothing
+    }
+  }
+
+  toggleDisabled() {
+    const control = this.formGroup.controls[this.controlName];
+    if (control.disabled) {
+      control.enable();
+      this.lockSet = false;
+    } else {
+      control.disable();
+      this.lockSet = true;
+    }
+  }
 
   isShown(): boolean {
     return this.hiddenFields.has(this.controlName) === false;
@@ -108,7 +134,7 @@ export class ControlWrapperComponent {
 
     const minMax = getMinMax(this.entityType)[this.controlName];
     const value = this.formGroup.get(this.controlName)?.value ?? '';
-    if (minMax && this.textInputType === 'text' || this.textInputType === 'array') {
+    if ((minMax && this.textInputType === 'text') || this.textInputType === 'array') {
       return `${value.length}/${minMax.max}`;
     } else {
       return '';
