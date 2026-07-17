@@ -41,7 +41,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 
 type EntityType = GameEntity;
 
-const BUTTON_WIDTH = 50;
+const BUTTON_WIDTH = 44;
 const BUTTON_GAP = 4;
 const POINT_VALUES = [1, 5, 10, 50, 100, 150, 200];
 
