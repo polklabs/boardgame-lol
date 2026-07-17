@@ -545,6 +545,8 @@ export class ApiService {
         (x) =>
           this.filteredPlayerGamePlayerList$.value.some((pgp) => pgp.PlayerGameId === x.PlayerGameId) &&
           this.filters.includeBoardGame(x.Game) &&
+          this.filters.includeStartDate(x.Game?.DateObj) &&
+          this.filters.includeEndDate(x.Game?.DateObj) &&
           this.filters.includeExcludedTag(x.Tags),
       );
       this.fPlayerList = this.playerList$.value.filter(

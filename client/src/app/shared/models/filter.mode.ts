@@ -46,11 +46,11 @@ export class FilterModel {
   includeExcludedTag(tags: TagEntity[]) {
     return !tags.some((t) => this.excludedTagIdSet.has(t.TagId));
   }
-  includeStartDate(date: Date) {
-    return this.startDate === null || isAfter(addDays(date, 1), this.startDate);
+  includeStartDate(date?: Date) {
+    return this.startDate === null || date === undefined || isAfter(addDays(date, 1), this.startDate);
   }
-  includeEndDate(date: Date) {
-    return this.endDate === null || isBefore(addDays(date, -1), this.endDate);
+  includeEndDate(date?: Date) {
+    return this.endDate === null || date === undefined || isBefore(addDays(date, -1), this.endDate);
   }
 
   updateSets() {
