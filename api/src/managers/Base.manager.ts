@@ -266,7 +266,7 @@ export abstract class BaseManager<T extends BaseEntity> {
 
         if (fk?.tableName && fk.primaryKeys.length > 0 && fk.secondaryKey) {
           const result = this.db.GetRaw(
-            `SELECT ${fk.primaryKeys[0]} FROM ${fk.tableName} WHERE ${fk.primaryKeys[0]} = ?`,
+            `SELECT ${fk.primaryKeys[0]}, ${fk.secondaryKey} FROM ${fk.tableName} WHERE ${fk.primaryKeys[0]} = ?`,
             [fkValue],
           ) as any;
           if (result === undefined) {
@@ -275,7 +275,9 @@ export abstract class BaseManager<T extends BaseEntity> {
             const fkSkValue = result[fk.secondaryKey];
 
             if (skValue !== fkSkValue) {
-              throw new ValidationError(['Foreign Key table does not match']);
+              throw new ValidationError([
+                `Foreign Key (${fk.tableName}.${fk.primaryKeys[0]}) does not match: ${skValue} != ${fkSkValue}`,
+              ]);
             } else {
               // continue
             }
