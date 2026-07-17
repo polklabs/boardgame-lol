@@ -13,12 +13,7 @@ export class TrophyMostLosses extends ITrophy {
   }
 
   calculate(players: PlayerEntity[]) {
-    const objects: ApplyObj = [];
-
-    players.forEach((player) => {
-      objects.push({ item: player, count: player.LossCount - player.WinCount });
-    });
-
+    const objects: ApplyObj = players.map((player) => ({ item: player, count: player.LossCount - player.WinCount }));
     this.applyValues(objects);
   }
 }

@@ -20,6 +20,7 @@ import { TrophyBestFriends } from '../trophies/trophy-best-friends';
 import { TrophyHoarder } from '../trophies/trophy-hoarder';
 import { TrophyNewPlayer } from '../trophies/trophy-new-player';
 import { TrophyTeamPlayer } from '../trophies/trophy-team-player';
+import { TrophyTieBreaker } from '../trophies/trophy-tie-breaker';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +33,7 @@ export class TrophyService {
     BestComeback: new TrophyComebackKid(4),
     MaxUniqueWins: new TrophyMaxUniqueWins(3),
     MostTies: new TrophyMostTies(3),
+    TieBreaker: new TrophyTieBreaker(3),
     UniqueOpponents: new TrophyUniqueOpponents(3),
     MostLosses: new TrophyMostLosses(2),
     FirstWinDelay: new TrophySnail(2),
