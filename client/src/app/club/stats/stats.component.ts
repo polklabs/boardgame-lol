@@ -48,9 +48,9 @@ export class StatsComponent implements OnInit {
 
   gameTypeMeterMax = 0;
   gameTypeMeter: MeterItem[] = [
-    { label: 'Win/Lose', color: COLORS[0], value: 0 },
-    { label: 'Point', color: COLORS[1], value: 0 },
-    { label: 'Rank', color: COLORS[2], value: 0 },
+    { label: ScoreTypeMapping['win-lose'], color: COLORS[0], value: 0 },
+    { label: ScoreTypeMapping['points'], color: COLORS[1], value: 0 },
+    { label: ScoreTypeMapping['rank'], color: COLORS[2], value: 0 },
   ];
 
   boardGameMeterMax = 0;
