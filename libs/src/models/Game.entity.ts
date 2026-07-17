@@ -10,8 +10,6 @@ import { PlayerEntity } from './Player.entity';
 import { Ignore } from '../decorators/ignore.decorator';
 import { Nullable } from '../decorators/nullable.decorator';
 import { CHARACTER_LIMIT_LONG } from '../constants';
-import { max } from 'date-fns/max';
-import { min } from 'date-fns/min';
 import { TagEntity } from './Tag.entity';
 import { TagGameEntity } from './TagGame.entity';
 import { TagPlayerGameEntity } from './TagPlayerGame.entity';
@@ -157,11 +155,17 @@ export class GameEntity extends BaseEntity {
   }
 
   static postCalculate(games: GameEntity[]) {
-    const newestDate = max(games.map((x) => x.DateObj)).getTime();
-    const oldestDate = min(games.map((x) => x.DateObj)).getTime();
+    const newestDate = games.reduce(
+      (prev, curr) => (prev > curr.dateSortOrder ? prev : curr.dateSortOrder),
+      games[0]?.dateSortOrder ?? '',
+    );
+    const oldestDate = games.reduce(
+      (prev, curr) => (prev < curr.dateSortOrder ? prev : curr.dateSortOrder),
+      games[0]?.dateSortOrder ?? '',
+    );
     games.forEach((g) => {
-      g.newest = g.DateObj.getTime() === newestDate;
-      g.oldest = g.DateObj.getTime() === oldestDate;
+      g.newest = g.dateSortOrder === newestDate;
+      g.oldest = g.dateSortOrder === oldestDate;
     });
   }
 }
