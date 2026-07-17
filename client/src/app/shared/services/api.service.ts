@@ -228,6 +228,7 @@ export class ApiService {
     }
 
     this.publicClubs = data;
+    this.calculatedFields();
   }
 
   async fetchClub(clubId: string) {
@@ -276,6 +277,7 @@ export class ApiService {
       this.unloadClub();
       this.club = result;
       this.publicClubs = this.upsertEntry(result, (x) => x.ClubId, this.publicClubs);
+      this.updateReferences();
       return true;
     } else {
       return false;

@@ -39,7 +39,7 @@
     <app-editor-tags [editorVisible]="editorTagsVisible" (closeEditor)="editorTagsVisible = false"></app-editor-tags>
   }
 
-  <h1>{{ title }}</h1>
+  <app-club-title [club]="club" fontSize="42px"></app-club-title>
 
   <div>
     <p-tabs [(value)]="activeTab" (valueChange)="onTabChange($event)" [lazy]="true">
@@ -79,5 +79,4 @@
 
     <app-filter></app-filter>
   </div>
-
 </div>

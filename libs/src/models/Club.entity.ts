@@ -3,7 +3,7 @@ import { BaseEntity } from './Base.entity';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { Nullable } from '../decorators/nullable.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
-import { CHARACTER_LIMIT_LONG, CHARACTER_LIMIT_SHORT } from '../constants';
+import { CHARACTER_LIMIT_LONG, CHARACTER_LIMIT_TINY, HEX_REGEX } from '../constants';
 import { Sanitize } from '../decorators/sanitize.decorator';
 import { GameEntity } from './Game.entity';
 import { PlayerGameEntity } from './PlayerGame.entity';
@@ -16,6 +16,8 @@ import { TagPlayerEntity } from './TagPlayer.entity';
 import { TagPlayerGameEntity } from './TagPlayerGame.entity';
 import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
 import { Ignore } from '../decorators/ignore.decorator';
+import { Pattern } from '../decorators/pattern.decorator';
+import { getAccessibleBackground } from '../utils/color-utils';
 
 export type ClubReturn = {
   Club: ClubEntity;
@@ -36,7 +38,7 @@ export class ClubEntity extends BaseEntity {
   @PrimaryKey()
   ClubId: string = '';
 
-  @MinMax(1, CHARACTER_LIMIT_SHORT, 'string')
+  @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
   @Sanitize()
   Name: string = '';
 
@@ -47,6 +49,18 @@ export class ClubEntity extends BaseEntity {
   @MinMax(0, CHARACTER_LIMIT_LONG, 'string')
   Summary: string | null = null;
 
+  @Sanitize()
+  @Nullable()
+  Font: string | null = null;
+
+  @Sanitize()
+  @Nullable()
+  @Pattern(HEX_REGEX, 'hex color in the format: #FFFFFF')
+  Color: string | null = null;
+
+  @Ignore()
+  BackgroundColor: string = '';
+
   @Ignore()
   calculated = false;
 
@@ -56,6 +70,7 @@ export class ClubEntity extends BaseEntity {
   }
 
   calculate(): void {
+    this.BackgroundColor = getAccessibleBackground(this.Color ?? '');
     this.calculated = true;
   }
 }

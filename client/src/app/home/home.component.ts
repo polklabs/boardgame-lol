@@ -3,14 +3,15 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ApiService } from '../shared/services/api.service';
 import { Router, RouterModule } from '@angular/router';
 import { MenuBarComponent } from '../menu-bar/menu-bar.component';
-import { AccessIds, UserService } from '../shared/services/user.service';
+import { UserService } from '../shared/services/user.service';
 import { Observable, of } from 'rxjs';
 import { ClubEntity } from 'libs/index';
 import { EditorClubComponent } from '../editors/editor-club/editor-club.component';
+import { ClubTitleComponent } from '../shared/components/club-title/club-title.component';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, MenuBarComponent, EditorClubComponent],
+  imports: [CommonModule, RouterModule, MenuBarComponent, EditorClubComponent, ClubTitleComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
@@ -19,7 +20,7 @@ export class HomeComponent implements OnInit {
   private apiService = inject(ApiService);
   private userService = inject(UserService);
 
-  clubList$: Observable<AccessIds[]> = of([]);
+  clubList$: Observable<ClubEntity[]> = of([]);
   publicClubList$: Observable<ClubEntity[]> = of([]);
 
   editorClubVisible = false;

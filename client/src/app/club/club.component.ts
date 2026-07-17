@@ -17,6 +17,7 @@ import { EditorClubComponent } from '../editors/editor-club/editor-club.componen
 import { TabsModule } from 'primeng/tabs';
 import { EditorTagsComponent } from '../editors/editor-tags/editor-tags.component';
 import { FilterComponent } from './filter/filter.component';
+import { ClubTitleComponent } from '../shared/components/club-title/club-title.component';
 
 @Component({
   selector: 'app-club',
@@ -34,6 +35,7 @@ import { FilterComponent } from './filter/filter.component';
     BoardGameTableComponent,
     StatsComponent,
     FilterComponent,
+    ClubTitleComponent,
   ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
@@ -44,7 +46,7 @@ export class ClubComponent implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private userService = inject(UserService);
 
-  title = '';
+  club?: ClubEntity;
   canEdit = false;
 
   editorGameVisible = false;
@@ -81,7 +83,7 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       combineLatest([this.apiService.club$, this.userService.accessIds$, this.apiService.filterEnabled$]).subscribe(
         ([club, access, filter]) => {
-          this.title = club?.Name ?? '';
+          this.club = club;
           this.canEdit = access.some((x) => x.ClubId === club?.ClubId) && !filter;
         },
       ),

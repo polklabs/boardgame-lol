@@ -11,9 +11,9 @@ import {
 } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ClubEntity } from 'libs/index';
+import { ClubEntity, getAccessibleBackground } from 'libs/index';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
@@ -22,6 +22,9 @@ import { UserService } from '../../shared/services/user.service';
 import { Observable, of } from 'rxjs';
 import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
 import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
+import { ClubTitleComponent } from '../../shared/components/club-title/club-title.component';
 
 type EntityType = ClubEntity;
 
@@ -36,6 +39,9 @@ type EntityType = ClubEntity;
     FormsModule,
     ReactiveFormsModule,
     CheckboxComponent,
+    ColorPickerModule,
+    DropdownComponent,
+    ClubTitleComponent,
   ],
   templateUrl: './editor-club.component.html',
   styleUrl: './editor-club.component.scss',
@@ -53,6 +59,29 @@ export class EditorClubComponent implements OnChanges {
   @Input() club?: ClubEntity;
   @Output() closeEditor = new EventEmitter<ClubEntity>();
   @Output() deleteEntity = new EventEmitter<ClubEntity>();
+
+  presetColors: { severity: ButtonSeverity; color: string | null; text: string }[] = [
+    { severity: 'contrast', color: null, text: 'Default (White)' },
+    { severity: 'secondary', color: '#ffffff', text: 'Black' },
+    { severity: 'success', color: '#156934', text: 'Green' },
+    { severity: 'info', color: '#0e5780', text: 'Blue' },
+    { severity: 'warn', color: '#C2410C', text: 'Orange' },
+    { severity: 'help', color: '#380b61', text: 'Purple' },
+    { severity: 'danger', color: '#B91C1C', text: 'Red' },
+  ];
+
+  presetFonts: string[] = [
+    'Arial, sans-serif',
+    'Verdana, sans-serif',
+    'Tahoma, sans-serif',
+    'Trebuchet MS, sans-serif',
+    'Times New Roman, serif',
+    'Georgia, serif',
+    'Garamond, serif',
+    'Courier New, monospace',
+  ];
+
+  bgColor = '';
 
   title = '';
   isNew = false;
@@ -89,6 +118,25 @@ export class EditorClubComponent implements OnChanges {
 
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
+  }
+
+  setColor(color: string | object | null) {
+    console.log('setColor', color);
+    const control = this.getControl('Color');
+    control?.setValue(color);
+    control?.markAsTouched();
+    control?.markAsDirty();
+    control?.updateValueAndValidity();
+    this.updateColor();
+  }
+
+  updateColor() {
+    const control = this.getControl('Color');
+    if (control?.value) {
+      this.bgColor = getAccessibleBackground(control?.value);
+    } else {
+      this.bgColor = '';
+    }
   }
 
   async submit() {

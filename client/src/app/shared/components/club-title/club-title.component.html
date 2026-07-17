@@ -1,0 +1,9 @@
+<h1
+  [style]="{
+    color: color ?? club?.Color,
+    '-webkit-text-stroke': getTextStroke(),
+    'font-family': font ?? club?.Font,
+    'font-size': fontSize
+  }">
+  {{ name ?? club?.Name ?? 'Unknown' }}
+</h1>

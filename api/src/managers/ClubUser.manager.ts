@@ -53,7 +53,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
 
   loadManyWithName(userId: string): (ClubUserEntity & ClubEntity & UserEntity)[] {
     return this.db.AllRaw<ClubUserEntity & ClubEntity & UserEntity>(
-      `SELECT ${TP(ClubEntity, 'ClubId')}, ${TP(ClubEntity, 'Name')}, ${TP(ClubEntity, 'Summary')}, ${TP(UserEntity, 'Username')}
+      `SELECT ${TP(ClubEntity, 'ClubId')}, ${TP(ClubEntity, 'Name')}, ${TP(ClubEntity, 'Summary')}, ${TP(ClubEntity, 'Font')}, ${TP(ClubEntity, 'Color')}, ${TP(UserEntity, 'Username')}
         FROM ${T(ClubUserEntity)}
         INNER JOIN ${T(ClubEntity)} ON ${TP(ClubEntity, 'ClubId')} = ${TP(ClubUserEntity, 'ClubId')}
         INNER JOIN ${T(UserEntity)} ON ${TP(ClubEntity, 'CreatedBy')} = ${TP(UserEntity, 'UserId')}

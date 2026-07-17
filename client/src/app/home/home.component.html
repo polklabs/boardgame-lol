@@ -25,7 +25,7 @@
 
 <ng-template #card let-club="club">
   <div class="club-card" [routerLink]="'/club/' + club.ClubId">
-    <h2>{{ club.Name }}</h2>
+    <app-club-title [club]="club" fontSize="28px"></app-club-title>
     <p>{{ club.Summary }}</p>
     <small>Created by: {{ club.CreatedBy }}</small>
   </div>

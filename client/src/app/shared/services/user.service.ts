@@ -2,10 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { tokenGetter, tokenSetter } from '../../app.config';
 import { BehaviorSubject } from 'rxjs';
-import { JwtModel } from 'libs/index';
+import { ClubEntity, JwtModel } from 'libs/index';
 import { HttpService } from './http.service';
-
-export type AccessIds = { ClubId: string; Name: string; Summary: string; CreatedBy: string };
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +13,7 @@ export class UserService {
   private httpService = inject(HttpService);
 
   loggedIn$ = new BehaviorSubject<boolean>(false);
-  accessIds$ = new BehaviorSubject<AccessIds[]>([]);
+  accessIds$ = new BehaviorSubject<ClubEntity[]>([]);
   adminIds$ = new BehaviorSubject<string[]>([]);
 
   private jwt: JwtModel | null = null;
@@ -68,7 +66,10 @@ export class UserService {
   }
 
   async loadClubAccess() {
-    this.accessIds$.next((await this.httpService.get(['auth', 'club_access'])) ?? []);
+    let data = (await this.httpService.get<ClubEntity[]>(['auth', 'club_access'])) ?? [];
+    data = data.map((x) => new ClubEntity(x));
+    data.forEach((x) => x.calculate());
+    this.accessIds$.next(data);
   }
 
   async loadClubAdminAccess() {

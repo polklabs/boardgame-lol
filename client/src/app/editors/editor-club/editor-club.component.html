@@ -10,17 +10,55 @@
   @if (formGroup && club) {
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit()">
+        <app-club-title
+          [color]="formGroup.value.Color"
+          [bgColor]="bgColor"
+          [name]="formGroup.value.Name"
+          [font]="formGroup.value.Font"
+          fontSize="50px"></app-club-title>
         <app-textinput
           formControlName="Name"
           label="Club Name"
           [entityType]="entityType"
           [hiddenFields]="hideFields"></app-textinput>
-        <app-checkbox formControlName="Public" label="Is Public"></app-checkbox>
+
         <app-textarea
           formControlName="Summary"
           label="Summary"
           [entityType]="entityType"
           [hiddenFields]="hideFields"></app-textarea>
+
+        <app-checkbox formControlName="Public" label="Is Public"></app-checkbox>
+
+        <app-dropdown
+          [entityType]="entityType"
+          formControlName="Font"
+          [options]="presetFonts"
+          [showClear]="true"
+          placeholder="(Default) Robot, sans-serif"></app-dropdown>
+
+        <div class="flex-nowrap gap-8">
+          <div class="color-list gap-8">
+            <app-textinput
+              formControlName="Color"
+              [entityType]="entityType"
+              [hiddenFields]="hideFields"></app-textinput>
+            <div class="flex gap-8">
+              @for (preset of presetColors; track preset) {
+                <p-button variant="outlined" [severity]="preset.severity" (onClick)="setColor(preset.color)">
+                  {{ [preset.text] }}
+                </p-button>
+              }
+            </div>
+          </div>
+          <p-colorpicker
+            [(ngModel)]="formGroup.value.Color"
+            (onChange)="setColor($event.value)"
+            [ngModelOptions]="{ standalone: true }"
+            [inline]="true"
+            defaultColor="000000" />
+        </div>
+
         <div class="dialog-footer">
           <div>
             @if ((adminIds | async)?.includes(club.ClubId)) {
