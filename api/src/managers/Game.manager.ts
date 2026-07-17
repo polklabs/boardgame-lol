@@ -49,6 +49,7 @@ export class GameManager extends BaseManager<GameEntity> {
     transactions.push(this.runInsert(userId, entity, true));
 
     playerGames.forEach((pg) => {
+      pg.ClubId = entity.ClubId;
       pg.PlayerGameId = newGuid();
       pg.GameId = entity.GameId;
       transactions.push(this.playerGameManager.put(userId, pg, false));
@@ -59,6 +60,7 @@ export class GameManager extends BaseManager<GameEntity> {
     });
 
     playerGamePlayers.forEach((pgp) => {
+      pgp.ClubId = entity.ClubId;
       transactions.push(this.playerGamePlayerManager.put(userId, pgp));
     });
 
@@ -97,6 +99,7 @@ export class GameManager extends BaseManager<GameEntity> {
     const playerGameIds = new Set(playerGames.map((pg) => pg.PlayerGameId));
     const oldPlayerGames = new Set(this.playerGameManager.loadMany('GameId', entity.GameId).map((x) => x.PlayerGameId));
     playerGames.forEach((pg) => {
+      pg.ClubId = entity.ClubId;
       pg.GameId = entity.GameId;
       if (oldPlayerGames.has(pg.PlayerGameId)) {
         transactions.push(this.playerGameManager.patch(userId, pg));
@@ -119,6 +122,7 @@ export class GameManager extends BaseManager<GameEntity> {
       .filter((x) => playerGameIds.has(x.PlayerGameId));
     const oldPlayerGamePlayers = new Set(oldPlayerGamePlayerRows.map((x) => x.PlayerId));
     playerGamePlayers.forEach((pgp) => {
+      pgp.ClubId = entity.ClubId;
       if (oldPlayerGamePlayers.has(pgp.PlayerId)) {
         transactions.push(this.playerGamePlayerManager.patch(userId, pgp));
         oldPlayerGamePlayers.delete(pgp.PlayerId);

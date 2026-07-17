@@ -265,9 +265,10 @@ export abstract class BaseManager<T extends BaseEntity> {
         }
 
         if (fk?.tableName && fk.primaryKeys.length > 0 && fk.secondaryKey) {
-          const result = this.db.GetRaw(`SELECT * FROM ${fk.tableName} WHERE ${fk.primaryKeys[0]} = ?`, [
-            fkValue,
-          ]) as any;
+          const result = this.db.GetRaw(
+            `SELECT ${fk.primaryKeys[0]} FROM ${fk.tableName} WHERE ${fk.primaryKeys[0]} = ?`,
+            [fkValue],
+          ) as any;
           if (result === undefined) {
             // Possibly from transaction
           } else {
