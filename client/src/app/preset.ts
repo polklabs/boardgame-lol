@@ -61,6 +61,11 @@ export const LaraDark = definePreset(Lara, {
         padding: '0 1rem 1rem',
       },
     },
+    togglebutton: {
+      root: {
+        checkedBackground: 'var(--p-primary-700)'
+      }
+    },
     datatable: {
       colorScheme: {
         dark: {

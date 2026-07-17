@@ -13,14 +13,17 @@ import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ChartData, ChartOptions } from 'chart.js';
 import { clone } from 'lodash-es';
 import { MeterGroupModule, MeterItem } from 'primeng/metergroup';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { NameValue } from '../../shared/models/name-value.model';
+import { FormsModule } from '@angular/forms';
 
-type DayItem = { color: string; tooltip?: string; icon?: string };
+type DayItem = { color: string; tooltip?: string; icon?: string; colorAll: string; tooltipAll?: string };
 
 const COLORS = ['#0A84FF', '#FF3B30', '#30D158', '#5E5CE6', '#FFD60A', '#FF9F0A', '#64D2FF', '#BF5AF2', '#FF375F'];
 
 @Component({
   selector: 'app-stats',
-  imports: [TooltipModule, ChartModule, CommonModule, ArrayPipe, MeterGroupModule],
+  imports: [TooltipModule, ChartModule, CommonModule, ArrayPipe, MeterGroupModule, SelectButtonModule, FormsModule],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
 })
@@ -30,6 +33,11 @@ export class StatsComponent implements OnInit {
 
   heatmap: { days: DayItem[]; month: string; key: string }[] = [];
   colors = ['#1C2532', '#0E4429', '#006D32', '#26A641', '#39D353'];
+  heatmapState: NameValue<boolean>[] = [
+    { name: '1 Year', value: false },
+    { name: 'All Time', value: true },
+  ];
+  heatmapStateValue: boolean = false;
 
   ShowCharts = false;
 
@@ -105,6 +113,23 @@ export class StatsComponent implements OnInit {
       date = addDays(date, 7 - date.getDay());
     }
 
+    const gameDateMap: Record<string, number> = {};
+    this.apiService.gameList.forEach((g) => {
+      const date = `${g.Date}`;
+      if (date in gameDateMap) {
+        gameDateMap[date] += 1;
+      } else {
+        gameDateMap[date] = 1;
+      }
+
+      const dateAll = format(g.DateObj, 'MM-dd');
+      if (dateAll in gameDateMap) {
+        gameDateMap[dateAll] += 1;
+      } else {
+        gameDateMap[dateAll] = 1;
+      }
+    });
+
     let currentMonth = '';
     // eslint-disable-next-line no-constant-condition
     let weekIndex = 0;
@@ -115,12 +140,17 @@ export class StatsComponent implements OnInit {
 
       for (let d = 0; d < 7; d++) {
         const dateStr = format(date, 'yyyy-MM-dd');
+        const dateStrAll = format(date, 'MM-dd');
         const dateText = format(date, 'MMMM do, yyyy');
+        const dateTextAll = format(date, 'MMMM do');
 
-        const count = this.apiService.gameList.reduce((count, game) => count + (game.Date === dateStr ? 1 : 0), 0);
+        const count = gameDateMap[dateStr] ?? 0;
+        const countAll = gameDateMap[dateStrAll] ?? 0;
         week.push({
           color: this.getHeatmapColor(count),
           tooltip: count > 0 ? `${count} game${count > 1 ? 's' : ''} on ${dateText}` : undefined,
+          colorAll: this.getHeatmapColor(countAll),
+          tooltipAll: countAll > 0 ? `${countAll} game${countAll > 1 ? 's' : ''} on ${dateTextAll}` : undefined,
         });
         date = addDays(date, 1);
         if (date > today) {
