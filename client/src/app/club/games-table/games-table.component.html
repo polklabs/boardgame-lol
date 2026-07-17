@@ -1,5 +1,5 @@
 <div style="height: calc(100dvh - 140px)">
-  @let games = (games$ | async) ?? [];
+  @let games = ((games$ | async) ?? []);
   @let cols = filterColumns(games);
   <p-table
     #gameTable

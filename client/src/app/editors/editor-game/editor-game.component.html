@@ -20,101 +20,125 @@
   [style]="{ width: '650px', 'min-width': '300px', 'max-height': 'calc(100% - 60px)' }"
   [draggable]="false"
   position="bottom">
-  @if (formGroup && editorVisible) {
-    <div class="form">
-      <form [formGroup]="formGroup" (ngSubmit)="submit()">
-        <!-- BoardGame -->
-        <div class="flex gap-4 justify-content-space-between">
-          <app-dropdown
-            style="flex-grow: 1"
-            formControlName="BoardGameId"
-            label="BoardGame"
-            [entityType]="entityType"
-            [hiddenFields]="hideFields"
-            [options]="(boardGameList$ | async) ?? []"
-            [showClear]="false"
-            optionLabel="Name"
-            optionValue="BoardGameId"></app-dropdown>
-          <p-button (onClick)="addBoardGame()" pTooltip="New Game" icon="pi pi-plus"></p-button>
-        </div>
-        <p-orderList
-          [value]="playerGames"
-          [selection]="selectedPlayerGames"
-          [dragdrop]="game?.BoardGame?.ScoreType === 'rank'"
-          [responsive]="true"
-          [metaKeySelection]="false"
-          (onReorder)="updateOrdering()"
-          (selectionChange)="onPlayerSelection($event)"
-          [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
-          <ng-template #header>
-            <div class="order-list-header flex justify-content-space-between">
-              <div class="p-orderlist-title">Players</div>
-              <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
-            </div>
-            <div class="flex justify-content-center">
-              @if (selectedPlayerGames.length > 0 && game?.BoardGame?.ScoreType === 'points') {
-                <p-buttongroup class="point-add-group">
-                  <div class="flex-nowrap">
-                    <p-button label="-100" variant="outlined" severity="warn" (onClick)="addPoints(-100)" />
-                    <p-button label="-50" variant="outlined" severity="warn" (onClick)="addPoints(-50)" />
-                    <p-button label="-10" variant="outlined" severity="warn" (onClick)="addPoints(-10)" />
-                    <p-button label="-1" variant="outlined" severity="warn" (onClick)="addPoints(-1)" />
-                  </div>
-                  <div class="flex-nowrap">
-                    <p-button label="+1" variant="outlined" severity="success" (onClick)="addPoints(1)" />
-                    <p-button label="+10" variant="outlined" severity="success" (onClick)="addPoints(10)" />
-                    <p-button label="+50" variant="outlined" severity="success" (onClick)="addPoints(50)" />
-                    <p-button label="+100" variant="outlined" severity="success" (onClick)="addPoints(100)" />
-                  </div>
-                </p-buttongroup>
-              }
-            </div>
-          </ng-template>
-          <ng-template let-playerGame #item>
-            <ng-container
-              [ngTemplateOutlet]="orderListItem"
-              [ngTemplateOutletContext]="{ $implicit: playerGame }"></ng-container>
-          </ng-template>
-          <ng-template #empty>
-            <div class="empty-list">Add a player to start</div>
-          </ng-template>
-        </p-orderList>
-        <div class="flex-grow gap-8 width-100">
-          <app-calendar
-            formControlName="Date"
-            label="Date"
-            [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-calendar>
-          <app-number-input
-            formControlName="Players"
-            label="Players"
-            [entityType]="entityType"
-            [hiddenFields]="hideFields"
-            [maxFractionDigits]="0"></app-number-input>
-        </div>
-
-        <app-tags
-          formControlName="Tags"
-          label="Tags"
+  <div class="form" #gameEditDialog>
+    <form [formGroup]="formGroup" (ngSubmit)="submit()">
+      <!-- BoardGame -->
+      <div class="flex gap-4 justify-content-space-between">
+        <app-dropdown
+          style="flex-grow: 1"
+          formControlName="BoardGameId"
+          label="BoardGame"
           [entityType]="entityType"
           [hiddenFields]="hideFields"
-          [options$]="tagList$"></app-tags>
+          [options]="(boardGameList$ | async) ?? []"
+          [showClear]="false"
+          optionLabel="Name"
+          optionValue="BoardGameId"></app-dropdown>
+        <p-button (onClick)="addBoardGame()" pTooltip="New Game" icon="pi pi-plus"></p-button>
+      </div>
+      <p-orderList
+        [value]="playerGames"
+        [selection]="selectedPlayerGames"
+        [dragdrop]="game?.BoardGame?.ScoreType === 'rank'"
+        [responsive]="true"
+        [metaKeySelection]="false"
+        (onReorder)="updateOrdering()"
+        (selectionChange)="onPlayerSelection($event)"
+        [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
+        <ng-template #header>
+          <div class="order-list-header flex justify-content-space-between">
+            <div class="p-orderlist-title">Players</div>
+            <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
+          </div>
+          <div #addPointGroup class="add-point-group">
+            @if (selectedPlayerGames.length > 0 && game?.BoardGame?.ScoreType === 'points') {
+              @for (adjust of pointGroupButtonValues; track adjust) {
+                <div class="button-group">
+                  <p-button label="+{{ adjust }}" variant="outlined" severity="success" (onClick)="addPoints(adjust)" />
+                  <p-button
+                    label="-{{ adjust }}"
+                    variant="outlined"
+                    severity="warn"
+                    (onClick)="addPoints(-1 * adjust)" />
+                </div>
+              }
 
-        <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
-      </form>
-      <div class="flex dialog-footer">
-        <div>
-          @if (isNew === false) {
-            <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
-          }
-        </div>
-        <div>
-          <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-          <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
-        </div>
+              <div class="add-point-group-spacer"></div>
+
+              <div class="button-group">
+                <p-button label="+-" variant="outlined" severity="info" (onClick)="customPoints()" />
+                <p-button label="=0" variant="outlined" severity="danger" (onClick)="setPoints(0)" />
+              </div>
+            }
+          </div>
+        </ng-template>
+        <ng-template let-playerGame #item>
+          <ng-container
+            [ngTemplateOutlet]="orderListItem"
+            [ngTemplateOutletContext]="{ $implicit: playerGame }"></ng-container>
+        </ng-template>
+        <ng-template #empty>
+          <div class="empty-list">Add a player to start</div>
+        </ng-template>
+      </p-orderList>
+      <div class="flex-grow gap-8 width-100">
+        <app-calendar
+          formControlName="Date"
+          label="Date"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"></app-calendar>
+        <app-number-input
+          formControlName="Players"
+          label="Players"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"
+          [maxFractionDigits]="0"></app-number-input>
+      </div>
+
+      <app-tags
+        formControlName="Tags"
+        label="Tags"
+        [entityType]="entityType"
+        [hiddenFields]="hideFields"
+        [options$]="tagList$"></app-tags>
+
+      <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
+    </form>
+    <div class="flex dialog-footer">
+      <div>
+        @if (isNew === false) {
+          <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
+        }
+      </div>
+      <div>
+        <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
+        <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
       </div>
     </div>
-  }
+  </div>
+</p-dialog>
+
+<p-dialog [(visible)]="showCustomPointsDialog" [modal]="true" [style]="{ width: '25rem' }" header="Adjust Points">
+  <div class="custom-point-adjustment">
+    <p-floatlabel variant="on">
+      <p-inputnumber
+        [autofocus]="true"
+        [(ngModel)]="customPointAdjustment"
+        inputId="customPointAdjustment"
+        mode="decimal"
+        [minFractionDigits]="0"
+        [maxFractionDigits]="10" />
+      <label for="customPointAdjustment">Points</label>
+    </p-floatlabel>
+  </div>
+  <ng-template #footer>
+    <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="showCustomPointsDialog = false" />
+    <p-button
+      label="Apply"
+      [outlined]="true"
+      severity="success"
+      (onClick)="addPoints(customPointAdjustment); showCustomPointsDialog = false" />
+  </ng-template>
 </p-dialog>
 
 <ng-template #orderListItem let-playerGame>
@@ -184,12 +208,6 @@
             [rounded]="true"
             [text]="true"
             icon="pi pi-pencil"></p-button>
-          <p-button
-            (onClick)="deletePlayerGame(playerGame)"
-            icon="pi pi-trash"
-            [rounded]="true"
-            [text]="true"
-            severity="danger"></p-button>
         </div>
       </div>
     </div>

@@ -30,12 +30,6 @@
     .order-list-header {
       align-items: center;
     }
-    .p-buttongroup {
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 4px;
-    }
   }
 
   .p-listbox-list-container {
@@ -99,5 +93,39 @@
     .list-items {
       cursor: ns-resize;
     }
+  }
+
+  .add-point-group {
+    width: 100%;
+    display: flex;
+    gap: 4px;
+    justify-content: start;
+  }
+
+  .add-point-group-spacer {
+    flex-grow: 1;
+    flex-basis: 0;
+  }
+
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    p-button {
+      .p-button {
+        width: 50px;
+      }
+      &:first-child .p-button {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      &:last-child .p-button {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
+    }
+  }
+
+  .custom-point-adjustment {
+    margin-top: 8px;
   }
 }

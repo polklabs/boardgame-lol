@@ -1,13 +1,16 @@
 import {
   ChangeDetectorRef,
   Component,
+  ElementRef,
   EventEmitter,
   inject,
   Input,
   OnChanges,
   OnDestroy,
+  OnInit,
   Output,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BoardGameEntity, GameEntity, getMinMax, PlayerGameEntity } from 'libs/index';
@@ -18,7 +21,6 @@ import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { OrderListModule } from 'primeng/orderlist';
 import { ButtonModule } from 'primeng/button';
-import { ButtonGroupModule } from 'primeng/buttongroup';
 import { EditorBoardGameComponent } from '../editor-board-game/editor-board-game.component';
 import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
 import { EditorPlayerGameComponent } from '../editor-player-game/editor-player-game.component';
@@ -34,8 +36,14 @@ import { TagComponent } from '../../shared/components/tag/tag.component';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
 import { PlayerGamePlayerEntity } from 'libs/models/PlayerGamePlayer.entity';
 import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 type EntityType = GameEntity;
+
+const BUTTON_WIDTH = 50;
+const BUTTON_GAP = 4;
+const POINT_VALUES = [1, 5, 10, 50, 100, 150, 200];
 
 @Component({
   selector: 'app-editor-game',
@@ -46,8 +54,9 @@ type EntityType = GameEntity;
     TextareaComponent,
     CalendarComponent,
     CheckboxModule,
+    InputNumberModule,
     ButtonModule,
-    ButtonGroupModule,
+    FloatLabelModule,
     FormsModule,
     ReactiveFormsModule,
     EditorBoardGameComponent,
@@ -63,12 +72,15 @@ type EntityType = GameEntity;
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
 })
-export class EditorGameComponent implements OnChanges, OnDestroy {
+export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   private fb = inject(FormBuilder);
   private apiService = inject(ApiService);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
+
+  @ViewChild('gameEditDialog', { static: true, read: ElementRef }) gameEditDialog!: ElementRef;
+  @ViewChild('addPointGroup', { static: false, read: ElementRef }) pointGroupButtons?: ElementRef;
 
   @Input() editorVisible = false;
   @Input() game?: GameEntity;
@@ -95,9 +107,26 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
   boardGameEditorVisible = false;
   boardGameEdit?: BoardGameEntity;
 
+  showCustomPointsDialog = false;
+  customPointAdjustment: number | null = null;
+
   maxPoints = 0;
 
+  pointGroupButtonValues: number[] = [];
+
   subscription?: Subscription;
+
+  wakeLock?: WakeLockSentinel;
+
+  ngOnInit(): void {
+    navigator.wakeLock
+      .request()
+      .then((lock) => {
+        this.wakeLock = lock;
+        console.log('Wake lock success');
+      })
+      .catch(() => console.warn('Wake lock failed'));
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('game' in changes && this.game) {
@@ -132,6 +161,11 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
         this.game!.BoardGame = this.apiService.getBoardGame(value);
         this.updateScoring();
       });
+
+      const observer = new ResizeObserver(() => {
+        this.calculatePointButtons();
+      });
+      observer.observe(this.gameEditDialog.nativeElement);
     } else {
       // No Changes
     }
@@ -140,6 +174,13 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
+
+    if (this.wakeLock) {
+      this.wakeLock.release();
+      console.log('Wake lock released');
+    } else {
+      // Continue
+    }
   }
 
   grabLists() {
@@ -153,23 +194,49 @@ export class EditorGameComponent implements OnChanges, OnDestroy {
     return this.formGroup.get(key);
   }
 
-  addPoints(points: number) {
+  calculatePointButtons() {
+    this.pointGroupButtonValues = [];
+    if (this.pointGroupButtons) {
+      // Continue
+    } else {
+      return;
+    }
+
+    let width = this.pointGroupButtons.nativeElement.clientWidth;
+    width -= BUTTON_WIDTH + BUTTON_GAP;
+
+    const count = Math.floor(width / (BUTTON_WIDTH + BUTTON_GAP));
+    for (let i = 0; i < count; i++) {
+      this.pointGroupButtonValues.push(POINT_VALUES[i] ?? (this.pointGroupButtonValues.at(-1) ?? 0) + 100);
+    }
+  }
+
+  addPoints(points: number | null) {
     const minMax = getMinMax(PlayerGameEntity)['Points'];
     this.selectedPlayerGames.forEach((p) => {
-      p.Points = Math.max(minMax.min, Math.min(minMax.max, (p.Points ?? 0) + points));
+      p.Points = Math.max(minMax.min, Math.min(minMax.max, (p.Points ?? 0) + (points ?? 0)));
     });
     this.updateScoring();
   }
 
-  setPoints(playerGame: PlayerGameEntity, event: number) {
-    playerGame.Points = event;
+  setPoints(points: number) {
+    const minMax = getMinMax(PlayerGameEntity)['Points'];
+    this.selectedPlayerGames.forEach((p) => {
+      p.Points = Math.max(minMax.min, Math.min(minMax.max, points));
+    });
     this.updateScoring();
+  }
+
+  customPoints() {
+    this.showCustomPointsDialog = true;
+    this.customPointAdjustment = null;
   }
 
   onPlayerSelection(event: PlayerGameEntity[]) {
     for (const item of event) {
       if (!this.selectedPlayerGames.includes(item)) {
         this.selectedPlayerGames = [item];
+        this.calculatePointButtons();
         return;
       } else {
         // Continue
