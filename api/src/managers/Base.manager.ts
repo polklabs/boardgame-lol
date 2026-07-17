@@ -348,13 +348,13 @@ export abstract class BaseManager<T extends BaseEntity> {
       const minMax = this.minMaxes[keyString];
       if (minMax) {
         if (minMax.type === 'string') {
-          if (String(value).length < minMax.min || String(value).length > minMax.max) {
+          if (String(value).length < (minMax.min ?? -Infinity) || String(value).length > (minMax.max ?? Infinity)) {
             errors.push(`${keyString}: length must be >= ${minMax.min}, and <= ${minMax.max}`);
           } else {
             // continue
           }
         } else if (minMax.type === 'number') {
-          if (+value < minMax.min || +value > minMax.max) {
+          if (+value < (minMax.min ?? -Infinity) || +value > (minMax.max ?? Infinity)) {
             errors.push(`${keyString}: value must be >= ${minMax.min}, and <= ${minMax.max}`);
           } else {
             // continue

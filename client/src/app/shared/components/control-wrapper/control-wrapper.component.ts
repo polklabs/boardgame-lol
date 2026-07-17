@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
 import { getIgnore } from 'libs/decorators/ignore.decorator';
-import { getMinMax, getNullable, getPattern } from 'libs/index';
+import { getMinMax, getNullable, getPattern, MinMaxValue } from 'libs/index';
 import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -87,14 +87,20 @@ export class ControlWrapperComponent implements OnInit {
       } else if (control.errors?.['minMax']) {
         const value = control.value;
         const minMax = getMinMax(this.entityType)[this.controlName];
-        if (this.textInputType === 'text' || this.textInputType === 'array') {
-          if (value.length < minMax.min) {
+        if (this.textInputType === 'text') {
+          if (value.length < (minMax.min ?? -Infinity)) {
             return `${value.length}/${minMax.max} Minimum Length: ${minMax.min}`;
           } else {
             return `${value.length}/${minMax.max} Exceeds Character Limit`;
           }
+        } else if (this.textInputType === 'array') {
+          if (value.length < (minMax.min ?? -Infinity)) {
+            return `${this.lengthText(minMax, value)} Minimum Length: ${minMax.min}`;
+          } else {
+            return `${this.lengthText(minMax, value)} Exceeds Limit`;
+          }
         } else if (this.textInputType === 'number') {
-          if (value < minMax.min) {
+          if (value < (minMax.min ?? -Infinity)) {
             return `Minimum Value: ${minMax.min}`;
           } else {
             return `Maximum Value: ${minMax.max}`;
@@ -134,10 +140,22 @@ export class ControlWrapperComponent implements OnInit {
 
     const minMax = getMinMax(this.entityType)[this.controlName];
     const value = this.formGroup.get(this.controlName)?.value ?? '';
-    if ((minMax && this.textInputType === 'text') || this.textInputType === 'array') {
-      return `${value.length}/${minMax.max}`;
+    if (
+      minMax?.min !== undefined &&
+      minMax?.max !== undefined &&
+      (this.textInputType === 'text' || this.textInputType === 'array')
+    ) {
+      return this.lengthText(minMax, value);
     } else {
       return '';
+    }
+  }
+
+  private lengthText(minMax: MinMaxValue, value: string | unknown[]) {
+    if (minMax.max === undefined) {
+      return `${value.length}`;
+    } else {
+      return `${value.length}/${minMax.max}`;
     }
   }
 }

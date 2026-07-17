@@ -216,7 +216,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   addPoints(points: number | null) {
     const minMax = getMinMax(PlayerGameEntity)['Points'];
     this.selectedPlayerGames.forEach((p) => {
-      p.Points = Math.max(minMax.min, Math.min(minMax.max, (p.Points ?? 0) + (points ?? 0)));
+      p.Points = Math.max(minMax.min ?? -Infinity, Math.min(minMax.max ?? Infinity, (p.Points ?? 0) + (points ?? 0)));
     });
     this.updateScoring();
   }
@@ -224,7 +224,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   setPoints(points: number) {
     const minMax = getMinMax(PlayerGameEntity)['Points'];
     this.selectedPlayerGames.forEach((p) => {
-      p.Points = Math.max(minMax.min, Math.min(minMax.max, points));
+      p.Points = Math.max(minMax.min ?? -Infinity, Math.min(minMax.max ?? Infinity, points));
     });
     this.updateScoring();
   }

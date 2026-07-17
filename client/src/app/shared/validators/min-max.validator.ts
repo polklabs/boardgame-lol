@@ -19,9 +19,9 @@ export function minMaxValidator<T>(entityType: new (partial: Partial<T>) => T, p
         (minMax.type === 'string' && typeof value === 'string') ||
         (minMax.type === 'array' && Array.isArray(value))
       ) {
-        minMaxValid = value.length >= minMax.min && value.length <= minMax.max;
+        minMaxValid = value.length >= (minMax.min ?? -Infinity) && value.length <= (minMax.max ?? Infinity);
       } else if (minMax.type === 'number') {
-        minMaxValid = +value >= minMax.min && +value <= minMax.max;
+        minMaxValid = +value >= (minMax.min ?? -Infinity) && +value <= (minMax.max ?? Infinity);
       } else {
         console.warn(`${String(propertyKey)}: ${minMax.type} cannot have MinMax decorator`);
       }
