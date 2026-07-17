@@ -1,6 +1,5 @@
 import 'reflect-metadata'; // This must be imported here for the prod build to work
-import { getIgnore, Ignore } from '../decorators/ignore.decorator';
-import { Exclude } from 'class-transformer';
+import { getIgnore } from '../decorators/ignore.decorator';
 
 export function calculationsComplete<T extends BaseEntity>(item?: T | (T | null)[] | null) {
   let complete: boolean;
@@ -68,10 +67,11 @@ export abstract class BaseEntity {
     }
   }
 
-  resetCalculated<T extends this>(entity: T, entityType: new (partial: Partial<T>) => T) {
+  resetCalculated<T extends this>(entityType: new (partial: Partial<T>) => T) {
+    const newObj = new entityType({});
     const ignored = getIgnore(entityType);
     for (const key in ignored) {
-      if (key in entity && key in this) {
+      if (key in newObj && key in this) {
         const temp = this as { [k in typeof key]: any };
         const newInstance = this as { [k in typeof key]: any };
         temp[key] = newInstance[key];

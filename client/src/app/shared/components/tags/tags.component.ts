@@ -11,9 +11,9 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
 import { TagEntity } from 'libs/index';
 import { ButtonModule } from 'primeng/button';
 import { MultiSelectFocusEvent, MultiSelectModule } from 'primeng/multiselect';
-import { Observable, of } from 'rxjs';
 import { TagComponent } from '../tag/tag.component';
 import { EditorTagsComponent } from '../../../editors/editor-tags/editor-tags.component';
+import { ControlBase } from '../../models/control.base';
 
 @Component({
   selector: 'app-tags',
@@ -37,15 +37,9 @@ import { EditorTagsComponent } from '../../../editors/editor-tags/editor-tags.co
     },
   ],
 })
-export class TagsComponent implements ControlValueAccessor {
+export class TagsComponent<T> extends ControlBase<T, unknown> implements ControlValueAccessor {
   private formGroupDirective = inject(FormGroupDirective);
 
-  @Input() formControlName!: string;
-  @Input() label?: string;
-  @Input() entityType: unknown;
-  @Input() hiddenFields = new Set<string>();
-  @Input() options$: Observable<TagEntity[]> = of([]);
-  @Input() placeholder?: string;
   @Input() showClear = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

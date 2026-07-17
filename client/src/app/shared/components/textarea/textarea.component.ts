@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
+import { ControlBase } from '../../models/control.base';
 
 @Component({
   selector: 'app-textarea',
@@ -23,13 +24,9 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
     },
   ],
 })
-export class TextareaComponent implements ControlValueAccessor {
+export class TextareaComponent<T> extends ControlBase<T, unknown> implements ControlValueAccessor {
   private formGroupDirective = inject(FormGroupDirective);
 
-  @Input() formControlName!: string;
-  @Input() label?: string;
-  @Input() entityType: unknown;
-  @Input() hiddenFields = new Set<string>();
   @Input() rows = '5';
   @Input() cols = '30';
 

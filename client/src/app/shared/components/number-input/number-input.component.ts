@@ -10,6 +10,7 @@ import {
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { BoardGameEntity } from 'libs/index';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { ControlBase } from '../../models/control.base';
 
 @Component({
   selector: 'app-number-input',
@@ -24,13 +25,9 @@ import { InputNumberModule } from 'primeng/inputnumber';
     },
   ],
 })
-export class NumberInputComponent implements ControlValueAccessor {
+export class NumberInputComponent<T> extends ControlBase<T, unknown> implements ControlValueAccessor {
   private formGroupDirective = inject(FormGroupDirective);
 
-  @Input() formControlName!: string;
-  @Input() label?: string;
-  @Input() entityType: unknown;
-  @Input() hiddenFields = new Set<string>();
   @Input() locked = false;
 
   @Input() boardGame?: BoardGameEntity | null;

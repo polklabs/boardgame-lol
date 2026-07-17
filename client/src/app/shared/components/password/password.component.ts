@@ -10,6 +10,7 @@ import {
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { PasswordModule } from 'primeng/password';
 import { DividerModule } from 'primeng/divider';
+import { ControlBase } from '../../models/control.base';
 
 @Component({
   selector: 'app-password',
@@ -24,13 +25,9 @@ import { DividerModule } from 'primeng/divider';
     },
   ],
 })
-export class PasswordComponent implements ControlValueAccessor {
+export class PasswordComponent<T> extends ControlBase<T, unknown> implements ControlValueAccessor {
   private formGroupDirective = inject(FormGroupDirective);
 
-  @Input() formControlName!: string;
-  @Input() label?: string;
-  @Input() entityType: unknown;
-  @Input() hiddenFields = new Set<string>();
   @Input() feedback = false;
 
   get formGroup() {

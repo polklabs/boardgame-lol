@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { DatePickerModule } from 'primeng/datepicker';
+import { ControlBase } from '../../models/control.base';
 
 @Component({
   selector: 'app-calendar',
@@ -23,13 +24,8 @@ import { DatePickerModule } from 'primeng/datepicker';
     },
   ],
 })
-export class CalendarComponent implements ControlValueAccessor {
+export class CalendarComponent<T> extends ControlBase<T, unknown> implements ControlValueAccessor {
   private formGroupDirective = inject(FormGroupDirective);
-
-  @Input() formControlName!: string;
-  @Input() label?: string;
-  @Input() entityType: unknown;
-  @Input() hiddenFields = new Set<string>();
 
   @Input() icon = '';
   @Input() iconPosition: 'left' | 'right' = 'right';

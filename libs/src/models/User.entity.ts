@@ -42,6 +42,9 @@ export class UserEntity extends BaseEntity {
   Deleted: boolean = false;
 
   @Ignore()
+  PasswordRetry: string = '';
+
+  @Ignore()
   calculated = false;
 
   constructor(partial: Partial<UserEntity> = {}, copyIgnored = false) {

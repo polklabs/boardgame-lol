@@ -10,8 +10,8 @@ import {
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { ButtonModule } from 'primeng/button';
 import { MultiSelectFocusEvent, MultiSelectModule } from 'primeng/multiselect';
-import { Observable } from 'rxjs';
 import { getMinMax } from 'libs/index';
+import { ControlBase } from '../../models/control.base';
 
 @Component({
   selector: 'app-multi-select',
@@ -26,18 +26,9 @@ import { getMinMax } from 'libs/index';
     },
   ],
 })
-export class MultiSelectComponent<T> implements ControlValueAccessor, OnInit {
+export class MultiSelectComponent<T, K> extends ControlBase<T, K> implements ControlValueAccessor, OnInit {
   private formGroupDirective = inject(FormGroupDirective);
 
-  @Input() formControlName!: string;
-  @Input() label?: string;
-  @Input() entityType: unknown;
-  @Input() hiddenFields = new Set<string>();
-  @Input() options$?: Observable<T[]>;
-  @Input() options: T[] = [];
-  @Input() optionLabel?: keyof T & string;
-  @Input() optionValue?: string;
-  @Input() placeholder?: string;
   @Input() showClear = false;
   @Input() showFilter = false;
   @Input() maxSelectedLabels: number | null = null;
@@ -47,7 +38,7 @@ export class MultiSelectComponent<T> implements ControlValueAccessor, OnInit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();
 
-  private onChange: (value: T[]) => void = () => {};
+  private onChange: (value: K[]) => void = () => {};
   private onTouched: () => void = () => {};
 
   get formGroup() {
@@ -56,7 +47,7 @@ export class MultiSelectComponent<T> implements ControlValueAccessor, OnInit {
 
   ngOnInit(): void {
     const minMax = getMinMax(this.entityType)[this.formControlName];
-    if (this.selectionLimit === null) {
+    if (minMax && this.selectionLimit === null) {
       this.selectionLimit = minMax.max || null;
     } else {
       // Use provided limit
@@ -67,7 +58,7 @@ export class MultiSelectComponent<T> implements ControlValueAccessor, OnInit {
     // Stub
   }
 
-  registerOnChange(fn: (value: T[]) => void): void {
+  registerOnChange(fn: (value: K[]) => void): void {
     this.onChange = fn;
   }
 
@@ -80,8 +71,6 @@ export class MultiSelectComponent<T> implements ControlValueAccessor, OnInit {
   }
 
   onFocus(event: MultiSelectFocusEvent) {
-    // if (this.isMobile) {
     event.originalEvent.stopImmediatePropagation();
-    // }
   }
 }

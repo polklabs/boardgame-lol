@@ -589,6 +589,11 @@ export class ApiService {
         .map((t) => this.getTag(t.TagId))
         .filter((x) => x !== null);
     });
+    this.playerGameList.sort(
+      (a, b) =>
+        b.Game?.Date.toString().localeCompare(a.Game?.Date.toString() ?? '') ||
+        (b.Game?.SortIndex ?? 0) - (a.Game?.SortIndex ?? 0),
+    );
 
     this.boardGameList.forEach((bg) => {
       bg.Games = this.gameList.filter((x) => x.BoardGameId === bg.BoardGameId);
@@ -626,13 +631,13 @@ export class ApiService {
   }
 
   private calculatedFields() {
-    this.club?.resetCalculated(new ClubEntity(), ClubEntity);
-    this.publicClubs.forEach((x) => x.resetCalculated(new ClubEntity(), ClubEntity));
-    this.gameList.forEach((x) => x.resetCalculated(new GameEntity(), GameEntity));
-    this.playerGameList.forEach((x) => x.resetCalculated(new PlayerGameEntity(), PlayerGameEntity));
-    this.playerGamePlayerList.forEach((x) => x.resetCalculated(new PlayerGamePlayerEntity(), PlayerGamePlayerEntity));
-    this.boardGameList.forEach((x) => x.resetCalculated(new BoardGameEntity(), BoardGameEntity));
-    this.playerList.forEach((x) => x.resetCalculated(new PlayerEntity(), PlayerEntity));
+    this.club?.resetCalculated(ClubEntity);
+    this.publicClubs.forEach((x) => x.resetCalculated(ClubEntity));
+    this.gameList.forEach((x) => x.resetCalculated(GameEntity));
+    this.playerGameList.forEach((x) => x.resetCalculated(PlayerGameEntity));
+    this.playerGamePlayerList.forEach((x) => x.resetCalculated(PlayerGamePlayerEntity));
+    this.boardGameList.forEach((x) => x.resetCalculated(BoardGameEntity));
+    this.playerList.forEach((x) => x.resetCalculated(PlayerEntity));
 
     this.club?.calculate();
     this.publicClubs.forEach((x) => x.calculate());
@@ -653,7 +658,7 @@ export class ApiService {
 
   private upsertEntry<T>(items: T | T[], key: (item: T) => string | null, list: T[], dict?: Record<string, T>): T[] {
     items = Array.isArray(items) ? items : [items];
-    
+
     for (const item of items) {
       if (dict) {
         dict[key(item) ?? ''] = item;
@@ -667,7 +672,7 @@ export class ApiService {
         list = [...list, item];
       }
     }
-    
+
     if (dict) {
       const keys = new Set(items.map(key));
       Object.keys(dict).forEach((k) => {

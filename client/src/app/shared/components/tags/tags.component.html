@@ -10,7 +10,7 @@
     #dropdown
     inputId="{{ formControlName }}"
     formControlName="{{ formControlName }}"
-    [options]="(options$ | async) ?? []"
+    [options]="(options$ | async) ?? options ?? []"
     optionLabel="Text"
     appendTo="body"
     display="chip"

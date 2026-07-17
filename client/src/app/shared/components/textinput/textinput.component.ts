@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
+import { ControlBase } from '../../models/control.base';
 
 @Component({
   selector: 'app-textinput',
@@ -23,13 +24,9 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
     },
   ],
 })
-export class TextInputComponent implements ControlValueAccessor {
+export class TextInputComponent<T> extends ControlBase<T, unknown> implements ControlValueAccessor {
   private formGroupDirective = inject(FormGroupDirective);
 
-  @Input() formControlName!: string;
-  @Input() label?: string;
-  @Input() entityType: unknown;
-  @Input() hiddenFields = new Set<string>();
   @Input() inputType = 'text';
 
   @Input() icon = '';
