@@ -41,7 +41,7 @@ export class MultiSelectComponent<T> implements ControlValueAccessor, OnInit {
   @Input() showClear = false;
   @Input() showFilter = false;
   @Input() maxSelectedLabels: number | null = null;
-
+  @Input() selectedItemsLabel: string | undefined;
   @Input() selectionLimit: number | null = null;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -149,7 +149,8 @@ form {
   margin-bottom: 0.8rem;
   display: flex;
   flex-direction: column;
-  > *:not(label) {
+  > *:not(label),
+  input {
     width: 100% !important;
   }
 }

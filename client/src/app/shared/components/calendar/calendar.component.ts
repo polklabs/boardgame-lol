@@ -33,6 +33,7 @@ export class CalendarComponent implements ControlValueAccessor {
 
   @Input() icon = '';
   @Input() iconPosition: 'left' | 'right' = 'right';
+  @Input() showClear = false;
 
   get formGroup() {
     return this.formGroupDirective.form;

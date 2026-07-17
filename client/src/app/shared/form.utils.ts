@@ -1,14 +1,9 @@
 import { FormBuilder } from '@angular/forms';
-import { BaseEntity } from 'libs/index';
 import { nullableValidator } from './validators/nullable.validator';
 import { minMaxValidator } from './validators/min-max.validator';
 import { patternValidator } from './validators/pattern.validator';
 
-export function buildForm<T extends BaseEntity>(
-  fb: FormBuilder,
-  entityType: new (partial: Partial<T>) => T,
-  entity: T,
-) {
+export function buildForm<T extends object>(fb: FormBuilder, entityType: new (partial: Partial<T>) => T, entity: T) {
   const formControlsConfig: { [key: string]: unknown } = {};
 
   // Get property names of the entity class

@@ -16,10 +16,10 @@ import {
   TagEntity,
   ClubReturn,
 } from 'libs/index';
-import { format } from 'date-fns';
 import { TagGameEntity } from 'libs/models/TagGame.entity';
 import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
 import { PlayerGamePlayerEntity } from 'libs/models/PlayerGamePlayer.entity';
+import { FilterModel } from '../models/filter.mode';
 
 @Injectable({
   providedIn: 'root',
@@ -48,11 +48,7 @@ export class ApiService {
   private _gameDict: Record<string, GameEntity> = {};
   private _tagDict: Record<string, TagEntity> = {};
 
-  // Filters
-  private _filteredBoardGameIds = new Set<string>();
-  private _filteredPlayerIds = new Set<string>();
-  private _filteredDaysOfWeek = new Set<string>();
-  private _filteredExcludeTagIds = new Set<string>();
+  private filters = new FilterModel({});
 
   // Filtered Observables
   readonly filteredBoardGameList$ = new BehaviorSubject<BoardGameEntity[]>([]);
@@ -520,24 +516,11 @@ export class ApiService {
     }
   }
 
-  filter(
-    enabled: boolean,
-    playerIds: string[],
-    boardGameIds: string[],
-    daysOfWeek: string[],
-    excludedTagIds: string[],
-  ) {
-    this._filteredBoardGameIds = new Set(boardGameIds);
-    this._filteredPlayerIds = new Set(playerIds);
-    this._filteredDaysOfWeek = new Set(daysOfWeek);
-    this._filteredExcludeTagIds = new Set(excludedTagIds);
-    this.filterEnabled$.next(enabled);
+  filter(filter: Partial<FilterModel>) {
+    this.filters.assign(filter);
+    this.filterEnabled$.next(this.filters.enabled);
     this.updateReferences();
     this.dataUpdate$.next();
-  }
-
-  filterTags(tags: TagEntity[]): boolean {
-    return !tags.some((t) => this._filteredExcludeTagIds.has(t.TagId));
   }
 
   private updateReferences() {
@@ -545,25 +528,25 @@ export class ApiService {
     if (this.filterEnabled$.value) {
       this.fGameList = this.gameList$.value.filter((x) => {
         return (
-          this._filteredBoardGameIds.has(x.BoardGameId) &&
-          this._filteredDaysOfWeek.has(format(x.DateObj, 'cccc')) &&
-          this.filterTags(x.Tags)
+          this.filters.includeBoardGame(x) &&
+          this.filters.includeDayOfWeek(x.DateObj) &&
+          this.filters.includeExcludedTag(x.Tags) &&
+          this.filters.includeEndDate(x.DateObj) &&
+          this.filters.includeStartDate(x.DateObj)
         );
       });
       this.fBoardGameList = this.boardGameList$.value.filter(
-        (x) => this._filteredBoardGameIds.has(x.BoardGameId) && this.filterTags(x.Tags),
+        (x) => this.filters.includeBoardGame(x) && this.filters.includeExcludedTag(x.Tags),
       );
-      this.fPlayerGamePlayerList = this.playerGamePlayerList$.value.filter((x) =>
-        this._filteredPlayerIds.has(x.PlayerId),
-      );
+      this.fPlayerGamePlayerList = this.playerGamePlayerList$.value.filter((x) => this.filters.includePlayer(x));
       this.fPlayerGameList = this.playerGameList$.value.filter(
         (x) =>
           this.filteredPlayerGamePlayerList$.value.some((pgp) => pgp.PlayerGameId === x.PlayerGameId) &&
-          this._filteredBoardGameIds.has(x.Game?.BoardGameId ?? '') &&
-          this.filterTags(x.Tags),
+          this.filters.includeBoardGame(x.Game) &&
+          this.filters.includeExcludedTag(x.Tags),
       );
       this.fPlayerList = this.playerList$.value.filter(
-        (x) => this._filteredPlayerIds.has(x.PlayerId) && this.filterTags(x.Tags),
+        (x) => this.filters.includePlayer(x) && this.filters.includeExcludedTag(x.Tags),
       );
     } else {
       this.fGameList = this.gameList$.value;
