@@ -32,7 +32,7 @@
     <ng-template #body let-player let-columns="columns" let-expanded="expanded">
       <tr>
         <td>
-          @if (player.WinCount > 0) {
+          @if (player.PlayerGames.length > 0) {
             <p-button
               type="button"
               pRipple
@@ -95,9 +95,10 @@
       <tr>
         <td></td>
         <td [attr.colspan]="cols.length">
-          <p-table [value]="player.Wins" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
+          <p-table [value]="player.PlayerGames" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
             <ng-template #header>
               <tr>
+                <th id="won">Won</th>
                 <th id="date">Date</th>
                 <th id="game">Game</th>
                 <th id="points">Points</th>
@@ -105,6 +106,9 @@
             </ng-template>
             <ng-template #body let-playerGame>
               <tr>
+                <td>
+                  <app-trophy-icon [score]="playerGame"></app-trophy-icon>
+                </td>
                 <td>
                   {{ playerGame.Game.Date | date: 'MM/dd/yy' }}
                 </td>

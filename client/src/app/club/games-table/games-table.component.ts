@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { GameEntity, PlayerGameEntity } from 'libs/index';
+import { GameEntity } from 'libs/index';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { Table, TableModule } from 'primeng/table';
@@ -11,6 +11,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
 import { TagComponent } from '../../shared/components/tag/tag.component';
+import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
 
 const COLUMNS: { field: keyof GameEntity; name: string; sort: boolean }[] = [
   { field: 'dateSortOrder', name: 'Date', sort: true },
@@ -34,6 +35,7 @@ const COLUMNS: { field: keyof GameEntity; name: string; sort: boolean }[] = [
     ArrayPipe,
     ScorePipe,
     TagComponent,
+    TrophyIconComponent,
   ],
   templateUrl: './games-table.component.html',
   styleUrl: './games-table.component.scss',
@@ -67,20 +69,6 @@ export class GamesTableComponent {
 
   showScore(game: GameEntity): boolean {
     return game.BoardGame?.ScoreType === 'points';
-  }
-
-  getTrophyColor(playerGame: PlayerGameEntity): string {
-    if (playerGame.Game?.BoardGame?.ScoreType === 'rank') {
-      if (playerGame.Points === 0) {
-        return 'gold';
-      } else if (playerGame.Points === 1) {
-        return 'silver';
-      } else {
-        return 'chocolate';
-      }
-    } else {
-      return 'gold';
-    }
   }
 
   canAdjustOrder(table: Table): boolean {

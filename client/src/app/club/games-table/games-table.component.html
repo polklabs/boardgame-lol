@@ -134,29 +134,7 @@
               <tr>
                 <td class="flex gap-8">
                   <div class="tag-wrapper">
-                  @switch (game?.BoardGame?.ScoreType) {
-                    @case ('points') {
-                      @if (score.Won) {
-                        <i class="pi pi-trophy" style="color: gold"></i>
-                      } @else {
-                        <div class="empty-trophy"></div>
-                      }
-                    }
-                    @case ('rank') {
-                      @if (score.Points !== null && score.Points < 3) {
-                        <i class="pi pi-trophy" [ngStyle]="{ color: getTrophyColor(score) }"></i>
-                      } @else {
-                        <div class="empty-trophy"></div>
-                      }
-                    }
-                    @case ('win-lose') {
-                      @if (score.Points === 1) {
-                        <i class="pi pi-trophy" style="color: gold"></i>
-                      } @else {
-                        <div class="empty-trophy"></div>
-                      }
-                    }
-                  }
+                  <app-trophy-icon [score]="score"></app-trophy-icon>
                   <span>{{ score.DisplayName }}</span>
                   
                   @for (tag of score.Tags; track tag.TagId) {

@@ -1,0 +1,23 @@
+@switch (score.Game?.BoardGame?.ScoreType) {
+  @case ('points') {
+    @if (score.Won) {
+      <i class="pi pi-trophy" style="color: gold"></i>
+    } @else {
+      <div class="empty-trophy"></div>
+    }
+  }
+  @case ('rank') {
+    @if (score.Points !== null && score.Points < 3) {
+      <i class="pi pi-trophy" [ngStyle]="{ color: getTrophyColor() }"></i>
+    } @else {
+      <div class="empty-trophy"></div>
+    }
+  }
+  @case ('win-lose') {
+    @if (score.Points === 1) {
+      <i class="pi pi-trophy" style="color: gold"></i>
+    } @else {
+      <div class="empty-trophy"></div>
+    }
+  }
+}

@@ -11,6 +11,7 @@ import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ScorePipe } from '../../shared/pipes/score.pipe';
 import { TagModule } from 'primeng/tag';
 import { TagComponent } from '../../shared/components/tag/tag.component';
+import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
 
 const COLUMNS: { field: keyof PlayerEntity; name: string; sort: boolean }[] = [
   { field: 'Name', name: 'Name', sort: true },
@@ -24,7 +25,17 @@ const COLUMNS: { field: keyof PlayerEntity; name: string; sort: boolean }[] = [
 
 @Component({
   selector: 'app-player-table',
-  imports: [TableModule, ButtonModule, TagModule, CommonModule, HidePipe, ArrayPipe, ScorePipe, TagComponent],
+  imports: [
+    TableModule,
+    ButtonModule,
+    TagModule,
+    CommonModule,
+    HidePipe,
+    ArrayPipe,
+    ScorePipe,
+    TagComponent,
+    TrophyIconComponent,
+  ],
   templateUrl: './player-table.component.html',
   styleUrl: './player-table.component.scss',
 })
