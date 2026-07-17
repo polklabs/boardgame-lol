@@ -13,9 +13,9 @@ import { ScorePipe } from '../../shared/pipes/score.pipe';
 import { TagComponent } from '../../shared/components/tag/tag.component';
 import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
 
-const COLUMNS: { field: keyof GameEntity; name: string; sort: boolean }[] = [
+const COLUMNS: { field: string; name: string; sort: boolean }[] = [
   { field: 'dateSortOrder', name: 'Date', sort: true },
-  { field: 'BoardGame', name: 'Game', sort: true },
+  { field: 'BoardGame.Name', name: 'Game', sort: true },
   { field: 'WinnerTeams', name: 'Winner(s)', sort: false },
   { field: 'HighScore', name: 'Points', sort: true },
   { field: 'Players', name: 'Players', sort: true },
@@ -57,11 +57,15 @@ export class GamesTableComponent {
   filterColumns(games: GameEntity[]) {
     return COLUMNS.filter((col) =>
       games.some((row) => {
-        const data = row[col.field];
+        if (col.field.includes('.')) {
+          return true;
+        } else {
+          const data = row[col.field as keyof GameEntity];
         if (col.field === 'HighScore') {
           return this.showScore(row) && !!data;
         } else {
           return Array.isArray(data) ? data.length > 0 : !!data;
+          }
         }
       }),
     );
