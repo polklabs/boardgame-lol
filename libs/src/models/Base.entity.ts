@@ -9,7 +9,11 @@ export function calculationsComplete<T extends BaseEntity>(item?: T | (T | null)
     complete = item?.calculated ?? false;
   }
 
-  console.assert(complete, 'Calculations incomplete:', item);
+  if (complete) {
+    // Continue
+  } else {
+    console.trace('Calculations incomplete', item);
+  }
 }
 
 export abstract class BaseEntity {
