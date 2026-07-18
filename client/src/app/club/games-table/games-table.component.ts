@@ -51,10 +51,6 @@ export class GamesTableComponent {
 
   expandedRows = {};
 
-  filterTable(table: Table, filter: Event): void {
-    table.filterGlobal((filter.target as HTMLInputElement).value, 'contains');
-  }
-
   filterColumns(games: GameEntity[]) {
     return COLUMNS.filter((col) =>
       games.some((row) => {

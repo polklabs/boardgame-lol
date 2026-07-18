@@ -15,21 +15,6 @@
     [globalFilterFields]="['Date', 'BoardGame.Name']"
     [tableStyle]="{ 'min-width': '50rem' }"
     [expandedRowKeys]="expandedRows">
-    <ng-template #caption>
-      <div class="flex justify-content-center">
-        <div></div>
-        <p-iconfield>
-          <p-inputicon class="pi pi-search" />
-          <input
-            id="search"
-            #gameTableFilter
-            pInputText
-            type="text"
-            (input)="filterTable(gameTable, $event)"
-            placeholder="Search keyword" />
-        </p-iconfield>
-      </div>
-    </ng-template>
     <ng-template #header let-columns>
       <tr>
         <th id="expansion" style="width: 0"></th>
