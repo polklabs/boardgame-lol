@@ -55,7 +55,7 @@ export class EditorTagsComponent {
   isNew = false;
   addTagTag = new TagEntity({ Text: 'Add New', Color: '#334155', BackgroundColor: '#ffffff' });
 
-  tags$ = this.apiService.tagList$;
+  tags$ = this.apiService.tags.raw$;
 
   tag?: TagEntity;
   entityType = TagEntity;

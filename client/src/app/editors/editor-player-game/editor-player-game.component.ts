@@ -68,8 +68,8 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
 
   entityType = PlayerGameEntity;
 
-  tagList$ = this.apiService.tagList$;
-  playerList$ = this.apiService.playerList$;
+  tagList$ = this.apiService.tags.raw$;
+  playerList$ = this.apiService.players.raw$;
 
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();

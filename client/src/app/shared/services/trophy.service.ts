@@ -56,7 +56,7 @@ export class TrophyService {
     apiService.dataUpdate$.subscribe(() => {
       const values = Object.values(this._trophies);
       values.forEach((t) => {
-        t.update(apiService.playerList, apiService.gameList, apiService.boardGameList);
+        t.update(apiService.players.list, apiService.games.list, apiService.boardGames.list);
       });
       values.sort((a, b) => (b.sortOrder ?? 0) - (a.sortOrder ?? 0) || b.value - a.value);
       this.trophies$.next(values);

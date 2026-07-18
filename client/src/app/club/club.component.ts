@@ -89,9 +89,9 @@ export class ClubComponent implements OnInit, OnDestroy {
       ),
     );
 
-    this.games$ = this.apiService.filteredGameList$;
-    this.boardGames$ = this.apiService.filteredBoardGameList$;
-    this.players$ = this.apiService.filteredPlayerList$;
+    this.games$ = this.apiService.games.list$;
+    this.boardGames$ = this.apiService.boardGames.list$;
+    this.players$ = this.apiService.players.list$;
   }
 
   ngOnDestroy(): void {

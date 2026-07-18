@@ -39,9 +39,9 @@ export class FilterComponent implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private fb = inject(FormBuilder);
 
-  ogBoardGames$ = this.apiService.boardGameList$;
-  ogPlayers$ = this.apiService.playerList$;
-  tags$ = this.apiService.tagList$;
+  ogBoardGames$ = this.apiService.boardGames.raw$;
+  ogPlayers$ = this.apiService.players.raw$;
+  tags$ = this.apiService.tags.raw$;
 
   dow = DAYS_OF_WEEK;
 
@@ -58,8 +58,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.apiService.dataUpdate$.subscribe(() => {
         this.formGroup.patchValue({
-          boardGameIds: this.apiService.boardGameList.map((x) => x.BoardGameId),
-          playerIds: this.apiService.playerList.map((x) => x.PlayerId),
+          boardGameIds: this.apiService.boardGames.list.map((x) => x.BoardGameId),
+          playerIds: this.apiService.players.list.map((x) => x.PlayerId),
         });
       }),
     );

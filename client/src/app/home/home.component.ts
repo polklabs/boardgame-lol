@@ -28,7 +28,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.clubList$ = this.userService.accessIds$;
-    this.publicClubList$ = this.apiService.publicClubs$;
+    this.publicClubList$ = this.apiService.clubs.list$;
     void this.loadData();
   }
 

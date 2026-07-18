@@ -91,8 +91,8 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
 
   entityType = GameEntity;
 
-  tagList$ = this.apiService.tagList$;
-  boardGameList$ = this.apiService.boardGameList$;
+  tagList$ = this.apiService.tags.raw$;
+  boardGameList$ = this.apiService.boardGames.raw$;
 
   protected selectedPlayerGames: PlayerGameEntity[] = [];
 
@@ -152,8 +152,8 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       this.grabLists();
 
       if (this.isNew) {
-        const firstBoardGame = this.apiService.boardGameList[0];
-        const lastBoardGame = this.apiService.gameList[0]?.BoardGame;
+        const firstBoardGame = this.apiService.boardGames.raw[0];
+        const lastBoardGame = this.apiService.games.raw[0]?.BoardGame;
         this.game.BoardGame = lastBoardGame ?? firstBoardGame ?? null;
         this.game.BoardGameId = this.game.BoardGame?.BoardGameId ?? null;
         this.game.Date = new Date();
@@ -168,7 +168,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       this.formGroup.patchValue(new GameEntity(this.game));
 
       this.subscription = this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
-        this.game!.BoardGame = this.apiService.getBoardGame(value);
+        this.game!.BoardGame = this.apiService.boardGames.getValue(value);
         this.updateScoring();
       });
 
@@ -194,7 +194,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   grabLists() {
-    this.playerGames = this.apiService.playerGameList
+    this.playerGames = this.apiService.playerGames.raw
       .filter((x) => x.GameId === this.game?.GameId)
       .map((m) => new PlayerGameEntity(m, true));
     this.updateScoring();
@@ -341,7 +341,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.playerGameEdit = new PlayerGameEntity({ ClubId: this.game?.ClubId, GameId: '-1' });
       const existingPlayers = new Set(this.playerGames.flatMap((x) => x.Players.map((p) => p.PlayerId)));
-      this.playerGameEdit.Players = [this.apiService.playerList.find((x) => !existingPlayers.has(x.PlayerId))].filter(
+      this.playerGameEdit.Players = [this.apiService.players.raw.find((x) => !existingPlayers.has(x.PlayerId))].filter(
         (x) => x !== undefined,
       );
     }
@@ -439,7 +439,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       const oldDate = format(this.game.Date, 'yyyy-MM-dd');
 
       if (this.isNew || oldDate !== gameData.Date) {
-        gameData.SortIndex = this.apiService.gameList
+        gameData.SortIndex = this.apiService.games.raw
           .filter((x) => x.Date === gameData.Date && x.GameId !== gameData.GameId)
           .reduce((index, game) => Math.max(index, (game.SortIndex ?? 0) + 1), 0);
       } else {

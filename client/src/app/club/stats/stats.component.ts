@@ -80,7 +80,7 @@ export class StatsComponent implements OnInit {
         this.generateRankOverTimeChart(wins, dates);
         this.generateCountByDayChart();
         this.generateCountByMonthChart();
-        this.ShowCharts = this.apiService.gameList.length > 0;
+        this.ShowCharts = this.apiService.games.list.length > 0;
       }),
     );
     this.subscriptions.add(
@@ -114,7 +114,7 @@ export class StatsComponent implements OnInit {
     }
 
     const gameDateMap: Record<string, number> = {};
-    this.apiService.gameList.forEach((g) => {
+    this.apiService.games.list.forEach((g) => {
       const date = `${g.Date}`;
       if (date in gameDateMap) {
         gameDateMap[date] += 1;
@@ -197,14 +197,14 @@ export class StatsComponent implements OnInit {
   }
 
   generateMeters() {
-    const plays = this.apiService.gameList;
+    const plays = this.apiService.games.list;
     this.gameTypeMeterMax = plays.length;
     this.gameTypeMeter[0].value = plays.reduce((prev, curr) => prev + (curr.ScoreType === 'win-lose' ? 1 : 0), 0);
     this.gameTypeMeter[1].value = plays.reduce((prev, curr) => prev + (curr.ScoreType === 'points' ? 1 : 0), 0);
     this.gameTypeMeter[2].value = plays.reduce((prev, curr) => prev + (curr.ScoreType === 'rank' ? 1 : 0), 0);
     this.gameTypeMeter.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
 
-    const boardGames = this.apiService.boardGameList;
+    const boardGames = this.apiService.boardGames.list;
     this.boardGameMeterMax = boardGames.reduce((prev, curr) => prev + curr.PlayCount, 0);
     if (boardGames.length <= COLORS.length) {
       this.boardGameMeter = boardGames
@@ -244,7 +244,7 @@ export class StatsComponent implements OnInit {
 
     pIds.forEach((pId) => {
       this.winsOverTimeData.datasets.push({
-        label: this.apiService.getPlayer(pId)?.Nickname ?? 'Unknown',
+        label: this.apiService.players.getValue(pId)?.Nickname ?? 'Unknown',
         data: wins[pId],
         fill: false,
         stepped: true,
@@ -346,7 +346,7 @@ export class StatsComponent implements OnInit {
 
     pIds.forEach((pId) => {
       this.rankOverTimeData.datasets.push({
-        label: this.apiService.getPlayer(pId)?.Nickname ?? 'Unknown',
+        label: this.apiService.players.getValue(pId)?.Nickname ?? 'Unknown',
         data: wins[pId],
         fill: false,
         tension: 0.4,
@@ -402,17 +402,17 @@ export class StatsComponent implements OnInit {
   generateWins(): [Record<string, number[]>, string[]] {
     const wins: Record<string, number[]> = {};
 
-    if (this.apiService.gameList.length === 0) {
+    if (this.apiService.games.list.length === 0) {
       return [{}, []];
     } else {
       // Continue
     }
 
-    const pIds = this.apiService.playerList.filter((x) => x.IsRealPerson && x.Wins.length > 0).map((x) => x.PlayerId);
+    const pIds = this.apiService.players.list.filter((x) => x.IsRealPerson && x.Wins.length > 0).map((x) => x.PlayerId);
 
     const gameDayDict: Record<string, GameEntity[]> = {};
     const dateSet = new Set<string>();
-    this.apiService.gameList.forEach((g) => {
+    this.apiService.games.list.forEach((g) => {
       const dateStr = format(g.DateObj, 'yyyy-MM-dd');
       dateSet.add(dateStr);
       if (dateStr in gameDayDict) {
@@ -443,13 +443,13 @@ export class StatsComponent implements OnInit {
     const counts: { [scoreType: string]: { [day: string]: number } } = {};
     const countDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-    if (this.apiService.gameList.length === 0) {
+    if (this.apiService.games.list.length === 0) {
       return;
     } else {
       // Continue
     }
 
-    const gameList = this.apiService.gameList;
+    const gameList = this.apiService.games.list;
 
     ScoreTypes.forEach((st) => (counts[st] = {}));
 
@@ -520,13 +520,13 @@ export class StatsComponent implements OnInit {
     const counts: { [scoreType: string]: { [month: string]: number } } = {};
     const countMonths: string[] = [];
 
-    if (this.apiService.gameList.length === 0) {
+    if (this.apiService.games.list.length === 0) {
       return;
     } else {
       // Continue
     }
 
-    const gameList = this.apiService.gameList;
+    const gameList = this.apiService.games.list;
 
     ScoreTypes.forEach((st) => (counts[st] = {}));
 

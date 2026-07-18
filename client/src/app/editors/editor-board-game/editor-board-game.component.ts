@@ -123,7 +123,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
   }
 
   grabLists() {
-    this.tagList$ = this.apiService.tagList$;
+    this.tagList$ = this.apiService.tags.raw$;
   }
 
   updatePrefixSuffix() {
