@@ -30,6 +30,7 @@ export class CalendarComponent<T> extends ControlBase<T, unknown> implements Con
   @Input() icon = '';
   @Input() iconPosition: 'left' | 'right' = 'right';
   @Input() showClear = false;
+  @Input() maxDate = new Date();
 
   get formGroup() {
     return this.formGroupDirective.form;

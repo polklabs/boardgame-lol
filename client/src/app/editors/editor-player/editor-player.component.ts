@@ -91,7 +91,7 @@ export class EditorPlayerComponent implements OnChanges {
   }
 
   grabLists() {
-    this.tagList$ = this.apiService.tagList$;
+    this.tagList$ = this.apiService.tags.raw$;
   }
 
   async submit() {

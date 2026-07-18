@@ -67,6 +67,10 @@ export class BoardGameEntity extends BaseEntity {
     }
   }
 
+  get scoreTypeText() {
+    return ScoreTypeMapping[this.ScoreType];
+  }
+
   @Ignore()
   @MinMax(0, 8, 'array')
   Tags: TagEntity[] = [];
