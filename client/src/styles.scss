@@ -191,6 +191,9 @@ p-select {
 .p-datatable-flex-scrollable > .p-datatable-table-container {
   flex: 0;
 }
+.p-datatable-table .p-datatable-tbody tr td.p-datatable-frozen-column {
+  border-left: solid 1px var(--p-surface-300);
+}
 
 .p-listbox:not(.p-disabled) .p-listbox-option:not(.p-listbox-option-selected):not(.p-disabled):hover {
   background: unset !important;
