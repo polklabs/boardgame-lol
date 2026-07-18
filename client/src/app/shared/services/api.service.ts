@@ -553,11 +553,11 @@ export class ApiService {
         (x) => this.filters.includePlayer(x) && this.filters.includeExcludedTag(x.Tags),
       );
     } else {
-      this.fGameList = this.gameList$.value;
-      this.fBoardGameList = this.boardGameList$.value;
-      this.fPlayerGameList = this.playerGameList$.value;
-      this.fPlayerGamePlayerList = this.playerGamePlayerList$.value;
-      this.fPlayerList = this.playerList$.value;
+      this.fGameList = [...this.gameList$.value];
+      this.fBoardGameList = [...this.boardGameList$.value];
+      this.fPlayerGameList = [...this.playerGameList$.value];
+      this.fPlayerGamePlayerList = [...this.playerGamePlayerList$.value];
+      this.fPlayerList = [...this.playerList$.value];
     }
 
     this.gameList.sort(
