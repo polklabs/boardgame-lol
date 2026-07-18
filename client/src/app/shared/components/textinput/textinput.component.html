@@ -12,6 +12,7 @@
     id="{{ formControlName }}"
     type="{{ inputType }}"
     pInputText
+    [pAutoFocus]="autoFocus"
     formControlName="{{ formControlName }}"
     [value]="formGroup.value[formControlName]"
     [ngClass]="{ 'ng-invalid ng-dirty': ControlWrapper.isFieldInvalid() }" />

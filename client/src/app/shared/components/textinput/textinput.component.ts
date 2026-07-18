@@ -10,10 +10,11 @@ import {
 import { InputTextModule } from 'primeng/inputtext';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { ControlBase } from '../../models/control.base';
+import { AutoFocusModule } from 'primeng/autofocus';
 
 @Component({
   selector: 'app-textinput',
-  imports: [InputTextModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
+  imports: [InputTextModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent, AutoFocusModule],
   templateUrl: './textinput.component.html',
   styleUrl: './textinput.component.scss',
   providers: [

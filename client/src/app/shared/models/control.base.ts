@@ -7,6 +7,7 @@ export abstract class ControlBase<T, K> {
   @Input() label?: string;
   @Input() entityType!: new (partial: Partial<T>) => T;
   @Input() hiddenFields = new Set<string>();
+  @Input() autoFocus = false;
   @Input() options$?: Observable<K[]>;
   @Input() options?: K[] = [];
   @Input() optionLabel?: keyof K & string;
