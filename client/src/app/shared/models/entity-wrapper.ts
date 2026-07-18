@@ -41,7 +41,7 @@ export class EntityWrapper<T extends BaseEntity> {
     this.keyFunc = (obj) => this.primaryKeys.map((k) => obj[k]).join(';');
   }
 
-  getValue(...ids: string[]): T | null {
+  getOne(...ids: string[]): T | null {
     const key = ids.join(';');
     if (key && key in this._dict) {
       return this._dict[key];
@@ -64,22 +64,22 @@ export class EntityWrapper<T extends BaseEntity> {
     this._list$.next([]);
   }
 
-  deleteEntry(...ids: string[]) {
+  deleteOne(...ids: string[]) {
     const key = ids.join(';');
     const list = this.raw.filter((x) => this.keyFunc(x) !== key);
     this._raw$.next(list);
     this._list$.next(list);
   }
 
-  deleteEntries(toDelete: (item: T) => boolean) {
-    this.upsertEntry([], toDelete);
+  deleteMany(toDelete: (item: T) => boolean) {
+    this.upsert([], toDelete);
   }
 
-  overwriteEntries(items: T | T[]) {
-    this.upsertEntry(items, () => true, true);
+  overwriteAll(items: T | T[]) {
+    this.upsert(items, () => true, true);
   }
 
-  upsertEntry(items: T | T[], toDelete?: (item: T) => boolean, clear = false): void {
+  upsert(items: T | T[], toDelete?: (item: T) => boolean, clear = false): void {
     items = (Array.isArray(items) ? items : [items]).map((x) => new this.entityType(x));
     const baseList = toDelete ? this.raw.filter((x) => !toDelete(x)) : this.raw;
     const list = clear ? [] : baseList;

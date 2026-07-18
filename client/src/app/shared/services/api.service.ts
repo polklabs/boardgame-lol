@@ -85,7 +85,7 @@ export class ApiService {
       return;
     }
 
-    this.clubs.overwriteEntries(data);
+    this.clubs.overwriteAll(data);
     this.calculatedFields();
   }
 
@@ -108,16 +108,16 @@ export class ApiService {
     }
 
     this.club = data.Club;
-    this.boardGames.overwriteEntries(data.BoardGames);
-    this.games.overwriteEntries(data.Games);
-    this.playerGames.overwriteEntries(data.PlayerGames);
-    this.playerGamePlayers.overwriteEntries(data.PlayerGamePlayers);
-    this.tags.overwriteEntries(data.Tags);
-    this.tagBoardGames.overwriteEntries(data.TagBoardGames);
-    this.tagGames.overwriteEntries(data.TagGames);
-    this.tagPlayers.overwriteEntries(data.TagPlayers);
-    this.tagPlayerGames.overwriteEntries(data.TagPlayerGames);
-    this.players.overwriteEntries(data.Players);
+    this.boardGames.overwriteAll(data.BoardGames);
+    this.games.overwriteAll(data.Games);
+    this.playerGames.overwriteAll(data.PlayerGames);
+    this.playerGamePlayers.overwriteAll(data.PlayerGamePlayers);
+    this.tags.overwriteAll(data.Tags);
+    this.tagBoardGames.overwriteAll(data.TagBoardGames);
+    this.tagGames.overwriteAll(data.TagGames);
+    this.tagPlayers.overwriteAll(data.TagPlayers);
+    this.tagPlayerGames.overwriteAll(data.TagPlayerGames);
+    this.players.overwriteAll(data.Players);
     this.updateReferences();
     this.dataUpdate$.next();
   }
@@ -133,7 +133,7 @@ export class ApiService {
     if (result) {
       this.unloadClub();
       this.club = result;
-      this.clubs.upsertEntry(result);
+      this.clubs.upsert(result);
       this.updateReferences();
       return true;
     } else {
@@ -150,18 +150,18 @@ export class ApiService {
     }
 
     if (result) {
-      this.games.upsertEntry(result.Game);
+      this.games.upsert(result.Game);
 
-      this.playerGames.upsertEntry(result.PlayerGames, (x) => x.GameId === result.Game.GameId);
-      this.playerGamePlayers.upsertEntry(result.PlayerGamePlayers, (x) => x.GameId === result.Game.GameId);
-      this.tagGames.upsertEntry(result.TagGames, (x) => x.GameId === result.Game.GameId);
+      this.playerGames.upsert(result.PlayerGames, (x) => x.GameId === result.Game.GameId);
+      this.playerGamePlayers.upsert(result.PlayerGamePlayers, (x) => x.GameId === result.Game.GameId);
+      this.tagGames.upsert(result.TagGames, (x) => x.GameId === result.Game.GameId);
 
       const playerGameIds = this.playerGames.primaryIdSet;
-      this.tagPlayerGames.upsertEntry(result.TagPlayerGames, (x) => playerGameIds.has(x.PlayerGameId));
+      this.tagPlayerGames.upsert(result.TagPlayerGames, (x) => playerGameIds.has(x.PlayerGameId));
 
       this.updateReferences();
       this.dataUpdate$.next();
-      return this.games.getValue(result.Game.GameId);
+      return this.games.getOne(result.Game.GameId);
     } else {
       return null;
     }
@@ -176,8 +176,8 @@ export class ApiService {
     }
 
     if (result) {
-      this.players.upsertEntry(result.Player);
-      this.tagPlayers.upsertEntry(result.TagPlayers, (x) => x.PlayerId === result.Player.PlayerId);
+      this.players.upsert(result.Player);
+      this.tagPlayers.upsert(result.TagPlayers, (x) => x.PlayerId === result.Player.PlayerId);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -195,8 +195,8 @@ export class ApiService {
     }
 
     if (result) {
-      this.boardGames.upsertEntry(result.BoardGame);
-      this.tagBoardGames.upsertEntry(result.TagBoardGames, (x) => x.BoardGameId === result.BoardGame.BoardGameId);
+      this.boardGames.upsert(result.BoardGame);
+      this.tagBoardGames.upsert(result.TagBoardGames, (x) => x.BoardGameId === result.BoardGame.BoardGameId);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -214,7 +214,7 @@ export class ApiService {
     }
 
     if (result) {
-      this.tags.upsertEntry(result);
+      this.tags.upsert(result);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -234,13 +234,13 @@ export class ApiService {
     const result = await this.httpService.delete(['api', 'game', this.clubId, gameId]);
 
     if (result) {
-      this.games.deleteEntry(gameId);
-      this.playerGames.deleteEntries((x) => x.GameId === gameId);
-      this.playerGamePlayers.deleteEntries((x) => x.GameId === gameId);
-      this.tagGames.deleteEntries((x) => x.GameId === gameId);
+      this.games.deleteOne(gameId);
+      this.playerGames.deleteMany((x) => x.GameId === gameId);
+      this.playerGamePlayers.deleteMany((x) => x.GameId === gameId);
+      this.tagGames.deleteMany((x) => x.GameId === gameId);
 
       const playerGameIds = this.playerGames.primaryIdSet;
-      this.tagPlayerGames.deleteEntries((x) => !playerGameIds.has(x.PlayerGameId));
+      this.tagPlayerGames.deleteMany((x) => !playerGameIds.has(x.PlayerGameId));
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -256,7 +256,7 @@ export class ApiService {
     );
 
     if (result) {
-      this.games.upsertEntry(result);
+      this.games.upsert(result);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -276,9 +276,9 @@ export class ApiService {
     const result = await this.httpService.delete(['api', 'player', this.clubId, playerId]);
 
     if (result) {
-      this.players.deleteEntry(playerId);
+      this.players.deleteOne(playerId);
       const playerIds = this.players.primaryIdSet;
-      this.playerGamePlayers.deleteEntries((x) => !playerIds.has(x.PlayerId));
+      this.playerGamePlayers.deleteMany((x) => !playerIds.has(x.PlayerId));
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -298,12 +298,12 @@ export class ApiService {
     const result = await this.httpService.delete(['api', 'board-game', this.clubId, boardGameId]);
 
     if (result) {
-      this.boardGames.deleteEntry(boardGameId);
-      this.games.deleteEntries((x) => x.BoardGameId === boardGameId);
-      this.playerGames.deleteEntries((x) => x.Game?.BoardGameId === boardGameId);
+      this.boardGames.deleteOne(boardGameId);
+      this.games.deleteMany((x) => x.BoardGameId === boardGameId);
+      this.playerGames.deleteMany((x) => x.Game?.BoardGameId === boardGameId);
 
       const playerGameIds = this.playerGames.primaryIdSet;
-      this.playerGamePlayers.deleteEntries((x) => !playerGameIds.has(x.PlayerGameId));
+      this.playerGamePlayers.deleteMany((x) => !playerGameIds.has(x.PlayerGameId));
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -323,12 +323,12 @@ export class ApiService {
     const result = await this.httpService.delete(['api', 'tag', this.clubId, tagId]);
 
     if (result) {
-      this.tags.deleteEntry(tagId);
+      this.tags.deleteOne(tagId);
       const tagIds = this.tags.primaryIdSet;
-      this.tagBoardGames.deleteEntries((x) => !tagIds.has(x.TagId));
-      this.tagGames.deleteEntries((x) => !tagIds.has(x.TagId));
-      this.tagPlayerGames.deleteEntries((x) => !tagIds.has(x.TagId));
-      this.tagPlayers.deleteEntries((x) => !tagIds.has(x.TagId));
+      this.tagBoardGames.deleteMany((x) => !tagIds.has(x.TagId));
+      this.tagGames.deleteMany((x) => !tagIds.has(x.TagId));
+      this.tagPlayerGames.deleteMany((x) => !tagIds.has(x.TagId));
+      this.tagPlayers.deleteMany((x) => !tagIds.has(x.TagId));
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -390,26 +390,26 @@ export class ApiService {
     }
 
     this.tagBoardGames.list.forEach((t) => {
-      t.Tag = this.tags.getValue(t.TagId);
+      t.Tag = this.tags.getOne(t.TagId);
     });
 
     this.tagGames.list.forEach((t) => {
-      t.Tag = this.tags.getValue(t.TagId);
+      t.Tag = this.tags.getOne(t.TagId);
     });
 
     this.tagPlayers.list.forEach((t) => {
-      t.Tag = this.tags.getValue(t.TagId);
+      t.Tag = this.tags.getOne(t.TagId);
     });
 
     this.tagPlayerGames.list.forEach((t) => {
-      t.Tag = this.tags.getValue(t.TagId);
+      t.Tag = this.tags.getOne(t.TagId);
     });
 
     this.games.sort(
       (a, b) => a.Date.toString().localeCompare(b.Date.toString()) || (a.SortIndex ?? 0) - (b.SortIndex ?? 0),
     );
     this.games.list.forEach((game) => {
-      game.BoardGame = this.boardGames.getValue(game.BoardGameId);
+      game.BoardGame = this.boardGames.getOne(game.BoardGameId);
       game.Scores = this.playerGames.list
         .filter((x) => x.GameId === game.GameId)
         .toSorted((a, b) => {
@@ -431,9 +431,9 @@ export class ApiService {
 
     this.playerGames.list.forEach((pg) => {
       pg.PlayerLinks = this.playerGamePlayers.list.filter((x) => x.PlayerGameId === pg.PlayerGameId);
-      pg.Players = pg.PlayerLinks.map((p) => this.players.getValue(p.PlayerId)).filter((x) => x !== null);
+      pg.Players = pg.PlayerLinks.map((p) => this.players.getOne(p.PlayerId)).filter((x) => x !== null);
       pg.PlayerIds = new Set(pg.Players.map((x) => x.PlayerId));
-      pg.Game = this.games.getValue(pg.GameId);
+      pg.Game = this.games.getOne(pg.GameId);
       pg.Tags = this.tagPlayerGames.list
         .filter((x) => x.PlayerGameId === pg.PlayerGameId)
         .map((t) => t.Tag)

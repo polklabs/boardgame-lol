@@ -244,7 +244,7 @@ export class StatsComponent implements OnInit {
 
     pIds.forEach((pId) => {
       this.winsOverTimeData.datasets.push({
-        label: this.apiService.players.getValue(pId)?.Nickname ?? 'Unknown',
+        label: this.apiService.players.getOne(pId)?.Nickname ?? 'Unknown',
         data: wins[pId],
         fill: false,
         stepped: true,
@@ -346,7 +346,7 @@ export class StatsComponent implements OnInit {
 
     pIds.forEach((pId) => {
       this.rankOverTimeData.datasets.push({
-        label: this.apiService.players.getValue(pId)?.Nickname ?? 'Unknown',
+        label: this.apiService.players.getOne(pId)?.Nickname ?? 'Unknown',
         data: wins[pId],
         fill: false,
         tension: 0.4,
@@ -518,7 +518,7 @@ export class StatsComponent implements OnInit {
 
   generateCountByMonthChart() {
     const counts: { [scoreType: string]: { [month: string]: number } } = {};
-    const countMonths: string[] = [];
+    const countMonths: string[] = new Array(12).fill(0).map((_, i) => format(new Date(2000, i, 1), 'MMM'));
 
     if (this.apiService.games.list.length === 0) {
       return;
@@ -531,12 +531,7 @@ export class StatsComponent implements OnInit {
     ScoreTypes.forEach((st) => (counts[st] = {}));
 
     gameList.forEach((game) => {
-      const month = format(game.DateObj, 'MMM yyyy');
-      if (countMonths.includes(month) === false) {
-        countMonths.push(month);
-      } else {
-        // Continue
-      }
+      const month = format(game.DateObj, 'MMM');
       const scoreTypeCount = counts[game.ScoreType];
       if (scoreTypeCount[month] === undefined) {
         scoreTypeCount[month] = 1;

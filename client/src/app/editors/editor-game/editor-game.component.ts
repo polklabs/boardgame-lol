@@ -168,7 +168,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       this.formGroup.patchValue(new GameEntity(this.game));
 
       this.subscription = this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
-        this.game!.BoardGame = this.apiService.boardGames.getValue(value);
+        this.game!.BoardGame = this.apiService.boardGames.getOne(value);
         this.updateScoring();
       });
 
