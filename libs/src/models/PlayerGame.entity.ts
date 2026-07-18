@@ -42,7 +42,7 @@ export class PlayerGameEntity extends BaseEntity {
   /** Use when comparing point values */
   get VirtualPoints() {
     if (this.Points === null) {
-      return null;
+      return 0;
     } else {
       return this.Points * 2 + (this.TieBreaker ? 1 : 0);
     }
