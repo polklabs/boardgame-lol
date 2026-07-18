@@ -10,10 +10,11 @@ import {
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { SelectModule } from 'primeng/select';
 import { ControlBase } from '../../models/control.base';
+import { SortPipe } from "../../pipes/sort.pipe";
 
 @Component({
   selector: 'app-dropdown',
-  imports: [SelectModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent],
+  imports: [SelectModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent, SortPipe],
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.scss',
   providers: [

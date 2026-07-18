@@ -10,7 +10,7 @@
     #dropdown
     inputId="{{ formControlName }}"
     formControlName="{{ formControlName }}"
-    [options]="options$ ? (options$ | async) ?? [] : options ?? []"
+    [options]="(options$ ? (options$ | async) ?? [] : options ?? []) | sort: optionLabel"
     [optionLabel]="optionLabel"
     [optionValue]="optionValue"
     [maxSelectedLabels]="maxSelectedLabels === -1 ? selectionLimit : maxSelectedLabels"

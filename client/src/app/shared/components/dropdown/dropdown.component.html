@@ -9,7 +9,7 @@
   <p-select
     inputId="{{ formControlName }}"
     formControlName="{{ formControlName }}"
-    [options]="options$ ? (options$ | async) ?? [] : options ?? []"
+    [options]="(options$ ? (options$ | async) ?? [] : options ?? []) | sort: optionLabel"
     [showClear]="showClear"
     [filter]="showFilter"
     (onChange)="onModelChange($event.value)"
