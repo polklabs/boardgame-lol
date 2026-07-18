@@ -61,16 +61,20 @@
           </div>
         }
       </div>
+    </div>
 
-      @if (gameTypeMeter.length > 0) {
+    @if (gameTypeMeter.length > 0) {
+      <div class="card">
         <h3 style="text-align: center">Scoring Types</h3>
         <p-metergroup [value]="gameTypeMeter" [max]="gameTypeMeterMax" />
-      }
-      @if (boardGameMeter.length > 0) {
+      </div>
+    }
+    @if (boardGameMeter.length > 0) {
+      <div class="card">
         <h3 style="text-align: center">Games</h3>
         <p-metergroup [value]="boardGameMeter" [max]="boardGameMeterMax" />
-      }
-    </div>
+      </div>
+    }
 
     @if (ShowCharts) {
       @if (rankOverTimeOptions) {
