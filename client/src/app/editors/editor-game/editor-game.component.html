@@ -21,7 +21,7 @@
   [draggable]="false"
   position="bottom">
   <div class="form" #gameEditDialog>
-    <form [formGroup]="formGroup" (ngSubmit)="submit()">
+    <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
       <!-- BoardGame -->
       <div class="flex gap-4 justify-content-space-between">
         <app-dropdown
@@ -113,7 +113,8 @@
       </div>
       <div>
         <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-        <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+        <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
+        <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
       </div>
     </div>
   </div>

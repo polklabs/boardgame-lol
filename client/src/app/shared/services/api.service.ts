@@ -284,7 +284,7 @@ export class ApiService {
     }
   }
 
-  async postGame(isNew: boolean, data: GameEntity) {
+  async postGame(isNew: boolean, data: GameEntity): Promise<GameEntity | null> {
     let result: GameReturn | null = null;
     if (isNew) {
       result = await this.httpService.put(['api', 'game'], data);
@@ -321,9 +321,9 @@ export class ApiService {
       );
       this.updateReferences();
       this.dataUpdate$.next();
-      return true;
+      return this.getGame(result.Game.GameId);
     } else {
-      return false;
+      return null;
     }
   }
 

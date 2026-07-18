@@ -131,7 +131,15 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ('game' in changes && this.game) {
+    if ('game' in changes) {
+      this.updateEditor();
+    } else {
+      // Skip
+    }
+  }
+
+  updateEditor(): void {
+    if (this.game) {
       this.game = new GameEntity(this.game, true);
       if (this.game.GameId === '') {
         this.title = 'New Play';
@@ -421,7 +429,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  async submit() {
+  async submit(close: boolean) {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.game) {
       return;
@@ -444,7 +452,13 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       const result = await this.apiService.postGame(this.game.GameId === '', game);
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Play' });
-        this.closeEditor.emit();
+        this.game = result;
+        this.updateEditor();
+        if (close) {
+          this.closeEditor.emit();
+        } else {
+          // Stay
+        }
       } else {
         // Do nothing
       }
