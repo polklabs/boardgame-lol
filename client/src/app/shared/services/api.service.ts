@@ -571,10 +571,11 @@ export class ApiService {
           switch (game?.BoardGame?.ScoreType) {
             case 'rank':
               return (a.Points ?? Infinity) - (b.Points ?? Infinity);
-            case 'win-lose':
             case 'points':
-            default:
               return (b.VirtualPoints ?? 0) - (a.VirtualPoints ?? 0);
+            case 'win-lose':
+            default:
+              return (b.Points ?? 0) - (a.Points ?? 0);
           }
         });
       game.Tags = this.tagGameList
