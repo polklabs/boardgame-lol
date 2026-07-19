@@ -8,12 +8,20 @@
   [draggable]="false"
   appendTo="body"
   position="bottom">
-  <div class="flex gap-8">
-    @for (t of tags$ | async; track t) {
-      <app-tag (click)="editTag(t)" [tag]="t"></app-tag>
+  <div class="flex-column gap-8">
+    @for (kv of tags | keyvalue | sort: 'key'; track kv.key) {
+      <p-fieldset [legend]="kv.key">
+        <div class="flex gap-8">
+          @for (t of kv.value | sort: 'Text'; track t) {
+            <app-tag (click)="editTag(t)" [tag]="t"></app-tag>
+          }
+        </div>
+      </p-fieldset>
     }
+
     <app-tag (click)="newTag()" [tag]="addTagTag" icon="pi pi-plus"></app-tag>
   </div>
+
   @if (formGroup && tag) {
     <div class="tag-display items-center">
       <p-tag

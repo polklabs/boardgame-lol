@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -7,18 +7,34 @@ import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { buildForm } from '../../shared/form.utils';
-import { AsyncPipe } from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { TagComponent } from '../../shared/components/tag/tag.component';
 import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { FieldsetModule } from 'primeng/fieldset';
+import { SortPipe } from "../../shared/pipes/sort.pipe";
 
 type EntityType = TagEntity;
+
+const TAG_KEYS: (keyof TagEntity)[] = [
+  'DisplayOnBoardGames',
+  'DisplayOnGames',
+  'DisplayOnPlayerGames',
+  'DisplayOnPlayers',
+] as const;
+
+const TAG_KEY_DISPLAY: Record<string, string> = {
+  DisplayOnBoardGames: 'BoardGames',
+  DisplayOnGames: 'Plays',
+  DisplayOnPlayerGames: 'Play Scores',
+  DisplayOnPlayers: 'Players',
+};
 
 @Component({
   selector: 'app-editor-tags',
   imports: [
-    AsyncPipe,
+    KeyValuePipe,
     TagModule,
     ColorPickerModule,
     DialogModule,
@@ -27,12 +43,14 @@ type EntityType = TagEntity;
     FormsModule,
     ReactiveFormsModule,
     TagComponent,
-    CheckboxComponent
-  ],
+    CheckboxComponent,
+    FieldsetModule,
+    SortPipe
+],
   templateUrl: './editor-tags.component.html',
   styleUrl: './editor-tags.component.scss',
 })
-export class EditorTagsComponent {
+export class EditorTagsComponent implements OnInit {
   private fb = inject(FormBuilder);
   private apiService = inject(ApiService);
   private messageService = inject(MessageService);
@@ -57,7 +75,7 @@ export class EditorTagsComponent {
   isNew = false;
   addTagTag = new TagEntity({ Text: 'Add New', Color: '#334155', BackgroundColor: '#ffffff' });
 
-  tags$ = this.apiService.tags.raw$;
+  tags: Record<string, TagEntity[]> = {};
 
   tag?: TagEntity;
   entityType = TagEntity;
@@ -66,6 +84,28 @@ export class EditorTagsComponent {
   hideFields: Set<keyof EntityType> = new Set();
 
   bgColor = '';
+
+  ngOnInit(): void {
+    this.apiService.tags.raw$.subscribe((tags) => {
+      this.tags = {};
+      tags.forEach((tag) => {
+        const keys = TAG_KEYS.filter((k) => tag[k] === true);
+        let key;
+        if (keys.length >= 4) {
+          key = 'All';
+        } else if (keys.length > 1) {
+          key = 'Assorted';
+        } else {
+          key = keys.map((x) => TAG_KEY_DISPLAY[x]).join(' & ');
+        }
+        if (key in this.tags) {
+          this.tags[key].push(tag);
+        } else {
+          this.tags[key] = [tag];
+        }
+      });
+    });
+  }
 
   editTag(tag: TagEntity) {
     this.buildForm(tag);
