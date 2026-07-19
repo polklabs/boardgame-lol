@@ -27,6 +27,12 @@ export class TagEntity extends BaseEntity implements ITag {
   @Sanitize()
   Text: string = '';
 
+  // Tag restrictions
+  DisplayOnBoardGames = true;
+  DisplayOnGames = true;
+  DisplayOnPlayerGames = true;
+  DisplayOnPlayers = true;
+
   constructor(partial: Partial<TagEntity> = {}, copyIgnored = false) {
     super(partial, TagEntity);
     this.assign(partial, TagEntity, copyIgnored);
