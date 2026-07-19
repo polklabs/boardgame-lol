@@ -11,6 +11,7 @@ import { AsyncPipe } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { TagComponent } from '../../shared/components/tag/tag.component';
+import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 
 type EntityType = TagEntity;
 
@@ -26,6 +27,7 @@ type EntityType = TagEntity;
     FormsModule,
     ReactiveFormsModule,
     TagComponent,
+    CheckboxComponent
   ],
   templateUrl: './editor-tags.component.html',
   styleUrl: './editor-tags.component.scss',
@@ -86,8 +88,6 @@ export class EditorTagsComponent {
     this.hideFields = new Set();
     this.formGroup = buildForm(this.fb, this.entityType, new TagEntity());
 
-    // this.getControl('Color')?.addValidators(Validators.pattern(/^#[0-9a-fA-F]{6}$/).bind(this));
-
     this.formGroup.patchValue(new TagEntity(this.tag));
 
     this.updateColor();
@@ -124,7 +124,6 @@ export class EditorTagsComponent {
   }
 
   async submit() {
-    console.log(this.formGroup.getRawValue());
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.tag) {
       return;

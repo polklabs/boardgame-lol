@@ -159,6 +159,19 @@ form {
   }
 }
 
+.checkbox-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 0.8rem;
+  h3 {
+    margin-bottom: 0;
+  }
+  .checkbox-wrapper {
+    margin: 0 !important;
+  }
+}
+
 p-select {
   max-width: calc(100vw - 75px);
   .p-select {
