@@ -47,7 +47,7 @@
         [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
         <ng-template #header>
           <div class="order-list-header flex justify-content-space-between">
-            <div class="p-orderlist-title">{{game?.BoardGame?.scoreTypeText ?? ''}} Scores</div>
+            <div class="p-orderlist-title">{{ game?.BoardGame?.scoreTypeText ?? '' }} Scores</div>
             <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
           </div>
           <div #addPointGroup class="add-point-group">
@@ -99,6 +99,7 @@
       <app-tags
         formControlName="Tags"
         label="Tags"
+        editorValue="DisplayOnGames"
         [entityType]="entityType"
         [hiddenFields]="hideFields"
         [options$]="tagList$"></app-tags>

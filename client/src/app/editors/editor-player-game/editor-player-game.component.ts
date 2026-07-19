@@ -138,7 +138,7 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
   }
 
   setTitle() {
-    this.title = `${this.playerGame?.PlayerGameId === '' ? 'Add' : 'Edit'} ${this.getValue('Team') ? 'Team' : 'Player'}`;
+    this.title = `${this.playerGame?.PlayerGameId === '' ? 'Add' : 'Edit'} ${this.getValue('Team') ? 'Team Score' : 'Score'}`;
   }
 
   addPlayer() {

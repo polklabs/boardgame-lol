@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, forwardRef, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroupDirective,
@@ -14,6 +14,7 @@ import { MultiSelectFocusEvent, MultiSelectModule } from 'primeng/multiselect';
 import { TagComponent } from '../tag/tag.component';
 import { EditorTagsComponent } from '../../../editors/editor-tags/editor-tags.component';
 import { ControlBase } from '../../models/control.base';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tags',
@@ -37,21 +38,66 @@ import { ControlBase } from '../../models/control.base';
     },
   ],
 })
-export class TagsComponent<T> extends ControlBase<T, unknown> implements ControlValueAccessor {
+export class TagsComponent<T> extends ControlBase<T, TagEntity> implements ControlValueAccessor, OnChanges, OnDestroy {
   private formGroupDirective = inject(FormGroupDirective);
 
   @Input() showClear = false;
+  @Input() editorValue: (keyof TagEntity & string) | '' = '';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();
 
+  tagOptions: TagEntity[] = [];
+
   editorTagsVisible = false;
+
+  subscriptions = new Subscription();
 
   private onChange: (value: TagEntity[]) => void = () => {};
   private onTouched: () => void = () => {};
 
   get formGroup() {
     return this.formGroupDirective.form;
+  }
+
+  ngOnChanges(): void {
+    if (this.options$) {
+      this.subscriptions.add(
+        this.options$.subscribe((options) => {
+          this.tagOptions = options;
+          this.updateTagOptions();
+        }),
+      );
+    } else {
+      this.tagOptions = this.options ?? [];
+      this.updateTagOptions();
+    }
+  }
+
+  updateTagOptions() {
+    if (this.editorValue === '') {
+      // Skip filter
+    } else {
+      this.tagOptions = this.tagOptions.filter((x) => x[this.editorValue as keyof TagEntity]);
+    }
+
+    const value = this.formGroup.controls[this.formControlName].value;
+    if (Array.isArray(value)) {
+      (value as TagEntity[]).forEach((t) => {
+        if (this.tagOptions.includes(t)) {
+          // Continue
+        } else {
+          this.tagOptions.push(t);
+        }
+      });
+    } else {
+      // Skip
+    }
+    this.tagOptions.sort((a, b) => a.Text.localeCompare(b.Text));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   writeValue(): void {
