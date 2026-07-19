@@ -98,7 +98,15 @@ export class EditorClubComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ('club' in changes && this.club) {
+    if ('club' in changes) {
+      this.updateEditor();
+    } else {
+      this.closeEditor.emit();
+    }
+  }
+
+  updateEditor(): void {
+    if (this.club) {
       if (this.club.ClubId === '') {
         this.title = 'New Club';
         this.isNew = true;
@@ -139,7 +147,7 @@ export class EditorClubComponent implements OnChanges {
     }
   }
 
-  async submit() {
+  async submit(close: boolean) {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.club) {
       return;
@@ -150,7 +158,13 @@ export class EditorClubComponent implements OnChanges {
       );
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Club' });
-        this.closeEditor.emit();
+
+        if (close) {
+          this.closeEditor.emit();
+        } else {
+          this.club = result;
+          this.updateEditor();
+        }
       } else {
         // Do nothing
       }

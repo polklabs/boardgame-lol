@@ -134,7 +134,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
     if ('game' in changes) {
       this.updateEditor();
     } else {
-      // Skip
+      this.closeEditor.emit();
     }
   }
 
@@ -452,12 +452,12 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       const result = await this.apiService.postGame(this.game.GameId === '', game);
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Play' });
-        this.game = result;
-        this.updateEditor();
+
         if (close) {
           this.closeEditor.emit();
         } else {
-          // Stay
+          this.game = result;
+          this.updateEditor();
         }
       } else {
         // Do nothing

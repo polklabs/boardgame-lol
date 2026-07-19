@@ -55,7 +55,6 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
 
   @Input() editorVisible = false;
   @Input() boardGame?: BoardGameEntity;
-  @Input() standalone = true;
   @Output() closeEditor = new EventEmitter<BoardGameEntity>();
   @Output() deleteEntity = new EventEmitter<BoardGameEntity>();
 
@@ -75,7 +74,15 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
   subscriptions = new Subscription();
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ('boardGame' in changes && this.boardGame) {
+    if ('boardGame' in changes) {
+      this.updateEditor();
+    } else {
+      this.closeEditor.emit();
+    }
+  }
+
+  updateEditor(): void {
+    if (this.boardGame) {
       if (this.boardGame.BoardGameId === '') {
         this.title = 'New BoardGame';
         this.isNew = true;
@@ -137,24 +144,26 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
     }
   }
 
-  async submit() {
+  async submit(close: boolean) {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.boardGame) {
       return;
-    } else if (this.standalone) {
+    } else {
       const result = await this.apiService.postBoardGame(
         this.boardGame.BoardGameId === '',
         new BoardGameEntity(this.formGroup.getRawValue()),
       );
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved BoardGame' });
-        this.closeEditor.emit();
+        if (close) {
+          this.closeEditor.emit();
+        } else {
+          this.boardGame = result;
+          this.updateEditor();
+        }
       } else {
         // Do nothing
       }
-    } else {
-      Object.assign(this.boardGame, this.formGroup.getRawValue());
-      this.closeEditor.emit(this.boardGame);
     }
   }
 
@@ -168,17 +177,13 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
         rejectIcon: 'none',
         rejectButtonStyleClass: 'p-button-text',
         accept: async () => {
-          if (this.standalone) {
-            const result = await this.apiService.deleteBoardGame(this.boardGame!.BoardGameId);
-            if (result) {
-              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted BoardGame' });
-              this.closeEditor.emit();
-              this.router.navigateByUrl(`/club/${this.apiService.club?.ClubId}`);
-            } else {
-              // Do nothing
-            }
+          const result = await this.apiService.deleteBoardGame(this.boardGame!.BoardGameId);
+          if (result) {
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted BoardGame' });
+            this.closeEditor.emit();
+            this.router.navigateByUrl(`/club/${this.apiService.club?.ClubId}`);
           } else {
-            this.deleteEntity.emit(this.boardGame);
+            // Do nothing
           }
         },
       });

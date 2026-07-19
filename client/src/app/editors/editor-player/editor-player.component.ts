@@ -64,7 +64,15 @@ export class EditorPlayerComponent implements OnChanges {
   tagList$: Observable<TagEntity[]> = of([]);
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ('player' in changes && this.player) {
+    if ('player' in changes) {
+      this.updateEditor();
+    } else {
+      this.closeEditor.emit();
+    }
+  }
+
+  updateEditor(): void {
+    if (this.player) {
       if (this.player.PlayerId === '') {
         this.title = 'New Player';
         this.isNew = true;
@@ -94,24 +102,27 @@ export class EditorPlayerComponent implements OnChanges {
     this.tagList$ = this.apiService.tags.raw$;
   }
 
-  async submit() {
+  async submit(close: boolean) {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.player) {
       return;
-    } else if (this.standalone) {
+    } else {
       const result = await this.apiService.postPlayer(
         this.player.PlayerId === '',
         new PlayerEntity(this.formGroup.getRawValue()),
       );
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Player' });
-        this.closeEditor.emit();
+
+        if (close) {
+          this.closeEditor.emit();
+        } else {
+          this.player = result;
+          this.updateEditor();
+        }
       } else {
         // Do nothing
       }
-    } else {
-      Object.assign(this.player, this.formGroup.getRawValue());
-      this.closeEditor.emit(this.player);
     }
   }
 

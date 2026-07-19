@@ -8,7 +8,7 @@
   position="bottom">
   @if (formGroup && boardGame) {
     <div class="form">
-      <form [formGroup]="formGroup" (ngSubmit)="submit()">
+      <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
         <app-textinput formControlName="Name" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
         <app-dropdown
           formControlName="ScoreType"
@@ -57,7 +57,8 @@
           </div>
           <div>
             <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-            <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+            <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
+            <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
           </div>
         </div>
       </form>

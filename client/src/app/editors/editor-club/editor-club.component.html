@@ -9,7 +9,7 @@
   position="bottom">
   @if (formGroup && club) {
     <div class="form">
-      <form [formGroup]="formGroup" (ngSubmit)="submit()">
+      <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
         <app-club-title
           [color]="formGroup.value.Color"
           [bgColor]="bgColor"
@@ -61,13 +61,14 @@
 
         <div class="dialog-footer">
           <div>
-            @if ((adminIds | async)?.includes(club.ClubId)) {
+            @if (club && (adminIds | async)?.includes(club.ClubId)) {
               <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
             }
           </div>
           <div>
             <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-            <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+            <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
+            <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
           </div>
         </div>
       </form>

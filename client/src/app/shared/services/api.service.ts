@@ -135,9 +135,9 @@ export class ApiService {
       this.club = result;
       this.clubs.upsert(result);
       this.updateReferences();
-      return true;
+      return this.clubs.getOne(result.ClubId);
     } else {
-      return false;
+      return null;
     }
   }
 
@@ -180,9 +180,9 @@ export class ApiService {
       this.tagPlayers.upsert(result.TagPlayers, (x) => x.PlayerId === result.Player.PlayerId);
       this.updateReferences();
       this.dataUpdate$.next();
-      return true;
+      return this.players.getOne(result.Player.PlayerId);
     } else {
-      return false;
+      return null;
     }
   }
 
@@ -199,9 +199,9 @@ export class ApiService {
       this.tagBoardGames.upsert(result.TagBoardGames, (x) => x.BoardGameId === result.BoardGame.BoardGameId);
       this.updateReferences();
       this.dataUpdate$.next();
-      return true;
+      return this.boardGames.getOne(result.BoardGame.BoardGameId);
     } else {
-      return false;
+      return null;
     }
   }
 
