@@ -30,7 +30,7 @@ import { TagManager } from './managers/Tag.manager';
 import { PlayerGamePlayerManager } from './managers/PlayerGamePlayer.manager';
 
 const publicThrottle = { default: { limit: 200, ttl: 600000 } };
-const authThrottle = { default: { limit: 15, ttl: 30000 } };
+const authThrottle = { default: { limit: 30, ttl: 30000 } };
 
 @Controller('api')
 @UseGuards(ThrottlerBehindProxyGuard)
