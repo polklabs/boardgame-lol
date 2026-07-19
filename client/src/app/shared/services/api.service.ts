@@ -405,9 +405,7 @@ export class ApiService {
       t.Tag = this.tags.getOne(t.TagId);
     });
 
-    this.games.sort(
-      (a, b) => a.Date.toString().localeCompare(b.Date.toString()) || (a.SortIndex ?? 0) - (b.SortIndex ?? 0),
-    );
+    this.games.sort((a, b) => b.dateSortOrder.localeCompare(a.dateSortOrder));
     this.games.list.forEach((game) => {
       game.BoardGame = this.boardGames.getOne(game.BoardGameId);
       game.Scores = this.playerGames.list
