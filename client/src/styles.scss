@@ -183,11 +183,14 @@ p-select {
   display: flex;
   justify-content: space-between;
   margin-top: 8px;
-  gap: 16px;
+  gap: 4px;
   > div {
     display: flex;
     justify-content: start;
-    gap: 16px;
+    gap: 4px;
+    .p-button {
+      padding: 0.625rem 0.8rem;
+    }
   }
 }
 
