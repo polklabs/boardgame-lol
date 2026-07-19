@@ -102,7 +102,7 @@
     <ng-template #expandedrow let-boardGame>
       <tr>
         <td></td>
-        <td [attr.colspan]="cols.length">
+        <td [attr.colspan]="cols.length+2">
           <p-table
             [value]="WinCounts[boardGame.BoardGameId]"
             class="p-datatable-sm"

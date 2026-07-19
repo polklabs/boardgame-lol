@@ -91,7 +91,7 @@
     <ng-template #expandedrow let-player>
       <tr>
         <td></td>
-        <td [attr.colspan]="cols.length">
+        <td [attr.colspan]="cols.length+2">
           <p-table [value]="player.PlayerGames" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
             <ng-template #header>
               <tr>

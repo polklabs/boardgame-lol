@@ -13,4 +13,10 @@
   tr.year-row {
     background: var(--p-surface-950) !important;
   }
+
+  .notes-column {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

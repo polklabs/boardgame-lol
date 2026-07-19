@@ -14,9 +14,10 @@ import { TagComponent } from '../../shared/components/tag/tag.component';
 import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
 import { format, isSameYear } from 'date-fns';
 
-const COLUMNS: { field: string; name: string; sort: boolean }[] = [
+const COLUMNS: { field: string; name: string; sort: boolean, class?: string }[] = [
   { field: 'dateSortOrder', name: 'Date', sort: true },
   { field: 'BoardGame.Name', name: 'Game', sort: true },
+  { field: 'Notes', name: 'Notes', sort: true, class: 'notes-column' },
   { field: 'WinnerTeams', name: 'Winner(s)', sort: false },
   { field: 'HighScore', name: 'Points', sort: true },
   { field: 'Players', name: 'Players', sort: true },

@@ -19,7 +19,7 @@
       <tr>
         <th id="expansion" style="width: 0"></th>
         @for (column of columns; track column) {
-          <th id="{{ column.field }}" [pSortableColumn]="column.sort ? column.field : undefined">
+          <th id="{{ column.field }}" [pSortableColumn]="column.sort ? column.field : undefined" class="{{column.class??''}}">
             <span>
               {{ column.name }}
               @if (column.sort) {
@@ -55,7 +55,7 @@
         </td>
 
         @for (column of columns; track column) {
-          <td>
+          <td class="{{column.class??''}}">
 
             @switch (column.field) {
               @case ('dateSortOrder') {
@@ -63,6 +63,9 @@
               }
               @case ('BoardGame.Name') {
                 {{ game.BoardGame.Name }}
+              }
+              @case ('Notes') {
+                {{ game.Notes }}
               }
               @case ('WinnerTeams') {
                 {{ game.WinnerTeams | array: 'DisplayName' }}
@@ -112,7 +115,10 @@
     <ng-template #expandedrow let-game>
       <tr>
         <td></td>
-        <td [attr.colspan]="cols.length">
+        <td [attr.colspan]="cols.length+1">
+          @if (game.Notes) {
+            <p>{{game.Notes}}</p>
+          }
           <p-table [value]="game.Scores" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
             <ng-template #header>
               <tr>
