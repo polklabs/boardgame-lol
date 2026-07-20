@@ -10,6 +10,7 @@ import {
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ControlBase } from '../../models/control.base';
+import { endOfDay } from 'date-fns';
 
 @Component({
   selector: 'app-calendar',
@@ -30,7 +31,7 @@ export class CalendarComponent<T> extends ControlBase<T, unknown> implements Con
   @Input() icon = '';
   @Input() iconPosition: 'left' | 'right' = 'right';
   @Input() showClear = false;
-  @Input() maxDate = new Date();
+  @Input() maxDate = endOfDay(new Date());
 
   get formGroup() {
     return this.formGroupDirective.form;
