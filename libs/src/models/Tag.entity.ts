@@ -3,7 +3,7 @@ import { TableName } from '../decorators/table-name.decorator';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
-import { CHARACTER_LIMIT_BYTE, HEX_REGEX } from '../constants';
+import { CHARACTER_LIMIT_TINY, HEX_REGEX } from '../constants';
 import { Sanitize } from '../decorators/sanitize.decorator';
 import { ITag } from './ITag';
 import { Nullable } from '../decorators/nullable.decorator';
@@ -23,7 +23,7 @@ export class TagEntity extends BaseEntity implements ITag {
   @Pattern(HEX_REGEX, 'hex color in the format: #FFFFFF')
   Color: string | null = null;
 
-  @MinMax(1, CHARACTER_LIMIT_BYTE * 2, 'string')
+  @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
   @Sanitize()
   Text: string = '';
 
