@@ -130,11 +130,12 @@
             </ng-template>
             <ng-template #body let-score>
               <tr>
-                <td class="flex gap-8">
+                <td class="flex-100 gap-8">
                   <div class="tag-wrapper">
                   <app-trophy-icon [score]="score"></app-trophy-icon>
                   <span>{{ score.DisplayName }}</span>
-                  
+                  <div class="grow"></div>
+                
                   @for (tag of score.Tags; track tag.TagId) {
                     <app-tag [tag]="tag"></app-tag>
                   }

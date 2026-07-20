@@ -111,11 +111,12 @@
                 </td>
                 <td>
                   <div class="tag-wrapper">
-                  <span>{{ playerGame.Game.BoardGame.Name }}</span>
-                  
-                  @for (tag of playerGame.Tags; track tag.TagId) {
-                    <app-tag [tag]="tag"></app-tag>
-                  }
+                    <span>{{ playerGame.Game.BoardGame.Name }}</span>
+                    <div class="grow"></div>
+                    
+                    @for (tag of playerGame.Tags; track tag.TagId) {
+                      <app-tag [tag]="tag"></app-tag>
+                    }
                   </div>
                 </td>
                 <td>

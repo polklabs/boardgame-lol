@@ -133,11 +133,12 @@
               <tr>
                 <td>
                   <div class="tag-wrapper">
-                  <span>{{ player.name }}</span>
+                    <span>{{ player.name }}</span>
+                    <div class="grow"></div>
 
-                  @for (tag of player.tags; track tag.TagId) {
-                    <app-tag [tag]="tag"></app-tag>
-                  }
+                    @for (tag of player.tags; track tag.TagId) {
+                      <app-tag [tag]="tag"></app-tag>
+                    }
                   </div>
                 </td>
                 <td>
