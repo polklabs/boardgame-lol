@@ -216,8 +216,17 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
     width -= BUTTON_WIDTH + BUTTON_GAP;
 
     const count = Math.floor(width / (BUTTON_WIDTH + BUTTON_GAP));
-    for (let i = 0; i < count; i++) {
-      this.pointGroupButtonValues.push(POINT_VALUES[i] ?? (this.pointGroupButtonValues.at(-1) ?? 0) + 100);
+
+    const pointBase = this.game?.BoardGame?.PointAdjustBase ?? null;
+    const pointStep = this.game?.BoardGame?.PointAdjustStep ?? null;
+    if (pointBase === null && pointStep === null) {
+      for (let i = 0; i < count; i++) {
+        this.pointGroupButtonValues.push(POINT_VALUES[i] ?? (this.pointGroupButtonValues.at(-1) ?? 0) + 100);
+      }
+    } else {
+      for (let i = 0; i < count; i++) {
+        this.pointGroupButtonValues.push((pointBase || 1) + (pointStep || 1) * i);
+      }
     }
   }
 

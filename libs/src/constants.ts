@@ -6,4 +6,6 @@ export const CHARACTER_LIMIT_BYTE = 8;
 export const SALT_ROUNDS = 10;
 export const VERIFICATION_TIMEOUT = -900; //15 minutes
 
+export const POINT_MAX = 1000000;
+
 export const HEX_REGEX = /^#[0-9a-fA-F]{6}$/;

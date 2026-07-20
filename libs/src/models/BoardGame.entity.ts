@@ -2,7 +2,7 @@ import { TableName } from '../decorators/table-name.decorator';
 import { BaseEntity, calculationsComplete } from './Base.entity';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
-import { CHARACTER_LIMIT_SHORT, CHARACTER_LIMIT_BYTE } from '../constants';
+import { CHARACTER_LIMIT_SHORT, CHARACTER_LIMIT_BYTE, POINT_MAX } from '../constants';
 import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { Nullable } from '../decorators/nullable.decorator';
 import { Expose } from 'class-transformer';
@@ -57,6 +57,14 @@ export class BoardGameEntity extends BaseEntity {
   @MinMax(1, CHARACTER_LIMIT_SHORT, 'string')
   @Sanitize()
   BoardGameGeekId: string | null = null;
+
+  @Nullable()
+  @MinMax(1, POINT_MAX, 'number')
+  PointAdjustBase: number | null = null;
+
+  @Nullable()
+  @MinMax(1, POINT_MAX, 'number')
+  PointAdjustStep: number | null = null;
 
   @Expose()
   get boardGameGeekUrl() {

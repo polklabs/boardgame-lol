@@ -10,7 +10,7 @@ import { GameEntity } from './Game.entity';
 import { Ignore } from '../decorators/ignore.decorator';
 import { TagEntity } from './Tag.entity';
 import { Sanitize } from '../decorators/sanitize.decorator';
-import { CHARACTER_LIMIT_TINY } from '../constants';
+import { CHARACTER_LIMIT_TINY, POINT_MAX } from '../constants';
 import { Expose } from 'class-transformer';
 import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
 
@@ -25,7 +25,7 @@ export class PlayerGameEntity extends BaseEntity {
   @ForeignKey(GameEntity)
   GameId: string = '';
 
-  @MinMax(-1000000, 1000000, 'number')
+  @MinMax(-POINT_MAX, POINT_MAX, 'number')
   @Nullable()
   /** Use for values to be displayed */
   Points: number | null = null;
