@@ -156,7 +156,7 @@ export class ApiService {
       this.playerGamePlayers.upsert(result.PlayerGamePlayers, (x) => x.GameId === result.Game.GameId);
       this.tagGames.upsert(result.TagGames, (x) => x.GameId === result.Game.GameId);
 
-      const playerGameIds = this.playerGames.primaryIdSet;
+      const playerGameIds = new Set(result.PlayerGames.map(x => x.PlayerGameId));
       this.tagPlayerGames.upsert(result.TagPlayerGames, (x) => playerGameIds.has(x.PlayerGameId));
 
       this.updateReferences();
