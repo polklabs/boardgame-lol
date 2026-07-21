@@ -8,7 +8,7 @@ export class TrophyMostLosses extends ITrophy {
       ['🏅'],
       'The Participator',
       ['At least you tried', "You'll get em next time"],
-      '{value} = Losses - Wins; {value} losses > 0',
+      'Losses - Wins = {value} and losses > 0',
     );
   }
 

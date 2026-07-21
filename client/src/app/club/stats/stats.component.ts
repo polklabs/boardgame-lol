@@ -16,6 +16,7 @@ import { MeterGroupModule, MeterItem } from 'primeng/metergroup';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { NameValue } from '../../shared/models/name-value.model';
 import { FormsModule } from '@angular/forms';
+import { PopoverModule } from 'primeng/popover';
 
 type DayItem = { color: string; tooltip?: string; icon?: string; colorAll: string; tooltipAll?: string };
 
@@ -23,7 +24,7 @@ const COLORS = ['#0A84FF', '#FF3B30', '#30D158', '#5E5CE6', '#FFD60A', '#FF9F0A'
 
 @Component({
   selector: 'app-stats',
-  imports: [TooltipModule, ChartModule, CommonModule, ArrayPipe, MeterGroupModule, SelectButtonModule, FormsModule],
+  imports: [TooltipModule, ChartModule, CommonModule, ArrayPipe, MeterGroupModule, SelectButtonModule, FormsModule, PopoverModule],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
 })

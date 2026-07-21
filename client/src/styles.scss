@@ -208,6 +208,13 @@ p-select {
   }
 }
 
+.formula-popover {
+  background-color: var(--p-surface-700) !important;
+  &::after {
+    border-bottom-color: var(--p-surface-700) !important;
+  }
+}
+
 .tag-wrapper {
   display: flex;
   gap: 4px;

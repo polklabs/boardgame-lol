@@ -5,7 +5,7 @@
 
       <table>
         @for (t of trophies; track $index) {
-          <tr>
+          <tr (click)="formulaPopup.toggle($event)">
             <td class="trophy-icon">
               <span>{{ t.emoji }}</span>
               @if (t.formula) {
@@ -27,6 +27,11 @@
               }
             </td>
           </tr>
+          <p-popover #formulaPopup styleClass="formula-popover">
+            <ng-template #content>
+              <span>{{ t.formula }}</span>
+            </ng-template>
+          </p-popover>
         }
       </table>
     </div>
