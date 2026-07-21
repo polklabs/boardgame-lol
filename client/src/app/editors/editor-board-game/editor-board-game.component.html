@@ -42,20 +42,19 @@
         <div class="flex-grow gap-8 width-100">
           <app-number-input
             formControlName="PointAdjustBase"
-            label="Point Adjustment Base"
+            label="Point Adjustment Base Override"
             [prefix]="formGroup.value.ScorePrefix"
             [suffix]="formGroup.value.ScoreSuffix"
             [entityType]="entityType"
             [hiddenFields]="hideFields"></app-number-input>
           <app-number-input
             formControlName="PointAdjustStep"
-            label="Point Adjustment Step"
+            label="Point Adjustment Step Override"
             [prefix]="formGroup.value.ScorePrefix"
             [suffix]="formGroup.value.ScoreSuffix"
             [entityType]="entityType"
             [hiddenFields]="hideFields"></app-number-input>
         </div>
-        <p class="helper-text">By default point adjustment is: 1, 5, 10, 50, 100, 150, 200, etc...</p>
 
         <app-tags
           formControlName="Tags"

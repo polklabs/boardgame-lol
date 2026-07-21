@@ -138,9 +138,15 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
     if (score?.value === 'points') {
       this.hideFields.delete('ScorePrefix');
       this.hideFields.delete('ScoreSuffix');
+      this.hideFields.delete('ExampleScore');
+      this.hideFields.delete('PointAdjustBase');
+      this.hideFields.delete('PointAdjustStep');
     } else {
       this.hideFields.add('ScorePrefix');
       this.hideFields.add('ScoreSuffix');
+      this.hideFields.add('ExampleScore');
+      this.hideFields.add('PointAdjustBase');
+      this.hideFields.add('PointAdjustStep');
     }
   }
 
