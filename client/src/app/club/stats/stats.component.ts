@@ -24,7 +24,16 @@ const COLORS = ['#0A84FF', '#FF3B30', '#30D158', '#5E5CE6', '#FFD60A', '#FF9F0A'
 
 @Component({
   selector: 'app-stats',
-  imports: [TooltipModule, ChartModule, CommonModule, ArrayPipe, MeterGroupModule, SelectButtonModule, FormsModule, PopoverModule],
+  imports: [
+    TooltipModule,
+    ChartModule,
+    CommonModule,
+    ArrayPipe,
+    MeterGroupModule,
+    SelectButtonModule,
+    FormsModule,
+    PopoverModule,
+  ],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
 })
@@ -99,7 +108,9 @@ export class StatsComponent implements OnInit {
   }
 
   calculateTrophies(trophies: ITrophy[]) {
-    this.trophies = trophies.map((x) => x.export()).filter((x) => x.array.length > 0 && x.array.length < 4 && x.value !== Math.abs(Infinity));
+    this.trophies = trophies
+      .map((x) => x.export())
+      .filter((x) => x.array.length > 0 && x.array.length < 4 && x.value !== Math.abs(Infinity));
     // this.trophies = this.trophies.slice(0, 9);
   }
 
@@ -304,15 +315,16 @@ export class StatsComponent implements OnInit {
       // Create chart
     }
 
+    let pIds = Object.keys(wins);
+
     const spots = 5;
-    const ranks = ['5th', '4th', '3rd', '2nd', '1st'];
+    const ranks = ['5th', '4th', '3rd', '2nd', '1st'].slice(Math.max(0,5 - pIds.length));
 
     const lastYear = format(addYears(new Date(), -1), 'yyyy-MM-dd');
     const toDelete = dates.findIndex((d) => d > lastYear);
 
     wins = clone(wins);
 
-    let pIds = Object.keys(wins);
     if (toDelete > 0) {
       dates = [lastYear, ...dates.slice(toDelete)];
       pIds.forEach((p) => {
