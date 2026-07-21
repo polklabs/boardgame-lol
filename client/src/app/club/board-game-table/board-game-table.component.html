@@ -58,7 +58,7 @@
                 }
               }
               @case ('ChampionWins') {
-                 {{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }} - {{ boardGame.Champions | array: 'Nickname' }}
+                 {{ boardGame.ChampionWins | hide: '0' | number: '1.0-0' }} - {{ boardGame.Champions | array: 'ShortName' }}
               }
               @case ('MaxPlayers') {
                  {{ boardGame.MaxPlayers | hide: '0' | number: '1.0-0' }}

@@ -2,7 +2,7 @@ import { TableName } from '../decorators/table-name.decorator';
 import { BaseEntity, calculationsComplete } from './Base.entity';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { MinMax } from '../decorators/min-max.decorator';
-import { CHARACTER_LIMIT_TINY } from '../constants';
+import { CHARACTER_LIMIT_BYTE, CHARACTER_LIMIT_TINY } from '../constants';
 import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { Sanitize } from '../decorators/sanitize.decorator';
 import { Ignore } from '../decorators/ignore.decorator';
@@ -11,6 +11,7 @@ import { BoardGameEntity } from './BoardGame.entity';
 import { Mode } from '../utils/helper-utils';
 import { TagEntity } from './Tag.entity';
 import { TagPlayerEntity } from './TagPlayer.entity';
+import { Nullable } from '../decorators/nullable.decorator';
 
 export type PlayerReturn = {
   Player: PlayerEntity;
@@ -28,6 +29,11 @@ export class PlayerEntity extends BaseEntity {
   @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
   @Sanitize()
   Name: string = '';
+
+  @Nullable()
+  @MinMax(1, CHARACTER_LIMIT_BYTE * 4, 'string')
+  @Sanitize()
+  Nickname: string | null = null;
 
   IsRealPerson: boolean = true;
 
@@ -57,7 +63,7 @@ export class PlayerEntity extends BaseEntity {
   FirstSeen?: Date | string;
 
   @Ignore()
-  Nickname?: string;
+  ShortName?: string;
 
   @Ignore()
   hasMostWins: boolean = false;
@@ -118,9 +124,15 @@ export class PlayerEntity extends BaseEntity {
     const maxWins = Math.max(...players.map((x) => x.Wins.length));
 
     players.forEach((p) => {
-      p.Nickname = p.Name?.trim().split(' ')[0];
-      if (p.Nickname && players.filter((x) => x.PlayerId !== p.PlayerId).some((x) => x.Name?.startsWith(p.Nickname!))) {
-        p.Nickname = p.Name ?? undefined;
+      p.ShortName = p.Nickname || '';
+      if (players.some((x) => x.PlayerId !== p.PlayerId && x.Name?.startsWith(p.ShortName!))) {
+        p.ShortName = p.Name.split(' ')[0];
+      } else {
+        // continue
+      }
+
+      if (players.some((x) => x.PlayerId !== p.PlayerId && x.Name?.startsWith(p.ShortName!))) {
+        p.ShortName = p.Name;
       } else {
         // continue
       }

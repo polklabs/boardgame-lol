@@ -244,7 +244,7 @@ export class StatsComponent implements OnInit {
 
     pIds.forEach((pId) => {
       this.winsOverTimeData.datasets.push({
-        label: this.apiService.players.getOne(pId)?.Nickname ?? 'Unknown',
+        label: this.apiService.players.getOne(pId)?.ShortName ?? 'Unknown',
         data: wins[pId],
         fill: false,
         stepped: true,
@@ -346,7 +346,7 @@ export class StatsComponent implements OnInit {
 
     pIds.forEach((pId) => {
       this.rankOverTimeData.datasets.push({
-        label: this.apiService.players.getOne(pId)?.Nickname ?? 'Unknown',
+        label: this.apiService.players.getOne(pId)?.ShortName ?? 'Unknown',
         data: wins[pId],
         fill: false,
         tension: 0.4,

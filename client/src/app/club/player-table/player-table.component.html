@@ -47,7 +47,12 @@
           <td>
             @switch (column.field) {
               @case ('Name') {
-                {{ player.Name }}
+                @if (player.Nickname) {
+                  {{player.Nickname}} - {{ player.Name }}
+                } @else {
+                  {{ player.Name }}
+                }
+                
                 @if (player.hasMostWins) {
                   <i class="pi pi-crown" style="color: gold"></i>
                 }

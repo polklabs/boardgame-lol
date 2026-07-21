@@ -9,11 +9,18 @@
   @if (formGroup && player) {
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
-        <app-textinput
-          formControlName="Name"
-          label="Player Name"
-          [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-textinput>
+        <div class="flex-grow gap-8 width-100">
+          <app-textinput
+            formControlName="Name"
+            label="Player Name"
+            [entityType]="entityType"
+            [hiddenFields]="hideFields"></app-textinput>
+          <app-textinput
+            formControlName="Nickname"
+            label="Player Nickname"
+            [entityType]="entityType"
+            [hiddenFields]="hideFields"></app-textinput>
+        </div>
         <app-checkbox formControlName="IsRealPerson" label="Is Real Person"></app-checkbox>
 
         <app-tags
