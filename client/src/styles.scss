@@ -158,16 +158,15 @@ form {
   flex-direction: column;
   gap: 16px;
   padding-top: 0.5rem;
-
-  .helper-text {
-    margin-top: -16px;
-  }
 }
 
 .p-floatlabel {
   margin-bottom: 0.8rem;
   display: flex;
   flex-direction: column;
+  label {
+    max-width: calc(100% - 24px);
+  }
   > *:not(label),
   input {
     width: 100% !important;
@@ -210,11 +209,11 @@ p-select {
 }
 
 .tag-wrapper {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    width: 100%;
-  }
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+}
 
 .p-datatable-table .p-datatable-thead tr th {
   padding: 0.5rem;
@@ -239,7 +238,6 @@ p-select {
   cursor: pointer;
 }
 
-
 // FLOAT LABEL PLACEHOLDER FIX
 .p-floatlabel:not(:has(input:focus)) input::placeholder,
 .p-floatlabel:not(:has(input.p-filled)) input::placeholder,
@@ -248,12 +246,12 @@ p-select {
 .p-floatlabel:not(:has(textarea.p-filled)) textarea::placeholder,
 .p-floatlabel:not(:has(.p-inputwrapper-focus)) .p-placeholder,
 .p-floatlabel:not(:has(.p-inputwrapper-filled)) .p-placeholder {
-    color: transparent !important;
+  color: transparent !important;
 }
 
 .p-floatlabel:has(input:focus) input::placeholder,
 .p-floatlabel:has(input:-webkit-autofill) input::placeholder,
 .p-floatlabel:has(textarea:focus) input::placeholder,
 .p-floatlabel:has(.p-inputwrapper-focus) .p-placeholder {
-    color: var(--p-inputtext-placeholder-color) !important;
+  color: var(--p-inputtext-placeholder-color) !important;
 }
