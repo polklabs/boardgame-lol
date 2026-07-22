@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { getAccessibleBackground, TagEntity } from 'libs/index';
+import { DISPLAY_FIELDS, getAccessibleBackground, TagCategory, TagCategoryMapping, TagEntity } from 'libs/index';
 import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
@@ -13,18 +13,13 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { TagComponent } from '../../shared/components/tag/tag.component';
 import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
 import { FieldsetModule } from 'primeng/fieldset';
-import { SortPipe } from "../../shared/pipes/sort.pipe";
+import { SortPipe } from '../../shared/pipes/sort.pipe';
+import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
+import { Subscription } from 'rxjs';
 
 type EntityType = TagEntity;
 
-const TAG_KEYS: (keyof TagEntity)[] = [
-  'DisplayOnBoardGames',
-  'DisplayOnGames',
-  'DisplayOnPlayerGames',
-  'DisplayOnPlayers',
-] as const;
-
-const TAG_KEY_DISPLAY: Record<string, string> = {
+const TAG_KEY_DISPLAY: Record<(typeof DISPLAY_FIELDS)[number], string> = {
   DisplayOnBoardGames: 'BoardGames',
   DisplayOnGames: 'Plays',
   DisplayOnPlayerGames: 'Play Scores',
@@ -45,12 +40,13 @@ const TAG_KEY_DISPLAY: Record<string, string> = {
     TagComponent,
     CheckboxComponent,
     FieldsetModule,
-    SortPipe
-],
+    SortPipe,
+    DropdownComponent,
+  ],
   templateUrl: './editor-tags.component.html',
   styleUrl: './editor-tags.component.scss',
 })
-export class EditorTagsComponent implements OnInit {
+export class EditorTagsComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private apiService = inject(ApiService);
   private messageService = inject(MessageService);
@@ -75,6 +71,8 @@ export class EditorTagsComponent implements OnInit {
   isNew = false;
   addTagTag = new TagEntity({ Text: 'Add New', Color: '#334155', BackgroundColor: '#ffffff' });
 
+  categoryTypes = Object.entries(TagCategoryMapping).map(([value, x]) => ({ value, label: x.text }));
+
   tags: Record<string, TagEntity[]> = {};
 
   tag?: TagEntity;
@@ -83,15 +81,19 @@ export class EditorTagsComponent implements OnInit {
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
+  subscription?: Subscription;
+
   bgColor = '';
 
   ngOnInit(): void {
     this.apiService.tags.raw$.subscribe((tags) => {
       this.tags = {};
       tags.forEach((tag) => {
-        const keys = TAG_KEYS.filter((k) => tag[k] === true);
+        const keys = DISPLAY_FIELDS.filter((k) => tag[k] === true);
         let key;
-        if (keys.length >= 4) {
+        if (tag.Category) {
+          key = TagCategoryMapping[tag.Category].text;
+        } else if (keys.length >= 4) {
           key = 'All';
         } else if (keys.length > 1) {
           key = 'Assorted';
@@ -105,6 +107,10 @@ export class EditorTagsComponent implements OnInit {
         }
       });
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
   editTag(tag: TagEntity) {
@@ -128,9 +134,15 @@ export class EditorTagsComponent implements OnInit {
     this.hideFields = new Set();
     this.formGroup = buildForm(this.fb, this.entityType, new TagEntity());
 
-    this.formGroup.patchValue(new TagEntity(this.tag));
+    const instance = new TagEntity(this.tag);
+    this.formGroup.patchValue(instance);
+
+    this.subscription = this.getControl('Category')?.valueChanges.subscribe((value) => {
+      this.updateCategory(value);
+    });
 
     this.updateColor();
+    this.updateCategory(instance.Category);
 
     this.cdr.detectChanges();
   }
@@ -142,6 +154,20 @@ export class EditorTagsComponent implements OnInit {
 
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
+  }
+
+  updateCategory(category: TagCategory | null) {
+    if (category) {
+      DISPLAY_FIELDS.forEach((field) => {
+        const control = this.getControl(field);
+        control?.disable();
+        control?.setValue(TagCategoryMapping[category][field] === true);
+      });
+    } else {
+      DISPLAY_FIELDS.forEach((field) => {
+        this.getControl(field)?.enable();
+      });
+    }
   }
 
   setColor(color: string | object | null) {

@@ -1,5 +1,6 @@
 import 'reflect-metadata'; // This must be imported here for the prod build to work
 import { getIgnore } from '../decorators/ignore.decorator';
+import { Exclude } from 'class-transformer';
 
 export function calculationsComplete<T extends BaseEntity>(item?: T | (T | null)[] | null) {
   let complete: boolean;
@@ -20,9 +21,16 @@ export abstract class BaseEntity {
   // These fields are all required but will be assigned by the Base.Manager
   // User should never have control over these values
 
+  @Exclude()
   CreatedDate?: string = new Date().toISOString();
+  
+  @Exclude()
   CreatedBy?: string = 'ANON';
+  
+  @Exclude()
   LastModifiedDate?: string = new Date().toISOString();
+  
+  @Exclude()
   LastModifiedBy?: string = 'ANON';
 
   abstract calculated: boolean;

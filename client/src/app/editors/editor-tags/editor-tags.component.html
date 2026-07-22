@@ -38,6 +38,15 @@
           [hiddenFields]="hideFields"
           [autoFocus]="true"></app-textinput>
 
+        <app-dropdown
+          formControlName="Category"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"
+          [options]="categoryTypes"
+          optionLabel="label"
+          optionValue="value"
+          [showClear]="true"></app-dropdown>
+
         <div class="checkbox-column">
           <h3>Display On Editors:</h3>
           <app-checkbox formControlName="DisplayOnBoardGames" label="BoardGames"></app-checkbox>
