@@ -6,12 +6,12 @@ import { Observable } from 'rxjs';
 import { BoardGameEntity, PlayerEntity, PlayerGameEntity, TagEntity } from 'libs/index';
 import { TrophyService } from '../../shared/services/trophy.service';
 import { HidePipe } from '../../shared/pipes/hide.pipe';
-import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { TagModule } from 'primeng/tag';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
 import { getTagColumns } from '../../shared/helpers/data.helper';
+import { MapPipe } from "../../shared/pipes/map.pipe";
 
 type WinCount = {
   playerId: string;
@@ -32,10 +32,10 @@ type WinCount = {
     TagModule,
     CommonModule,
     HidePipe,
-    ArrayPipe,
     TableComponent,
     TemplateIdDirective,
-  ],
+    MapPipe
+],
   templateUrl: './board-game-table.component.html',
   styleUrl: './board-game-table.component.scss',
 })

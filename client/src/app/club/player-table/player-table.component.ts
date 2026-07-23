@@ -3,17 +3,17 @@ import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { Observable } from 'rxjs';
-import { PlayerEntity, PlayerGameEntity, TagCategoryMapping } from 'libs/index';
+import { PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { TrophyService } from '../../shared/services/trophy.service';
 import { ITrophy } from '../../shared/trophies/trophy.model';
 import { HidePipe } from '../../shared/pipes/hide.pipe';
-import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { TagModule } from 'primeng/tag';
 import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
-import { getTagColumns, tagFilter } from '../../shared/helpers/data.helper';
+import { getTagColumns } from '../../shared/helpers/data.helper';
+import { MapPipe } from "../../shared/pipes/map.pipe";
 
 @Component({
   selector: 'app-player-table',
@@ -23,11 +23,11 @@ import { getTagColumns, tagFilter } from '../../shared/helpers/data.helper';
     TagModule,
     CommonModule,
     HidePipe,
-    ArrayPipe,
     TrophyIconComponent,
     TableComponent,
     TemplateIdDirective,
-  ],
+    MapPipe
+],
   templateUrl: './player-table.component.html',
   styleUrl: './player-table.component.scss',
 })

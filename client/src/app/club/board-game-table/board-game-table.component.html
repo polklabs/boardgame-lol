@@ -16,7 +16,7 @@
       }
     </ng-template>
     <ng-template templateId="ChampionWins" let-boardGame>
-      {{ boardGame.ChampionWins | hide | number: '1.0-0' }} - {{ boardGame.Champions | array: 'ShortName' }}
+      {{ boardGame.ChampionWins | hide | number: '1.0-0' }} - {{ boardGame.Champions | map: 'ShortName' }}
     </ng-template>
 
     <ng-template templateId="expansion" let-boardGame>

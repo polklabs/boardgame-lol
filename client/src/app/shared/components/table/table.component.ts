@@ -18,7 +18,7 @@ import { TemplateIdDirective } from '../../directives/template-id.directive';
 import { isEmptyLike } from '../../helpers/data.helper';
 import { ScorePipe } from '../../pipes/score.pipe';
 import { ButtonModule } from 'primeng/button';
-import { ArrayPipe } from '../../pipes/array.pipe';
+import { MapPipe } from "../../pipes/map.pipe";
 
 @Component({
   selector: 'app-table',
@@ -31,8 +31,8 @@ import { ArrayPipe } from '../../pipes/array.pipe';
     CommonModule,
     ScorePipe,
     ButtonModule,
-    ArrayPipe,
-  ],
+    MapPipe
+],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })

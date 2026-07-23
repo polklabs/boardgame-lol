@@ -75,7 +75,7 @@
                 {{ property(row, column) | hide | number: '1.0-' + (column.decimalPlaces ?? 1) }}
               }
               @case ('array') {
-                {{ property(row, column) | array: column.keys }}
+                {{ property(row, column) | map: column.keys }}
               }
               @case ('score') {
                 @let boardGame = column.boardGame(row);

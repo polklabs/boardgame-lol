@@ -26,7 +26,7 @@
       }
     </ng-template>
     <ng-template templateId="BestGameWins" let-player>
-      {{ player.BestGameWins | hide | number: '1.0-0' }} - {{ player.BestGames | array: 'Name' }}
+      {{ player.BestGameWins | hide | number: '1.0-0' }} - {{ player.BestGames | map: 'Name' }}
     </ng-template>
 
     <ng-template templateId="expansion" let-player>
