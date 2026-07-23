@@ -1,5 +1,6 @@
-import { GameEntity, PlayerEntity } from 'libs/index';
-import { ApplyObj, ITrophy } from './trophy.model';
+import { PlayerEntity } from 'libs/index';
+import { ITrophy } from './trophy.model';
+import { ApiService } from '../services/api.service';
 
 export class TrophyComebackKid extends ITrophy {
   constructor(sortOrder: number | null = null) {
@@ -12,26 +13,26 @@ export class TrophyComebackKid extends ITrophy {
     );
   }
 
-  calculate(players: PlayerEntity[], games: GameEntity[]) {
-    const streakPlayers: ApplyObj = [];
+  calculate(api: ApiService) {
+    const streakPlayers = new Map<PlayerEntity, number>();
 
-    for (const player of players) {
+    for (const player of api.players.list) {
       const loseStreaks: number[] = [];
       let losses = 0;
-      for (const game of games) {
-        if (game.place(0).some((x) => x.PlayerIds.has(player.PlayerId))) {
+      for (const pg of player.PlayerGames) {
+        if (pg.Game?.place(0).some((x) => x.PlayerIds.has(player.PlayerId))) {
           loseStreaks.push(losses);
           losses = 0;
-        } else if (game.Scores.some((x) => x.PlayerIds.has(player.PlayerId))) {
+        } else if (pg.Game?.Scores.some((x) => x.PlayerIds.has(player.PlayerId))) {
           losses++;
         } else {
           // Did not play, streak continues
         }
       }
 
-      streakPlayers.push({ item: player, count: Math.max(...loseStreaks) });
+      streakPlayers.set(player, Math.max(...loseStreaks));
     }
 
-    this.applyValues(streakPlayers)
+    this.applyValues(streakPlayers);
   }
 }

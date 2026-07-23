@@ -1,6 +1,7 @@
-import { BoardGameEntity, GameEntity, PlayerEntity } from 'libs/index';
+import { BoardGameEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
 import { differenceInDays, max } from 'date-fns';
+import { ApiService } from '../services/api.service';
 
 export class TrophyLastGroupWin extends ITrophy {
   constructor(sortOrder: number | null = null) {
@@ -13,8 +14,8 @@ export class TrophyLastGroupWin extends ITrophy {
     );
   }
 
-  calculate(_players: PlayerEntity[], games: GameEntity[]) {
-    const groupWins = games.filter((x) => x.WinnerTeams.length === x.Scores.length);
+  calculate(api: ApiService) {
+    const groupWins = api.games.list.filter((x) => x.WinnerTeams.length === x.Scores.length);
     const maxDate = max(groupWins.map((x) => x.DateObj));
 
     this.array = groupWins

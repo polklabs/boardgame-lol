@@ -6,10 +6,9 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
 import autocolors from 'chartjs-plugin-autocolors';
 import { GameEntity, ScoreTypeMapping, ScoreTypes } from 'libs/index';
-import { ITrophy, Trophy } from '../../shared/trophies/trophy.model';
+import { ITrophy } from '../../shared/trophies/trophy.model';
 import { Subscription } from 'rxjs';
 import { TrophyService } from '../../shared/services/trophy.service';
-import { ArrayPipe } from '../../shared/pipes/array.pipe';
 import { ChartData, ChartOptions } from 'chart.js';
 import { clone } from 'lodash-es';
 import { MeterGroupModule, MeterItem } from 'primeng/metergroup';
@@ -17,6 +16,8 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { NameValue } from '../../shared/models/name-value.model';
 import { FormsModule } from '@angular/forms';
 import { PopoverModule } from 'primeng/popover';
+import { TagComponent } from '../../shared/components/tag/tag.component';
+import { MapPipe } from "../../shared/pipes/map.pipe";
 
 type DayItem = { color: string; tooltip?: string; icon?: string; colorAll: string; tooltipAll?: string };
 
@@ -28,12 +29,13 @@ const COLORS = ['#0A84FF', '#FF3B30', '#30D158', '#5E5CE6', '#FFD60A', '#FF9F0A'
     TooltipModule,
     ChartModule,
     CommonModule,
-    ArrayPipe,
     MeterGroupModule,
     SelectButtonModule,
     FormsModule,
     PopoverModule,
-  ],
+    TagComponent,
+    MapPipe
+],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
 })
@@ -62,7 +64,7 @@ export class StatsComponent implements OnInit {
 
   chartPlugins = [autocolors];
 
-  trophies: Trophy[] = [];
+  trophies: ITrophy[] = [];
 
   gameTypeMeterMax = 0;
   gameTypeMeter: MeterItem[] = [
@@ -108,9 +110,10 @@ export class StatsComponent implements OnInit {
   }
 
   calculateTrophies(trophies: ITrophy[]) {
-    this.trophies = trophies
-      .map((x) => x.export())
-      .filter((x) => x.array.length > 0 && x.array.length < 4 && x.value !== Math.abs(Infinity));
+    this.trophies = trophies.map((x) => x.export()).filter((x) => x.array.length > 0 && x.value !== Math.abs(Infinity));
+    // this.trophies = trophies
+    //   .map((x) => x.export())
+    //   .filter((x) => x.array.length > 0 && x.array.length < 4 && x.value !== Math.abs(Infinity));
     // this.trophies = this.trophies.slice(0, 9);
   }
 
@@ -318,7 +321,7 @@ export class StatsComponent implements OnInit {
     let pIds = Object.keys(wins);
 
     const spots = 5;
-    const ranks = ['5th', '4th', '3rd', '2nd', '1st'].slice(Math.max(0,5 - pIds.length));
+    const ranks = ['5th', '4th', '3rd', '2nd', '1st'].slice(Math.max(0, 5 - pIds.length));
 
     const lastYear = format(addYears(new Date(), -1), 'yyyy-MM-dd');
     const toDelete = dates.findIndex((d) => d > lastYear);

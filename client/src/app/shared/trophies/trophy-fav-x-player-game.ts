@@ -1,5 +1,6 @@
-import { BoardGameEntity, GameEntity, Mode, PlayerEntity } from 'libs/index';
+import { BoardGameEntity, Mode } from 'libs/index';
 import { ITrophy } from './trophy.model';
+import { ApiService } from '../services/api.service';
 
 export class TrophyFavXPlayerGame extends ITrophy {
   constructor(sortOrder: number | null = null) {
@@ -12,11 +13,11 @@ export class TrophyFavXPlayerGame extends ITrophy {
     );
   }
 
-  calculate(_players: PlayerEntity[], games: GameEntity[], boardGames: BoardGameEntity[]) {
-    this.extra['FavXPlayerCount'] = Mode(games, (x) => x.Players)?.[0]?.Players ?? 0;
+  calculate(api: ApiService) {
+    this.extra['FavXPlayerCount'] = Mode(api.games.list, (x) => x.Players)?.[0]?.Players ?? 0;
 
     if (this.extra['FavXPlayerCount'] >= 0 && this.extra['FavXPlayerCount'] <= 10) {
-      const list: [BoardGameEntity, number][] = boardGames.map((x) => [
+      const list: [BoardGameEntity, number][] = api.boardGames.list.map((x) => [
         x,
         x.Games.filter((g) => g.Players === this.extra['FavXPlayerCount']).length,
       ]);

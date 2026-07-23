@@ -1,5 +1,6 @@
 import { PlayerEntity } from 'libs/index';
-import { ApplyObj, ITrophy } from './trophy.model';
+import { ITrophy } from './trophy.model';
+import { ApiService } from '../services/api.service';
 
 export class TrophyMostLosses extends ITrophy {
   constructor(sortOrder: number | null = null) {
@@ -12,8 +13,11 @@ export class TrophyMostLosses extends ITrophy {
     );
   }
 
-  calculate(players: PlayerEntity[]) {
-    const objects: ApplyObj = players.map((player) => ({ item: player, count: player.LossCount - player.WinCount }));
+  calculate(api: ApiService) {
+    const objects = new Map<PlayerEntity, number>();
+    api.players.list.forEach((player) => {
+      objects.set(player, player.LossCount - player.WinCount);
+    });
     this.applyValues(objects);
   }
 }

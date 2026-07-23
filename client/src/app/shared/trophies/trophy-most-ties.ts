@@ -1,13 +1,19 @@
-import { PlayerEntity } from 'libs/index';
+import { ApiService } from '../services/api.service';
 import { ITrophy } from './trophy.model';
 
 export class TrophyMostTies extends ITrophy {
   constructor(sortOrder: number | null = null) {
-    super(sortOrder, ['🤝'], 'The Great Compromiser', ['Call it a truce?'], 'Most tied wins or most wins of player +1 other player');
+    super(
+      sortOrder,
+      ['🤝'],
+      'The Great Compromiser',
+      ['Call it a truce?'],
+      'Most tied wins or most wins of player +1 other player',
+    );
   }
 
-  calculate(players: PlayerEntity[]) {
-    const tiedWins = players.map((x) => ({
+  calculate(api: ApiService) {
+    const tiedWins = api.players.list.map((x) => ({
       player: x,
       count: x.Wins.filter((w) => (w.Game?.WinnerTeams.length ?? 0) > 1).length,
     }));

@@ -1,14 +1,15 @@
-import { PlayerEntity, GameEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
+import { ApiService } from '../services/api.service';
 
 export class TrophyMostPlaysOneDay extends ITrophy {
   constructor(sortOrder: number | null = null) {
     super(sortOrder, ['🕹️'], 'Just One More Game', ["Can't Stop, Won't Stop"], 'Max games played in one day');
+    this.showArray = false;
   }
 
-  override calculate(_players: PlayerEntity[], games: GameEntity[]): void {
+  override calculate(api: ApiService): void {
     const playCount: { [date: string]: number } = {};
-    games.forEach((g) => {
+    api.games.list.forEach((g) => {
       const d = g.Date.toString();
       if (playCount[d] === undefined) {
         playCount[d] = 1;

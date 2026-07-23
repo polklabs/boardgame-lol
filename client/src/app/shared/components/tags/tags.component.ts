@@ -42,7 +42,7 @@ export class TagsComponent<T> extends ControlBase<T, TagEntity> implements Contr
   private formGroupDirective = inject(FormGroupDirective);
 
   @Input() showClear = false;
-  @Input() editorValue: (keyof TagEntity & string) | '' = '';
+  @Input() editorValue: (keyof TagEntity) | '' = '';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();

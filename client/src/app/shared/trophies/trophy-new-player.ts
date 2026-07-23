@@ -1,6 +1,7 @@
 import { PlayerEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
 import { differenceInDays, min } from 'date-fns';
+import { ApiService } from '../services/api.service';
 
 export class TrophyNewPlayer extends ITrophy {
   constructor(sortOrder: number | null = null) {
@@ -8,10 +9,10 @@ export class TrophyNewPlayer extends ITrophy {
     this.showValue = false;
   }
 
-  calculate(players: PlayerEntity[]) {
+  calculate(api: ApiService) {
     const today = new Date();
     const dataMap: { player: PlayerEntity; total: number }[] = [];
-    players.forEach((player: PlayerEntity) => {
+    api.players.list.forEach((player: PlayerEntity) => {
       const dates = player.PlayerGames.map((x) => x.Game?.DateObj).filter((x) => x !== undefined);
       dataMap.push({
         player,
