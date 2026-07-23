@@ -1,15 +1,16 @@
 <p-table
   #table
   [value]="rows"
-  [sortField]="sort?.field ?? null"
-  [sortOrder]="sort?.order ?? 1"
+  [sortField]="sortBy"
+  [sortOrder]="sortOrder"
   class="p-datatable-sm"
   [tableStyle]="{ 'min-width': '50rem' }"
   [scrollable]="baseTable"
   [stripedRows]="baseTable"
   scrollHeight="flex"
   [dataKey]="dataKey"
-  [expandedRowKeys]="expandedRows">
+  [expandedRowKeys]="expandedRows"
+  >
   <ng-template #header>
     <tr>
       @if (baseTable) {
@@ -33,6 +34,15 @@
     </tr>
   </ng-template>
   <ng-template #body let-row let-expanded="expanded" let-rowIndex="rowIndex">
+    @if(showGroup(table, rowIndex)) {
+      <tr class="group-row">
+        <td></td>
+        <td [attr.colspan]="columns.length + (canEdit ? 1 : 0)">
+          {{row[groupRowsBy]}}
+        </td>
+      </tr>
+    }
+
     <tr>
       @if (baseTable) {
         <td>
@@ -107,7 +117,7 @@
   <ng-template #expandedrow let-row>
     <tr>
       <td></td>
-      <td [attr.colspan]="cols.length+2">
+      <td [attr.colspan]="cols.length+(canEdit?1:0) + (showExpansion(row)? 1:0)">
         @let template = templateMap.get('expansion');
           @if (template) {
             <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row  }"></ng-container>

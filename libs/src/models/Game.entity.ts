@@ -14,6 +14,7 @@ import { TagEntity } from './Tag.entity';
 import { TagGameEntity } from './TagGame.entity';
 import { TagPlayerGameEntity } from './TagPlayerGame.entity';
 import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
+import { format } from 'date-fns';
 
 export type GameReturn = {
   Game: GameEntity;
@@ -51,8 +52,16 @@ export class GameEntity extends BaseEntity {
     return `${this.Date}T${String(this.SortIndex).padStart(6, '0')}`;
   }
 
+  get year() {
+    return format(this.DateObj, 'yyyy');
+  }
+
   get ScoreType() {
     return this.BoardGame?.ScoreType ?? '';
+  }
+
+  get BoardGameName() {
+    return this.BoardGame?.Name;
   }
 
   @Ignore()

@@ -7,7 +7,7 @@
     [canEdit]="canEdit"
     (edit)="boardGameEdit.emit($event)"
     dataKey="BoardGameId"
-    [sort]="{ field: 'PlayCount', order: -1 }"
+    sortBy="PlayCount"
     [showExpansion]="showExpansion.bind(this)">
     <ng-template templateId="PlayCount" let-boardGame>
       <span>{{ boardGame.PlayCount | hide | number: '1.0-0' }}</span>
@@ -20,7 +20,7 @@
     </ng-template>
 
     <ng-template templateId="expansion" let-boardGame>
-      <app-table [columns]="expansionColumns" [rows]="WinCounts[boardGame.BoardGameId]" [sort]="{field: 'wins', order: -1}">
+      <app-table [columns]="expansionColumns" [rows]="WinCounts[boardGame.BoardGameId]" sortBy="wins">
             <ng-template templateId="wins" let-row>
               {{ row.wins | number: '1.0-0' }} / {{row.plays | number: '1.0-0'}}
             </ng-template>

@@ -11,6 +11,7 @@ import { TagModule } from 'primeng/tag';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
+import { getTagColumns } from '../../shared/helpers/data.helper';
 
 type WinCount = {
   playerId: string;
@@ -58,10 +59,11 @@ export class BoardGameTableComponent implements OnChanges {
     { id: 'ChampionWins', name: 'Champion(s)', dataType: 'custom', sort: true },
     { id: 'MaxPlayers', name: 'Max Players', dataType: 'number', sort: true },
     { id: 'AveragePlayers', name: 'Avg Players', dataType: 'decimal', sort: true },
-    { id: 'MaxScore', name: 'High Score', dataType: 'score', boardGame: (row) => row },
-    { id: 'AverageScore', name: 'Avg Score', dataType: 'score', boardGame: (row) => row },
-    { id: 'AverageWinningScore', name: 'Avg Winning Score', dataType: 'score', boardGame: (row) => row },
-    { id: 'Tags', dataType: 'tag' },
+    { id: 'MaxScore', name: 'High Score', dataType: 'score', boardGame: (row) => row, sort: true },
+    { id: 'AverageScore', name: 'Avg Score', dataType: 'score', boardGame: (row) => row, sort: true },
+    { id: 'AverageWinningScore', name: 'Avg Winning Score', dataType: 'score', boardGame: (row) => row, sort: true },
+    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
+    ...getTagColumns('DisplayOnBoardGames'),
   ];
 
   expansionColumns: Column<WinCount>[] = [

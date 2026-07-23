@@ -13,6 +13,7 @@ import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
+import { getTagColumns, tagFilter } from '../../shared/helpers/data.helper';
 
 @Component({
   selector: 'app-player-table',
@@ -46,7 +47,8 @@ export class PlayerTableComponent {
     { id: 'LossCount', name: 'Losses', sort: true, dataType: 'number' },
     { id: 'BestGameWins', name: 'Best Game(s)', sort: true, dataType: 'custom' },
     { id: 'FirstSeen', name: 'First Seen', sort: true, dataType: 'date' },
-    { id: 'Tags', dataType: 'tag' },
+    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
+    ...getTagColumns('DisplayOnPlayers'),
   ];
 
   expansionColumns: Column<PlayerGameEntity>[] = [
@@ -54,36 +56,7 @@ export class PlayerTableComponent {
     { id: 'Date', dataType: 'date', fieldFunc: (x) => x.Game!.Date },
     { id: 'Game', dataType: 'text', fieldFunc: (x) => x.Game!.BoardGame!.Name },
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    {
-      id: 'Tags',
-      name: TagCategoryMapping['character'].text,
-      dataType: 'tag',
-      fieldFunc: (x) => x.Tags.filter((t) => t.Category === 'character'),
-    },
-    {
-      id: 'Tags',
-      name: TagCategoryMapping['faction'].text,
-      dataType: 'tag',
-      fieldFunc: (x) => x.Tags.filter((t) => t.Category === 'faction'),
-    },
-    {
-      id: 'Tags',
-      name: TagCategoryMapping['role'].text,
-      dataType: 'tag',
-      fieldFunc: (x) => x.Tags.filter((t) => t.Category === 'role'),
-    },
-    {
-      id: 'Tags',
-      name: TagCategoryMapping['victory-method'].text,
-      dataType: 'tag',
-      fieldFunc: (x) => x.Tags.filter((t) => t.Category === 'victory-method'),
-    },
-    {
-      id: 'Tags',
-      name: TagCategoryMapping['death-cause'].text,
-      dataType: 'tag',
-      fieldFunc: (x) => x.Tags.filter((t) => t.Category === 'death-cause'),
-    },
+    ...getTagColumns('DisplayOnPlayerGames'),
     { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
   ];
 }

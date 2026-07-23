@@ -41,10 +41,13 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
 
   @Input() columns: Column<T>[] = [];
   @Input() rows: T[] = [];
-  @Input() sort?: { field: keyof T & string; order: -1 | 1 };
+  @Input() sortBy?: keyof T & string;
+  @Input() sortOrder = -1;
   @Input() baseTable = false;
   @Input() canEdit = false;
   @Input() dataKey?: string;
+
+  @Input() groupRowsBy: keyof T | null = null;
 
   @Input() showExpansion: (item: T) => boolean = () => true;
 
@@ -94,10 +97,26 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
     return !isEmptyLike(this.property(row, column));
   }
 
+  showGroup(table: Table, index: number) {
+    if (this.groupRowsBy) {
+      if (table.sortOrder === 1) {
+        index = this.rows.length - index;
+      } else {
+        // Continue
+      }
+      return (
+        table.sortField === this.sortBy &&
+        this.rows.at(index - 1)?.[this.groupRowsBy] !== this.rows.at(index)?.[this.groupRowsBy]
+      );
+    } else {
+      return false;
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   property(row: T, column: Column<T>): any {
     if (column.dataType === 'custom') {
-      return true;
+      return 'Custom Column';
     } else if (column.fieldFunc) {
       return column.fieldFunc(row);
     } else if (column.id in row) {

@@ -7,7 +7,7 @@
     [canEdit]="canEdit"
     (edit)="playerEdit.emit($event)"
     dataKey="PlayerId"
-    [sort]="{ field: 'WinCount', order: -1 }">
+    sortBy="WinCount">
     <ng-template templateId="Name" let-player>
       @if (player.Nickname) {
         {{ player.Nickname }} - {{ player.Name }}
