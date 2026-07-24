@@ -20,6 +20,7 @@ import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
 import { PlayerGamePlayerEntity } from 'libs/models/PlayerGamePlayer.entity';
 import { FilterModel } from '../models/filter.mode';
 import { EntityWrapper } from '../models/entity-wrapper';
+import { sortPlayerGames } from '../helpers/data.helper';
 
 @Injectable({
   providedIn: 'root',
@@ -156,7 +157,7 @@ export class ApiService {
       this.playerGamePlayers.upsert(result.PlayerGamePlayers, (x) => x.GameId === result.Game.GameId);
       this.tagGames.upsert(result.TagGames, (x) => x.GameId === result.Game.GameId);
 
-      const playerGameIds = new Set(result.PlayerGames.map(x => x.PlayerGameId));
+      const playerGameIds = new Set(result.PlayerGames.map((x) => x.PlayerGameId));
       this.tagPlayerGames.upsert(result.TagPlayerGames, (x) => playerGameIds.has(x.PlayerGameId));
 
       this.updateReferences();
@@ -405,24 +406,10 @@ export class ApiService {
       t.Tag = this.tags.getOne(t.TagId);
     });
 
-    this.games.sort((a, b) => b.dateSortOrder.localeCompare(a.dateSortOrder));
-    this.games.list.forEach((game) => {
-      game.BoardGame = this.boardGames.getOne(game.BoardGameId);
-      game.Scores = this.playerGames.list
-        .filter((x) => x.GameId === game.GameId)
-        .toSorted((a, b) => {
-          switch (game?.BoardGame?.ScoreType) {
-            case 'rank':
-              return (a.Points ?? Infinity) - (b.Points ?? Infinity);
-            case 'points':
-              return (b.VirtualPoints ?? 0) - (a.VirtualPoints ?? 0);
-            case 'win-lose':
-            default:
-              return (b.Points ?? 0) - (a.Points ?? 0);
-          }
-        });
-      game.Tags = this.tagGames.list
-        .filter((x) => x.GameId === game.GameId)
+    this.boardGames.list.forEach((bg) => {
+      bg.Games = this.games.list.filter((x) => x.BoardGameId === bg.BoardGameId);
+      bg.Tags = this.tagBoardGames.list
+        .filter((x) => x.BoardGameId === bg.BoardGameId)
         .map((t) => t.Tag)
         .filter((x) => x !== null);
     });
@@ -443,18 +430,23 @@ export class ApiService {
         (b.Game?.SortIndex ?? 0) - (a.Game?.SortIndex ?? 0),
     );
 
-    this.boardGames.list.forEach((bg) => {
-      bg.Games = this.games.list.filter((x) => x.BoardGameId === bg.BoardGameId);
-      bg.Tags = this.tagBoardGames.list
-        .filter((x) => x.BoardGameId === bg.BoardGameId)
-        .map((t) => t.Tag)
-        .filter((x) => x !== null);
-    });
-
     this.players.list.forEach((p) => {
       p.PlayerGames = this.playerGames.list.filter((x) => x.PlayerIds.has(p.PlayerId));
       p.Tags = this.tagPlayers.list
         .filter((x) => x.PlayerId === p.PlayerId)
+        .map((t) => t.Tag)
+        .filter((x) => x !== null);
+    });
+
+    this.games.sort((a, b) => b.dateSortOrder.localeCompare(a.dateSortOrder));
+    this.games.list.forEach((game) => {
+      game.BoardGame = this.boardGames.getOne(game.BoardGameId);
+      game.Scores = sortPlayerGames(
+        this.playerGames.list.filter((x) => x.GameId === game.GameId),
+        game,
+      );
+      game.Tags = this.tagGames.list
+        .filter((x) => x.GameId === game.GameId)
         .map((t) => t.Tag)
         .filter((x) => x !== null);
     });

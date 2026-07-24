@@ -38,6 +38,7 @@ import { PlayerGamePlayerEntity } from 'libs/models/PlayerGamePlayer.entity';
 import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { sortPlayerGames } from '../../shared/helpers/data.helper';
 
 type EntityType = GameEntity;
 
@@ -276,9 +277,8 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
           pg.Points = i - DNFs;
         }
       }
-      this.playerGames.sort((a, b) => (a.Points ?? Infinity) - (b.Points ?? Infinity));
     } else {
-      this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
+      // Continue
     }
   }
 
@@ -307,12 +307,10 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
             pg.Points = 0;
           }
         });
-        this.playerGames.sort((a, b) => (b.Points ?? 0) - (a.Points ?? 0));
         break;
       case 'points':
         this.maxPoints = Math.max(...this.playerGames.map((x) => x.Points ?? 0));
         this.maxVirtualPoints = Math.max(...this.playerGames.map((x) => x.VirtualPoints ?? 0));
-        this.playerGames.sort((a, b) => (b.VirtualPoints ?? 0) - (a.VirtualPoints ?? 0));
         this.showTiebreaker =
           this.playerGames.reduce((prev, curr) => prev + (curr.Points === this.maxPoints ? 1 : 0), 0) > 1;
 
@@ -325,7 +323,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       default:
         break;
     }
-    this.playerGames = [...this.playerGames];
+    this.playerGames = [...sortPlayerGames(this.playerGames)];
   }
 
   getTrophyColor(playerGame: PlayerGameEntity): string {
