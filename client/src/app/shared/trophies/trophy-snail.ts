@@ -8,7 +8,7 @@ export class TrophySnail extends ITrophy {
 
   calculate(api: ApiService) {
     api.players.list.forEach((p) => {
-      const length = p.PlayerGames.findIndex((x) => x.Won);
+      const length = p.ScoringGames.findIndex((x) => x.Won);
       if (length <= 0) {
         // Skip
       } else if (length > this.value) {

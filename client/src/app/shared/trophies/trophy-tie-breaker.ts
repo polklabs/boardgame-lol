@@ -12,7 +12,7 @@ export class TrophyTieBreaker extends ITrophy {
     api.players.list.forEach((p) => {
       objects.set(
         p,
-        p.PlayerGames.reduce((prev, curr) => prev + (curr.TieBreaker && curr.Won ? 1 : 0), 0),
+        p.ScoringGames.reduce((prev, curr) => prev + (curr.TieBreaker && curr.Won ? 1 : 0), 0),
       );
     });
     this.applyValues(objects);

@@ -95,9 +95,8 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   tagList$ = this.apiService.tags.raw$;
   boardGameList$ = this.apiService.boardGames.raw$;
 
-  protected selectedPlayerGames: PlayerGameEntity[] = [];
-
-  playerGames: PlayerGameEntity[] = [];
+  protected selectedPlayerScores: PlayerGameEntity[] = [];
+  playerScores: PlayerGameEntity[] = [];
 
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
@@ -195,7 +194,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   grabLists() {
-    this.playerGames = this.apiService.playerGames.raw
+    this.playerScores = this.apiService.playerGames.raw
       .filter((x) => x.GameId === this.game?.GameId)
       .map((m) => new PlayerGameEntity(m, true));
     this.updateScoring();
@@ -233,7 +232,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
 
   addPoints(points: number | null) {
     const minMax = getMinMax(PlayerGameEntity)['Points'];
-    this.selectedPlayerGames.forEach((p) => {
+    this.selectedPlayerScores.forEach((p) => {
       p.Points = Math.max(minMax.min ?? -Infinity, Math.min(minMax.max ?? Infinity, (p.Points ?? 0) + (points ?? 0)));
     });
     this.updateScoring();
@@ -241,7 +240,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
 
   setPoints(points: number) {
     const minMax = getMinMax(PlayerGameEntity)['Points'];
-    this.selectedPlayerGames.forEach((p) => {
+    this.selectedPlayerScores.forEach((p) => {
       p.Points = Math.max(minMax.min ?? -Infinity, Math.min(minMax.max ?? Infinity, points));
     });
     this.updateScoring();
@@ -253,28 +252,35 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onPlayerSelection(event: PlayerGameEntity[]) {
+    if (this.playerGameEditorVisible) {
+      this.selectedPlayerScores = [];
+      return;
+    } else {
+      // Continue
+    }
+
     for (const item of event) {
-      if (!this.selectedPlayerGames.includes(item)) {
-        this.selectedPlayerGames = [item];
+      if (!this.selectedPlayerScores.includes(item)) {
+        this.selectedPlayerScores = [item];
         this.calculatePointButtons();
         return;
       } else {
         // Continue
       }
     }
-    this.selectedPlayerGames = [];
+    this.selectedPlayerScores = [];
   }
 
   updateOrdering() {
     if (this.game?.BoardGame?.ScoreType === 'rank') {
-      let DNFs = 0;
-      for (let i = 0; i < this.playerGames.length; i++) {
-        const pg = this.playerGames[i];
-        if (pg.DNF) {
-          DNFs += 1;
-          pg.Points = null;
+      let nonPlayers = 0;
+      for (let i = 0; i < this.playerScores.length; i++) {
+        const pg = this.playerScores[i];
+        if (pg.ScoringPlayer) {
+          pg.Points = i - nonPlayers;
         } else {
-          pg.Points = i - DNFs;
+          nonPlayers += 1;
+          pg.Points = null;
         }
       }
     } else {
@@ -283,7 +289,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   tieBreak(playerGame: PlayerGameEntity, checked: boolean) {
-    this.playerGames.forEach((pg) => {
+    this.playerScores.forEach((pg) => {
       if (pg.Points === playerGame.Points) {
         pg.TieBreaker = false;
       } else {
@@ -300,8 +306,10 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
         this.updateOrdering();
         break;
       case 'win-lose':
-        this.playerGames.forEach((pg) => {
-          if ((pg.Points ?? 0) > 0) {
+        this.playerScores.forEach((pg) => {
+          if (pg.Points === null) {
+            // continue
+          } else if (pg.Points > 0) {
             pg.Points = 1;
           } else {
             pg.Points = 0;
@@ -309,21 +317,21 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
         });
         break;
       case 'points':
-        this.maxPoints = Math.max(...this.playerGames.map((x) => x.Points ?? 0));
-        this.maxVirtualPoints = Math.max(...this.playerGames.map((x) => x.VirtualPoints ?? 0));
+        this.maxPoints = Math.max(...this.playerScores.map((x) => x.Points ?? -Infinity));
+        this.maxVirtualPoints = Math.max(...this.playerScores.map((x) => x.VirtualPoints ?? -Infinity));
         this.showTiebreaker =
-          this.playerGames.reduce((prev, curr) => prev + (curr.Points === this.maxPoints ? 1 : 0), 0) > 1;
+          this.playerScores.reduce((prev, curr) => prev + (curr.Points === this.maxPoints ? 1 : 0), 0) > 1;
 
         if (this.showTiebreaker) {
           // continue
         } else {
-          this.playerGames.forEach((pg) => (pg.TieBreaker = false));
+          this.playerScores.forEach((pg) => (pg.TieBreaker = false));
         }
         break;
       default:
         break;
     }
-    this.playerGames = [...sortPlayerGames(this.playerGames)];
+    this.playerScores = [...sortPlayerGames(this.playerScores)];
   }
 
   getTrophyColor(playerGame: PlayerGameEntity): string {
@@ -342,12 +350,17 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  editPlayerGame(playerGame?: PlayerGameEntity) {
+  editPlayerGame(playerGame?: PlayerGameEntity, player = true) {
     if (playerGame) {
       this.playerGameEdit = playerGame;
     } else {
-      this.playerGameEdit = new PlayerGameEntity({ ClubId: this.game?.ClubId, GameId: '-1' });
-      const existingPlayers = new Set(this.playerGames.flatMap((x) => x.Players.map((p) => p.PlayerId)));
+      this.playerGameEdit = new PlayerGameEntity({
+        ClubId: this.game?.ClubId,
+        GameId: '-1',
+        Points: player ? 0 : null,
+        ScoringPlayer: player,
+      });
+      const existingPlayers = new Set(this.playerScores.flatMap((x) => x.Players.map((p) => p.PlayerId)));
       this.playerGameEdit.Players = [this.apiService.players.raw.find((x) => !existingPlayers.has(x.PlayerId))].filter(
         (x) => x !== undefined,
       );
@@ -357,12 +370,13 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
 
   savePlayerGame(pg?: PlayerGameEntity) {
     if (pg) {
-      const index = this.playerGames.indexOf(pg);
-      if (index === -1) {
-        this.playerGames = [...this.playerGames, pg];
+      const scoreIndex = this.playerScores.indexOf(pg);
+      if (scoreIndex !== -1) {
+        this.playerScores.splice(scoreIndex, 1);
       } else {
-        // continue
+        // Continue
       }
+      this.playerScores.push(pg);
 
       if (pg.PlayerGameId === '') {
         pg.PlayerLinks = pg.Players.map(
@@ -405,12 +419,12 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
 
   deletePlayerGame(playerGame?: PlayerGameEntity) {
     if (playerGame) {
-      const index = this.playerGames.indexOf(playerGame);
+      const index = this.playerScores.indexOf(playerGame);
       if (index === -1) {
         // continue
       } else {
-        this.playerGames.splice(index, 1);
-        this.playerGames = [...this.playerGames];
+        this.playerScores.splice(index, 1);
+        this.playerScores = [...this.playerScores];
       }
     } else {
       // continue
@@ -418,7 +432,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
 
     this.playerGameEdit = undefined;
     this.playerGameEditorVisible = false;
-    this.selectedPlayerGames = [];
+    this.selectedPlayerScores = [];
     this.updateScoring();
     this.updatePlayerCount();
   }
@@ -430,7 +444,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
 
   updatePlayerCount() {
     if (this.getControl('Players')?.disabled) {
-      this.getControl('Players')?.setValue(this.playerGames.reduce((prev, curr) => prev + curr.Players.length, 0));
+      this.getControl('Players')?.setValue(this.playerScores.reduce((prev, curr) => prev + curr.Players.length, 0));
     } else {
       // Skip
     }
@@ -454,7 +468,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       const game = new GameEntity(gameData);
-      game.Scores = this.playerGames.map((x) => new PlayerGameEntity(x));
+      game.Scores = this.playerScores.map((x) => new PlayerGameEntity(x));
 
       const result = await this.apiService.postGame(this.game.GameId === '', game);
       if (result) {

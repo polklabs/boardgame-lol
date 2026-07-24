@@ -19,7 +19,7 @@ export class TrophyComebackKid extends ITrophy {
     for (const player of api.players.list) {
       const loseStreaks: number[] = [];
       let losses = 0;
-      for (const pg of player.PlayerGames) {
+      for (const pg of player.ScoringGames) {
         if (pg.Game?.place(0).some((x) => x.PlayerIds.has(player.PlayerId))) {
           loseStreaks.push(losses);
           losses = 0;

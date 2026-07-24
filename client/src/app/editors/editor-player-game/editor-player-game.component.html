@@ -48,6 +48,9 @@
           }
           <p-button (onClick)="addPlayer()" pTooltip="New Player" icon="pi pi-plus"></p-button>
         </div>
+
+        <app-checkbox formControlName="ScoringPlayer" label="Scoring Player" [hiddenFields]="hideFields"></app-checkbox>
+
         @if (scoreType === 'points') {
           <app-number-input
             formControlName="Points"
@@ -58,8 +61,6 @@
         }
         @if (scoreType === 'win-lose') {
           <app-checkbox formControlName="Points" label="Won Game" [hiddenFields]="hideFields"></app-checkbox>
-        } @else if (scoreType === 'rank') {
-          <app-checkbox formControlName="DNF" label="Did Not Finish" [hiddenFields]="hideFields"></app-checkbox>
         }
 
         <app-tags

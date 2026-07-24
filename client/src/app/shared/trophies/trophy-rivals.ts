@@ -22,7 +22,7 @@ export class TrophyRivals extends ITrophy {
       const id = p.PlayerId;
       winList[id] = [];
 
-      p.PlayerGames.forEach((pg) => {
+      p.ScoringGames.forEach((pg) => {
         if (pg.Game?.BoardGame?.ScoreType === 'win-lose') {
           return;
         } else {

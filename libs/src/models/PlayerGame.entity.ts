@@ -11,7 +11,6 @@ import { Ignore } from '../decorators/ignore.decorator';
 import { TagEntity } from './Tag.entity';
 import { Sanitize } from '../decorators/sanitize.decorator';
 import { CHARACTER_LIMIT_TINY, POINT_MAX } from '../constants';
-import { Expose } from 'class-transformer';
 import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
 
 @TableName('PlayerGame')
@@ -42,7 +41,7 @@ export class PlayerGameEntity extends BaseEntity {
   /** Use when comparing point values */
   get VirtualPoints() {
     if (this.Points === null) {
-      return 0;
+      return null;
     } else {
       return this.Points * 2 + (this.TieBreaker ? 1 : 0);
     }
@@ -66,10 +65,10 @@ export class PlayerGameEntity extends BaseEntity {
   Game: GameEntity | null = null;
 
   @Ignore()
-  DNF: boolean = false;
+  Won = false;
 
   @Ignore()
-  Won = false;
+  ScoringPlayer = true;
 
   @Ignore()
   calculated = false;
@@ -81,14 +80,14 @@ export class PlayerGameEntity extends BaseEntity {
   constructor(partial: Partial<PlayerGameEntity> = {}, copyIgnored = false) {
     super(partial, PlayerGameEntity);
     this.assign(partial, PlayerGameEntity, copyIgnored);
-    this.DNF = partial.DNF ?? false;
+    this.ScoringPlayer = partial.ScoringPlayer ?? true;
     this.PlayerLinks = partial.PlayerLinks ?? [];
     this.Tags = partial.Tags ?? [];
   }
 
   calculate() {
     calculationsComplete(this.Game);
-    this.DNF = this.Game?.BoardGame?.ScoreType === 'rank' && this.Points === null;
+    this.ScoringPlayer = this.Points !== null;
     this.Won = this.Game?.place(0).includes(this) ?? false;
     this.calculated = true;
   }

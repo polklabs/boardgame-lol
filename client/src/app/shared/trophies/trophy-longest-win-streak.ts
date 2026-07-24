@@ -13,7 +13,7 @@ export class TrophyLongestWinStreak extends ITrophy {
     for (const player of api.players.list) {
       let maxStreak = 0;
       let streak = 0;
-      player.PlayerGames.forEach((pg) => {
+      player.ScoringGames.forEach((pg) => {
         if (pg.Won) {
           streak++;
         } else {

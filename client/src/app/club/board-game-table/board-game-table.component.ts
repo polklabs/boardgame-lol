@@ -100,9 +100,11 @@ export class BoardGameTableComponent implements OnChanges {
         const winRow = this.WinCounts[boardGameId].find((x) => x.playerId === player.PlayerId);
         const won = wonGames.has(pg.PlayerGameId);
 
+        const played = pg.ScoringPlayer ? 1 : 0;
+
         if (winRow) {
           winRow.wins += won ? 1 : 0;
-          winRow.plays++;
+          winRow.plays += played;
           winRow.winPercent = (winRow.wins / winRow.plays) * 100;
           winRow.totalPoints = this.getPoints(pg, winRow.totalPoints);
         } else {
@@ -111,7 +113,7 @@ export class BoardGameTableComponent implements OnChanges {
             name: player.ShortName ?? 'Unknown',
             tags: player.Tags,
             wins: won ? 1 : 0,
-            plays: 1,
+            plays: played,
             winPercent: won ? 100 : 0,
             totalPoints: this.getPoints(pg),
             boardGame: pg.Game?.BoardGame,

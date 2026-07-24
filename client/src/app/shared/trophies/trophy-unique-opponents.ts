@@ -12,7 +12,7 @@ export class TrophyUniqueOpponents extends ITrophy {
 
     for (const player of api.players.list) {
       const friendSet = new Set<string>();
-      player.PlayerGames.forEach((pg) =>
+      player.ScoringGames.forEach((pg) =>
         pg.Game?.Scores.forEach((score) => {
           score.PlayerIds.forEach((p) => friendSet.add(p));
         }),

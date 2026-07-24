@@ -31,6 +31,7 @@ import { TrophyVictor } from '../trophies/trophy-victor';
 import { TrophyFatalPair } from '../trophies/trophy-fatal-pair';
 import { TrophyWinningPair } from '../trophies/trophy-winning-pair';
 import { TrophyPlayerIsCharacter } from '../trophies/trophy-player-is-character';
+import { TrophyPlayerIsRole } from '../trophies/trophy-player-is-role';
 
 @Injectable({
   providedIn: 'root',
@@ -68,6 +69,7 @@ export class TrophyService {
     FatalPair: new TrophyFatalPair(3),
     WinningPair: new TrophyWinningPair(3),
     PlayerIsCharacter: new TrophyPlayerIsCharacter(3),
+    PlayerIsRole: new TrophyPlayerIsRole(3),
   } as const;
 
   readonly trophies$ = new BehaviorSubject<ITrophy[]>([]);

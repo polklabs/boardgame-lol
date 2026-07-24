@@ -17,11 +17,22 @@ import { NameValue } from '../../shared/models/name-value.model';
 import { FormsModule } from '@angular/forms';
 import { PopoverModule } from 'primeng/popover';
 import { TagComponent } from '../../shared/components/tag/tag.component';
-import { MapPipe } from "../../shared/pipes/map.pipe";
+import { MapPipe } from '../../shared/pipes/map.pipe';
 
 type DayItem = { color: string; tooltip?: string; icon?: string; colorAll: string; tooltipAll?: string };
 
-const COLORS = ['#0A84FF', '#FF3B30', '#30D158', '#5E5CE6', '#FFD60A', '#FF9F0A', '#64D2FF', '#BF5AF2', '#FF375F'];
+const COLORS = [
+  '#0A84FF',
+  '#FF3B30',
+  '#30D158',
+  '#FFD60A',
+  '#5E5CE6',
+  '#FF9F0A',
+  '#64D2FF',
+  '#FF375F',
+  '#BF5AF2',
+  '#665755',
+];
 
 @Component({
   selector: 'app-stats',
@@ -34,8 +45,8 @@ const COLORS = ['#0A84FF', '#FF3B30', '#30D158', '#5E5CE6', '#FFD60A', '#FF9F0A'
     FormsModule,
     PopoverModule,
     TagComponent,
-    MapPipe
-],
+    MapPipe,
+  ],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
 })
@@ -219,15 +230,19 @@ export class StatsComponent implements OnInit {
     this.gameTypeMeter[2].value = plays.reduce((prev, curr) => prev + (curr.ScoreType === 'rank' ? 1 : 0), 0);
     this.gameTypeMeter.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
 
-    const boardGames = this.apiService.boardGames.list;
+    const boardGames = this.apiService.boardGames.list.toSorted((a, b) => b.PlayCount - a.PlayCount);
     this.boardGameMeterMax = boardGames.reduce((prev, curr) => prev + curr.PlayCount, 0);
-    if (boardGames.length <= COLORS.length) {
-      this.boardGameMeter = boardGames
-        .map((b, i) => ({ label: b.Name, color: COLORS[i], value: b.PlayCount }))
-        .toSorted((a, b) => b.value - a.value);
-    } else {
-      this.boardGameMeter = [];
-    }
+    boardGames.forEach((bg, i) => {
+      if (i < COLORS.length - 1) {
+        this.boardGameMeter.push({ label: bg.Name, color: COLORS[i], value: bg.PlayCount });
+      } else if (i === COLORS.length-1) {
+        this.boardGameMeter.push({ label: 'Other', color: COLORS[i], value: bg.PlayCount });
+      } else if (this.boardGameMeter.at(-1)?.value) {
+        this.boardGameMeter.at(-1)!.value! += bg.PlayCount;
+      } else {
+        // Skip
+      }
+    });
   }
 
   generateWinsOverTimeChart(wins: Record<string, number[]>, dates: string[]) {

@@ -37,6 +37,10 @@ export class PlayerEntity extends BaseEntity {
 
   IsRealPerson: boolean = true;
 
+  get ScoringGames() {
+    return this.PlayerGames.filter(x => x.ScoringPlayer);
+  }
+
   @Ignore()
   @MinMax(0, 8, 'array')
   Tags: TagEntity[] = [];
@@ -87,9 +91,9 @@ export class PlayerEntity extends BaseEntity {
 
   calculateWins() {
     calculationsComplete(this.PlayerGames.map((x) => x.Game));
-    this.Wins = this.PlayerGames.filter((pg) => pg.Game?.place(0).includes(pg)).reverse();
+    this.Wins = this.ScoringGames.filter((pg) => pg.Game?.place(0).includes(pg)).reverse();
     this.WinCount = this.Wins.length;
-    this.LossCount = this.PlayerGames.length - this.WinCount;
+    this.LossCount = this.ScoringGames.length - this.WinCount;
   }
 
   calculateBestGames() {

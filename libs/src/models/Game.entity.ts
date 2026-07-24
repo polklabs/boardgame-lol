@@ -142,7 +142,7 @@ export class GameEntity extends BaseEntity {
     const scoreBuckets: number[] = [
       ...new Set([
         ...initialValues,
-        ...this.Scores.map((x) => (this.ScoreType === 'points' ? x.VirtualPoints : x.Points)).filter((x) => x !== null),
+        ...this.Scores.filter(x => x.ScoringPlayer).map((x) => (this.ScoreType === 'points' ? x.VirtualPoints : x.Points)).filter((x) => x !== null),
       ]),
     ];
 

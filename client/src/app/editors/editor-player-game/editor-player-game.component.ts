@@ -10,7 +10,7 @@ import {
   inject,
 } from '@angular/core';
 import { PlayerEntity, PlayerGameEntity, ScoreType } from 'libs/index';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
 
@@ -74,10 +74,12 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
+  pointValidator = Validators.required.bind(this);
+
   playerEditorVisible = false;
   playerEdit?: PlayerEntity;
 
-  subscription?: Subscription;
+  subscriptions = new Subscription();
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('playerGame' in changes && this.playerGame) {
@@ -94,23 +96,50 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
       this.formGroup.patchValue(instance);
       this.setTitle();
 
-      if (this.scoreType === 'win-lose') {
-        this.getControl('Points')?.setValue(this.playerGame.Points === null ? true : this.playerGame.Points === 1);
-      } else if (this.scoreType === 'points') {
-        this.getControl('Points')?.setValue(this.playerGame.Points || 0);
-      } else {
-        // Continue
-      }
       this.updateTeamName(instance.Team);
+      this.updateNonScoring(instance.ScoringPlayer);
 
-      this.subscription = this.getControl('Team')?.valueChanges.subscribe((value) => {
-        this.setTitle();
-        this.updateTeamName(value);
-      });
+      this.subscriptions.add(
+        this.getControl('Team')?.valueChanges.subscribe((value) => {
+          this.setTitle();
+          this.updateTeamName(value);
+        }),
+      );
+      this.subscriptions.add(
+        this.getControl('ScoringPlayer')?.valueChanges.subscribe((value) => {
+          this.updateNonScoring(value);
+        }),
+      );
     } else {
       // No Changes
     }
     this.cdr.detectChanges();
+  }
+
+  updateNonScoring(scoring: boolean) {
+    const points = this.getValue('Points');
+    if (scoring && points === null) {
+      if (this.scoreType === 'win-lose') {
+        this.getControl('Points')?.setValue(false);
+      } else if (this.scoreType === 'points' || this.scoreType === 'rank') {
+        this.getControl('Points')?.setValue(0);
+      } else {
+        // Non Player
+      }
+    } else if (!scoring && points !== null) {
+      this.getControl('Points')?.setValue(null);
+    } else {
+      // Continue
+    }
+
+    if (scoring) {
+      this.getControl('Points')?.addValidators(this.pointValidator);
+      this.hideFields.delete('Points');
+    } else {
+      this.getControl('Points')?.removeValidators(this.pointValidator);
+      this.hideFields.add('Points');
+    }
+    this.getControl('Points')?.updateValueAndValidity();
   }
 
   updateTeamName(team: boolean) {
@@ -126,7 +155,7 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 
   getControl(key: keyof EntityType) {
@@ -148,8 +177,14 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
 
   async submit() {
     if (this.scoreType === 'win-lose') {
-      const won = this.getControl('Points')?.value ?? false;
-      this.getControl('Points')?.setValue(won ? 1 : 0);
+      const won = this.getControl('Points')?.value;
+      if (won === true) {
+        this.getControl('Points')?.setValue(1);
+      } else if (won === false) {
+        this.getControl('Points')?.setValue(0);
+      } else {
+        this.getControl('Points')?.setValue(null);
+      }
     } else {
       // Continue
     }
@@ -162,6 +197,7 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
     }
 
     this.formGroup.markAllAsTouched();
+    this.formGroup.updateValueAndValidity();
     if (this.formGroup.invalid || !this.playerGame) {
       console.log(this.formGroup.controls);
     } else {

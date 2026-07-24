@@ -50,11 +50,11 @@ export function sortPlayerGames(playerGames: PlayerGameEntity[], game?: GameEnti
         sortValue = (a.Points ?? Infinity) - (b.Points ?? Infinity);
         break;
       case 'points':
-        sortValue = (b.VirtualPoints ?? 0) - (a.VirtualPoints ?? 0);
+        sortValue = (b.VirtualPoints ?? -Infinity) - (a.VirtualPoints ?? -Infinity);
         break;
       case 'win-lose':
       default:
-        sortValue = (b.Points ?? 0) - (a.Points ?? 0);
+        sortValue = (b.Points ?? -Infinity) - (a.Points ?? -Infinity);
     }
     return sortValue || a.DisplayName.localeCompare(b.DisplayName);
   });

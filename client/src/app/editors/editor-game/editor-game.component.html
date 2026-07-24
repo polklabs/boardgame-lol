@@ -36,12 +36,12 @@
         <p-button (onClick)="addBoardGame()" pTooltip="New Game" icon="pi pi-plus"></p-button>
       </div>
       <p-orderList
-        [value]="playerGames"
-        [selection]="selectedPlayerGames"
+        [value]="playerScores"
+        [selection]="selectedPlayerScores"
         [dragdrop]="game?.BoardGame?.ScoreType === 'rank'"
         [responsive]="true"
         [metaKeySelection]="false"
-        (onReorder)="updateOrdering()"
+        (onReorder)="updateScoring()"
         (selectionChange)="onPlayerSelection($event)"
         [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
         <ng-template #header>
@@ -50,24 +50,34 @@
             <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
           </div>
           <div #addPointGroup class="add-point-group">
-            @if (selectedPlayerGames.length > 0 && game?.BoardGame?.ScoreType === 'points') {
-              @for (adjust of pointGroupButtonValues; track adjust) {
-                <div class="button-group">
-                  <p-button label="+{{ adjust }}" variant="outlined" severity="success" (onClick)="addPoints(adjust)" />
-                  <p-button
-                    label="-{{ adjust }}"
-                    variant="outlined"
-                    severity="warn"
-                    (onClick)="addPoints(-1 * adjust)" />
-                </div>
+            @if (selectedPlayerScores.length > 0) {
+              @if (selectedPlayerScores[0].ScoringPlayer) {
+                @if (game?.BoardGame?.ScoreType === 'points') {
+                  @for (adjust of pointGroupButtonValues; track adjust) {
+                    <div class="button-group">
+                      <p-button
+                        label="+{{ adjust }}"
+                        variant="outlined"
+                        severity="success"
+                        (onClick)="addPoints(adjust)" />
+                      <p-button
+                        label="-{{ adjust }}"
+                        variant="outlined"
+                        severity="warn"
+                        (onClick)="addPoints(-1 * adjust)" />
+                    </div>
+                  }
+
+                  <div class="add-point-group-spacer"></div>
+
+                  <div class="button-group">
+                    <p-button label="+-" variant="outlined" severity="info" (onClick)="customPoints()" />
+                    <p-button label="=0" variant="outlined" severity="danger" (onClick)="setPoints(0)" />
+                  </div>
+                }
+              } @else {
+                <div>Non player characters are not scored and do not count toward win/losses</div>
               }
-
-              <div class="add-point-group-spacer"></div>
-
-              <div class="button-group">
-                <p-button label="+-" variant="outlined" severity="info" (onClick)="customPoints()" />
-                <p-button label="=0" variant="outlined" severity="danger" (onClick)="setPoints(0)" />
-              </div>
             }
           </div>
         </ng-template>
@@ -80,6 +90,7 @@
           <div class="empty-list">Add a player to start</div>
         </ng-template>
       </p-orderList>
+
       <div class="flex-grow gap-8 width-100">
         <app-calendar
           formControlName="Date"
@@ -148,47 +159,52 @@
     <div class="flex-column-100">
       <div class="flex gap-8 justify-content-space-between">
         <span class="font-bold flex-nowrap gap-8">
-          @switch (game?.BoardGame?.ScoreType) {
-            <!-- POINTS -->
-            @case ('points') {
-              @if (playerGame.VirtualPoints === maxVirtualPoints) {
-                <i class="pi pi-trophy" style="color: gold"></i>
-              } @else {
-                <div class="empty-trophy"></div>
+          @if (playerGame.ScoringPlayer) {
+            @switch (game?.BoardGame?.ScoreType) {
+              <!-- POINTS -->
+              @case ('points') {
+                @if (playerGame.VirtualPoints === maxVirtualPoints) {
+                  <i class="pi pi-trophy" style="color: gold"></i>
+                } @else {
+                  <div class="empty-trophy"></div>
+                }
+                @if (showTiebreaker && playerGame.Points === maxPoints) {
+                  <p-checkbox
+                    pTooltip="Tie breaker winner."
+                    [ngModel]="playerGame.TieBreaker"
+                    (onChange)="tieBreak(playerGame, $event.checked)"
+                    [binary]="true" />
+                }
+                <span class="player-name">
+                  {{ playerGame.DisplayName }}: {{ playerGame.Points | number: '1.0-3' | score: game?.BoardGame }}
+                </span>
               }
-              @if (showTiebreaker && playerGame.Points === maxPoints) {
+              <!-- RANK -->
+              @case ('rank') {
+                @if (playerGame.Points !== null && playerGame.Points < 3) {
+                  <i class="pi pi-trophy" [ngStyle]="{ color: getTrophyColor(playerGame) }"></i>
+                } @else {
+                  <div class="empty-trophy"></div>
+                }
+                <span>{{ playerGame.DisplayName }}</span>
+              }
+              <!-- WIN/LOSE -->
+              @case ('win-lose') {
                 <p-checkbox
-                  pTooltip="Tie breaker winner."
-                  [ngModel]="playerGame.TieBreaker"
-                  (onChange)="tieBreak(playerGame, $event.checked)"
+                  [ngModel]="playerGame.Points === 1"
+                  (onChange)="playerGame.Points = $event.checked ? 1 : 0; this.updateScoring()"
                   [binary]="true" />
+                @if (playerGame.Points === 1) {
+                  <i class="pi pi-trophy" style="color: gold"></i>
+                } @else {
+                  <div class="empty-trophy"></div>
+                }
+                <span>{{ playerGame.DisplayName }}</span>
               }
-              <span class="player-name">
-                {{ playerGame.DisplayName }}: {{ playerGame.Points | number: '1.0-3' | score: game?.BoardGame }}
-              </span>
             }
-            <!-- RANK -->
-            @case ('rank') {
-              @if (playerGame.Points !== null && playerGame.Points < 3) {
-                <i class="pi pi-trophy" [ngStyle]="{ color: getTrophyColor(playerGame) }"></i>
-              } @else {
-                <div class="empty-trophy"></div>
-              }
-              <span [ngClass]="{ DNF: playerGame.DNF }">{{ playerGame.DisplayName }}</span>
-            }
-            <!-- WIN/LOSE -->
-            @case ('win-lose') {
-              <p-checkbox
-                [ngModel]="playerGame.Points === 1"
-                (onChange)="playerGame.Points = $event.checked ? 1 : 0; this.updateScoring()"
-                [binary]="true" />
-              @if (playerGame.Points === 1) {
-                <i class="pi pi-trophy" style="color: gold"></i>
-              } @else {
-                <div class="empty-trophy"></div>
-              }
-              <span>{{ playerGame.DisplayName }}</span>
-            }
+          } @else {
+            <i class="pi pi-ban"></i>
+            <span>{{ playerGame.DisplayName }}</span>
           }
         </span>
         <div class="flex gap-8 edit-btns">

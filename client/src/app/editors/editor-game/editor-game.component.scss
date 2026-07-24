@@ -32,12 +32,17 @@
     }
   }
 
-  .p-listbox-list-container {
-    min-height: 12rem;
-  }
-
   .p-orderlist-list-container {
     width: 100%;
+  }
+
+  .p-listbox:not(.p-disabled) .p-listbox-option:not(.p-listbox-option-selected):not(.p-disabled).p-focus {
+    background: unset;
+    color: unset;
+  }
+
+  .p-listbox-option {
+    padding: 0;
   }
 
   .order-list-header,
@@ -46,6 +51,7 @@
     display: flex;
     position: relative;
     width: 100%;
+    padding: var(--p-listbox-option-padding);
 
     .player-name {
       flex-shrink: 0;
@@ -68,6 +74,7 @@
 
     .edit-btns {
       gap: 4px;
+      align-items: center;
       .p-button {
         height: 30px;
         border-radius: 8px;
@@ -77,7 +84,6 @@
 
   .empty-list {
     text-align: center;
-    margin-top: 4rem;
   }
 
   .p-orderlist > .p-orderlist-controls {
