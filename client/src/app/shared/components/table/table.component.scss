@@ -1,0 +1,10 @@
+:host ::ng-deep {
+  td .p-datatable-table-container .p-datatable-table {
+    width: unset !important;
+    min-width: 200px !important;
+  }
+
+  tr.group-row {
+    background: var(--p-surface-950) !important;
+  }
+}

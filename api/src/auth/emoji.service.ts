@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { shuffle } from 'libs/index';
 
 const emojiChoices = [
   '🐥',
@@ -115,7 +116,7 @@ export class EmojiService {
     }
 
     while (toReturn.join('').includes(verificationEmojis.join(''))) {
-      toReturn = this.shuffle(toReturn);
+      toReturn = shuffle(toReturn);
     }
 
     return toReturn;
@@ -130,27 +131,10 @@ export class EmojiService {
       }
       toReturn.push(choice);
     }
-    return this.shuffle(toReturn);
+    return shuffle(toReturn);
   }
 
   private getRandomNumber(min: number, max: number) {
     return Math.floor(Math.random() * (max - min) + min);
-  }
-
-  private shuffle<T>(array: T[]): T[] {
-    let currentIndex = array.length;
-    let randomIndex;
-
-    // While there remain elements to shuffle.
-    while (currentIndex != 0) {
-      // Pick a remaining element.
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-    }
-
-    return array;
   }
 }

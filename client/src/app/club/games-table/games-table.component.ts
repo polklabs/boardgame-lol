@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { GameEntity } from 'libs/index';
+import { GameEntity, PlayerGameEntity } from 'libs/index';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { Table, TableModule } from 'primeng/table';
@@ -8,21 +8,11 @@ import { Observable } from 'rxjs';
 import { TagModule } from 'primeng/tag';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { ArrayPipe } from '../../shared/pipes/array.pipe';
-import { ScorePipe } from '../../shared/pipes/score.pipe';
-import { TagComponent } from '../../shared/components/tag/tag.component';
 import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
-import { format, isSameYear } from 'date-fns';
-
-const COLUMNS: { field: string; name: string; sort: boolean, class?: string }[] = [
-  { field: 'dateSortOrder', name: 'Date', sort: true },
-  { field: 'BoardGame.Name', name: 'Game', sort: true },
-  { field: 'Notes', name: 'Notes', sort: true, class: 'notes-column' },
-  { field: 'WinnerTeams', name: 'Winner(s)', sort: false },
-  { field: 'HighScore', name: 'Points', sort: true },
-  { field: 'Players', name: 'Players', sort: true },
-  { field: 'Tags', name: 'Tags', sort: true },
-];
+import { Column } from '../../shared/models/column.model';
+import { TableComponent } from '../../shared/components/table/table.component';
+import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
+import { getTagColumns } from '../../shared/helpers/data.helper';
 
 @Component({
   selector: 'app-games-table',
@@ -34,10 +24,9 @@ const COLUMNS: { field: string; name: string; sort: boolean, class?: string }[] 
     CommonModule,
     IconFieldModule,
     InputIconModule,
-    ArrayPipe,
-    ScorePipe,
-    TagComponent,
     TrophyIconComponent,
+    TableComponent,
+    TemplateIdDirective,
   ],
   templateUrl: './games-table.component.html',
   styleUrl: './games-table.component.scss',
@@ -50,44 +39,23 @@ export class GamesTableComponent {
   @Output() moveUp = new EventEmitter<GameEntity>();
   @Output() moveDown = new EventEmitter<GameEntity>();
 
-  expandedRows = {};
+  columns: Column<GameEntity>[] = [
+    { id: 'dateSortOrder', name: 'Date', sort: true, dataType: 'date' },
+    { id: 'BoardGameName', name: 'Game', sort: true, dataType: 'text' },
+    { id: 'Notes', sort: true, class: 'notes-column', dataType: 'text' },
+    { id: 'WinnerTeams', name: 'Winner(s)', dataType: 'array', keys: 'DisplayName' },
+    { id: 'HighScore', name: 'Points', sort: true, dataType: 'score', boardGame: (x) => x.BoardGame },
+    { id: 'Players', sort: true, dataType: 'number' },
+    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
+    ...getTagColumns('DisplayOnGames'),
+  ];
 
-  filterColumns(games: GameEntity[]) {
-    return COLUMNS.filter((col) =>
-      games.some((row) => {
-        if (col.field.includes('.')) {
-          return true;
-        } else {
-          const data = row[col.field as keyof GameEntity];
-          if (col.field === 'HighScore') {
-            return this.showScore(row) && !!data;
-          } else {
-            return Array.isArray(data) ? data.length > 0 : !!data;
-          }
-        }
-      }),
-    );
-  }
-
-  showScore(game: GameEntity): boolean {
-    return game.BoardGame?.ScoreType === 'points';
-  }
-
-  showYearRow(table: Table, games: GameEntity[], index: number) {
-    if (table.sortOrder === 1) {
-      index = games.length - index;
-    } else {
-      // Continue
-    }
-    return (
-      table.sortField === 'dateSortOrder' &&
-      !isSameYear(games.at(index - 1)?.DateObj ?? 0, games.at(index)?.DateObj ?? 0)
-    );
-  }
-
-  getYearText(game: GameEntity) {
-    return format(game.DateObj, 'yyyy');
-  }
+  expansionColumns: Column<PlayerGameEntity>[] = [
+    { id: 'DisplayName', name: 'Name', dataType: 'text' },
+    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
+    ...getTagColumns('DisplayOnPlayerGames'),
+    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
+  ];
 
   canAdjustOrder(table: Table, games: GameEntity[], index: number): boolean {
     if (table.sortField === 'dateSortOrder' && table.sortOrder === -1) {

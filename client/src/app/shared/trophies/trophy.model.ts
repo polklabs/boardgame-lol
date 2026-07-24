@@ -1,64 +1,62 @@
-import { BoardGameEntity, GameEntity, GetRandom, PlayerEntity, UnicodeToEmoji } from 'libs/index';
-
-export type Trophy = {
-  emoji: string;
-  title: string;
-  subtitle: string;
-  formula?: string;
-  value: number;
-  array: unknown[];
-  showValue: boolean;
-};
-
-export type ApplyObj = { item: unknown; count: number }[];
+import { GetRandom, TagEntity, UnicodeToEmoji } from 'libs/index';
+import { ApiService } from '../services/api.service';
 
 export abstract class ITrophy {
-  emoji: string[];
-  title: string;
-  subtitle: string[];
-  formula?: string;
+  private _emojis: string[];
+  private _title: string;
+  private _subtitles: string[];
+  private _formula?: string;
+
   sortOrder: number | null;
-  array: unknown[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  array: any[] = [];
   value: number = 0;
   showValue = true;
+  showArray = true;
+
+  // Calculated Values
+  emoji = '';
+  title = '';
+  subtitle = '';
+  formula?: string;
 
   extra: Record<string, string | number> = {};
 
-  constructor(sortOrder: number | null, emoji: string[], title: string, subtitle: string[], formula?: string) {
+  constructor(sortOrder: number | null, emoji: string[], title: string, subtitle: string[], formula: string) {
     this.sortOrder = sortOrder;
-    this.emoji = emoji;
-    this.title = title;
-    this.subtitle = subtitle;
-    this.formula = formula;
+    this._emojis = emoji;
+    this._title = title;
+    this._subtitles = subtitle;
+    this._formula = formula;
   }
 
-  abstract calculate(players: PlayerEntity[], games: GameEntity[], boardGames: BoardGameEntity[]): void;
+  abstract calculate(api: ApiService): void;
 
-  update(players: PlayerEntity[], games: GameEntity[], boardGames: BoardGameEntity[]) {
+  isTag(arrayItem: unknown) {
+    return arrayItem instanceof TagEntity;
+  }
+
+  update(api: ApiService) {
     this.value = 0;
     this.array = [];
-    this.calculate(players, games, boardGames);
+    this.calculate(api);
   }
 
-  export(): Trophy {
+  export() {
     this.extra['value'] = this.value;
 
-    let emoji = this.textReplace(GetRandom(this.emoji) ?? '');
-    if (emoji.includes('U+')) {
-      emoji = UnicodeToEmoji(emoji);
+    this.emoji = this.textReplace(GetRandom(this._emojis) ?? '');
+    if (this.emoji.includes('U+')) {
+      this.emoji = UnicodeToEmoji(this.emoji);
     } else {
       // Continue
     }
 
-    return {
-      emoji,
-      title: this.textReplace(this.title),
-      subtitle: this.textReplace(GetRandom(this.subtitle) ?? ''),
-      formula: this.formula ? this.textReplace(this.formula) : undefined,
-      value: this.value ?? 0,
-      array: this.array ?? [],
-      showValue: this.showValue,
-    };
+    this.title = this.textReplace(this._title);
+    this.subtitle = this.textReplace(GetRandom(this._subtitles) ?? '');
+    this.formula = this._formula ? this.textReplace(this._formula) : undefined;
+
+    return this;
   }
 
   textReplace(text: string): string {
@@ -68,8 +66,14 @@ export abstract class ITrophy {
     return text;
   }
 
-  applyValues(objects: ApplyObj) {
-    this.value = objects.reduce((prev, curr) => Math.max(prev, curr.count), 0);
-    this.array = objects.filter((x) => x.count > 0 && x.count === this.value).map((x) => x.item);
+  applyValues<T>(objects: Map<T, number>, limit = 0) {
+    this.value = [...objects.values()].reduce((prev, curr) => Math.max(prev, curr), 0);
+    this.array = [...objects.entries()].filter((x) => x[1] > 0 && x[1] === this.value).map((x) => x[0]);
+
+    if (limit > 0 && this.array.length > limit) {
+      this.array = [];
+    } else {
+      // Continue
+    }
   }
 }

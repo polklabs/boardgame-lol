@@ -3,24 +3,17 @@ import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { Observable } from 'rxjs';
-import { GameEntity, PlayerEntity } from 'libs/index';
+import { PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { TrophyService } from '../../shared/services/trophy.service';
 import { ITrophy } from '../../shared/trophies/trophy.model';
 import { HidePipe } from '../../shared/pipes/hide.pipe';
-import { ArrayPipe } from '../../shared/pipes/array.pipe';
-import { ScorePipe } from '../../shared/pipes/score.pipe';
 import { TagModule } from 'primeng/tag';
-import { TagComponent } from '../../shared/components/tag/tag.component';
 import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
-
-const COLUMNS: { field: keyof PlayerEntity; name: string; sort: boolean }[] = [
-  { field: 'Name', name: 'Name', sort: true },
-  { field: 'WinCount', name: 'Wins', sort: true },
-  { field: 'LossCount', name: 'Losses', sort: true },
-  { field: 'BestGameWins', name: 'Best Game(s)', sort: true },
-  { field: 'FirstSeen', name: 'First Seen', sort: true },
-  { field: 'Tags', name: 'Tags', sort: false },
-];
+import { Column } from '../../shared/models/column.model';
+import { TableComponent } from '../../shared/components/table/table.component';
+import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
+import { getTagColumns } from '../../shared/helpers/data.helper';
+import { MapPipe } from "../../shared/pipes/map.pipe";
 
 @Component({
   selector: 'app-player-table',
@@ -30,40 +23,40 @@ const COLUMNS: { field: keyof PlayerEntity; name: string; sort: boolean }[] = [
     TagModule,
     CommonModule,
     HidePipe,
-    ArrayPipe,
-    ScorePipe,
-    TagComponent,
     TrophyIconComponent,
-  ],
+    TableComponent,
+    TemplateIdDirective,
+    MapPipe
+],
   templateUrl: './player-table.component.html',
   styleUrl: './player-table.component.scss',
 })
 export class PlayerTableComponent {
+  private trophyService = inject(TrophyService);
+
   @Input() players$?: Observable<PlayerEntity[]>;
   @Input() canEdit = false;
 
   @Output() playerEdit = new EventEmitter<PlayerEntity>();
 
-  mostWins: ITrophy;
+  mostWins: ITrophy = this.trophyService.getTrophy('MostWins');
 
-  expandedRows = {};
+  columns: Column<PlayerEntity>[] = [
+    { id: 'Name', sort: true, dataType: 'custom' },
+    { id: 'WinCount', name: 'Wins', sort: true, dataType: 'custom' },
+    { id: 'LossCount', name: 'Losses', sort: true, dataType: 'number' },
+    { id: 'BestGameWins', name: 'Best Game(s)', sort: true, dataType: 'custom' },
+    { id: 'FirstSeen', name: 'First Seen', sort: true, dataType: 'date' },
+    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
+    ...getTagColumns('DisplayOnPlayers'),
+  ];
 
-  constructor() {
-    const trophyService = inject(TrophyService);
-
-    this.mostWins = trophyService.getTrophy('MostWins');
-  }
-
-  showScore(game: GameEntity): boolean {
-    return game.BoardGame?.ScoreType === 'points';
-  }
-
-  filterColumns(players: PlayerEntity[]) {
-    return COLUMNS.filter((col) =>
-      players.some((row) => {
-        const data = row[col.field];
-        return Array.isArray(data) ? data.length > 0 : !!data;
-      }),
-    );
-  }
+  expansionColumns: Column<PlayerGameEntity>[] = [
+    { id: 'won', name: '', dataType: 'custom' },
+    { id: 'Date', dataType: 'date', fieldFunc: (x) => x.Game!.Date },
+    { id: 'Game', dataType: 'text', fieldFunc: (x) => x.Game!.BoardGame!.Name },
+    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
+    ...getTagColumns('DisplayOnPlayerGames'),
+    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
+  ];
 }

@@ -1,4 +1,4 @@
-import { BoardGameEntity, GameEntity, PlayerEntity } from 'libs/index';
+import { ApiService } from '../services/api.service';
 import { ITrophy } from './trophy.model';
 
 export class TrophyMostPlays extends ITrophy {
@@ -6,8 +6,8 @@ export class TrophyMostPlays extends ITrophy {
     super(sortOrder, ['💖'], 'The Fan Favorite', ["It's a really fun game!"], 'Most Played Game');
   }
 
-  calculate(_players: PlayerEntity[], _games: GameEntity[], boardGames: BoardGameEntity[]) {
-    this.value = Math.max(...boardGames.map((x) => x.Games.length));
-    this.array = boardGames.filter((x) => x.Games.length === this.value);
+  calculate(api: ApiService) {
+    this.value = Math.max(...api.boardGames.list.map((x) => x.Games.length));
+    this.array = api.boardGames.list.filter((x) => x.Games.length === this.value);
   }
 }

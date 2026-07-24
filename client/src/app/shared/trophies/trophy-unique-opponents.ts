@@ -1,15 +1,16 @@
 import { PlayerEntity } from 'libs/index';
-import { ApplyObj, ITrophy } from './trophy.model';
+import { ITrophy } from './trophy.model';
+import { ApiService } from '../services/api.service';
 
 export class TrophyUniqueOpponents extends ITrophy {
   constructor(sortOrder: number | null = null) {
     super(sortOrder, ['🦋'], 'The Social Butterfly', ["I'm just here to make friends."], 'Most unique opponents');
   }
 
-  calculate(players: PlayerEntity[]) {
-    const butterflies: ApplyObj = [];
+  calculate(api: ApiService) {
+    const butterflies = new Map<PlayerEntity, number>();
 
-    for (const player of players) {
+    for (const player of api.players.list) {
       const friendSet = new Set<string>();
       player.PlayerGames.forEach((pg) =>
         pg.Game?.Scores.forEach((score) => {
@@ -19,7 +20,7 @@ export class TrophyUniqueOpponents extends ITrophy {
       friendSet.delete(player.PlayerId);
       friendSet.delete('');
 
-      butterflies.push({ item: player, count: friendSet.size });
+      butterflies.set(player, friendSet.size);
     }
 
     this.applyValues(butterflies);

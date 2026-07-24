@@ -1,154 +1,31 @@
 <div style="height: calc(100dvh - 150px)">
-  @let games = ((games$ | async) ?? []);
-  @let cols = filterColumns(games);
-  <p-table
-    #gameTable
-    [value]="games"
-    [columns]="cols"
-    dataKey="GameId"
-    [scrollable]="true"
-    [stripedRows]="true"
-    scrollHeight="flex"
-    class="p-datatable-striped p-datatable-sm"
-    sortField="dateSortOrder"
-    [sortOrder]="-1"
-    [globalFilterFields]="['Date', 'BoardGame.Name']"
-    [tableStyle]="{ 'min-width': '50rem' }"
-    [expandedRowKeys]="expandedRows">
-    <ng-template #header let-columns>
-      <tr>
-        <th id="expansion" style="width: 0"></th>
-        @for (column of columns; track column) {
-          <th id="{{ column.field }}" [pSortableColumn]="column.sort ? column.field : undefined" class="{{column.class??''}}">
-            <span>
-              {{ column.name }}
-              @if (column.sort) {
-                <p-sortIcon [field]="column.field" />
-              }
-            </span>
-          </th>
-        }
-        @if (canEdit) {
-          <th pFrozenColumn alignFrozen="right" id="edit" class="edit-header">Edit</th>
-        }
-      </tr>
-    </ng-template>
-    <ng-template #body let-game let-rowIndex="rowIndex" let-columns="columns" let-expanded="expanded">
-      @if (showYearRow(gameTable, games, rowIndex)){
-        <tr class="year-row">
-          <td></td>
-          <td [attr.colspan]="columns.length + 1">
-            {{getYearText(game)}}
-          </td>
-        </tr>
+  @let games = (games$ | async) ?? [];
+  <app-table [columns]="columns" [rows]="games" [baseTable]="true" [canEdit]="canEdit" (edit)="gameEdit.emit($event)" dataKey="GameId" sortBy="dateSortOrder" groupRowsBy="year">
+    <ng-template templateId="edit" let-game let-rowIndex="rowIndex" let-gameTable="table">
+      @if (gameTable && canAdjustOrder(gameTable, games, rowIndex)) {
+        <p-button
+          (onClick)="moveUp.emit(game)"
+          icon="pi pi-arrow-up"
+          [rounded]="true"
+          [text]="true"
+          [disabled]="!canAdjustUp(games, rowIndex)"></p-button>
+        <p-button
+          (onClick)="moveDown.emit(game)"
+          icon="pi pi-arrow-down"
+          [rounded]="true"
+          [text]="true"
+          [disabled]="!canAdjustDown(games, rowIndex)"></p-button>
       }
-      <tr>
-        <td>
-            <p-button
-              type="button"
-              pRipple
-              [pRowToggler]="game"
-              [text]="true"
-              [rounded]="true"
-              [plain]="true"
-              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-        </td>
-
-        @for (column of columns; track column) {
-          <td class="{{column.class??''}}">
-
-            @switch (column.field) {
-              @case ('dateSortOrder') {
-                {{ game.Date | date: 'yyyy/MM/dd' }}
-              }
-              @case ('BoardGame.Name') {
-                {{ game.BoardGame.Name }}
-              }
-              @case ('Notes') {
-                {{ game.Notes }}
-              }
-              @case ('WinnerTeams') {
-                {{ game.WinnerTeams | array: 'DisplayName' }}
-              }
-              @case ('HighScore') {
-                @if (showScore(game)) {
-                  {{ game.HighScore | number: '1.0-3' | score: game.BoardGame }}
-                }
-              }
-              @case ('Players') {
-                {{ game.Players | number: '1.0-0' }}
-              }
-              @case ('Tags') {
-                <div class="tag-wrapper">
-                @for (tag of game.Tags; track tag.TagId) {
-                  <app-tag [tag]="tag"></app-tag>
-                }
-                </div>
-              }
-            }
-
-          </td>
-        }
-        @if (canEdit) {
-          <td pFrozenColumn alignFrozen="right">
-            <div class="flex-nowrap justify-content-end">
-              @if (canAdjustOrder(gameTable, games, rowIndex)) {
-                <p-button
-                  (onClick)="moveUp.emit(game)"
-                  icon="pi pi-arrow-up"
-                  [rounded]="true"
-                  [text]="true"
-                  [disabled]="!canAdjustUp(games, rowIndex)"></p-button>
-                <p-button
-                  (onClick)="moveDown.emit(game)"
-                  icon="pi pi-arrow-down"
-                  [rounded]="true"
-                  [text]="true"
-                  [disabled]="!canAdjustDown(games, rowIndex)"></p-button>
-              }
-              <p-button (onClick)="gameEdit.emit(game)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
-            </div>
-          </td>
-        }
-      </tr>
     </ng-template>
-    <ng-template #expandedrow let-game>
-      <tr>
-        <td></td>
-        <td [attr.colspan]="cols.length+1">
-          @if (game.Notes) {
-            <p>{{game.Notes}}</p>
-          }
-          <p-table [value]="game.Scores" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
-            <ng-template #header>
-              <tr>
-                <th id="name">Name</th>
-                @if (showScore(game)) {
-                  <th id="points">Points</th>
-                }
-              </tr>
-            </ng-template>
-            <ng-template #body let-score>
-              <tr>
-                <td class="flex-100 gap-8">
-                  <div class="tag-wrapper">
-                  <app-trophy-icon [score]="score"></app-trophy-icon>
-                  <span>{{ score.DisplayName }}</span>
-                  <div class="grow"></div>
-                
-                  @for (tag of score.Tags; track tag.TagId) {
-                    <app-tag [tag]="tag"></app-tag>
-                  }
-                  </div>
-                </td>
-                @if (showScore(game)) {
-                  <td>{{ score.Points | number: '1.0-3' | score: game.BoardGame }}</td>
-                }
-              </tr>
-            </ng-template>
-          </p-table>
-        </td>
-      </tr>
+    <ng-template templateId="expansion" let-game>
+      <app-table [columns]="expansionColumns" [rows]="game.Scores">
+        <ng-template templateId="DisplayName" let-row>
+          <div class="flex-100 gap-8">
+            <app-trophy-icon [score]="row"></app-trophy-icon>
+            <span>{{ row.DisplayName }}</span>
+          </div>
+        </ng-template>
+      </app-table>
     </ng-template>
-  </p-table>
+  </app-table>
 </div>

@@ -29,8 +29,8 @@ export const TagCategoryMapping: Record<
   role: { text: 'Role', DisplayOnPlayerGames: true },
   'victory-method': { text: 'Victory Method', DisplayOnPlayerGames: true },
   'death-cause': { text: 'Cause of Death', DisplayOnPlayerGames: true },
-  version: { text: 'Game Version', DisplayOnGames: true },
-  event: { text: 'Game Event', DisplayOnGames: true },
+  event: { text: 'Game Events', DisplayOnGames: true },
+  version: { text: 'Version', DisplayOnGames: true },
 } as const;
 
 export const DISPLAY_FIELDS = [

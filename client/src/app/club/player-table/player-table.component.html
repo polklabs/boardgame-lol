@@ -1,139 +1,40 @@
 <div style="height: calc(100dvh - 150px)">
-  @let players = (players$ | async) ?? [];
-  @let cols = filterColumns(players);
-  <p-table
-    [value]="players"
-    [columns]="cols"
+  @let games = ((players$ | async) ?? []);
+  <app-table
+    [columns]="columns"
+    [rows]="games"
+    [baseTable]="true"
+    [canEdit]="canEdit"
+    (edit)="playerEdit.emit($event)"
     dataKey="PlayerId"
-    [scrollable]="true"
-    [stripedRows]="true"
-    scrollHeight="flex"
-    class="p-datatable-striped p-datatable-sm"
-    sortField="WinCount"
-    [sortOrder]="-1"
-    [tableStyle]="{ 'min-width': '50rem' }"
-    [expandedRowKeys]="expandedRows">
-    <ng-template #header let-columns>
-      <tr>
-        <th id="expansion" style="width: 0" id="blank"></th>
-        @for (column of columns; track column) {
-          <th id="{{ column.field }}" [pSortableColumn]="column.sort ? column.field : undefined" [id]="column.field">
-            {{ column.name }}
-            @if (column.sort) {
-              <p-sortIcon [field]="column.field" />
-            }
-          </th>
-        }
-        @if (canEdit) {
-          <th pFrozenColumn alignFrozen="right" id="edit" class="edit-header" id="edit">Edit</th>
-        }
-      </tr>
+    sortBy="WinCount">
+    <ng-template templateId="Name" let-player>
+      @if (player.Nickname) {
+        {{ player.Nickname }} - {{ player.Name }}
+      } @else {
+        {{ player.Name }}
+      }
+
+      @if (player.hasMostWins) {
+        <i class="pi pi-crown" style="color: gold"></i>
+      }
     </ng-template>
-    <ng-template #body let-player let-columns="columns" let-expanded="expanded">
-      <tr>
-        <td>
-          @if (player.PlayerGames.length > 0) {
-            <p-button
-              type="button"
-              pRipple
-              [pRowToggler]="player"
-              [text]="true"
-              [rounded]="true"
-              [plain]="true"
-              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-          }
-        </td>
-        @for (column of columns; track column) {
-          <td>
-            @switch (column.field) {
-              @case ('Name') {
-                @if (player.Nickname) {
-                  {{player.Nickname}} - {{ player.Name }}
-                } @else {
-                  {{ player.Name }}
-                }
-                
-                @if (player.hasMostWins) {
-                  <i class="pi pi-crown" style="color: gold"></i>
-                }
-              }
-              @case ('WinCount') {
-                <span>{{ player.WinCount | hide: '0' | number: '1.0-0' }}</span>
-                @if (player.WinCount > 0) {
-                  <div
-                    class="bar-percent"
-                    [ngStyle]="{ width: (player.WinCount / (mostWins.value || 1)) * 100 + '%' }"></div>
-                }
-              }
-              @case ('LossCount') {
-                {{ player.LossCount | hide: '0' | number: '1.0-0' }}
-              }
-              @case ('BestGameWins') {
-                {{ player.BestGameWins | hide: '0' | number: '1.0-0' }} - {{ player.BestGames | array: 'Name' }}
-              }
-              @case ('FirstSeen') {
-                {{ player.FirstSeen | date: 'yyyy/MM/dd' }}
-              }
-              @case ('Tags') {
-                <div class="tag-wrapper">
-                @for (tag of player.Tags; track tag.TagId) {
-                  <app-tag [tag]="tag"></app-tag>
-                }
-                </div>
-              }
-            }
-          </td>
-        }
-        @if (canEdit) {
-          <td pFrozenColumn alignFrozen="right">
-            <p-button (onClick)="playerEdit.emit(player)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
-          </td>
-        }
-      </tr>
+    <ng-template templateId="WinCount" let-player>
+      <span>{{ player.WinCount | hide | number: '1.0-0' }}</span>
+      @if (player.WinCount > 0) {
+        <div class="bar-percent" [ngStyle]="{ width: (player.WinCount / (mostWins.value || 1)) * 100 + '%' }"></div>
+      }
+    </ng-template>
+    <ng-template templateId="BestGameWins" let-player>
+      {{ player.BestGameWins | hide | number: '1.0-0' }} - {{ player.BestGames | map: 'Name' }}
     </ng-template>
 
-    <!-- Row Expansion -->
-    <ng-template #expandedrow let-player>
-      <tr>
-        <td></td>
-        <td [attr.colspan]="cols.length+2">
-          <p-table [value]="player.PlayerGames" class="p-datatable-sm" [tableStyle]="{ 'min-width': '50rem' }">
-            <ng-template #header>
-              <tr>
-                <th id="won">Won</th>
-                <th id="date">Date</th>
-                <th id="game">Game</th>
-                <th id="points">Points</th>
-              </tr>
-            </ng-template>
-            <ng-template #body let-playerGame>
-              <tr>
-                <td>
-                  <app-trophy-icon [score]="playerGame"></app-trophy-icon>
-                </td>
-                <td>
-                  {{ playerGame.Game.Date | date: 'yyyy/MM/dd' }}
-                </td>
-                <td>
-                  <div class="tag-wrapper">
-                    <span>{{ playerGame.Game.BoardGame.Name }}</span>
-                    <div class="grow"></div>
-                    
-                    @for (tag of playerGame.Tags; track tag.TagId) {
-                      <app-tag [tag]="tag"></app-tag>
-                    }
-                  </div>
-                </td>
-                <td>
-                  @if (showScore(playerGame.Game)) {
-                    {{ playerGame.Points | number: '1.0-3' | score: playerGame.Game.BoardGame }}
-                  }
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </td>
-      </tr>
+    <ng-template templateId="expansion" let-player>
+      <app-table [columns]="expansionColumns" [rows]="player.PlayerGames">
+        <ng-template templateId="won" let-row>
+          <app-trophy-icon [score]="row"></app-trophy-icon>
+        </ng-template>
+      </app-table>
     </ng-template>
-  </p-table>
+  </app-table>
 </div>

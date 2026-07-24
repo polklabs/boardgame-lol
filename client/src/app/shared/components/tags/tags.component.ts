@@ -8,7 +8,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
-import { TagEntity } from 'libs/index';
+import { TagCategories, TagCategoryMapping, TagEntity } from 'libs/index';
 import { ButtonModule } from 'primeng/button';
 import { MultiSelectFocusEvent, MultiSelectModule } from 'primeng/multiselect';
 import { TagComponent } from '../tag/tag.component';
@@ -42,12 +42,12 @@ export class TagsComponent<T> extends ControlBase<T, TagEntity> implements Contr
   private formGroupDirective = inject(FormGroupDirective);
 
   @Input() showClear = false;
-  @Input() editorValue: (keyof TagEntity & string) | '' = '';
+  @Input() editorValue: keyof TagEntity | '' = '';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();
 
-  tagOptions: TagEntity[] = [];
+  tagOptions: { label: string; value: string; items: TagEntity[] }[] = [];
 
   editorTagsVisible = false;
 
@@ -64,36 +64,54 @@ export class TagsComponent<T> extends ControlBase<T, TagEntity> implements Contr
     if (this.options$) {
       this.subscriptions.add(
         this.options$.subscribe((options) => {
-          this.tagOptions = options;
-          this.updateTagOptions();
+          this.groupTags(options);
         }),
       );
     } else {
-      this.tagOptions = this.options ?? [];
-      this.updateTagOptions();
+      this.groupTags(this.options ?? []);
     }
   }
 
-  updateTagOptions() {
+  groupTags(tags: TagEntity[]) {
+    tags = this.updateTagOptions(tags);
+    TagCategories.forEach((category) => {
+      this.tagOptions.push({
+        label: TagCategoryMapping[category].text,
+        value: category,
+        items: tags.filter((x) => x.Category === category).toSorted((a, b) => a.Text.localeCompare(b.Text)),
+      });
+    });
+    this.tagOptions.sort((a, b) => a.label.localeCompare(b.label))
+    this.tagOptions.push({
+      label: 'Uncategorized',
+      value: '',
+      items: tags.filter((x) => x.Category === null).toSorted((a, b) => a.Text.localeCompare(b.Text)),
+    });
+
+    this.tagOptions = this.tagOptions.filter((x) => x.items.length > 0);
+  }
+
+  updateTagOptions(tags: TagEntity[]) {
     if (this.editorValue === '') {
       // Skip filter
     } else {
-      this.tagOptions = this.tagOptions.filter((x) => x[this.editorValue as keyof TagEntity]);
+      tags = tags.filter((x) => x[this.editorValue as keyof TagEntity]);
     }
 
     const value = this.formGroup.controls[this.formControlName].value;
     if (Array.isArray(value)) {
       (value as TagEntity[]).forEach((t) => {
-        if (this.tagOptions.includes(t)) {
+        if (tags.includes(t)) {
           // Continue
         } else {
-          this.tagOptions.push(t);
+          tags.push(t);
         }
       });
     } else {
       // Skip
     }
-    this.tagOptions.sort((a, b) => a.Text.localeCompare(b.Text));
+    tags.sort((a, b) => a.Text.localeCompare(b.Text));
+    return tags;
   }
 
   ngOnDestroy(): void {

@@ -74,7 +74,6 @@ export class PlayerGameEntity extends BaseEntity {
   @Ignore()
   calculated = false;
 
-  @Expose()
   get DisplayName(): string {
     return this.Name || this.Players?.map((p) => p.ShortName ?? p.Name).join(', ');
   }

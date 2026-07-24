@@ -1,0 +1,128 @@
+<p-table
+  #table
+  [value]="rows"
+  [sortField]="sortBy"
+  [sortOrder]="sortOrder"
+  class="p-datatable-sm"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  [scrollable]="baseTable"
+  [stripedRows]="baseTable"
+  scrollHeight="flex"
+  [dataKey]="dataKey"
+  [expandedRowKeys]="expandedRows"
+  >
+  <ng-template #header>
+    <tr>
+      @if (baseTable) {
+        <th id="expansion" style="width: 0"></th>
+      }
+      @for (column of cols; track column) {
+        <th
+          id="{{ column.id }}"
+          [pSortableColumn]="column.sort ? column.id : undefined"
+          [id]="column.id"
+          class="{{ column.class ?? '' }}">
+          {{ column.name ?? (column.id | titlecase) }}
+          @if (column.sort) {
+            <p-sortIcon [field]="column.id" />
+          }
+        </th>
+      }
+      @if (canEdit) {
+        <th pFrozenColumn alignFrozen="right" id="edit" class="edit-header">Edit</th>
+      }
+    </tr>
+  </ng-template>
+  <ng-template #body let-row let-expanded="expanded" let-rowIndex="rowIndex">
+    @if(showGroup(table, rowIndex)) {
+      <tr class="group-row">
+        <td></td>
+        <td [attr.colspan]="columns.length + (canEdit ? 1 : 0)">
+          {{row[groupRowsBy]}}
+        </td>
+      </tr>
+    }
+
+    <tr>
+      @if (baseTable) {
+        <td>
+          @if (showExpansion(row)){
+            <p-button
+              type="button"
+              pRipple
+              [pRowToggler]="row"
+              [text]="true"
+              [rounded]="true"
+              [plain]="true"
+              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+          }
+        </td>
+      }
+      @for (column of cols; track column) {
+        <td class="{{ column.class ?? '' }}">
+          @let template = templateMap.get(column.id);
+          @if (template) {
+            <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
+          } @else {
+            @switch (column.dataType) {
+              @case ('date') {
+                {{ property(row, column) | date: 'yyyy/MM/dd' }}
+              }
+              @case ('number') {
+                {{ property(row, column) | hide | number: '1.0-0' }}
+              }
+              @case ('decimal') {
+                {{ property(row, column) | hide | number: '1.0-' + (column.decimalPlaces ?? 1) }}
+              }
+              @case ('array') {
+                {{ property(row, column) | map: column.keys }}
+              }
+              @case ('score') {
+                @let boardGame = column.boardGame(row);
+                {{ property(row, column) | hide | number: '1.0-' + (column.decimalPlaces ?? 3) | score: boardGame }}
+              }
+              @case ('tag') {
+                @for (tag of property(row, column); track tag.TagId) {
+                  <app-tag [tag]="tag"></app-tag>
+                }
+              }
+              @default {
+                {{ property(row, column) }}
+              }
+            }
+            @if ('suffix' in column && column.suffix && hasData(row, column)) {
+              {{ column.suffix }}
+            }
+          }
+        </td>
+      }
+      @if (canEdit) {
+        <td pFrozenColumn alignFrozen="right">
+          <div class="flex-nowrap justify-content-end">
+            @let editTemplate = templateMap.get('edit');
+            @if (editTemplate) {
+              <ng-container [ngTemplateOutlet]="editTemplate" [ngTemplateOutletContext]="{ $implicit: row, table, rowIndex }"></ng-container>
+            }
+            <p-button
+              (onClick)="edit.emit(row)"
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"></p-button>
+          </div>
+        </td>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template #expandedrow let-row>
+    <tr>
+      <td></td>
+      <td [attr.colspan]="cols.length+(canEdit?1:0) + (showExpansion(row)? 1:0)">
+        @let template = templateMap.get('expansion');
+          @if (template) {
+            <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row  }"></ng-container>
+          }
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

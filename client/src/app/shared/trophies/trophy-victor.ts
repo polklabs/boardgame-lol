@@ -1,0 +1,23 @@
+import { TagEntity } from 'libs/index';
+import { ITrophy } from './trophy.model';
+import { ApiService } from '../services/api.service';
+
+export class TrophyVictor extends ITrophy {
+  constructor(sortOrder: number | null = null) {
+    super(sortOrder, ['🏁'], 'The Victor', ['All I do is win'], 'Most common victory path');
+  }
+
+  calculate(api: ApiService) {
+    const object = new Map<TagEntity, number>();
+
+    for (const game of api.games.list) {
+      for (const pg of game.Scores) {
+        pg.Tags.filter((t) => t.Category === 'victory-method').forEach((t) =>
+          object.set(t, (object.get(t) ?? 0) + 1),
+        );
+      }
+    }
+
+    this.applyValues(object);
+  }
+}

@@ -1,5 +1,6 @@
 import { Mode, PlayerEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
+import { ApiService } from '../services/api.service';
 
 export class TrophyBestFriends extends ITrophy {
   constructor(sortOrder: number | null = null) {
@@ -12,12 +13,12 @@ export class TrophyBestFriends extends ITrophy {
     );
   }
 
-  calculate(players: PlayerEntity[]) {
+  calculate(api: ApiService) {
     const winList: Record<string, PlayerEntity[]> = {};
     this.value = 0;
     this.array = [];
 
-    players.forEach((p) => {
+    api.players.list.forEach((p) => {
       const id = p.PlayerId;
       winList[id] = [];
 
@@ -42,7 +43,7 @@ export class TrophyBestFriends extends ITrophy {
         const modeCount = winList[k].filter((x) => x.PlayerId === mode[0].PlayerId).length;
         if (modeCount > this.value) {
           this.value = modeCount;
-          this.array = [players.find((x) => x.PlayerId === k), mode[0]];
+          this.array = [api.players.getOne(k), mode[0]];
         } else {
           // Continue
         }

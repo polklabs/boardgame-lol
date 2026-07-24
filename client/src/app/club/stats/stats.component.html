@@ -19,7 +19,18 @@
               </div>
             </td>
             <td>
-              <span class="trophy-winner">{{ t.array | array: ['ShortName', 'Name'] }}</span>
+              @if (t.showArray) {
+                <!-- prettier-ignore -->
+                <span class="trophy-winner">
+                @for (item of t.array; track item) {
+                  @if (t.isTag(item)) {
+                    <app-tag [tag]="item"></app-tag>
+                  } @else {
+                    {{ item | map: ['ShortName', 'Name', 'Text'] }}@if (!$last) {, }
+                  }
+                }
+                </span>
+              }
             </td>
             <td class="trophy-count">
               @if (t.showValue) {

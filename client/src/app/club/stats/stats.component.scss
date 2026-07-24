@@ -71,8 +71,13 @@
         color: white;
         font-style: italic;
         text-align: center;
-        display: block;
+        justify-content: center;
+        align-items: center;
         width: 100%;
+        gap: 4px;
+        display: flex;
+        flex-wrap: wrap;
+        margin: 8px 0;
       }
 
       .trophy-count {
