@@ -1,4 +1,4 @@
-import { GetRandom, shuffle, TagEntity, UnicodeToEmoji } from 'libs/index';
+import { GetRandom, TagEntity, UnicodeToEmoji } from 'libs/index';
 import { ApiService } from '../services/api.service';
 
 export abstract class ITrophy {
@@ -66,20 +66,12 @@ export abstract class ITrophy {
     return text;
   }
 
-  applyValues<T>(objects: Map<T, number>, take = 0, sort: 'none' | 'random' | keyof T = 'none') {
+  applyValues<T>(objects: Map<T, number>, limit = 0) {
     this.value = [...objects.values()].reduce((prev, curr) => Math.max(prev, curr), 0);
     this.array = [...objects.entries()].filter((x) => x[1] > 0 && x[1] === this.value).map((x) => x[0]);
 
-    if (sort === 'none') {
-      // Continue
-    } else if (sort === 'random') {
-      this.array = shuffle(this.array);
-    } else {
-      this.array.sort((a, b) => a[sort] - b[sort]);
-    }
-
-    if (take > 0) {
-      this.array = this.array.slice(0, take);
+    if (limit > 0 && this.array.length > limit) {
+      this.array = [];
     } else {
       // Continue
     }

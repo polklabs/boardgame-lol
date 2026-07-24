@@ -110,10 +110,10 @@ export class StatsComponent implements OnInit {
   }
 
   calculateTrophies(trophies: ITrophy[]) {
-    this.trophies = trophies.map((x) => x.export()).filter((x) => x.array.length > 0 && x.value !== Math.abs(Infinity));
-    // this.trophies = trophies
-    //   .map((x) => x.export())
-    //   .filter((x) => x.array.length > 0 && x.array.length < 4 && x.value !== Math.abs(Infinity));
+    // this.trophies = trophies.map((x) => x.export()).filter((x) => x.array.length > 0 && x.value !== Math.abs(Infinity));
+    this.trophies = trophies
+      .map((x) => x.export())
+      .filter((x) => x.array.length > 0 && x.array.length < 4 && x.value !== Math.abs(Infinity));
     // this.trophies = this.trophies.slice(0, 9);
   }
 
