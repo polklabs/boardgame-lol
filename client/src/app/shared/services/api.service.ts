@@ -27,7 +27,7 @@ import { EntityWrapper } from '../models/entity-wrapper';
 export class ApiService {
   private httpService = inject(HttpService);
 
-  readonly clubs = new EntityWrapper(ClubEntity);
+  readonly clubs = new EntityWrapper(ClubEntity, false);
   readonly boardGames = new EntityWrapper(BoardGameEntity);
   readonly playerGames = new EntityWrapper(PlayerGameEntity);
   readonly playerGamePlayers = new EntityWrapper(PlayerGamePlayerEntity);

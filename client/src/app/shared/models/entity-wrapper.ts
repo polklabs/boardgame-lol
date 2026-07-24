@@ -13,6 +13,7 @@ export class EntityWrapper<T extends BaseEntity> {
   private keyFunc: (obj: T) => string;
   private entityType: new (partial: Partial<T>) => T;
   private primaryKeys: (keyof T)[];
+  private autoClear;
 
   // Getters ------------------------------------------
   get raw$(): Observable<T[]> {
@@ -35,10 +36,11 @@ export class EntityWrapper<T extends BaseEntity> {
     return new Set<string>(this.raw.map(this.keyFunc));
   }
 
-  constructor(entityType: new (partial: Partial<T>) => T) {
+  constructor(entityType: new (partial: Partial<T>) => T, autoClear = true) {
     this.entityType = entityType;
     this.primaryKeys = getPrimaryKeys(entityType) as (keyof T)[];
     this.keyFunc = (obj) => this.primaryKeys.map((k) => obj[k]).join(';');
+    this.autoClear = autoClear;
   }
 
   getOne(...ids: string[]): T | null {
@@ -59,9 +61,13 @@ export class EntityWrapper<T extends BaseEntity> {
   }
 
   clear() {
-    this._dict = {};
-    this._raw$.next([]);
-    this._list$.next([]);
+    if (this.autoClear) {
+      this._dict = {};
+      this._raw$.next([]);
+      this._list$.next([]);
+    } else {
+      //Skip
+    }
   }
 
   deleteOne(...ids: string[]) {
