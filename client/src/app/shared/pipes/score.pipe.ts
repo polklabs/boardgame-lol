@@ -7,7 +7,7 @@ import { BoardGameEntity } from 'libs/index';
 export class ScorePipe implements PipeTransform {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transform(value: any, boardGame?: BoardGameEntity | null): string {
-    if (value === null || value === undefined) {
+    if (value === null || value === undefined || boardGame?.ScoreType !== 'points') {
       return '';
     } else {
       return `${boardGame?.ScorePrefix ?? ''}${value ?? ''}${boardGame?.ScoreSuffix ?? ''}`;
