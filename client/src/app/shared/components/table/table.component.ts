@@ -7,6 +7,7 @@ import {
   OnChanges,
   Output,
   QueryList,
+  SimpleChanges,
   TemplateRef,
 } from '@angular/core';
 import { Column } from '../../models/column.model';
@@ -18,21 +19,11 @@ import { TemplateIdDirective } from '../../directives/template-id.directive';
 import { isEmptyLike } from '../../helpers/data.helper';
 import { ScorePipe } from '../../pipes/score.pipe';
 import { ButtonModule } from 'primeng/button';
-import { MapPipe } from "../../pipes/map.pipe";
+import { MapPipe } from '../../pipes/map.pipe';
 
 @Component({
   selector: 'app-table',
-  imports: [
-    TableModule,
-    DatePipe,
-    DecimalPipe,
-    TagComponent,
-    HidePipe,
-    CommonModule,
-    ScorePipe,
-    ButtonModule,
-    MapPipe
-],
+  imports: [TableModule, DatePipe, DecimalPipe, TagComponent, HidePipe, CommonModule, ScorePipe, ButtonModule, MapPipe],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
@@ -65,8 +56,12 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
     });
   }
 
-  ngOnChanges(): void {
-    this.filterColumns();
+  ngOnChanges(changed: SimpleChanges): void {
+    if ('columns' in changed || 'rows' in changed) {
+      this.filterColumns();
+    } else {
+      // Keep same column filter
+    }
   }
 
   filterColumns() {
