@@ -7,4 +7,12 @@
   tr.group-row {
     background: var(--p-surface-950) !important;
   }
+
+  .button-cell {
+    padding: 0 !important;
+    .p-button {
+      width: 36px;
+      height: 36px;
+    }
+  }
 }

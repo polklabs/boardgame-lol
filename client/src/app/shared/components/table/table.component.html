@@ -45,7 +45,7 @@
 
     <tr>
       @if (baseTable) {
-        <td>
+        <td class="button-cell">
           @if (showExpansion(row)){
             <p-button
               type="button"
@@ -97,7 +97,7 @@
         </td>
       }
       @if (canEdit) {
-        <td pFrozenColumn alignFrozen="right">
+        <td pFrozenColumn alignFrozen="right" class="button-cell">
           <div class="flex-nowrap justify-content-end">
             @let editTemplate = templateMap.get('edit');
             @if (editTemplate) {
