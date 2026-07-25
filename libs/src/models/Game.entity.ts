@@ -41,8 +41,9 @@ export class GameEntity extends BaseEntity {
   @MinMax(0, 99999, 'number')
   SortIndex: number | null = null;
 
+  @Nullable()
   @MinMax(1, 99999, 'number')
-  Players: number = 0;
+  Players: number | null = null;
 
   @Nullable()
   @MinMax(0, CHARACTER_LIMIT_LONG, 'string')
@@ -146,7 +147,9 @@ export class GameEntity extends BaseEntity {
     const scoreBuckets: number[] = [
       ...new Set([
         ...initialValues,
-        ...this.Scores.filter(x => x.ScoringPlayer).map((x) => (this.ScoreType === 'points' ? x.VirtualPoints : x.Points)).filter((x) => x !== null),
+        ...this.Scores.filter((x) => x.ScoringPlayer)
+          .map((x) => (this.ScoreType === 'points' ? x.VirtualPoints : x.Points))
+          .filter((x) => x !== null),
       ]),
     ];
 

@@ -157,9 +157,9 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   calculatePlayers() {
-    this.MaxPlayers = Math.max(...this.Games.map((g) => g.Players), 0);
+    this.MaxPlayers = Math.max(...this.Games.map((g) => g.PlayerCount), 0);
     if (this.Games.length > 0) {
-      this.AveragePlayers = this.Games.reduce((sum, game) => sum + game.Players, 0) / this.Games.length;
+      this.AveragePlayers = this.Games.reduce((sum, game) => sum + game.PlayerCount, 0) / this.Games.length;
     } else {
       this.AveragePlayers = 0;
     }

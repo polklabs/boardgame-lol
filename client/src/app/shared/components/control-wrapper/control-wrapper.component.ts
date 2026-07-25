@@ -1,19 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
 import { getIgnore } from 'libs/decorators/ignore.decorator';
 import { getMinMax, getNullable, getPattern, MinMaxValue } from 'libs/index';
-import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 
 @Component({
   selector: 'app-control-wrapper',
-  imports: [FloatLabelModule, InputGroupModule, InputGroupAddonModule, ButtonModule],
+  imports: [FloatLabelModule, InputGroupModule, InputGroupAddonModule],
   templateUrl: './control-wrapper.component.html',
   styleUrl: './control-wrapper.component.scss',
 })
-export class ControlWrapperComponent implements OnInit {
+export class ControlWrapperComponent {
   @Input() controlName!: string;
   @Input() formGroup!: FormGroup;
   @Input() label?: string;
@@ -23,28 +22,8 @@ export class ControlWrapperComponent implements OnInit {
   @Input() iconPosition = 'right';
   @Input() locked = false;
 
-  lockSet = false;
-
-  constructor() {}
-
-  ngOnInit(): void {
-    if (this.locked) {
-      this.formGroup.controls[this.controlName].disable();
-      this.lockSet = true;
-    } else {
-      // Do nothing
-    }
-  }
-
-  toggleDisabled() {
-    const control = this.formGroup.controls[this.controlName];
-    if (control.disabled) {
-      control.enable();
-      this.lockSet = false;
-    } else {
-      control.disable();
-      this.lockSet = true;
-    }
+  isLocked() {
+    return this.locked && this.formGroup.controls[this.controlName].value !== null;
   }
 
   isShown(): boolean {

@@ -98,6 +98,8 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   protected selectedPlayerScores: PlayerGameEntity[] = [];
   playerScores: PlayerGameEntity[] = [];
 
+  calculatedPlayerCount = 0;
+
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
@@ -116,7 +118,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
 
   pointGroupButtonValues: number[] = [];
 
-  subscription?: Subscription;
+  subscriptions = new Subscription();
 
   wakeLock?: WakeLockSentinel;
 
@@ -173,12 +175,21 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
         // Skip
       }
 
-      this.subscription = this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
-        this.game!.BoardGameId = value;
-        this.game!.BoardGame = this.apiService.boardGames.getOne(value);
-        this.updateScoring();
-        this.tryCopyFromRef();
-      });
+      this.subscriptions.add(
+        this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
+          this.game!.BoardGameId = value;
+          this.game!.BoardGame = this.apiService.boardGames.getOne(value);
+          this.updateScoring();
+          this.tryCopyFromRef();
+        }),
+      );
+
+      this.updatePlayerCount();
+      this.subscriptions.add(
+        this.getControl('Players')?.valueChanges.subscribe(() => {
+          this.updatePlayerCount();
+        }),
+      );
 
       const observer = new ResizeObserver(() => {
         this.calculatePointButtons();
@@ -191,7 +202,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.subscriptions.unsubscribe();
 
     if (this.wakeLock) {
       this.wakeLock.release();
@@ -451,9 +462,10 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updatePlayerCount() {
-    this.getControl('Players')?.setValue(
-      this.playerScores.reduce((prev, curr) => prev + (curr.ScoringPlayer ? curr.Players.length : 0), 0),
-    );
+    this.game!.Players = null;
+    this.game!.Scores = this.playerScores;
+    this.calculatedPlayerCount = this.game!.PlayerCount;
+    this.game!.Players = this.getControl('Players')?.value;
   }
 
   tryCopyFromRef() {

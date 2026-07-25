@@ -47,7 +47,9 @@
         [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
         <ng-template #header>
           <div class="order-list-header flex justify-content-space-between">
-            <div class="p-orderlist-title">{{ game?.BoardGame?.scoreTypeText ?? '' }} Scores</div>
+            <div class="p-orderlist-title">
+              {{ game?.BoardGame?.scoreTypeText ?? '' }} Scores ({{ game?.PlayerCount ?? 0 }})
+            </div>
             <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
           </div>
           <div #addPointGroup class="add-point-group">
@@ -100,7 +102,7 @@
           [hiddenFields]="hideFields"></app-calendar>
         <app-number-input
           formControlName="Players"
-          label="Players"
+          label="Override {{ calculatedPlayerCount }} Players"
           [entityType]="entityType"
           [hiddenFields]="hideFields"
           [locked]="true"

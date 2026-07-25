@@ -11,13 +11,8 @@
       }
     </p-floatlabel>
     @if (locked) {
-      <!-- TODO: Make this better -->
       <p-inputgroup-addon>
-        <p-button
-          icon="pi pi-lock{{ lockSet ? '' : '-open' }}"
-          severity="secondary"
-          variant="text"
-          (onClick)="toggleDisabled()" />
+        <i class="pi pi-lock{{ isLocked() ? '' : '-open' }}"></i>
       </p-inputgroup-addon>
     }
   </p-inputgroup>

@@ -14,12 +14,12 @@ export class TrophyFavXPlayerGame extends ITrophy {
   }
 
   calculate(api: ApiService) {
-    this.extra['FavXPlayerCount'] = Mode(api.games.list, (x) => x.Players)?.[0]?.Players ?? 0;
+    this.extra['FavXPlayerCount'] = Mode(api.games.list, (x) => x.PlayerCount)?.[0]?.PlayerCount ?? 0;
 
     if (this.extra['FavXPlayerCount'] >= 0 && this.extra['FavXPlayerCount'] <= 10) {
       const list: [BoardGameEntity, number][] = api.boardGames.list.map((x) => [
         x,
-        x.Games.filter((g) => g.Players === this.extra['FavXPlayerCount']).length,
+        x.Games.filter((g) => g.PlayerCount === this.extra['FavXPlayerCount']).length,
       ]);
       this.value = Math.max(...list.map((x) => x[1]));
       this.array = list.filter((x) => x[1] === this.value).map((x) => x[0]);

@@ -147,7 +147,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
     this.tagList$ = this.apiService.tags.raw$;
     this.playOptions = this.apiService.games.raw
       .filter((x) => x.BoardGameId === this.boardGame?.BoardGameId)
-      .map((x) => ({ name: `${format(x.DateObj, 'yyyy/MM/dd')} - ${x.Players} player(s)`, value: x.GameId }));
+      .map((x) => ({ name: `${format(x.DateObj, 'yyyy/MM/dd')} - ${x.PlayerCount} player(s)`, value: x.GameId }));
   }
 
   updatePrefixSuffix() {
