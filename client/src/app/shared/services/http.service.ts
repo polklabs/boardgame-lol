@@ -102,8 +102,10 @@ export class HttpService {
 
   private removeSpinner(showSpinner: boolean) {
     if (showSpinner === true) {
-      this.loadingSpinner--;
-      this._loadingSpinner$.next(this.loadingSpinner > 0);
+      setTimeout(() => {
+        this.loadingSpinner--;
+        this._loadingSpinner$.next(this.loadingSpinner > 0);
+      }, 500);
     } else {
       // nothing
     }

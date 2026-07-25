@@ -1,22 +1,21 @@
+:host {
+  .progress-spinner-wrapper {
+    display: block;
+    height: 100dvh;
+    background-color: var(--mask-color);
+    .p-progressspinner {
+      transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 50%));
+    }
+  }
+
+  .main-content {
+    margin: auto;
+    max-width: var(--content-width);
+  }
+}
+
 :host ::ng-deep {
-    .progress-spinner-wrapper {
-        display: block;
-        position: fixed;
-        width: 100vw;
-        height: 100dvh;
-        background-color: var(--mask-color);
-        z-index: 99999;
-        .p-progressspinner {
-            transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 50%));
-        }
-    }
-
-    .main-content {
-        margin: auto;
-        max-width: var(--content-width);
-    }
-
-    .confirm-dialog {
-        max-width: 550px;
-    }
+  .confirm-dialog {
+    max-width: 550px;
+  }
 }

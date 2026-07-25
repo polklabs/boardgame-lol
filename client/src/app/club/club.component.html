@@ -7,42 +7,44 @@
     (newBoardGame)="newBoardGame()"
     (newPlayer)="newPlayer()"></app-menu-bar>
 
-  @if (editorClubVisible) {
-    <app-editor-club
-      [editorVisible]="editorClubVisible"
-      [club]="editClub"
-      (closeEditor)="editorClubVisible = false"></app-editor-club>
-  }
+  @defer (when canEdit) {
+    @if (editorClubVisible) {
+      <app-editor-club
+        [editorVisible]="editorClubVisible"
+        [club]="editClub"
+        (closeEditor)="editorClubVisible = false"></app-editor-club>
+    }
 
-  @if (editorGameVisible) {
-    <app-editor-game
-      [editorVisible]="editorGameVisible"
-      [game]="editGame"
-      (closeEditor)="editorGameVisible = false"></app-editor-game>
-  }
+    @if (editorGameVisible) {
+      <app-editor-game
+        [editorVisible]="editorGameVisible"
+        [game]="editGame"
+        (closeEditor)="editorGameVisible = false"></app-editor-game>
+    }
 
-  @if (editorBoardGameVisible) {
-    <app-editor-board-game
-      [editorVisible]="editorBoardGameVisible"
-      [boardGame]="editBoardGame"
-      (closeEditor)="editorBoardGameVisible = false"></app-editor-board-game>
-  }
+    @if (editorBoardGameVisible) {
+      <app-editor-board-game
+        [editorVisible]="editorBoardGameVisible"
+        [boardGame]="editBoardGame"
+        (closeEditor)="editorBoardGameVisible = false"></app-editor-board-game>
+    }
 
-  @if (editorPlayerVisible) {
-    <app-editor-player
-      [editorVisible]="editorPlayerVisible"
-      [player]="editPlayer"
-      (closeEditor)="editorPlayerVisible = false"></app-editor-player>
-  }
+    @if (editorPlayerVisible) {
+      <app-editor-player
+        [editorVisible]="editorPlayerVisible"
+        [player]="editPlayer"
+        (closeEditor)="editorPlayerVisible = false"></app-editor-player>
+    }
 
-  @if (editorTagsVisible) {
-    <app-editor-tags [editorVisible]="editorTagsVisible" (closeEditor)="editorTagsVisible = false"></app-editor-tags>
+    @if (editorTagsVisible) {
+      <app-editor-tags [editorVisible]="editorTagsVisible" (closeEditor)="editorTagsVisible = false"></app-editor-tags>
+    }
   }
 
   <app-club-title [club]="club" fontSize="42px"></app-club-title>
 
   <div>
-    <p-tabs [(value)]="activeTab" (valueChange)="onTabChange($event)" [lazy]="true">
+    <p-tabs #tabComponent [(value)]="activeTab" (valueChange)="onTabChange($event)" [lazy]="true">
       <p-tablist>
         <p-tab value="overview">Overview</p-tab>
         <p-tab value="plays">Plays: {{ ((games$ | async) ?? []).length }}</p-tab>
@@ -51,28 +53,52 @@
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="overview">
-          <app-stats></app-stats>
+          @defer (when tabComponent.value() === 'overview'; prefetch on idle) {
+            <app-stats></app-stats>
+          } @loading {
+            <div class="progress-spinner-wrapper">
+              <p-progressSpinner></p-progressSpinner>
+            </div>
+          }
         </p-tabpanel>
         <p-tabpanel value="plays">
-          <app-games-table
-            [games$]="games$"
-            [canEdit]="canEdit"
-            (gameEdit)="gameEdit($event)"
-            (moveUp)="moveUp($event)"
-            (moveDown)="moveDown($event)"></app-games-table>
+          @defer (when tabComponent.value() === 'plays'; prefetch on idle) {
+            <app-games-table
+              [games$]="games$"
+              [canEdit]="canEdit"
+              (gameEdit)="gameEdit($event)"
+              (moveUp)="moveUp($event)"
+              (moveDown)="moveDown($event)"></app-games-table>
+          } @loading {
+            <div class="progress-spinner-wrapper">
+              <p-progressSpinner></p-progressSpinner>
+            </div>
+          }
         </p-tabpanel>
         <p-tabpanel value="players">
-          <app-player-table
-            [players$]="players$"
-            [canEdit]="canEdit"
-            (playerEdit)="playerEdit($event)"></app-player-table>
+          @defer (when tabComponent.value() === 'players'; prefetch on idle) {
+            <app-player-table
+              [players$]="players$"
+              [canEdit]="canEdit"
+              (playerEdit)="playerEdit($event)"></app-player-table>
+          } @loading {
+            <div class="progress-spinner-wrapper">
+              <p-progressSpinner></p-progressSpinner>
+            </div>
+          }
         </p-tabpanel>
         <p-tabpanel value="games">
-          <app-board-game-table
-            [boardGames$]="boardGames$"
-            [players]="players$ | async"
-            [canEdit]="canEdit"
-            (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
+          @defer (when tabComponent.value() === 'games'; prefetch on idle) {
+            <app-board-game-table
+              [boardGames$]="boardGames$"
+              [players]="players$ | async"
+              [canEdit]="canEdit"
+              (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
+          } @loading {
+            <div class="progress-spinner-wrapper">
+              <p-progressSpinner></p-progressSpinner>
+            </div>
+          }
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>

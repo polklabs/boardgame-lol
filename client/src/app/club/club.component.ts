@@ -18,6 +18,7 @@ import { TabsModule } from 'primeng/tabs';
 import { EditorTagsComponent } from '../editors/editor-tags/editor-tags.component';
 import { FilterComponent } from './filter/filter.component';
 import { ClubTitleComponent } from '../shared/components/club-title/club-title.component';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-club',
@@ -36,6 +37,7 @@ import { ClubTitleComponent } from '../shared/components/club-title/club-title.c
     StatsComponent,
     FilterComponent,
     ClubTitleComponent,
+    ProgressSpinnerModule,
   ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
