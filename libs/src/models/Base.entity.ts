@@ -75,9 +75,7 @@ export abstract class BaseEntity {
     }
   }
 
-  resetCalculated<T extends this>(entityType: new (partial: Partial<T>) => T) {
-    const newObj = new entityType({});
-    const ignored = getIgnore(entityType);
+  resetCalculated<T extends this>(newObj: T, ignored: string[]) {
     for (const key in ignored) {
       if (key in newObj && key in this) {
         const temp = this as { [k in typeof key]: any };

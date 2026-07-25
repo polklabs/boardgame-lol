@@ -21,6 +21,7 @@ import { PlayerGamePlayerEntity } from 'libs/models/PlayerGamePlayer.entity';
 import { FilterModel } from '../models/filter.mode';
 import { EntityWrapper } from '../models/entity-wrapper';
 import { sortPlayerGames } from '../helpers/data.helper';
+import { getIgnore } from 'libs/decorators/ignore.decorator';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +29,7 @@ import { sortPlayerGames } from '../helpers/data.helper';
 export class ApiService {
   private httpService = inject(HttpService);
 
-  readonly clubs = new EntityWrapper(ClubEntity, false);
+  readonly clubs = new EntityWrapper(ClubEntity).setAutoClear(false);
   readonly boardGames = new EntityWrapper(BoardGameEntity);
   readonly playerGames = new EntityWrapper(PlayerGameEntity);
   readonly playerGamePlayers = new EntityWrapper(PlayerGamePlayerEntity);
@@ -390,6 +391,8 @@ export class ApiService {
       this.entityWrappers.forEach((w) => w.clearFilter());
     }
 
+    // Assign Internal References ----------------------------------
+
     this.tagBoardGames.list.forEach((t) => {
       t.Tag = this.tags.getOne(t.TagId);
     });
@@ -415,7 +418,7 @@ export class ApiService {
     });
 
     this.playerGames.list.forEach((pg) => {
-      pg.PlayerLinks = this.playerGamePlayers.list.filter((x) => x.PlayerGameId === pg.PlayerGameId);
+      pg.PlayerLinks = this.playerGamePlayers.getByForeignKey(pg.PlayerGameId);
       pg.Players = pg.PlayerLinks.map((p) => this.players.getOne(p.PlayerId)).filter((x) => x !== null);
       pg.PlayerIds = new Set(pg.Players.map((x) => x.PlayerId));
       pg.Game = this.games.getOne(pg.GameId);
@@ -441,10 +444,7 @@ export class ApiService {
     this.games.sort((a, b) => b.dateSortOrder.localeCompare(a.dateSortOrder));
     this.games.list.forEach((game) => {
       game.BoardGame = this.boardGames.getOne(game.BoardGameId);
-      game.Scores = sortPlayerGames(
-        this.playerGames.list.filter((x) => x.GameId === game.GameId),
-        game,
-      );
+      game.Scores = sortPlayerGames(this.playerGames.getByForeignKey(game.GameId), game);
       game.Tags = this.tagGames.list
         .filter((x) => x.GameId === game.GameId)
         .map((t) => t.Tag)
@@ -455,7 +455,7 @@ export class ApiService {
   }
 
   private calculatedFields() {
-    this.club?.resetCalculated(ClubEntity);
+    this.club?.resetCalculated(new ClubEntity({}), getIgnore(ClubEntity));
     this.entityWrappers.forEach((w) => w.resetCalculated());
 
     this.club?.calculate();
