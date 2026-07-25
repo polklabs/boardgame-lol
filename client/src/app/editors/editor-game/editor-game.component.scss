@@ -45,13 +45,16 @@
     padding: 0;
   }
 
+  .list-items {
+    padding: var(--p-listbox-option-padding);
+  }
+
   .order-list-header,
   .pick-list-header,
   .list-items {
     display: flex;
     position: relative;
     width: 100%;
-    padding: var(--p-listbox-option-padding);
 
     .player-name {
       flex-shrink: 0;

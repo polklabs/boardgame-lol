@@ -235,7 +235,7 @@ export class StatsComponent implements OnInit {
     boardGames.forEach((bg, i) => {
       if (i < COLORS.length - 1) {
         this.boardGameMeter.push({ label: bg.Name, color: COLORS[i], value: bg.PlayCount });
-      } else if (i === COLORS.length-1) {
+      } else if (i === COLORS.length - 1) {
         this.boardGameMeter.push({ label: 'Other', color: COLORS[i], value: bg.PlayCount });
       } else if (this.boardGameMeter.at(-1)?.value) {
         this.boardGameMeter.at(-1)!.value! += bg.PlayCount;
