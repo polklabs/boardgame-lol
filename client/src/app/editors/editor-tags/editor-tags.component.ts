@@ -72,6 +72,7 @@ export class EditorTagsComponent implements OnInit, OnDestroy {
   addTagTag = new TagEntity({ Text: 'Add New', Color: '#334155', BackgroundColor: '#ffffff' });
 
   categoryTypes = Object.entries(TagCategoryMapping).map(([value, x]) => ({ value, label: x.text }));
+  boardGames$ = this.apiService.boardGames.raw$;
 
   tags: Record<string, TagEntity[]> = {};
 
@@ -119,6 +120,10 @@ export class EditorTagsComponent implements OnInit, OnDestroy {
 
   newTag() {
     this.buildForm(new TagEntity({ ClubId: this.apiService.clubId, Text: 'Example' }));
+  }
+
+  isFiltered(tag: TagEntity) {
+    return tag.DisplayOnBoardGameId !== null;
   }
 
   buildForm(tag: TagEntity) {

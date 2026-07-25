@@ -109,7 +109,8 @@
       <app-tags
         formControlName="Tags"
         label="Tags"
-        editorValue="DisplayOnGames"
+        filterBool="DisplayOnGames"
+        [filterBoardGame]="game?.BoardGameId"
         [entityType]="entityType"
         [hiddenFields]="hideFields"
         [options$]="tagList$"></app-tags>

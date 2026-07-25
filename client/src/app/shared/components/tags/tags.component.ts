@@ -42,7 +42,8 @@ export class TagsComponent<T> extends ControlBase<T, TagEntity> implements Contr
   private formGroupDirective = inject(FormGroupDirective);
 
   @Input() showClear = false;
-  @Input() editorValue: keyof TagEntity | '' = '';
+  @Input() filterBool: keyof TagEntity | '' = '';
+  @Input() filterBoardGame?: string;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();
@@ -73,6 +74,7 @@ export class TagsComponent<T> extends ControlBase<T, TagEntity> implements Contr
   }
 
   groupTags(tags: TagEntity[]) {
+    this.tagOptions = [];
     tags = this.updateTagOptions(tags);
     TagCategories.forEach((category) => {
       this.tagOptions.push({
@@ -81,7 +83,7 @@ export class TagsComponent<T> extends ControlBase<T, TagEntity> implements Contr
         items: tags.filter((x) => x.Category === category).toSorted((a, b) => a.Text.localeCompare(b.Text)),
       });
     });
-    this.tagOptions.sort((a, b) => a.label.localeCompare(b.label))
+    this.tagOptions.sort((a, b) => a.label.localeCompare(b.label));
     this.tagOptions.push({
       label: 'Uncategorized',
       value: '',
@@ -92,11 +94,18 @@ export class TagsComponent<T> extends ControlBase<T, TagEntity> implements Contr
   }
 
   updateTagOptions(tags: TagEntity[]) {
-    if (this.editorValue === '') {
+    if (this.filterBool === '') {
       // Skip filter
     } else {
-      tags = tags.filter((x) => x[this.editorValue as keyof TagEntity]);
+      tags = tags.filter((x) => x[this.filterBool as keyof TagEntity]);
     }
+
+    tags = tags.filter(
+      (x) =>
+        this.filterBoardGame === undefined ||
+        x.DisplayOnBoardGameId === null ||
+        x.DisplayOnBoardGameId === this.filterBoardGame,
+    );
 
     const value = this.formGroup.controls[this.formControlName].value;
     if (Array.isArray(value)) {
