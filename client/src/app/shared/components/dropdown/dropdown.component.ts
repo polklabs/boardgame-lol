@@ -30,6 +30,7 @@ export class DropdownComponent<T, K> extends ControlBase<T, K> implements Contro
 
   @Input() showClear = false;
   @Input() showFilter = false;
+  @Input() reverseSort = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();

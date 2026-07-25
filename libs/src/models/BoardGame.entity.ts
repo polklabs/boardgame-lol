@@ -5,7 +5,6 @@ import { MinMax } from '../decorators/min-max.decorator';
 import { CHARACTER_LIMIT_SHORT, CHARACTER_LIMIT_BYTE, POINT_MAX } from '../constants';
 import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { Nullable } from '../decorators/nullable.decorator';
-import { Expose } from 'class-transformer';
 import { Sanitize } from '../decorators/sanitize.decorator';
 import { Enum } from '../decorators/enum.decorator';
 import { Ignore } from '../decorators/ignore.decorator';
@@ -14,6 +13,7 @@ import { PlayerEntity } from './Player.entity';
 import { Mode } from '../utils/helper-utils';
 import { TagEntity } from './Tag.entity';
 import { TagBoardGameEntity } from './TagBoardGame.entity';
+import { ForeignKey } from '../decorators/foreign-key.decorator';
 
 export const ScoreTypes = ['points', 'rank', 'win-lose'] as const;
 export type ScoreType = (typeof ScoreTypes)[number];
@@ -21,6 +21,17 @@ export const ScoreTypeMapping: Record<ScoreType, string> = {
   points: 'Points',
   rank: 'Ranked',
   'win-lose': 'Win/Lose',
+} as const;
+
+export const CopyAttrs = ['P', 'Np', 'S', 'T', 'Tp', 'N'] as const;
+export type CopyAttrType = (typeof CopyAttrs)[number];
+export const CopyAttrsMapping: Record<CopyAttrType, string> = {
+  P: 'Players',
+  Np: 'Non-Players',
+  S: 'Scores',
+  T: 'Tags',
+  Tp: 'Score Tags',
+  N: 'Notes',
 } as const;
 
 export type BoardGameReturn = {
@@ -54,11 +65,6 @@ export class BoardGameEntity extends BaseEntity {
   ScoreSuffix: string | null = null;
 
   @Nullable()
-  @MinMax(1, CHARACTER_LIMIT_SHORT, 'string')
-  @Sanitize()
-  BoardGameGeekId: string | null = null;
-
-  @Nullable()
   @MinMax(1, POINT_MAX, 'number')
   PointAdjustBase: number | null = null;
 
@@ -66,18 +72,22 @@ export class BoardGameEntity extends BaseEntity {
   @MinMax(1, POINT_MAX, 'number')
   PointAdjustStep: number | null = null;
 
-  @Expose()
-  get boardGameGeekUrl() {
-    if (this.BoardGameGeekId) {
-      return `https://boardgamegeek.com/boardgame/${this.BoardGameGeekId}`;
-    } else {
-      return null;
-    }
-  }
+  // Play Creation
+  @Nullable()
+  @ForeignKey(GameEntity)
+  NewGameRefId: string | null = null;
+
+  // EX: P|Np|S|T|Tp|N
+  // Player|NonPlayer|Scores|Tags|TagsPlayer|Notes
+  @Nullable()
+  NewGameRefCopy: string | null = null;
 
   get scoreTypeText() {
     return ScoreTypeMapping[this.ScoreType];
   }
+
+  @Ignore()
+  NewGameRefCopyItems: CopyAttrType[] = [];
 
   @Ignore()
   @MinMax(0, 8, 'array')
@@ -120,6 +130,7 @@ export class BoardGameEntity extends BaseEntity {
     super(partial, BoardGameEntity);
     this.assign(partial, BoardGameEntity, copyIgnored);
     this.Tags = partial.Tags ?? [];
+    this.NewGameRefCopyItems = (this.NewGameRefCopy?.split('|').filter((x) => CopyAttrs.includes(x as CopyAttrType)) ?? []) as CopyAttrType[];
   }
 
   calculate() {

@@ -59,6 +59,7 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
   @Input() editorVisible = false;
   @Input() playerGame?: PlayerGameEntity;
   @Input() scoreType?: ScoreType;
+  @Input() boardGameId?: string;
 
   @Output() closeEditor = new EventEmitter<PlayerGameEntity>();
   @Output() deleteEntity = new EventEmitter<PlayerGameEntity>();
@@ -177,11 +178,9 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
 
   async submit() {
     if (this.scoreType === 'win-lose') {
-      const won = this.getControl('Points')?.value;
-      if (won === true) {
-        this.getControl('Points')?.setValue(1);
-      } else if (won === false) {
-        this.getControl('Points')?.setValue(0);
+      if (this.getControl('ScoringPlayer')) {
+        const won = this.getControl('Points')?.value;
+        this.getControl('Points')?.setValue(won === true || won === 1 ? 1 : 0);
       } else {
         this.getControl('Points')?.setValue(null);
       }
@@ -220,7 +219,7 @@ export class EditorPlayerGameComponent implements OnChanges, OnDestroy {
         },
       });
     } else {
-      // do nothing
+      this.deleteEntity.emit(this.playerGame);
     }
   }
 }

@@ -9,7 +9,7 @@ import {
   SimpleChanges,
   inject,
 } from '@angular/core';
-import { BoardGameEntity, ScoreTypeMapping, TagEntity } from 'libs/index';
+import { BoardGameEntity, CopyAttrsMapping, ScoreTypeMapping, TagEntity } from 'libs/index';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -25,6 +25,9 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { Observable, of, Subscription } from 'rxjs';
 import { TagsComponent } from '../../shared/components/tags/tags.component';
 import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
+import { MultiSelectComponent } from '../../shared/components/multi-select/multi-select.component';
+import { NameValue } from '../../shared/models/name-value.model';
+import { format } from 'date-fns';
 
 type EntityType = BoardGameEntity;
 
@@ -40,6 +43,7 @@ type EntityType = BoardGameEntity;
     DialogModule,
     TooltipModule,
     TagsComponent,
+    MultiSelectComponent,
     NumberInputComponent,
   ],
   templateUrl: './editor-board-game.component.html',
@@ -68,6 +72,9 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
 
   scoreTypeMapping = ScoreTypeMapping;
   scoreTypes = Object.entries(this.scoreTypeMapping).map(([value, label]) => ({ value, label }));
+
+  playOptions: NameValue[] = [];
+  CopyAttrOptions: NameValue[] = Object.entries(CopyAttrsMapping).map(([value, name]) => ({ value, name }));
 
   tagList$: Observable<TagEntity[]> = of([]);
 
@@ -100,6 +107,13 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
       this.formGroup.patchValue(instance);
       this.updatePrefixSuffix();
 
+      if (this.isNew) {
+        this.getControl('NewGameRefId')?.disable();
+        this.getControl('NewGameRefCopyItems')?.disable();
+      } else {
+        // Continue
+      }
+
       this.subscriptions.add(
         this.getControl('ScoreType')?.valueChanges.subscribe(() => {
           this.updatePrefixSuffix();
@@ -131,6 +145,9 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
 
   grabLists() {
     this.tagList$ = this.apiService.tags.raw$;
+    this.playOptions = this.apiService.games.raw
+      .filter((x) => x.BoardGameId === this.boardGame?.BoardGameId)
+      .map((x) => ({ name: `${format(x.DateObj, 'yyyy/MM/dd')} - ${x.Players} player(s)`, value: x.GameId }));
   }
 
   updatePrefixSuffix() {
@@ -155,9 +172,16 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
     if (this.formGroup.invalid || !this.boardGame) {
       return;
     } else {
+      const boardGameData = this.formGroup.getRawValue();
+      if (boardGameData.NewGameRefId) {
+        boardGameData.NewGameRefCopy = boardGameData.NewGameRefCopyItems.join('|');
+      } else {
+        boardGameData.NewGameRefCopy = null;
+      }
+
       const result = await this.apiService.postBoardGame(
         this.boardGame.BoardGameId === '',
-        new BoardGameEntity(this.formGroup.getRawValue()),
+        new BoardGameEntity(boardGameData),
       );
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved BoardGame' });

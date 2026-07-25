@@ -13,7 +13,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BoardGameEntity, GameEntity, getMinMax, PlayerGameEntity } from 'libs/index';
+import { BoardGameEntity, CopyAttrsMapping, CopyAttrType, GameEntity, getMinMax, PlayerGameEntity } from 'libs/index';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
@@ -167,9 +167,17 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
       this.formGroup.patchValue(new GameEntity(this.game));
 
+      if (this.isNew) {
+        this.tryCopyFromRef();
+      } else {
+        // Skip
+      }
+
       this.subscription = this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
+        this.game!.BoardGameId = value;
         this.game!.BoardGame = this.apiService.boardGames.getOne(value);
         this.updateScoring();
+        this.tryCopyFromRef();
       });
 
       const observer = new ResizeObserver(() => {
@@ -443,11 +451,94 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updatePlayerCount() {
-    if (this.getControl('Players')?.disabled) {
-      this.getControl('Players')?.setValue(this.playerScores.reduce((prev, curr) => prev + curr.Players.length, 0));
+    this.getControl('Players')?.setValue(
+      this.playerScores.reduce((prev, curr) => prev + (curr.ScoringPlayer ? curr.Players.length : 0), 0),
+    );
+  }
+
+  tryCopyFromRef() {
+    const id = this.game?.BoardGame?.NewGameRefId;
+    const items = new Set(this.game?.BoardGame?.NewGameRefCopyItems ?? []);
+    if (this.game?.GameId !== id && id && items.size > 0) {
+      // Continue
     } else {
-      // Skip
+      return;
     }
+
+    const ask = (!this.isNew || this.formGroup.dirty) && this.game?.BoardGame?.NewGameRefId;
+    if (ask) {
+      this.confirmationService.confirm({
+        message: `Copying: ${[...items].map((x) => CopyAttrsMapping[x]).join(', ')}.<br><br>This may overwrite existing data. Do you want to proceed?`,
+        header: 'Copy Info From Reference Play',
+        icon: 'pi pi-exclamation-triangle',
+        acceptIcon: 'none',
+        rejectIcon: 'none',
+        rejectButtonStyleClass: 'p-button-text',
+        accept: async () => {
+          this.copyFromRef(id, items);
+        },
+      });
+    } else {
+      this.copyFromRef(id, items);
+    }
+  }
+
+  copyFromRef(id: string, items: Set<CopyAttrType>) {
+    const copyFrom = this.apiService.games.getOne(id);
+    if (copyFrom) {
+      // Continue
+    } else {
+      return;
+    }
+
+    if (items.has('Np') || items.has('P')) {
+      this.playerScores = this.playerScores.filter(
+        (x) => (!items.has('Np') && !x.ScoringPlayer) || (!items.has('P') && x.ScoringPlayer),
+      );
+      this.playerScores.push(
+        ...copyFrom.Scores.filter(
+          (x) => !((!items.has('Np') && !x.ScoringPlayer) || (!items.has('P') && x.ScoringPlayer)),
+        ).map((pg) => {
+          const newPg = new PlayerGameEntity({
+            ClubId: this.apiService.clubId,
+            GameId: '-1',
+            Points: items.has('S') ? pg.Points : undefined,
+            ScoringPlayer: pg.ScoringPlayer,
+            PlayerLinks: pg.Players.map(
+              (p) =>
+                new PlayerGamePlayerEntity({
+                  ClubId: this.apiService.clubId,
+                  PlayerGameId: pg.PlayerGameId,
+                  PlayerId: p.PlayerId,
+                }),
+            ),
+            Tags: items.has('Tp') ? pg.Tags : [],
+          });
+          newPg.Players = pg.Players;
+          return newPg;
+        }),
+      );
+
+      this.playerScores.forEach((pg) => pg.PlayerLinks.forEach((pl) => (pl.PlayerGameId = pg.PlayerGameId)));
+    } else {
+      // Nothing
+    }
+
+    if (items.has('T')) {
+      this.getControl('Tags')?.setValue(copyFrom.Tags);
+    } else {
+      // Continue
+    }
+
+    if (items.has('N')) {
+      this.getControl('Notes')?.setValue(copyFrom.Notes);
+    } else {
+      // Continue
+    }
+
+    console.log(this.playerScores);
+    this.updateScoring();
+    this.updatePlayerCount();
   }
 
   async submit(close: boolean) {

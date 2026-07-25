@@ -8,6 +8,7 @@
   [editorVisible]="playerGameEditorVisible"
   [playerGame]="playerGameEdit"
   [scoreType]="game?.BoardGame?.ScoreType"
+  [boardGameId]="game?.BoardGameId"
   (closeEditor)="savePlayerGame($event)"
   (deleteEntity)="deletePlayerGame($event)"></app-editor-player-game>
 

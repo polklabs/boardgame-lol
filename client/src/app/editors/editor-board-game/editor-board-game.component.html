@@ -64,10 +64,27 @@
           [hiddenFields]="hideFields"
           [options$]="tagList$"></app-tags>
 
-        <app-textinput
-          formControlName="BoardGameGeekId"
-          [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-textinput>
+        <div class="flex-grow gap-8 width-100">
+          <app-dropdown
+            formControlName="NewGameRefId"
+            label="Copy From Play"
+            [options]="playOptions"
+            optionLabel="name"
+            optionValue="value"
+            [reverseSort]="true"
+            [entityType]="entityType"
+            [hiddenFields]="hideFields"></app-dropdown>
+          <app-multi-select
+            formControlName="NewGameRefCopyItems"
+            label="Copy Attributes"
+            [options]="CopyAttrOptions"
+            optionLabel="name"
+            optionValue="value"
+            [maxSelectedLabels]="-1"
+            [entityType]="entityType"
+            [hiddenFields]="hideFields"></app-multi-select>
+        </div>
+
         <div class="dialog-footer">
           <div>
             <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
