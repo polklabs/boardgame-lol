@@ -1,6 +1,5 @@
 import { PlayerEntity } from 'libs/index';
 import { ITrophy } from './trophy.model';
-import { format } from 'date-fns';
 import { ApiService } from '../services/api.service';
 
 export class TrophyMostWeekendWins extends ITrophy {
@@ -9,10 +8,9 @@ export class TrophyMostWeekendWins extends ITrophy {
   }
 
   calculate(api: ApiService) {
-    const weekend = new Set(['Sun', 'Sat']);
     const winCount: { [playerId: string]: number } = {};
     api.games.list
-      .filter((x) => weekend.has(format(x.DateObj, 'eee')))
+      .filter((x) => x.DateObj.getDay() === 0 || x.DateObj.getDay() === 6)
       .forEach((g) => {
         g.Winners.forEach((w) => {
           if (winCount[w.PlayerId] === undefined) {

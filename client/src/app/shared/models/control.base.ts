@@ -12,5 +12,4 @@ export abstract class ControlBase<T, K> {
   @Input() options?: K[] = [];
   @Input() optionLabel?: keyof K & string;
   @Input() optionValue?: keyof K & string;
-  @Input() placeholder?: string;
 }

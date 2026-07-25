@@ -91,19 +91,22 @@ export class EntityWrapper<T extends BaseEntity> {
     const list = clear ? [] : baseList;
     const dict = clear ? {} : this._dict;
 
-    for (const item of items) {
-      dict[this.keyFunc(item) ?? ''] = item;
-      const pgIndex = list.findIndex((x) => this.keyFunc(x) === this.keyFunc(item));
-      if (pgIndex >= 0) {
-        list[pgIndex] = item;
-      } else {
-        list.push(item);
-      }
-    }
-
     if (clear) {
-      // Skip
+      list.push(...items);
+      items.forEach((item) => {
+        dict[this.keyFunc(item) ?? ''] = item;
+      });
     } else {
+      for (const item of items) {
+        dict[this.keyFunc(item) ?? ''] = item;
+        const pgIndex = list.findIndex((x) => this.keyFunc(x) === this.keyFunc(item));
+        if (pgIndex >= 0) {
+          list[pgIndex] = item;
+        } else {
+          list.push(item);
+        }
+      }
+
       const keys = new Set(list.map(this.keyFunc));
       Object.keys(dict).forEach((k) => {
         if (keys.has(k)) {
