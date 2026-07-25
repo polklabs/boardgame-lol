@@ -65,7 +65,7 @@ export class ClubEntity extends BaseEntity {
   calculated = false;
 
   constructor(partial: Partial<ClubEntity> = {}, copyIgnored = false) {
-    super(partial, ClubEntity);
+    super();
     this.assign(partial, ClubEntity, copyIgnored);
   }
 

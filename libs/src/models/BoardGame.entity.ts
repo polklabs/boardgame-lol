@@ -127,7 +127,7 @@ export class BoardGameEntity extends BaseEntity {
   calculated = false;
 
   constructor(partial: Partial<BoardGameEntity> = {}, copyIgnored = false) {
-    super(partial, BoardGameEntity);
+    super();
     this.assign(partial, BoardGameEntity, copyIgnored);
     this.Tags = partial.Tags ?? [];
     this.NewGameRefCopyItems = (this.NewGameRefCopy?.split('|').filter((x) => CopyAttrs.includes(x as CopyAttrType)) ?? []) as CopyAttrType[];

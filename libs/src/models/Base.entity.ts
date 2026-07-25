@@ -37,10 +37,6 @@ export abstract class BaseEntity {
 
   abstract calculate(): void;
 
-  constructor(partial: Partial<BaseEntity>, entityType: new (partial: Partial<BaseEntity>) => BaseEntity) {
-    this.assign(partial, entityType, false);
-  }
-
   protected assign<T>(partial: Partial<T>, entityType: new (partial: Partial<T>) => T, copyIgnored: boolean) {
     const ignored = getIgnore(entityType);
     for (const key in partial) {

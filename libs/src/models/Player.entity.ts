@@ -79,7 +79,7 @@ export class PlayerEntity extends BaseEntity {
   calculated = false;
 
   constructor(partial: Partial<PlayerEntity> = {}, copyIgnored = false) {
-    super(partial, PlayerEntity);
+    super();
     this.assign(partial, PlayerEntity, copyIgnored);
     this.Tags = partial.Tags ?? [];
   }

@@ -48,7 +48,7 @@ export class UserEntity extends BaseEntity {
   calculated = false;
 
   constructor(partial: Partial<UserEntity> = {}, copyIgnored = false) {
-    super(partial, UserEntity);
+    super();
     this.assign(partial, UserEntity, copyIgnored);
   }
 

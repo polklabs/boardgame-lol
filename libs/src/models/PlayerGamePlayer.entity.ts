@@ -29,7 +29,7 @@ export class PlayerGamePlayerEntity extends BaseEntity {
   calculated = false;
 
   constructor(partial: Partial<PlayerGamePlayerEntity> = {}, copyIgnored = false) {
-    super(partial, PlayerGamePlayerEntity);
+    super();
     this.assign(partial, PlayerGamePlayerEntity, copyIgnored);
   }
 
