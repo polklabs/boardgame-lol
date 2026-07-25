@@ -230,6 +230,7 @@ export class StatsComponent implements OnInit {
     this.gameTypeMeter[2].value = plays.reduce((prev, curr) => prev + (curr.ScoreType === 'rank' ? 1 : 0), 0);
     this.gameTypeMeter.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
 
+    this.boardGameMeter = [];
     const boardGames = this.apiService.boardGames.list.toSorted((a, b) => b.PlayCount - a.PlayCount);
     this.boardGameMeterMax = boardGames.reduce((prev, curr) => prev + curr.PlayCount, 0);
     boardGames.forEach((bg, i) => {
