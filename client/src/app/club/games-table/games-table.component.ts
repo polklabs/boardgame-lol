@@ -42,19 +42,19 @@ export class GamesTableComponent {
   columns: Column<GameEntity>[] = [
     { id: 'dateSortOrder', name: 'Date', sort: true, dataType: 'date' },
     { id: 'BoardGameName', name: 'Game', sort: true, dataType: 'text' },
-    { id: 'Notes', sort: true, class: 'notes-column', dataType: 'text' },
     { id: 'WinnerTeams', name: 'Winner(s)', dataType: 'array', keys: 'DisplayName' },
+    { id: 'Notes', sort: true, class: 'notes-column', dataType: 'text' },
     { id: 'HighScore', name: 'Points', sort: true, dataType: 'score', boardGame: (x) => x.BoardGame },
-    { id: 'Players', sort: true, dataType: 'number' },
+    { id: 'PlayerCount', name: 'Players', sort: true, dataType: 'number' },
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
     ...getTagColumns('DisplayOnGames'),
   ];
 
   expansionColumns: Column<PlayerGameEntity>[] = [
     { id: 'DisplayName', name: 'Name', dataType: 'text' },
+    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
     ...getTagColumns('DisplayOnPlayerGames'),
-    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
   ];
 
   canAdjustOrder(table: Table, games: GameEntity[], index: number): boolean {

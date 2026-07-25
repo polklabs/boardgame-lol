@@ -64,6 +64,10 @@ export class GameEntity extends BaseEntity {
     return this.BoardGame?.Name;
   }
 
+  get PlayerCount() {
+    return this.Players ?? this.Scores.reduce((prev, curr) => prev + (curr.ScoringPlayer ? curr.Players.length : 0), 0);
+  }
+
   @Ignore()
   @MinMax(0, 8, 'array')
   Tags: TagEntity[] = [];

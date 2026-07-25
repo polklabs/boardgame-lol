@@ -18,6 +18,7 @@
       }
     </ng-template>
     <ng-template templateId="expansion" let-game>
+      <p>{{game.Notes}}</p>
       <app-table [columns]="expansionColumns" [rows]="game.Scores">
         <ng-template templateId="DisplayName" let-row>
           <div class="flex-100 gap-8">

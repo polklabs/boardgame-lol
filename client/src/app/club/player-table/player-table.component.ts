@@ -45,6 +45,7 @@ export class PlayerTableComponent {
     { id: 'Name', sort: true, dataType: 'custom' },
     { id: 'WinCount', name: 'Wins', sort: true, dataType: 'custom' },
     { id: 'LossCount', name: 'Losses', sort: true, dataType: 'number' },
+    { id: 'NonScoreCount', name: 'Non-Scoring', sort: true, dataType: 'number' },
     { id: 'BestGameWins', name: 'Best Game(s)', sort: true, dataType: 'custom' },
     { id: 'FirstSeen', name: 'First Seen', sort: true, dataType: 'date' },
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },

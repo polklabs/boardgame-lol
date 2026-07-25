@@ -38,7 +38,7 @@ export class PlayerEntity extends BaseEntity {
   IsRealPerson: boolean = true;
 
   get ScoringGames() {
-    return this.PlayerGames.filter(x => x.ScoringPlayer);
+    return this.PlayerGames.filter((x) => x.ScoringPlayer);
   }
 
   @Ignore()
@@ -56,6 +56,9 @@ export class PlayerEntity extends BaseEntity {
 
   @Ignore()
   LossCount = 0;
+
+  @Ignore()
+  NonScoreCount = 0;
 
   @Ignore()
   BestGames: BoardGameEntity[] = [];
@@ -94,6 +97,7 @@ export class PlayerEntity extends BaseEntity {
     this.Wins = this.ScoringGames.filter((pg) => pg.Game?.place(0).includes(pg)).reverse();
     this.WinCount = this.Wins.length;
     this.LossCount = this.ScoringGames.length - this.WinCount;
+    this.NonScoreCount = this.PlayerGames.length - (this.WinCount + this.LossCount);
   }
 
   calculateBestGames() {

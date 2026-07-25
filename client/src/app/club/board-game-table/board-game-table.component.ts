@@ -11,13 +11,14 @@ import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
 import { getTagColumns } from '../../shared/helpers/data.helper';
-import { MapPipe } from "../../shared/pipes/map.pipe";
+import { MapPipe } from '../../shared/pipes/map.pipe';
 
 type WinCount = {
   playerId: string;
   tags: TagEntity[];
   name: string;
   wins: number;
+  nonScoreCount: number;
   plays: number;
   winPercent: number;
   totalPoints?: number;
@@ -26,16 +27,7 @@ type WinCount = {
 
 @Component({
   selector: 'app-board-game-table',
-  imports: [
-    TableModule,
-    ButtonModule,
-    TagModule,
-    CommonModule,
-    HidePipe,
-    TableComponent,
-    TemplateIdDirective,
-    MapPipe
-],
+  imports: [TableModule, ButtonModule, TagModule, CommonModule, HidePipe, TableComponent, TemplateIdDirective, MapPipe],
   templateUrl: './board-game-table.component.html',
   styleUrl: './board-game-table.component.scss',
 })
@@ -72,6 +64,7 @@ export class BoardGameTableComponent implements OnChanges {
     { id: 'wins', sort: true, dataType: 'text' },
     { id: 'winPercent', name: 'Win %', sort: true, dataType: 'number', suffix: '%' },
     { id: 'totalPoints', name: 'Total Points', sort: true, dataType: 'score', boardGame: (row) => row.boardGame },
+    { id: 'nonScoreCount', name: 'Non-Scoring', sort: true, dataType: 'number' },
   ];
 
   mostPlays = this.trophyService.getTrophy('MostPlays');
@@ -105,7 +98,8 @@ export class BoardGameTableComponent implements OnChanges {
         if (winRow) {
           winRow.wins += won ? 1 : 0;
           winRow.plays += played;
-          winRow.winPercent = (winRow.wins / winRow.plays) * 100;
+          winRow.nonScoreCount += 1 - played;
+          winRow.winPercent = winRow.plays > 0 ? (winRow.wins / winRow.plays) * 100 : 0;
           winRow.totalPoints = this.getPoints(pg, winRow.totalPoints);
         } else {
           this.WinCounts[boardGameId].push({
@@ -115,6 +109,7 @@ export class BoardGameTableComponent implements OnChanges {
             wins: won ? 1 : 0,
             plays: played,
             winPercent: won ? 100 : 0,
+            nonScoreCount: 1 - played,
             totalPoints: this.getPoints(pg),
             boardGame: pg.Game?.BoardGame,
           });
