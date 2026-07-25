@@ -8,13 +8,22 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
-import { SelectModule } from 'primeng/select';
+import { Select, SelectModule } from 'primeng/select';
 import { ControlBase } from '../../models/control.base';
-import { SortPipe } from "../../pipes/sort.pipe";
+import { SortPipe } from '../../pipes/sort.pipe';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-dropdown',
-  imports: [SelectModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent, SortPipe],
+  imports: [
+    SelectModule,
+    ReactiveFormsModule,
+    FormsModule,
+    CommonModule,
+    ControlWrapperComponent,
+    SortPipe,
+    ButtonModule,
+  ],
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.scss',
   providers: [
@@ -31,9 +40,11 @@ export class DropdownComponent<T, K> extends ControlBase<T, K> implements Contro
   @Input() showClear = false;
   @Input() showFilter = false;
   @Input() reverseSort = false;
+  @Input() addNewButton = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();
+  @Output() addNew = new EventEmitter<void>();
 
   get formGroup() {
     return this.formGroupDirective.form;
@@ -47,5 +58,10 @@ export class DropdownComponent<T, K> extends ControlBase<T, K> implements Contro
 
   onModelChange(value: unknown): void {
     this.changed.emit(value);
+  }
+
+  onAddNew(select: Select) {
+    select.hide();
+    this.addNew.emit();
   }
 }

@@ -20,5 +20,20 @@
     [selectedItemsLabel]="selectedItemsLabel"
     appendTo="body"
     display="chip"
-    (onFocus)="onFocus($event)"></p-multiselect>
+    (onFocus)="onFocus($event)">
+    @if (addNewButton) {
+      <ng-template #footer>
+        <div>
+          <p-button
+            (onClick)="onAddNew(dropdown)"
+            label="Add New"
+            fluid
+            severity="secondary"
+            text
+            size="small"
+            icon="pi pi-plus" />
+        </div>
+      </ng-template>
+    }
+  </p-multiselect>
 </app-control-wrapper>

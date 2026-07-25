@@ -25,44 +25,47 @@
             [hiddenFields]="hideFields"></app-textinput>
         </div>
 
-        <div class="flex-nowrap align-items-start gap-4 justify-content-space-between">
-          @if (getValue('Team')) {
-            <app-multi-select
-              style="flex-grow: 1"
-              formControlName="Players"
-              label="Players"
-              [entityType]="entityType"
-              [hiddenFields]="hideFields"
-              [options$]="playerList$"
-              [maxSelectedLabels]="-1"
-              optionLabel="Name"></app-multi-select>
-          } @else {
-            <app-dropdown
-              style="flex-grow: 1"
-              formControlName="Players"
-              label="Player"
-              [entityType]="entityType"
-              [hiddenFields]="hideFields"
-              [options$]="playerList$"
-              optionLabel="Name"></app-dropdown>
-          }
-          <p-button (onClick)="addPlayer()" pTooltip="New Player" icon="pi pi-plus"></p-button>
-        </div>
+        @if (getValue('Team')) {
+          <app-multi-select
+            formControlName="Players"
+            label="Players"
+            [entityType]="entityType"
+            [hiddenFields]="hideFields"
+            [options$]="playerList$"
+            [maxSelectedLabels]="-1"
+            optionLabel="Name"
+            [addNewButton]="true"
+            (addNew)="addPlayer()"></app-multi-select>
+        } @else {
+          <app-dropdown
+            formControlName="Players"
+            label="Player"
+            [entityType]="entityType"
+            [hiddenFields]="hideFields"
+            [options$]="playerList$"
+            optionLabel="Name"
+            [addNewButton]="true"
+            (addNew)="addPlayer()"></app-dropdown>
+        }
 
-        <div class="flex-grow gap-4 width-100">
+        <div class="flex gap-4 justify-content-space-between">
           <app-checkbox
             formControlName="ScoringPlayer"
-            label="Scoring Player"
+            label="Has Score"
             [hiddenFields]="hideFields"></app-checkbox>
           @if (scoreType === 'points') {
             <app-number-input
+              style="flex-grow: 1"
               formControlName="Points"
               label="Points"
               [entityType]="entityType"
               [hiddenFields]="hideFields"
               [boardGame]="playerGame.Game?.BoardGame"></app-number-input>
           } @else if (scoreType === 'win-lose') {
-            <app-checkbox formControlName="Points" label="Won Game" [hiddenFields]="hideFields"></app-checkbox>
+            <app-checkbox
+              formControlName="Points"
+              label="Won Game"
+              [hiddenFields]="hideFields"></app-checkbox>
           }
         </div>
 

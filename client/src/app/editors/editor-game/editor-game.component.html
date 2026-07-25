@@ -23,19 +23,20 @@
   <div class="form" #gameEditDialog>
     <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
       <!-- BoardGame -->
-      <div class="flex gap-4 justify-content-space-between">
-        <app-dropdown
-          style="flex-grow: 1"
-          formControlName="BoardGameId"
-          label="BoardGame"
-          [entityType]="entityType"
-          [hiddenFields]="hideFields"
-          [options]="(boardGameList$ | async) ?? []"
-          [showClear]="false"
-          optionLabel="Name"
-          optionValue="BoardGameId"></app-dropdown>
-        <p-button (onClick)="addBoardGame()" pTooltip="New Game" icon="pi pi-plus"></p-button>
-      </div>
+
+      <app-dropdown
+        style="flex-grow: 1"
+        formControlName="BoardGameId"
+        label="BoardGame"
+        [entityType]="entityType"
+        [hiddenFields]="hideFields"
+        [options]="(boardGameList$ | async) ?? []"
+        [showClear]="false"
+        optionLabel="Name"
+        optionValue="BoardGameId"
+        [addNewButton]="true"
+        (addNew)="addBoardGame()"></app-dropdown>
+
       <p-orderList
         [value]="playerScores"
         [selection]="selectedPlayerScores"
@@ -79,7 +80,10 @@
                   </div>
                 }
               } @else {
-                <div>Non player characters are not scored and do not count toward win/losses</div>
+                <small>
+                  <i class="pi pi-ban"></i>
+                  players are non-scoring and do not count toward win/losses
+                </small>
               }
             }
           </div>
@@ -102,7 +106,7 @@
           [hiddenFields]="hideFields"></app-calendar>
         <app-number-input
           formControlName="Players"
-          label="Override Player Count ({{ calculatedPlayerCount }})"
+          label="Custom Player Count"
           [entityType]="entityType"
           [hiddenFields]="hideFields"
           [locked]="true"
@@ -167,17 +171,17 @@
             @switch (game?.BoardGame?.ScoreType) {
               <!-- POINTS -->
               @case ('points') {
-                @if (playerGame.VirtualPoints === maxVirtualPoints) {
-                  <i class="pi pi-trophy" style="color: gold"></i>
-                } @else {
-                  <div class="empty-trophy"></div>
-                }
                 @if (showTiebreaker && playerGame.Points === maxPoints) {
                   <p-checkbox
                     pTooltip="Tie breaker winner."
                     [ngModel]="playerGame.TieBreaker"
                     (onChange)="tieBreak(playerGame, $event.checked)"
                     [binary]="true" />
+                }
+                @if (playerGame.VirtualPoints === maxVirtualPoints) {
+                  <i class="pi pi-trophy" style="color: gold"></i>
+                } @else {
+                  <div class="empty-trophy"></div>
                 }
                 <span class="player-name">
                   {{ playerGame.DisplayName }}: {{ playerGame.Points | number: '1.0-3' | score: game?.BoardGame }}

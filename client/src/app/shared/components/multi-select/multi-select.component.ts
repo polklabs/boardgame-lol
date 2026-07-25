@@ -9,14 +9,22 @@ import {
 } from '@angular/forms';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { ButtonModule } from 'primeng/button';
-import { MultiSelectFocusEvent, MultiSelectModule } from 'primeng/multiselect';
+import { MultiSelect, MultiSelectFocusEvent, MultiSelectModule } from 'primeng/multiselect';
 import { getMinMax } from 'libs/index';
 import { ControlBase } from '../../models/control.base';
-import { SortPipe } from "../../pipes/sort.pipe";
+import { SortPipe } from '../../pipes/sort.pipe';
 
 @Component({
   selector: 'app-multi-select',
-  imports: [MultiSelectModule, ButtonModule, ReactiveFormsModule, FormsModule, CommonModule, ControlWrapperComponent, SortPipe],
+  imports: [
+    MultiSelectModule,
+    ButtonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    CommonModule,
+    ControlWrapperComponent,
+    SortPipe,
+  ],
   templateUrl: './multi-select.component.html',
   styleUrl: './multi-select.component.scss',
   providers: [
@@ -35,9 +43,11 @@ export class MultiSelectComponent<T, K> extends ControlBase<T, K> implements Con
   @Input() maxSelectedLabels: number | null = null;
   @Input() selectedItemsLabel: string | undefined;
   @Input() selectionLimit: number | null = null;
+  @Input() addNewButton = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Output() changed = new EventEmitter<any>();
+  @Output() addNew = new EventEmitter<void>();
 
   private onChange: (value: K[]) => void = () => {};
   private onTouched: () => void = () => {};
@@ -73,5 +83,10 @@ export class MultiSelectComponent<T, K> extends ControlBase<T, K> implements Con
 
   onFocus(event: MultiSelectFocusEvent) {
     event.originalEvent.stopImmediatePropagation();
+  }
+
+  onAddNew(multiSelect: MultiSelect) {
+    multiSelect.hide();
+    this.addNew.emit();
   }
 }

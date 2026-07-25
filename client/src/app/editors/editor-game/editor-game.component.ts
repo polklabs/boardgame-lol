@@ -98,8 +98,6 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   protected selectedPlayerScores: PlayerGameEntity[] = [];
   playerScores: PlayerGameEntity[] = [];
 
-  calculatedPlayerCount = 0;
-
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
@@ -462,9 +460,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updatePlayerCount() {
-    this.game!.Players = null;
     this.game!.Scores = this.playerScores;
-    this.calculatedPlayerCount = this.game!.PlayerCount;
     this.game!.Players = this.getControl('Players')?.value;
   }
 
