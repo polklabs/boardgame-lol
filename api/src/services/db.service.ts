@@ -1,17 +1,33 @@
 import { Database } from 'better-sqlite3';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleDestroy } from '@nestjs/common';
 
 type NullString = string | null;
 export type DbVars = NullString | NullString[] | { [key: string]: NullString };
 
 @Injectable()
-export class DbService {
+export class DbService implements OnModuleDestroy {
   private db?: Database;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     this.db = require('better-sqlite3')(process.env.DB_PATH, {}) as Database;
     this.db.pragma('journal_mode = WAL');
+    this.db.pragma('foreign_keys = ON');
+    console.log('SQLite DB opened in WAL mode');
+  }
+
+  onModuleDestroy() {
+    try {
+      if (this.db) {
+        this.db.pragma('wal_checkpoint(TRUNCATE)');
+        this.db.close();
+        console.log('SQLite DB checkpointed and closed');
+      } else {
+        // Nothing to close
+      }
+    } catch (err) {
+      console.error('Error closing DB:', err);
+    }
   }
 
   getDb(): Database | undefined {
