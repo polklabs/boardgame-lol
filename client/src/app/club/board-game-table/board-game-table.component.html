@@ -1,8 +1,7 @@
 <div style="height: calc(100dvh - 150px)">
-  @let games = ((boardGames$ | async) ?? []);
   <app-table
     [columns]="columns"
-    [rows]="games"
+    [rows]="boardGames"
     [baseTable]="true"
     [canEdit]="canEdit"
     (edit)="boardGameEdit.emit($event)"
@@ -12,7 +11,9 @@
     <ng-template templateId="PlayCount" let-boardGame>
       <span>{{ boardGame.PlayCount | hide | number: '1.0-0' }}</span>
       @if (boardGame.PlayCount > 0) {
-        <div class="bar-percent" [ngStyle]="{ width: (boardGame.PlayCount / (mostPlays.value || 1)) * 100 + '%' }"></div>
+        <div
+          class="bar-percent"
+          [ngStyle]="{ width: (boardGame.PlayCount / (mostPlays.value || 1)) * 100 + '%' }"></div>
       }
     </ng-template>
     <ng-template templateId="ChampionWins" let-boardGame>
@@ -21,10 +22,10 @@
 
     <ng-template templateId="expansion" let-boardGame>
       <app-table [columns]="expansionColumns" [rows]="WinCounts[boardGame.BoardGameId]" sortBy="wins">
-            <ng-template templateId="wins" let-row>
-              {{ row.wins | number: '1.0-0' }} / {{row.plays | number: '1.0-0'}}
-            </ng-template>
-          </app-table>
+        <ng-template templateId="wins" let-row>
+          {{ row.wins | number: '1.0-0' }} / {{ row.plays | number: '1.0-0' }}
+        </ng-template>
+      </app-table>
     </ng-template>
   </app-table>
 </div>

@@ -1,9 +1,8 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
-import { BoardGameEntity, PlayerEntity, PlayerGameEntity, TagEntity } from 'libs/index';
+import { BoardGameEntity, PlayerGameEntity, TagEntity } from 'libs/index';
 import { TrophyService } from '../../shared/services/trophy.service';
 import { HidePipe } from '../../shared/pipes/hide.pipe';
 import { TagModule } from 'primeng/tag';
@@ -33,10 +32,8 @@ type WinCount = {
 })
 export class BoardGameTableComponent implements OnChanges {
   trophyService = inject(TrophyService);
-  cdr = inject(ChangeDetectorRef);
 
-  @Input() boardGames$?: Observable<BoardGameEntity[]>;
-  @Input() players: PlayerEntity[] | null = null;
+  @Input() boardGames: BoardGameEntity[] = [];
   @Input() canEdit = false;
 
   @Output() boardGameEdit = new EventEmitter<BoardGameEntity>();
@@ -70,50 +67,48 @@ export class BoardGameTableComponent implements OnChanges {
   mostPlays = this.trophyService.getTrophy('MostPlays');
 
   ngOnChanges(): void {
-    if (this.players) {
-      this.calculateWinCounts(this.players);
-      this.cdr.detectChanges();
-    } else {
-      this.WinCounts = {};
-    }
+    this.calculateWinCounts();
   }
 
-  calculateWinCounts(players: PlayerEntity[]) {
+  calculateWinCounts() {
     this.WinCounts = {};
-    players.forEach((player) => {
-      const wonGames = new Set(player.Wins.map((w) => w.PlayerGameId));
-      player.PlayerGames.forEach((pg) => {
-        const boardGameId = pg.Game?.BoardGameId ?? '';
-        if (this.WinCounts[boardGameId] === undefined) {
-          this.WinCounts[boardGameId] = [];
-        } else {
-          // Continue
-        }
+    this.boardGames.forEach((bg) => {
+      bg.Games.forEach((g) => {
+        g.Scores.forEach((pg) => {
+          pg.Players.forEach((p) => {
+            const boardGameId = pg.Game?.BoardGameId ?? '';
+            if (this.WinCounts[boardGameId] === undefined) {
+              this.WinCounts[boardGameId] = [];
+            } else {
+              // Continue
+            }
 
-        const winRow = this.WinCounts[boardGameId].find((x) => x.playerId === player.PlayerId);
-        const won = wonGames.has(pg.PlayerGameId);
+            const winRow = this.WinCounts[boardGameId].find((x) => x.playerId === p.PlayerId);
+            const won = pg.Won;
 
-        const played = pg.ScoringPlayer ? 1 : 0;
+            const played = pg.ScoringPlayer ? 1 : 0;
 
-        if (winRow) {
-          winRow.wins += won ? 1 : 0;
-          winRow.plays += played;
-          winRow.nonScoreCount += 1 - played;
-          winRow.winPercent = winRow.plays > 0 ? (winRow.wins / winRow.plays) * 100 : 0;
-          winRow.totalPoints = this.getPoints(pg, winRow.totalPoints);
-        } else {
-          this.WinCounts[boardGameId].push({
-            playerId: player.PlayerId,
-            name: player.ShortName ?? 'Unknown',
-            tags: player.Tags,
-            wins: won ? 1 : 0,
-            plays: played,
-            winPercent: won ? 100 : 0,
-            nonScoreCount: 1 - played,
-            totalPoints: this.getPoints(pg),
-            boardGame: pg.Game?.BoardGame,
+            if (winRow) {
+              winRow.wins += won ? 1 : 0;
+              winRow.plays += played;
+              winRow.nonScoreCount += 1 - played;
+              winRow.winPercent = winRow.plays > 0 ? (winRow.wins / winRow.plays) * 100 : 0;
+              winRow.totalPoints = this.getPoints(pg, winRow.totalPoints);
+            } else {
+              this.WinCounts[boardGameId].push({
+                playerId: p.PlayerId,
+                name: p.ShortName,
+                tags: p.Tags,
+                wins: won ? 1 : 0,
+                plays: played,
+                winPercent: won ? 100 : 0,
+                nonScoreCount: 1 - played,
+                totalPoints: this.getPoints(pg),
+                boardGame: pg.Game?.BoardGame,
+              });
+            }
           });
-        }
+        });
       });
     });
 

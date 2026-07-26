@@ -238,6 +238,9 @@ p-select {
 .p-datatable-table .p-datatable-tbody tr td.p-datatable-frozen-column {
   border-left: solid 1px var(--p-surface-300);
 }
+.p-datatable-thead > tr > th.p-datatable-column-sorted {
+  background: var(--p-surface-950) !important;
+}
 
 .p-listbox:not(.p-disabled) .p-listbox-option:not(.p-listbox-option-selected):not(.p-disabled):hover {
   background: unset !important;

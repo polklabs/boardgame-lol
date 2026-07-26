@@ -13,7 +13,7 @@ import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
 import { getTagColumns } from '../../shared/helpers/data.helper';
-import { MapPipe } from "../../shared/pipes/map.pipe";
+import { MapPipe } from '../../shared/pipes/map.pipe';
 
 @Component({
   selector: 'app-player-table',
@@ -26,8 +26,8 @@ import { MapPipe } from "../../shared/pipes/map.pipe";
     TrophyIconComponent,
     TableComponent,
     TemplateIdDirective,
-    MapPipe
-],
+    MapPipe,
+  ],
   templateUrl: './player-table.component.html',
   styleUrl: './player-table.component.scss',
 })
@@ -56,8 +56,10 @@ export class PlayerTableComponent {
     { id: 'won', name: '', dataType: 'custom' },
     { id: 'Date', dataType: 'date', fieldFunc: (x) => x.Game!.Date },
     { id: 'Game', dataType: 'text', fieldFunc: (x) => x.Game!.BoardGame!.Name },
+    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
+    { id: 'Name', name: 'Team Name', dataType: 'text' },
+
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
     ...getTagColumns('DisplayOnPlayerGames'),
-    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
   ];
 }

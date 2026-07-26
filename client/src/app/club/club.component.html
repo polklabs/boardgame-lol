@@ -13,7 +13,7 @@
       [club]="editClub"
       (closeEditor)="editorClubVisible = false"></app-editor-club>
   }
-  
+
   @defer (when canEdit) {
     @if (editorGameVisible) {
       <app-editor-game
@@ -90,8 +90,7 @@
         <p-tabpanel value="games">
           @defer (when tabComponent.value() === 'games'; prefetch on idle) {
             <app-board-game-table
-              [boardGames$]="boardGames$"
-              [players]="players$ | async"
+              [boardGames]="(boardGames$ | async) ?? []"
               [canEdit]="canEdit"
               (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
           } @loading {

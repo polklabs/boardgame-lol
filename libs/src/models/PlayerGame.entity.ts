@@ -74,7 +74,7 @@ export class PlayerGameEntity extends BaseEntity {
   calculated = false;
 
   get DisplayName(): string {
-    return this.Name || this.Players?.map((p) => p.ShortName ?? p.Name).join(', ');
+    return (this.Name ? `${this.Name}: ` : '') + this.Players?.map((p) => p.ShortName ?? p.Name).join(', ');
   }
 
   constructor(partial: Partial<PlayerGameEntity> = {}, copyIgnored = false) {

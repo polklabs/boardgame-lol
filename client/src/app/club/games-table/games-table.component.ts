@@ -42,8 +42,8 @@ export class GamesTableComponent {
   columns: Column<GameEntity>[] = [
     { id: 'dateSortOrder', name: 'Date', sort: true, dataType: 'date' },
     { id: 'BoardGameName', name: 'Game', sort: true, dataType: 'text' },
-    { id: 'WinnerTeams', name: 'Winner(s)', dataType: 'array', keys: 'DisplayName' },
     { id: 'HighScore', name: 'Points', sort: true, dataType: 'score', boardGame: (x) => x.BoardGame },
+    { id: 'WinnerTeams', name: 'Winner(s)', dataType: 'array', keys: 'DisplayName' },
     { id: 'Notes', sort: true, class: 'notes-column', dataType: 'text' },
     { id: 'PlayerCount', name: 'Players', sort: true, dataType: 'number' },
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },

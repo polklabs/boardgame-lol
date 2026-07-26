@@ -70,7 +70,7 @@ export class PlayerEntity extends BaseEntity {
   FirstSeen?: Date | string;
 
   @Ignore()
-  ShortName?: string;
+  ShortName: string = '';
 
   @Ignore()
   hasMostWins: boolean = false;

@@ -79,7 +79,7 @@
               }
               @case ('score') {
                 @let boardGame = column.boardGame(row);
-                {{ property(row, column) | hide | number: '1.0-' + (column.decimalPlaces ?? 3) | score: boardGame }}
+                {{ property(row, column) | score: boardGame }}
               }
               @case ('tag') {
                 @for (tag of property(row, column); track tag.TagId) {
