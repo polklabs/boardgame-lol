@@ -7,14 +7,14 @@
     (newBoardGame)="newBoardGame()"
     (newPlayer)="newPlayer()"></app-menu-bar>
 
+  @if (editorClubVisible) {
+    <app-editor-club
+      [editorVisible]="editorClubVisible"
+      [club]="editClub"
+      (closeEditor)="editorClubVisible = false"></app-editor-club>
+  }
+  
   @defer (when canEdit) {
-    @if (editorClubVisible) {
-      <app-editor-club
-        [editorVisible]="editorClubVisible"
-        [club]="editClub"
-        (closeEditor)="editorClubVisible = false"></app-editor-club>
-    }
-
     @if (editorGameVisible) {
       <app-editor-game
         [editorVisible]="editorGameVisible"
