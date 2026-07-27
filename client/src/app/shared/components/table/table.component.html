@@ -3,7 +3,7 @@
   [value]="rows"
   [sortField]="sortBy"
   [sortOrder]="sortOrder"
-  class="p-datatable-sm"
+  class="p-datatable-sm {{tiny() ? 'tiny' : ''}}"
   [tableStyle]="{ 'min-width': '50rem' }"
   [scrollable]="true"
   [stripedRows]="true"

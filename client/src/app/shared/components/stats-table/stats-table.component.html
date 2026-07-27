@@ -6,7 +6,7 @@
 
     <table>
       @for (item of items(); track $index) {
-        @if (item.value !== undefined || item.content !== undefined) {
+        @if (item.value !== undefined || (item.content ?? []).length > 0) {
           <tr (click)="item.tooltip ? formulaPopup.toggle($event) : ''" [ngStyle]="{ height: customHeight() + 'px' }">
             <td class="cell-icon">
               @if (item.emoji) {

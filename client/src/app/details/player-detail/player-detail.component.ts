@@ -74,10 +74,11 @@ export class PlayerDetailComponent implements OnChanges {
           title: 'Last Seen',
           content: [format(p.LastSeen ?? 0, 'yyyy/M/d')],
         },
-        {
-          title: 'Tags',
-          content: p.Tags.length > 0 ? p.Tags : undefined,
-        },
+        { title: 'Tags', content: p.Tags.filter((t) => !t.Category) },
+        ...getTagColumns<PlayerEntity>('DisplayOnPlayers').map((x) => ({
+          title: x.name ?? x.id,
+          content: (x.fieldFunc?.(p) as unknown[]) ?? [],
+        })),
       ];
     } else {
       this.stats = [];

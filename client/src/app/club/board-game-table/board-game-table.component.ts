@@ -9,13 +9,12 @@ import { TagModule } from 'primeng/tag';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
-import { getTagColumns } from '../../shared/helpers/data.helper';
 import { MapPipe } from '../../shared/pipes/map.pipe';
 import { BoardGameDetailComponent } from '../../details/board-game-detail/board-game-detail.component';
 
 export type WinCount = {
   playerId: string;
-  tags: TagEntity[];
+  Tags: TagEntity[];
   name: string;
   wins: number;
   nonScoreCount: number;
@@ -62,8 +61,7 @@ export class BoardGameTableComponent implements OnChanges {
     { id: 'ChampionWins', name: 'Champion(s)', dataType: 'custom', sort: true },
     { id: 'MinPlayers', name: 'Players', dataType: 'custom', sort: true },
     { id: 'MaxScore', name: 'High Score', dataType: 'score', boardGame: (row) => row, sort: true },
-    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnBoardGames'),
+    { id: 'Tags', dataType: 'tag' },
   ];
 
   mostPlays = this.trophyService.getTrophy('MostPlays');
@@ -105,7 +103,7 @@ export class BoardGameTableComponent implements OnChanges {
               this.WinCounts[boardGameId].push({
                 playerId: p.PlayerId,
                 name: p.ShortName,
-                tags: p.Tags,
+                Tags: p.Tags,
                 wins: won ? 1 : 0,
                 plays: played,
                 winPercent: won ? 100 : 0,

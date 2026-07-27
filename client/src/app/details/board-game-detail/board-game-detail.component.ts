@@ -8,6 +8,7 @@ import { Column } from '../../shared/models/column.model';
 import { BoardGameEntity } from 'libs/index';
 import { WinCount } from '../../club/board-game-table/board-game-table.component';
 import { TrophyListComponent } from '../../club/trophy-list/trophy-list.component';
+import { getTagColumns } from '../../shared/helpers/data.helper';
 
 @Component({
   selector: 'app-board-game-detail',
@@ -25,11 +26,12 @@ export class BoardGameDetailComponent implements OnChanges {
 
   columns: Column<WinCount>[] = [
     { id: 'name', sort: true, dataType: 'text' },
-    { id: 'tags', dataType: 'tag' },
     { id: 'wins', sort: true, dataType: 'text' },
     { id: 'winPercent', name: 'Win %', sort: true, dataType: 'number', suffix: '%' },
     { id: 'totalPoints', name: 'Total Points', sort: true, dataType: 'score', boardGame: (row) => row.boardGame },
     { id: 'nonScoreCount', name: 'Non-Scoring', sort: true, dataType: 'number' },
+    { id: 'tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
+    ...getTagColumns('DisplayOnPlayers'),
   ];
 
   ngOnChanges(): void {
@@ -51,7 +53,11 @@ export class BoardGameDetailComponent implements OnChanges {
           title: 'Average Winning Score',
           value: Math.abs(bg.AverageWinningScore) !== Infinity ? bg.AverageWinningScore : undefined,
         },
-        { title: 'Tags', content: bg.Tags.length > 0 ? bg.Tags : undefined },
+        { title: 'Tags', content: bg.Tags.filter((t) => !t.Category) },
+        ...getTagColumns<BoardGameEntity>('DisplayOnBoardGames').map((x) => ({
+          title: x.name ?? x.id,
+          content: (x.fieldFunc?.(bg) as unknown[]) ?? [],
+        })),
       ];
     } else {
       this.stats = [];

@@ -3,6 +3,7 @@ import {
   Component,
   ContentChildren,
   EventEmitter,
+  input,
   Input,
   OnChanges,
   Output,
@@ -49,6 +50,8 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
 
   @Input() groupRowsBy: keyof T | null = null;
   @Input() spanRowsBy: keyof T | null = null;
+
+  readonly tiny = input(false);
 
   @Input() showExpansion: ((item: T) => boolean) | boolean = true;
 

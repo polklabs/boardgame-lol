@@ -1,4 +1,14 @@
 :host ::ng-deep {
+  .tiny {
+    td,
+    th {
+      &:last-child {
+        width: unset;
+      }
+      width: 1px;
+    }
+  }
+
   td {
     .p-button {
       height: 24px;

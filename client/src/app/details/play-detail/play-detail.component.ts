@@ -33,10 +33,14 @@ export class PlayDetailComponent implements OnChanges {
     const g = this.game();
     if (g) {
       this.stats = [
-        { title: 'Event', content: (g.Events.length > 0) ? g.Events : undefined },
+        { title: 'Event', content: g.Events.length > 0 ? g.Events : undefined },
         { title: 'Notes', content: g.Notes ? [g.Notes] : undefined },
         { title: 'Player Count', value: g.PlayerCount },
-        { title: 'Tags', content: g.Tags.length > 0 ? g.Tags : undefined },
+        { title: 'Tags', content: g.Tags.filter((t) => !t.Category) },
+        ...getTagColumns<GameEntity>('DisplayOnGames').map((x) => ({
+          title: x.name ?? x.id,
+          content: (x.fieldFunc?.(g) as unknown[]) ?? [],
+        })),
       ];
     } else {
       this.stats = [];

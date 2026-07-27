@@ -11,7 +11,6 @@ import { InputIconModule } from 'primeng/inputicon';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
-import { getTagColumns } from '../../shared/helpers/data.helper';
 import { SortPipe } from '../../shared/pipes/sort.pipe';
 import { PlayDetailComponent } from '../../details/play-detail/play-detail.component';
 
@@ -52,8 +51,7 @@ export class GamesTableComponent {
     { id: 'WinnerTeams', name: 'Winner(s)', dataType: 'array', keys: 'DisplayName' },
     { id: 'Notes', class: 'notes-column', dataType: 'text' },
     { id: 'PlayerCount', name: 'Players', dataType: 'number' },
-    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnGames'),
+    { id: 'Tags', dataType: 'tag' },
   ];
 
   openPlayDetail(play: GameEntity) {

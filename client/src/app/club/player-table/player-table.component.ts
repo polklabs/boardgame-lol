@@ -11,7 +11,6 @@ import { TagModule } from 'primeng/tag';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
-import { getTagColumns } from '../../shared/helpers/data.helper';
 import { MapPipe } from '../../shared/pipes/map.pipe';
 import { PlayerDetailComponent } from '../../details/player-detail/player-detail.component';
 
@@ -51,8 +50,7 @@ export class PlayerTableComponent {
     { id: 'NonScoreCount', name: 'Non-Scoring', sort: true, dataType: 'number' },
     { id: 'BestGameWins', name: 'Best Game(s)', sort: true, dataType: 'custom' },
     { id: 'FirstSeen', name: 'First Seen', sort: true, dataType: 'date' },
-    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnPlayers'),
+    { id: 'Tags', dataType: 'tag' },
   ];
 
   openPlayerDetail(player: PlayerEntity) {
