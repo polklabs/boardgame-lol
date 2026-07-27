@@ -46,7 +46,7 @@
     <tr>
       @if (baseTable) {
         <td class="button-cell">
-          @if (showExpansion(row)){
+          @if (canShowExpansion(row)){
             <p-button
               type="button"
               pRipple
@@ -117,7 +117,7 @@
   <ng-template #expandedrow let-row>
     <tr>
       <td></td>
-      <td [attr.colspan]="cols.length+(canEdit?1:0) + (showExpansion(row)? 1:0)">
+      <td [attr.colspan]="cols.length+(canEdit?1:0) + (canShowExpansion(row)? 1:0)">
         @let template = templateMap.get('expansion');
           @if (template) {
             <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row  }"></ng-container>

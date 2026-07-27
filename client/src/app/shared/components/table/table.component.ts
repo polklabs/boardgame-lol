@@ -40,7 +40,7 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
 
   @Input() groupRowsBy: keyof T | null = null;
 
-  @Input() showExpansion: (item: T) => boolean = () => true;
+  @Input() showExpansion: ((item: T) => boolean) | boolean = true;
 
   @Output() edit = new EventEmitter<T>();
 
@@ -105,6 +105,14 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
       );
     } else {
       return false;
+    }
+  }
+
+  canShowExpansion(row: T): boolean {
+    if (typeof this.showExpansion === 'boolean') {
+      return this.showExpansion;
+    } else {
+      return this.showExpansion(row);
     }
   }
 
