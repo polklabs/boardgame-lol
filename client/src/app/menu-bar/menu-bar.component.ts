@@ -9,6 +9,28 @@ import { Observable, Subscription, combineLatest, of } from 'rxjs';
 import { MenuModule } from 'primeng/menu';
 import { LoginComponent } from '../login/login.component';
 import { PasswordUpdateComponent } from '../password-update/password-update.component';
+import { MenuItem } from 'primeng/api';
+
+function actionToBtn(data: [string, string, EventEmitter<void>]) {
+  return {
+    label: data[0],
+    icon: 'pi pi-' + data[1],
+    command: () => {
+      data[2].emit();
+    },
+  };
+}
+
+type Buttons =
+  | 'clubEdit'
+  | 'clubAdd'
+  | 'tagEdit'
+  | 'eventEdit'
+  | 'playerEdit'
+  | 'playerAdd'
+  | 'gameAdd'
+  | 'boardGameEdit'
+  | 'boardGameAdd';
 
 @Component({
   selector: 'app-menu-bar',
@@ -43,29 +65,19 @@ export class MenuBarComponent implements OnInit, OnDestroy {
   showLogin = false;
   showPassword = false;
 
-  items = [
-    {
-      label: 'Club',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editClub.emit();
-      },
-    },
-    {
-      label: 'Tags',
-      icon: 'pi pi-th-large',
-      command: () => {
-        this.editTags.emit();
-      },
-    },
-    {
-      label: 'Events',
-      icon: 'pi pi-calendar-plus',
-      command: () => {
-        this.editEvents.emit();
-      },
-    },
-  ];
+  actions: Record<Buttons, MenuItem> = {
+    clubEdit: actionToBtn(['Club', 'pencil', this.editClub]),
+    clubAdd: actionToBtn(['Club', 'plus', this.newClub]),
+    tagEdit: actionToBtn(['Tags', 'th-large', this.editTags]),
+    eventEdit: actionToBtn(['Events', 'calendar-plus', this.editEvents]),
+    playerEdit: actionToBtn(['Player', 'pencil', this.editPlayer]),
+    playerAdd: actionToBtn(['Player', 'plus', this.newPlayer]),
+    gameAdd: actionToBtn(['Play', 'plus', this.newGame]),
+    boardGameEdit: actionToBtn(['BoardGame', 'pencil', this.editBoardGame]),
+    boardGameAdd: actionToBtn(['BoardGame', 'plus', this.newBoardGame]),
+  };
+
+  items = [this.actions.clubEdit, this.actions.tagEdit, this.actions.eventEdit];
 
   userItems = [
     {
@@ -85,121 +97,24 @@ export class MenuBarComponent implements OnInit, OnDestroy {
   ];
 
   editClubItems = [
-    {
-      label: 'Play',
-      icon: 'pi pi-plus',
-      command: () => {
-        this.newGame.emit();
-      },
-    },
-    {
-      label: 'BoardGame',
-      icon: 'pi pi-plus',
-      command: () => {
-        this.newBoardGame.emit();
-      },
-    },
-    {
-      label: 'Player',
-      icon: 'pi pi-plus',
-      command: () => {
-        this.newPlayer.emit();
-      },
-    },
-    {
-      label: 'Club',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editClub.emit();
-      },
-    },
-    {
-      label: 'Tags',
-      icon: 'pi pi-th-large',
-      command: () => {
-        this.editTags.emit();
-      },
-    },
-    {
-      label: 'Events',
-      icon: 'pi pi-calendar-plus',
-      command: () => {
-        this.editEvents.emit();
-      },
-    },
+    this.actions.clubEdit,
+    this.actions.gameAdd,
+    this.actions.boardGameAdd,
+    this.actions.playerAdd,
+    this.actions.tagEdit,
+    this.actions.eventEdit,
   ];
 
-  editPlayerItems = [
-    {
-      label: 'Player',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editPlayer.emit();
-      },
-    },
-    {
-      label: 'Club',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editClub.emit();
-      },
-    },
-    {
-      label: 'Tags',
-      icon: 'pi pi-th-large',
-      command: () => {
-        this.editTags.emit();
-      },
-    },
-    {
-      label: 'Events',
-      icon: 'pi pi-calendar-plus',
-      command: () => {
-        this.editEvents.emit();
-      },
-    },
-  ];
+  editPlayerItems = [this.actions.playerEdit, this.actions.clubEdit, this.actions.tagEdit, this.actions.eventEdit];
 
   editBoardGameItems = [
-    {
-      label: 'BoardGame',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editBoardGame.emit();
-      },
-    },
-    {
-      label: 'Club',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editClub.emit();
-      },
-    },
-    {
-      label: 'Tags',
-      icon: 'pi pi-th-large',
-      command: () => {
-        this.editTags.emit();
-      },
-    },
-    {
-      label: 'Events',
-      icon: 'pi pi-calendar-plus',
-      command: () => {
-        this.editEvents.emit();
-      },
-    },
+    this.actions.boardGameEdit,
+    this.actions.clubEdit,
+    this.actions.tagEdit,
+    this.actions.eventEdit,
   ];
 
-  editHomeItems = [
-    {
-      label: 'Club',
-      icon: 'pi pi-plus',
-      command: () => {
-        this.newClub.emit();
-      },
-    },
-  ];
+  editHomeItems = [this.actions['clubAdd']];
 
   subscriptions = new Subscription();
 
