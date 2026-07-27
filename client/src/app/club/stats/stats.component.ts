@@ -6,7 +6,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
 import autocolors from 'chartjs-plugin-autocolors';
 import { GameEntity, ScoreTypeMapping, ScoreTypes } from 'libs/index';
-import { ITrophy } from '../../shared/trophies/trophy.model';
 import { Subscription } from 'rxjs';
 import { TrophyService } from '../../shared/services/trophy.service';
 import { ChartData, ChartOptions } from 'chart.js';
@@ -15,9 +14,7 @@ import { MeterGroupModule, MeterItem } from 'primeng/metergroup';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { NameValue } from '../../shared/models/name-value.model';
 import { FormsModule } from '@angular/forms';
-import { PopoverModule } from 'primeng/popover';
-import { TagComponent } from '../../shared/components/tag/tag.component';
-import { MapPipe } from '../../shared/pipes/map.pipe';
+import { TrophyListComponent } from '../trophy-list/trophy-list.component';
 
 type DayItem = { color: string; tooltip?: string; icon?: string; colorAll: string; tooltipAll?: string };
 
@@ -43,9 +40,7 @@ const COLORS = [
     MeterGroupModule,
     SelectButtonModule,
     FormsModule,
-    PopoverModule,
-    TagComponent,
-    MapPipe,
+    TrophyListComponent,
   ],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
@@ -74,8 +69,6 @@ export class StatsComponent implements OnInit {
   countByMonthOptions?: ChartOptions;
 
   chartPlugins = [autocolors];
-
-  trophies: ITrophy[] = [];
 
   gameTypeMeterMax = 0;
   gameTypeMeter: MeterItem[] = [
@@ -107,9 +100,8 @@ export class StatsComponent implements OnInit {
       }),
     );
     this.subscriptions.add(
-      this.trophyService.trophies$.subscribe((t) => {
+      this.trophyService.trophies$.subscribe(() => {
         this.updateHeatmap();
-        this.calculateTrophies(t);
       }),
     );
   }
@@ -118,14 +110,6 @@ export class StatsComponent implements OnInit {
     const documentStyle = getComputedStyle(document.documentElement);
     this.textColor = documentStyle.getPropertyValue(this.textColor);
     this.textColorSecondary = documentStyle.getPropertyValue(this.textColorSecondary);
-  }
-
-  calculateTrophies(trophies: ITrophy[]) {
-    // this.trophies = trophies.map((x) => x.export()).filter((x) => x.array.length > 0 && x.value !== Math.abs(Infinity));
-    this.trophies = trophies
-      .map((x) => x.export())
-      .filter((x) => x.array.length > 0 && x.array.length < 4 && x.value !== Math.abs(Infinity));
-    // this.trophies = this.trophies.slice(0, 9);
   }
 
   updateHeatmap() {

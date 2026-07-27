@@ -1,0 +1,56 @@
+@if (items().length > 0) {
+  <div class="stats-table-wrapper">
+    <div class="stats-header" [ngClass]="{ 'small-header': smallHeader() }">
+      {{ headerIcon() }} {{ header() }} {{ headerIcon() }}
+    </div>
+
+    <table>
+      @for (item of items(); track $index) {
+        @if (item.value !== undefined || item.content !== undefined) {
+          <tr (click)="item.tooltip ? formulaPopup.toggle($event) : ''" [ngStyle]="{ height: customHeight() + 'px' }">
+            <td class="cell-icon">
+              @if (item.emoji) {
+                <span>{{ item.emoji }}</span>
+              }
+              @if (item.tooltip) {
+                <i class="info-icon pi pi-info-circle" [pTooltip]="item.tooltip"></i>
+              }
+            </td>
+            <td class="cell-title">
+              <div>
+                <span>{{ item.title }}</span>
+                @if (item.subtitle) {
+                  <small>{{ item.subtitle }}</small>
+                }
+              </div>
+            </td>
+            <td class="cell-content">
+              @if (item.content) {
+                <!-- prettier-ignore -->
+                <span>
+                @for (content of item.content; track content) {
+                  @if (isTag(content)) {
+                    <app-tag [tag]="content"></app-tag>
+                  } @else {
+                    {{ content | map: ['ShortName', 'Name', 'Text'] }}@if (!$last) {, }
+                  }
+                }
+                </span>
+              }
+            </td>
+            <td class="cell-count">
+              @if (item.value !== undefined) {
+                <span>{{ item.value | number }}</span>
+              }
+            </td>
+          </tr>
+        }
+        <p-popover #formulaPopup styleClass="formula-popover">
+          <ng-template #content>
+            <span>{{ item.tooltip }}</span>
+          </ng-template>
+        </p-popover>
+      }
+    </table>
+  </div>
+}
