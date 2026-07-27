@@ -11,9 +11,9 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
 import { TagCategories, TagCategoryMapping, TagEntity } from 'libs/index';
 import { ButtonModule } from 'primeng/button';
 import { MultiSelectFocusEvent, MultiSelectModule } from 'primeng/multiselect';
-import { TagComponent } from '../tag/tag.component';
-import { EditorTagsComponent } from '../../../editors/editor-tags/editor-tags.component';
-import { ControlBase } from '../../models/control.base';
+import { TagComponent } from '../../tag/tag.component';
+import { EditorTagsComponent } from '../../../../editors/editor-tags/editor-tags.component';
+import { ControlBase } from '../../../models/control.base';
 import { Subscription } from 'rxjs';
 
 @Component({

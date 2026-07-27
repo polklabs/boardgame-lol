@@ -10,7 +10,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
-import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
+import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClubEntity, getAccessibleBackground } from 'libs/index';
@@ -20,10 +20,10 @@ import { Router } from '@angular/router';
 import { buildForm } from '../../shared/form.utils';
 import { UserService } from '../../shared/services/user.service';
 import { Observable, of } from 'rxjs';
-import { TextareaComponent } from '../../shared/components/textarea/textarea.component';
-import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
+import { TextareaComponent } from '../../shared/components/form-components/textarea/textarea.component';
+import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
+import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
 import { ClubTitleComponent } from '../../shared/components/club-title/club-title.component';
 
 type EntityType = ClubEntity;

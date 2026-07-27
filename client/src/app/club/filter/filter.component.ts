@@ -12,8 +12,8 @@ import { AsyncPipe } from '@angular/common';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DAYS_OF_WEEK, FilterModel } from '../../shared/models/filter.mode';
 import { buildForm } from '../../shared/form.utils';
-import { MultiSelectComponent } from '../../shared/components/multi-select/multi-select.component';
-import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
+import { MultiSelectComponent } from '../../shared/components/form-components/multi-select/multi-select.component';
+import { CalendarComponent } from '../../shared/components/form-components/calendar/calendar.component';
 
 @Component({
   selector: 'app-filter',

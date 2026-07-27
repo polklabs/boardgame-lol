@@ -1,15 +1,16 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
-import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { buildForm } from '../../shared/form.utils';
 import { EventEntity } from 'libs/index';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ApiService } from '../../shared/services/api.service';
-import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { Column } from '../../shared/models/column.model';
+import { format } from 'date-fns';
+import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
+import { CalendarComponent } from '../../shared/components/form-components/calendar/calendar.component';
 
 type EntityType = EventEntity;
 
@@ -115,10 +116,12 @@ export class EditorEventComponent implements OnInit {
     if (this.formGroup.invalid || !this.event) {
       return;
     } else {
-      const result = await this.apiService.postEvent(
-        this.event.EventId === '',
-        new EventEntity(this.formGroup.getRawValue()),
-      );
+      const eventData = this.formGroup.getRawValue();
+
+      eventData.StartDate = format(eventData.StartDate, 'yyyy-MM-dd');
+      eventData.EndDate = format(eventData.EndDate, 'yyyy-MM-dd');
+
+      const result = await this.apiService.postEvent(this.event.EventId === '', new EventEntity(eventData));
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Event' });
         this.event = undefined;

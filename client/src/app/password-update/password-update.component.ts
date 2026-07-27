@@ -2,7 +2,7 @@
 import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { PasswordComponent } from '../shared/components/password/password.component';
+import { PasswordComponent } from '../shared/components/form-components/password/password.component';
 import { DialogModule } from 'primeng/dialog';
 import { HttpService } from '../shared/services/http.service';
 import { minMaxValidator } from '../shared/validators/min-max.validator';

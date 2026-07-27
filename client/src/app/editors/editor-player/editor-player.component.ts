@@ -9,7 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
-import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
+import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { buildForm } from '../../shared/form.utils';
@@ -17,8 +17,8 @@ import { PlayerEntity, TagEntity } from 'libs/index';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ApiService } from '../../shared/services/api.service';
 import { Router } from '@angular/router';
-import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
-import { TagsComponent } from '../../shared/components/tags/tags.component';
+import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
+import { TagsComponent } from '../../shared/components/form-components/tags/tags.component';
 import { Observable, of } from 'rxjs';
 
 type EntityType = PlayerEntity;

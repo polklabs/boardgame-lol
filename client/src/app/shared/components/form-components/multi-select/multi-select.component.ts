@@ -11,8 +11,8 @@ import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.comp
 import { ButtonModule } from 'primeng/button';
 import { MultiSelect, MultiSelectFocusEvent, MultiSelectModule } from 'primeng/multiselect';
 import { getMinMax } from 'libs/index';
-import { ControlBase } from '../../models/control.base';
-import { SortPipe } from '../../pipes/sort.pipe';
+import { ControlBase } from '../../../models/control.base';
+import { SortPipe } from '../../../pipes/sort.pipe';
 
 @Component({
   selector: 'app-multi-select',

@@ -9,8 +9,8 @@ import {
 } from '@angular/forms';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { Select, SelectModule } from 'primeng/select';
-import { ControlBase } from '../../models/control.base';
-import { SortPipe } from '../../pipes/sort.pipe';
+import { ControlBase } from '../../../models/control.base';
+import { SortPipe } from '../../../pipes/sort.pipe';
 import { ButtonModule } from 'primeng/button';
 
 @Component({

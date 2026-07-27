@@ -10,7 +10,7 @@ import {
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { BoardGameEntity } from 'libs/index';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { ControlBase } from '../../models/control.base';
+import { ControlBase } from '../../../models/control.base';
 
 @Component({
   selector: 'app-number-input',

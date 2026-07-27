@@ -10,7 +10,7 @@ import {
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
 import { PasswordModule } from 'primeng/password';
 import { DividerModule } from 'primeng/divider';
-import { ControlBase } from '../../models/control.base';
+import { ControlBase } from '../../../models/control.base';
 
 @Component({
   selector: 'app-password',

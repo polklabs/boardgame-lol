@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
-import { ControlBase } from '../../models/control.base';
+import { ControlBase } from '../../../models/control.base';
 
 @Component({
   selector: 'app-textarea',

@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ControlWrapperComponent } from '../control-wrapper/control-wrapper.component';
-import { ControlBase } from '../../models/control.base';
+import { ControlBase } from '../../../models/control.base';
 import { AutoFocusModule } from 'primeng/autofocus';
 
 @Component({
