@@ -103,6 +103,14 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
     return !isEmptyLike(this.property(row, column));
   }
 
+  rowClick(row: T): void {
+    if (this.canShowExpansion(row)) {
+      this.expand.emit(row);
+    } else {
+      // Nothing
+    }
+  }
+
   showSpan(table: Table, index: number) {
     if (this.spanRowsBy) {
       if (table.sortOrder === 1) {

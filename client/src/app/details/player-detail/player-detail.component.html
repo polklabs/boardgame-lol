@@ -1,0 +1,44 @@
+@let p = player();
+@if (p) {
+  <p-dialog
+    [header]="p.Name"
+    [visible]="visible()"
+    (visibleChange)="closeDetails.emit()"
+    [modal]="true"
+    [style]="{  'min-width': '300px' }"
+    [draggable]="false"
+    [dismissableMask]="true"
+    closeIcon="pi pi-window-minimize"
+    position="center">
+    <ng-template #header>
+      <div class="details-header">    
+        @if (p.Nickname) {  
+        <span>{{p.Nickname}} - {{p.Name}}</span>
+        } @else {  
+        <span>{{p.Name}}</span>
+        }
+        @if (p.hasMostWins) {
+          <i class="pi pi-crown" style="color: gold"></i>
+        }
+      </div>
+    </ng-template>
+
+    <div class="flex-column gap-8">
+      <div class="flex-100 justify-center">
+        @for (tag of p.Tags; track tag.TagId) {
+          <app-tag [tag]="tag"></app-tag>
+        }
+      </div>
+
+      <app-stats-table header="Stats" [smallHeader]="true" [items]="stats" [customHeight]="40"></app-stats-table>
+      
+      <app-trophy-list [filter]="p" [smallHeader]="true"></app-trophy-list>
+
+      <app-table [columns]="columns" [rows]="p.PlayerGames" [canEdit]="false" [showExpansion]="false">
+        <ng-template templateId="won" let-row>
+          <app-trophy-icon [score]="row"></app-trophy-icon>
+        </ng-template>
+      </app-table>
+    </div>
+  </p-dialog>
+}

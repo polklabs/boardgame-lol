@@ -55,14 +55,14 @@
               [rounded]="true"
               [plain]="true"
               icon="pi pi-window-maximize"
-              (onClick)="expand.emit(row)" />
+              (onClick)="rowClick(row)" />
           }
         </td>
       }
       @for (column of cols; track column) {
         @let rowGroupLen = rowGroup(row, rowIndex, column);
         @if (rowGroupLen > 0) {
-        <td class="{{ column.class ?? '' }}" [attr.rowspan]="rowGroupLen" [ngClass]="{'row-span': rowGroupLen > 1}">
+        <td class="{{ column.class ?? '' }}" [attr.rowspan]="rowGroupLen" [ngClass]="{'row-span': rowGroupLen > 1}" (click)="rowClick(row)">
           @let template = templateMap.get(column.id);
           @if (template) {
             <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
