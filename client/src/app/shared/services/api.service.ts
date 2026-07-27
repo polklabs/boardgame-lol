@@ -14,6 +14,7 @@ import {
   TagPlayerGameEntity,
   TagEntity,
   ClubReturn,
+  EventEntity,
 } from 'libs/index';
 import { TagGameEntity } from 'libs/models/TagGame.entity';
 import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
@@ -40,6 +41,7 @@ export class ApiService {
   readonly tagGames = new EntityWrapper(TagGameEntity);
   readonly tagPlayers = new EntityWrapper(TagPlayerEntity);
   readonly tagPlayerGames = new EntityWrapper(TagPlayerGameEntity);
+  readonly events = new EntityWrapper(EventEntity);
 
   private entityWrappers = [
     this.clubs,
@@ -53,6 +55,7 @@ export class ApiService {
     this.tagGames,
     this.tagPlayers,
     this.tagPlayerGames,
+    this.events,
   ];
 
   // Instance Observables
@@ -120,6 +123,7 @@ export class ApiService {
     this.tagPlayers.overwriteAll(data.TagPlayers);
     this.tagPlayerGames.overwriteAll(data.TagPlayerGames);
     this.players.overwriteAll(data.Players);
+    this.events.overwriteAll(data.Events);
     this.updateReferences();
     this.dataUpdate$.next();
   }
@@ -222,6 +226,24 @@ export class ApiService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  async postEvent(isNew: boolean, entity: EventEntity) {
+    let result: EventEntity | null = null;
+    if (isNew) {
+      result = await this.httpService.put(['api', 'event'], entity);
+    } else {
+      result = await this.httpService.patch(['api', 'event'], entity);
+    }
+
+    if (result) {
+      this.events.upsert(result);
+      this.updateReferences();
+      this.dataUpdate$.next();
+      return this.events.getOne(result.EventId);
+    } else {
+      return null;
     }
   }
 
@@ -357,6 +379,26 @@ export class ApiService {
     }
   }
 
+  async deleteEvent(eventId: string) {
+    if (eventId === '') {
+      console.log('eventId is empty');
+      return false;
+    } else {
+      // continue
+    }
+
+    const result = await this.httpService.delete(['api', 'event', this.clubId, eventId]);
+
+    if (result) {
+      this.events.deleteOne(eventId);
+      this.updateReferences();
+      this.dataUpdate$.next();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   filter(filter: Partial<FilterModel>) {
     this.filters.assign(filter);
     this.filterEnabled$.next(this.filters.enabled);
@@ -449,6 +491,16 @@ export class ApiService {
         .filter((x) => x.GameId === game.GameId)
         .map((t) => t.Tag)
         .filter((x) => x !== null);
+      game.Events = [];
+    });
+
+    this.events.list.forEach((e) => {
+      const startTime = e.StartDateObj.getTime();
+      const endTime = e.EndDateObj.getTime();
+      e.Games = this.games.list.filter((g) => g.DateObj.getTime() >= startTime && g.DateObj.getTime() <= endTime);
+      e.Games.forEach((g) => {
+        g.Events.push(e);
+      });
     });
 
     this.calculatedFields();

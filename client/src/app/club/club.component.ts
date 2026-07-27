@@ -19,6 +19,7 @@ import { EditorTagsComponent } from '../editors/editor-tags/editor-tags.componen
 import { FilterComponent } from './filter/filter.component';
 import { ClubTitleComponent } from '../shared/components/club-title/club-title.component';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { EditorEventComponent } from '../editors/editor-event/editor-event.component';
 
 @Component({
   selector: 'app-club',
@@ -29,6 +30,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     EditorPlayerComponent,
     EditorClubComponent,
     EditorTagsComponent,
+    EditorEventComponent,
     CommonModule,
     TabsModule,
     GamesTableComponent,
@@ -64,6 +66,8 @@ export class ClubComponent implements OnInit, OnDestroy {
   editClub?: ClubEntity;
 
   editorTagsVisible = false;
+
+  editorEventsVisible = false;
 
   games$?: Observable<GameEntity[]>;
   boardGames$?: Observable<BoardGameEntity[]>;
@@ -136,6 +140,10 @@ export class ClubComponent implements OnInit, OnDestroy {
 
   tagsEdit() {
     this.editorTagsVisible = true;
+  }
+
+  eventsEdit() {
+    this.editorEventsVisible = true;
   }
 
   moveUp(game: GameEntity) {

@@ -40,6 +40,7 @@ export class GamesTableComponent {
   @Output() moveDown = new EventEmitter<GameEntity>();
 
   columns: Column<GameEntity>[] = [
+    { id: 'EventsName', name: 'Event', dataType: 'text' },
     { id: 'dateSortOrder', name: 'Date', sort: true, dataType: 'date' },
     { id: 'BoardGameName', name: 'Game', sort: true, dataType: 'text' },
     { id: 'HighScore', name: 'Points', sort: true, dataType: 'score', boardGame: (x) => x.BoardGame },

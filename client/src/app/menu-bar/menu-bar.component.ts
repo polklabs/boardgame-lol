@@ -35,6 +35,7 @@ export class MenuBarComponent implements OnInit, OnDestroy {
   @Output() newGame = new EventEmitter();
 
   @Output() editTags = new EventEmitter();
+  @Output() editEvents = new EventEmitter();
 
   canEdit = false;
   loggedIn$: Observable<boolean> = of(false);
@@ -55,6 +56,13 @@ export class MenuBarComponent implements OnInit, OnDestroy {
       icon: 'pi pi-th-large',
       command: () => {
         this.editTags.emit();
+      },
+    },
+    {
+      label: 'Events',
+      icon: 'pi pi-calendar-plus',
+      command: () => {
+        this.editEvents.emit();
       },
     },
   ];
@@ -112,6 +120,13 @@ export class MenuBarComponent implements OnInit, OnDestroy {
         this.editTags.emit();
       },
     },
+    {
+      label: 'Events',
+      icon: 'pi pi-calendar-plus',
+      command: () => {
+        this.editEvents.emit();
+      },
+    },
   ];
 
   editPlayerItems = [
@@ -136,6 +151,13 @@ export class MenuBarComponent implements OnInit, OnDestroy {
         this.editTags.emit();
       },
     },
+    {
+      label: 'Events',
+      icon: 'pi pi-calendar-plus',
+      command: () => {
+        this.editEvents.emit();
+      },
+    },
   ];
 
   editBoardGameItems = [
@@ -158,6 +180,13 @@ export class MenuBarComponent implements OnInit, OnDestroy {
       icon: 'pi pi-th-large',
       command: () => {
         this.editTags.emit();
+      },
+    },
+    {
+      label: 'Events',
+      icon: 'pi pi-calendar-plus',
+      command: () => {
+        this.editEvents.emit();
       },
     },
   ];

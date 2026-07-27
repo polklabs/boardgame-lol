@@ -15,6 +15,7 @@ import { TagGameEntity } from './TagGame.entity';
 import { TagPlayerGameEntity } from './TagPlayerGame.entity';
 import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
 import { format } from 'date-fns';
+import { EventEntity } from './Event.entity';
 
 export type GameReturn = {
   Game: GameEntity;
@@ -95,6 +96,12 @@ export class GameEntity extends BaseEntity {
   WinnerTeams: PlayerGameEntity[] = [];
 
   @Ignore()
+  Events: EventEntity[] = [];
+
+  @Ignore()
+  EventsName?: string;
+
+  @Ignore()
   calculated = false;
 
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
@@ -137,6 +144,7 @@ export class GameEntity extends BaseEntity {
     this.Winners = this.placePlayers(0);
     this.WinnerTeams = this.place(0);
     this.HighScore = this.place(0).at(0)?.Points ?? null;
+    this.EventsName = this.Events.length > 0 ? this.Events.map((e) => e.Name).join(', ') : undefined;
     this.calculated = true;
   }
 

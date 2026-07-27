@@ -25,9 +25,10 @@ import { GameManager } from './managers/Game.manager';
 import { BoardGameManager } from './managers/BoardGame.manager';
 import { PlayerGameManager } from './managers/PlayerGame.manager';
 import { PlayerManager } from './managers/Player.manager';
-import { BoardGameEntity, ClubEntity, PlayerEntity, TagEntity, ClubReturn, GameEntity } from 'libs/index';
+import { BoardGameEntity, ClubEntity, PlayerEntity, TagEntity, ClubReturn, GameEntity, EventEntity } from 'libs/index';
 import { TagManager } from './managers/Tag.manager';
 import { PlayerGamePlayerManager } from './managers/PlayerGamePlayer.manager';
+import { EventManager } from './managers/Event.manager';
 
 const publicThrottle = { default: { limit: 200, ttl: 600000 } };
 const authThrottle = { default: { limit: 30, ttl: 30000 } };
@@ -43,6 +44,7 @@ export class AppController {
     private playerGamePlayerManager: PlayerGamePlayerManager,
     private playerManager: PlayerManager,
     private tagManager: TagManager,
+    private eventManager: EventManager,
   ) {}
 
   getUserId(request: any) {
@@ -93,6 +95,7 @@ export class AppController {
         TagGames: this.tagManager.tagGame.loadMany('ClubId', clubId),
         TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', clubId),
         TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', clubId),
+        Events: this.eventManager.loadMany('ClubId', clubId),
       };
     } else {
       throw new NotFoundException();
@@ -289,6 +292,46 @@ export class AppController {
   deleteTag(@Request() req: any, @Param() params: { clubId: string; tagId: string }) {
     try {
       this.tagManager.delete(this.getUserId(req), params.tagId, params.clubId);
+    } catch (e) {
+      this.handleErrors(e);
+    }
+    return HttpStatus.OK;
+  }
+
+  /// --------------------------------------------------------------------------------
+  /// Event
+  /// --------------------------------------------------------------------------------
+  @Throttle(authThrottle)
+  @UseGuards(AuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Put('event')
+  addEvent(@Request() req: any, @Body() entity: EventEntity) {
+    try {
+      return this.eventManager.put(this.getUserId(req), entity);
+    } catch (e) {
+      this.handleErrors(e);
+    }
+  }
+
+  @Throttle(authThrottle)
+  @UseGuards(AuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch('event')
+  updateEvent(@Request() req: any, @Body() entity: EventEntity) {
+    try {
+      return this.eventManager.patch(this.getUserId(req), entity);
+    } catch (e) {
+      this.handleErrors(e);
+    }
+  }
+
+  @Throttle(authThrottle)
+  @UseGuards(AuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Delete('event/:clubId/:eventId')
+  deleteEvent(@Request() req: any, @Param() params: { clubId: string; eventId: string }) {
+    try {
+      this.eventManager.delete(this.getUserId(req), params.eventId, params.clubId);
     } catch (e) {
       this.handleErrors(e);
     }

@@ -5,7 +5,8 @@
     (editTags)="tagsEdit()"
     (newGame)="newGame()"
     (newBoardGame)="newBoardGame()"
-    (newPlayer)="newPlayer()"></app-menu-bar>
+    (newPlayer)="newPlayer()"
+    (editEvents)="eventsEdit()"></app-menu-bar>
 
   @if (editorClubVisible) {
     <app-editor-club
@@ -38,6 +39,10 @@
 
     @if (editorTagsVisible) {
       <app-editor-tags [editorVisible]="editorTagsVisible" (closeEditor)="editorTagsVisible = false"></app-editor-tags>
+    }
+
+    @if (editorEventsVisible) {
+      <app-editor-event [editorVisible]="editorEventsVisible" (closeEditor)="editorEventsVisible = false"></app-editor-event>
     }
   }
 
