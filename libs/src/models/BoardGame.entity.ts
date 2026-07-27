@@ -112,10 +112,19 @@ export class BoardGameEntity extends BaseEntity {
   MaxPlayers = 0;
 
   @Ignore()
+  MinPlayers = 0;
+
+  @Ignore()
   AveragePlayers = 0;
 
   @Ignore()
+  UniquePlayers = 0;
+
+  @Ignore()
   MaxScore = 0;
+
+  @Ignore()
+  MinScore = 0;
 
   @Ignore()
   AverageScore = 0;
@@ -130,7 +139,8 @@ export class BoardGameEntity extends BaseEntity {
     super();
     this.assign(partial, BoardGameEntity, copyIgnored);
     this.Tags = partial.Tags ?? [];
-    this.NewGameRefCopyItems = (this.NewGameRefCopy?.split('|').filter((x) => CopyAttrs.includes(x as CopyAttrType)) ?? []) as CopyAttrType[];
+    this.NewGameRefCopyItems = (this.NewGameRefCopy?.split('|').filter((x) => CopyAttrs.includes(x as CopyAttrType)) ??
+      []) as CopyAttrType[];
   }
 
   calculate() {
@@ -158,6 +168,8 @@ export class BoardGameEntity extends BaseEntity {
 
   calculatePlayers() {
     this.MaxPlayers = Math.max(...this.Games.map((g) => g.PlayerCount), 0);
+    this.MinPlayers = Math.min(...this.Games.map((g) => g.PlayerCount), Infinity);
+    this.UniquePlayers = new Set(this.Games.flatMap((g) => g.Scores.flatMap((s) => s.Players.map((p) => p.PlayerId)))).size;
     if (this.Games.length > 0) {
       this.AveragePlayers = this.Games.reduce((sum, game) => sum + game.PlayerCount, 0) / this.Games.length;
     } else {
@@ -170,7 +182,8 @@ export class BoardGameEntity extends BaseEntity {
 
     const scores = this.Games.flatMap((g) => g.Scores).filter((x) => !!x.Points);
     if (this.ScoreType === 'points') {
-      this.MaxScore = Math.max(...scores.map((pg) => pg.Points ?? 0), 0);
+      this.MaxScore = Math.max(...scores.map((pg) => pg.Points ?? 0), -Infinity);
+      this.MinScore = Math.min(...scores.map((pg) => pg.Points ?? 0), Infinity);
 
       if (scores.length > 0) {
         this.AverageScore = scores.reduce((sum, score) => sum + score.Points!, 0) / scores.length;
@@ -185,9 +198,10 @@ export class BoardGameEntity extends BaseEntity {
         this.AverageWinningScore = 0;
       }
     } else {
-      this.MaxScore = 0;
-      this.AverageScore = 0;
-      this.AverageWinningScore = 0;
+      this.MaxScore = -Infinity;
+      this.MinScore = Infinity;
+      this.AverageScore = -Infinity;
+      this.AverageWinningScore = -Infinity;
     }
   }
 }

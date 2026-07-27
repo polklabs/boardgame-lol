@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { GameEntity, PlayerGameEntity } from 'libs/index';
+import { GameEntity } from 'libs/index';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { Table, TableModule } from 'primeng/table';
@@ -8,12 +8,12 @@ import { Observable } from 'rxjs';
 import { TagModule } from 'primeng/tag';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
 import { getTagColumns } from '../../shared/helpers/data.helper';
 import { SortPipe } from '../../shared/pipes/sort.pipe';
+import { PlayDetailComponent } from '../../details/play-detail/play-detail.component';
 
 @Component({
   selector: 'app-games-table',
@@ -25,10 +25,10 @@ import { SortPipe } from '../../shared/pipes/sort.pipe';
     CommonModule,
     IconFieldModule,
     InputIconModule,
-    TrophyIconComponent,
     TableComponent,
     TemplateIdDirective,
     SortPipe,
+    PlayDetailComponent,
   ],
   templateUrl: './games-table.component.html',
   styleUrl: './games-table.component.scss',
@@ -40,6 +40,9 @@ export class GamesTableComponent {
   @Output() gameEdit = new EventEmitter<GameEntity>();
   @Output() moveUp = new EventEmitter<GameEntity>();
   @Output() moveDown = new EventEmitter<GameEntity>();
+
+  playDetails?: GameEntity;
+  playDetailsShow = false;
 
   columns: Column<GameEntity>[] = [
     { id: 'EventsName', name: 'Event', dataType: 'text' },
@@ -53,12 +56,10 @@ export class GamesTableComponent {
     ...getTagColumns('DisplayOnGames'),
   ];
 
-  expansionColumns: Column<PlayerGameEntity>[] = [
-    { id: 'DisplayName', name: 'Name', dataType: 'text' },
-    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
-    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnPlayerGames'),
-  ];
+  openPlayDetail(play: GameEntity) {
+    this.playDetails = play;
+    this.playDetailsShow = true;
+  }
 
   canAdjustOrder(table: Table, games: GameEntity[], index: number): boolean {
     return games.at(index - 1)?.Date === games[index].Date || games.at(index + 1)?.Date === games[index].Date;

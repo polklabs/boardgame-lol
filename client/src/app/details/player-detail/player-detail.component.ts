@@ -6,7 +6,6 @@ import { getTagColumns } from '../../shared/helpers/data.helper';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
-import { TagComponent } from '../../shared/components/tag/tag.component';
 import { StatsTableComponent, StatsTableItem } from '../../shared/components/stats-table/stats-table.component';
 import { TrophyListComponent } from '../../club/trophy-list/trophy-list.component';
 import { format } from 'date-fns';
@@ -19,7 +18,6 @@ import { format } from 'date-fns';
     TrophyIconComponent,
     TemplateIdDirective,
     StatsTableComponent,
-    TagComponent,
     TrophyListComponent,
   ],
   templateUrl: './player-detail.component.html',

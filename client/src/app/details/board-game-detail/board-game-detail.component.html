@@ -1,0 +1,30 @@
+@let bg = boardGame();
+@if (bg) {
+  <p-dialog
+    [visible]="visible()"
+    (visibleChange)="closeDetails.emit()"
+    [modal]="true"
+    [style]="{ 'min-width': '300px' }"
+    [draggable]="false"
+    [dismissableMask]="true"
+    closeIcon="pi pi-window-minimize"
+    position="center">
+    <ng-template #header>
+      <div class="details-header">
+        <span>{{ bg.Name }}</span>
+      </div>
+    </ng-template>
+
+    <div class="flex-column gap-8">
+      <app-stats-table header="Stats" [smallHeader]="true" [items]="stats" [customHeight]="40"></app-stats-table>
+
+      <app-trophy-list [filter]="bg" [smallHeader]="true"></app-trophy-list>
+
+      <app-table [columns]="columns" [rows]="winCount()" [canEdit]="false" [showExpansion]="false">
+        <ng-template templateId="wins" let-row>
+          {{ row.wins | number: '1.0-0' }} / {{ row.plays | number: '1.0-0' }}
+        </ng-template>
+      </app-table>
+    </div>
+  </p-dialog>
+}

@@ -495,9 +495,7 @@ export class ApiService {
     });
 
     this.events.list.forEach((e) => {
-      const startTime = e.StartDateObj.getTime();
-      const endTime = e.EndDateObj.getTime();
-      e.Games = this.games.list.filter((g) => g.DateObj.getTime() >= startTime && g.DateObj.getTime() <= endTime);
+      e.Games = this.games.list.filter((g) => g.Date >= e.StartDate && g.Date <= e.EndDate);
       e.Games.forEach((g) => {
         g.Events.push(e);
       });

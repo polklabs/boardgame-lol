@@ -1,7 +1,6 @@
 @let p = player();
 @if (p) {
   <p-dialog
-    [header]="p.Name"
     [visible]="visible()"
     (visibleChange)="closeDetails.emit()"
     [modal]="true"
@@ -24,12 +23,6 @@
     </ng-template>
 
     <div class="flex-column gap-8">
-      <div class="flex-100 justify-center">
-        @for (tag of p.Tags; track tag.TagId) {
-          <app-tag [tag]="tag"></app-tag>
-        }
-      </div>
-
       <app-stats-table header="Stats" [smallHeader]="true" [items]="stats" [customHeight]="40"></app-stats-table>
       
       <app-trophy-list [filter]="p" [smallHeader]="true"></app-trophy-list>
