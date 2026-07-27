@@ -44,10 +44,11 @@
         </td>
       </tr>
     }
-    <tr>
+    @let expansion = canShowExpansion(row);
+    <tr [ngClass]="{'row-expansion': expansion}">
       @if (showExpansion !== false) {
         <td class="button-cell">
-          @if (canShowExpansion(row)) {
+          @if (expansion) {
           <p-button
               type="button"
               pRipple

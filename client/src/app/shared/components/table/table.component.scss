@@ -55,4 +55,11 @@
   .row-span {
     border-right: solid 3px !important;
   }
+
+  tr.row-expansion {
+    cursor: pointer;
+    &:hover {
+      background-color: var(--p-surface-950) !important;
+    }
+  }
 }
