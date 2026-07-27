@@ -41,12 +41,12 @@ export class GameManager extends BaseManager<GameEntity> {
 
     const transactions: unknown[] = [];
 
-    this.tagManager.upsert('game', userId, entity.ClubId!, tags, entity.GameId!, transactions);
-
     this.Validate(entity, playerGames);
     this.CheckForeignKeys(entity);
 
     transactions.push(this.runInsert(userId, entity, true));
+
+    this.tagManager.upsert('game', userId, entity.ClubId!, tags, entity.GameId!, transactions);
 
     playerGames.forEach((pg) => {
       pg.ClubId = entity.ClubId;
@@ -60,6 +60,7 @@ export class GameManager extends BaseManager<GameEntity> {
     });
 
     playerGamePlayers.forEach((pgp) => {
+      pgp.GameId = entity.GameId;
       pgp.ClubId = entity.ClubId;
       transactions.push(this.playerGamePlayerManager.put(userId, pgp));
     });
