@@ -1,6 +1,6 @@
 <div style="height: calc(100dvh - 150px)">
-  @let games = (games$ | async) ?? [];
-  <app-table [columns]="columns" [rows]="games" [baseTable]="true" [canEdit]="canEdit" (edit)="gameEdit.emit($event)" dataKey="GameId" sortBy="dateSortOrder" groupRowsBy="year">
+  @let games = (games$ | async) ?? [] | sort: 'dateSortOrder' : true;
+  <app-table [columns]="columns" [rows]="games" [canEdit]="false" (edit)="gameEdit.emit($event)" groupRowsBy="EventsName" spanRowsBy="year">
     <ng-template templateId="edit" let-game let-rowIndex="rowIndex" let-gameTable="table">
       @if (gameTable && canAdjustOrder(gameTable, games, rowIndex)) {
         <p-button
@@ -17,7 +17,7 @@
           [disabled]="!canAdjustDown(games, rowIndex)"></p-button>
       }
     </ng-template>
-    <ng-template templateId="expansion" let-game>
+    <!-- <ng-template templateId="expansion" let-game>
       <p>{{game.Notes}}</p>
       <app-table [columns]="expansionColumns" [rows]="game.Scores">
         <ng-template templateId="DisplayName" let-row>
@@ -27,6 +27,6 @@
           </div>
         </ng-template>
       </app-table>
-    </ng-template>
+    </ng-template> -->
   </app-table>
 </div>

@@ -5,15 +5,16 @@
   [sortOrder]="sortOrder"
   class="p-datatable-sm"
   [tableStyle]="{ 'min-width': '50rem' }"
-  [scrollable]="baseTable"
-  [stripedRows]="baseTable"
+  [scrollable]="true"
+  [stripedRows]="true"
   scrollHeight="flex"
-  [dataKey]="dataKey"
-  [expandedRowKeys]="expandedRows"
+  
+  [virtualScroll]="false"
+  [virtualScrollItemSize]="37"
   >
   <ng-template #header>
     <tr>
-      @if (baseTable) {
+      @if (showExpansion !== false) {
         <th id="expansion" style="width: 0"></th>
       }
       @for (column of cols; track column) {
@@ -33,40 +34,42 @@
       }
     </tr>
   </ng-template>
-  <ng-template #body let-row let-expanded="expanded" let-rowIndex="rowIndex">
-    @if(showGroup(table, rowIndex)) {
+  <ng-template #body let-row let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
+        @if(showSpan(table, rowIndex)) {
       <tr class="group-row">
         <td></td>
+        <td></td>
         <td [attr.colspan]="columns.length + (canEdit ? 1 : 0)">
-          {{row[groupRowsBy]}}
+          {{row[spanRowsBy]}}
         </td>
       </tr>
     }
-
     <tr>
-      @if (baseTable) {
+      @if (showExpansion !== false) {
         <td class="button-cell">
-          @if (canShowExpansion(row)){
-            <p-button
+          @if (canShowExpansion(row)) {
+          <p-button
               type="button"
               pRipple
-              [pRowToggler]="row"
               [text]="true"
               [rounded]="true"
               [plain]="true"
-              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+              icon="pi pi-window-maximize"
+              (onClick)="expand.emit(row)" />
           }
         </td>
       }
       @for (column of cols; track column) {
-        <td class="{{ column.class ?? '' }}">
+        @let rowGroupLen = rowGroup(row, rowIndex, column);
+        @if (rowGroupLen > 0) {
+        <td class="{{ column.class ?? '' }}" [attr.rowspan]="rowGroupLen" [ngClass]="{'row-span': rowGroupLen > 1}">
           @let template = templateMap.get(column.id);
           @if (template) {
             <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
           } @else {
             @switch (column.dataType) {
               @case ('date') {
-                {{ property(row, column) | date: 'yyyy/MM/dd' }}
+                {{ property(row, column) | date: 'yyyy/M/d' }}
               }
               @case ('number') {
                 {{ property(row, column) | hide | number: '1.0-0' }}
@@ -96,6 +99,7 @@
           }
         </td>
       }
+      }
       @if (canEdit) {
         <td pFrozenColumn alignFrozen="right" class="button-cell">
           <div class="flex-nowrap justify-content-end">
@@ -111,18 +115,6 @@
           </div>
         </td>
       }
-    </tr>
-  </ng-template>
-
-  <ng-template #expandedrow let-row>
-    <tr>
-      <td></td>
-      <td [attr.colspan]="cols.length+(canEdit?1:0) + (canShowExpansion(row)? 1:0)">
-        @let template = templateMap.get('expansion');
-          @if (template) {
-            <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row  }"></ng-container>
-          }
-      </td>
     </tr>
   </ng-template>
 </p-table>

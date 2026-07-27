@@ -23,7 +23,18 @@ import { MapPipe } from '../../pipes/map.pipe';
 
 @Component({
   selector: 'app-table',
-  imports: [TableModule, DatePipe, DecimalPipe, TagComponent, HidePipe, CommonModule, ScorePipe, ButtonModule, MapPipe],
+  imports: [
+    TableModule,
+    DatePipe,
+    DecimalPipe,
+    TagComponent,
+    HidePipe,
+    CommonModule,
+    ScorePipe,
+    ButtonModule,
+    MapPipe,
+    CommonModule,
+  ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
@@ -34,15 +45,15 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
   @Input() rows: T[] = [];
   @Input() sortBy?: keyof T & string;
   @Input() sortOrder = -1;
-  @Input() baseTable = false;
   @Input() canEdit = false;
-  @Input() dataKey?: string;
 
   @Input() groupRowsBy: keyof T | null = null;
+  @Input() spanRowsBy: keyof T | null = null;
 
   @Input() showExpansion: ((item: T) => boolean) | boolean = true;
 
   @Output() edit = new EventEmitter<T>();
+  @Output() expand = new EventEmitter<T>();
 
   cols: Column<T>[] = [];
 
@@ -92,8 +103,8 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
     return !isEmptyLike(this.property(row, column));
   }
 
-  showGroup(table: Table, index: number) {
-    if (this.groupRowsBy) {
+  showSpan(table: Table, index: number) {
+    if (this.spanRowsBy) {
       if (table.sortOrder === 1) {
         index = this.rows.length - index;
       } else {
@@ -101,7 +112,7 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
       }
       return (
         table.sortField === this.sortBy &&
-        this.rows.at(index - 1)?.[this.groupRowsBy] !== this.rows.at(index)?.[this.groupRowsBy]
+        this.rows.at(index - 1)?.[this.spanRowsBy] !== this.rows.at(index)?.[this.spanRowsBy]
       );
     } else {
       return false;
@@ -116,9 +127,39 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
     }
   }
 
+  rowGroup(row: T, index: number, col: Column<T>): number {
+    if (col.id === this.groupRowsBy) {
+      const data = this.property(row, col);
+
+      if (isEmptyLike(data)) {
+        return 1;
+      } else {
+        // Continue
+      }
+
+      if (index > 0 && data === this.property(this.rows.at(index - 1), col)) {
+        return 0;
+      } else {
+        // Continue
+      }
+
+      let span = data;
+      let i = 0;
+      while (span === data && i < this.rows.length) {
+        i++;
+        span = this.property(this.rows.at(index + i), col);
+      }
+      return i;
+    } else {
+      return 1;
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  property(row: T, column: Column<T>): any {
-    if (column.dataType === 'custom') {
+  property(row: T | undefined, column: Column<T>): any {
+    if (row === undefined) {
+      return undefined;
+    } else if (column.dataType === 'custom') {
       return 'Custom Column';
     } else if (column.fieldFunc) {
       return column.fieldFunc(row);

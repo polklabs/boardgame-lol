@@ -13,6 +13,7 @@ import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
 import { getTagColumns } from '../../shared/helpers/data.helper';
+import { SortPipe } from '../../shared/pipes/sort.pipe';
 
 @Component({
   selector: 'app-games-table',
@@ -27,6 +28,7 @@ import { getTagColumns } from '../../shared/helpers/data.helper';
     TrophyIconComponent,
     TableComponent,
     TemplateIdDirective,
+    SortPipe,
   ],
   templateUrl: './games-table.component.html',
   styleUrl: './games-table.component.scss',
@@ -41,12 +43,12 @@ export class GamesTableComponent {
 
   columns: Column<GameEntity>[] = [
     { id: 'EventsName', name: 'Event', dataType: 'text' },
-    { id: 'dateSortOrder', name: 'Date', sort: true, dataType: 'date' },
-    { id: 'BoardGameName', name: 'Game', sort: true, dataType: 'text' },
-    { id: 'HighScore', name: 'Points', sort: true, dataType: 'score', boardGame: (x) => x.BoardGame },
+    { id: 'dateSortOrder', name: 'Date', dataType: 'date' },
+    { id: 'BoardGameName', name: 'Game', dataType: 'text' },
+    { id: 'HighScore', name: 'Points', dataType: 'score', boardGame: (x) => x.BoardGame },
     { id: 'WinnerTeams', name: 'Winner(s)', dataType: 'array', keys: 'DisplayName' },
-    { id: 'Notes', sort: true, class: 'notes-column', dataType: 'text' },
-    { id: 'PlayerCount', name: 'Players', sort: true, dataType: 'number' },
+    { id: 'Notes', class: 'notes-column', dataType: 'text' },
+    { id: 'PlayerCount', name: 'Players', dataType: 'number' },
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
     ...getTagColumns('DisplayOnGames'),
   ];
@@ -59,11 +61,7 @@ export class GamesTableComponent {
   ];
 
   canAdjustOrder(table: Table, games: GameEntity[], index: number): boolean {
-    if (table.sortField === 'dateSortOrder' && table.sortOrder === -1) {
-      return games.at(index - 1)?.Date === games[index].Date || games.at(index + 1)?.Date === games[index].Date;
-    } else {
-      return false;
-    }
+    return games.at(index - 1)?.Date === games[index].Date || games.at(index + 1)?.Date === games[index].Date;
   }
 
   canAdjustDown(games: GameEntity[], index: number): boolean {

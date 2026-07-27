@@ -2,10 +2,8 @@
   <app-table
     [columns]="columns"
     [rows]="boardGames"
-    [baseTable]="true"
     [canEdit]="canEdit"
     (edit)="boardGameEdit.emit($event)"
-    dataKey="BoardGameId"
     sortBy="PlayCount"
     [showExpansion]="showExpansion.bind(this)">
     <ng-template templateId="PlayCount" let-boardGame>
