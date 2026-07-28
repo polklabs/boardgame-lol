@@ -494,6 +494,7 @@ export class ApiService {
       game.Events = [];
     });
 
+    this.events.sort((a, b) => b.StartDate.localeCompare(a.StartDate));
     this.events.list.forEach((e) => {
       e.Games = this.games.list.filter((g) => g.Date >= e.StartDate && g.Date <= e.EndDate);
       e.Games.forEach((g) => {

@@ -36,7 +36,7 @@ export class GameEntity extends BaseEntity {
   @ForeignKey(BoardGameEntity)
   BoardGameId: string = '';
 
-  Date: Date | string = new Date().toISOString();
+  Date: string = new Date().toISOString();
 
   @Nullable()
   @MinMax(0, 99999, 'number')
@@ -144,7 +144,12 @@ export class GameEntity extends BaseEntity {
     this.Winners = this.placePlayers(0);
     this.WinnerTeams = this.place(0);
     this.HighScore = this.place(0).at(0)?.Points ?? null;
-    this.EventsName = this.Events.length > 0 ? this.Events.map((e) => e.Name).join(', ') : undefined;
+    this.EventsName =
+      this.Events.length > 0
+        ? this.Events.map((e) => e.Name)
+            .toSorted((a, b) => a?.localeCompare(b))
+            .join(', ')
+        : undefined;
     this.calculated = true;
   }
 

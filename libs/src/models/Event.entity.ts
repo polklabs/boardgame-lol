@@ -15,20 +15,17 @@ export class EventEntity extends BaseEntity {
   @SecondaryKey
   ClubId: string = '';
 
-  StartDate: Date | string = new Date().toISOString();
-  EndDate: Date | string = new Date().toISOString();
+  StartDate: string = new Date().toISOString();
+  EndDate: string = new Date().toISOString();
 
   @MinMax(0, CHARACTER_LIMIT_TINY, 'string')
-  Name: string | null = null;
+  Name: string = '';
 
   @Ignore()
   Games: GameEntity[] = [];
 
   @Ignore()
-  StartDateObj: Date;
-
-  @Ignore()
-  EndDateObj: Date;
+  DateObj: [Date, Date];
 
   @Ignore()
   calculated = false;
@@ -37,12 +34,14 @@ export class EventEntity extends BaseEntity {
     super();
     this.assign(partial, EventEntity, copyIgnored);
 
-    this.StartDateObj = new Date(this.StartDate);
-    const userTimezoneOffset = this.StartDateObj.getTimezoneOffset() * 60000;
-    this.StartDateObj = new Date(this.StartDateObj.getTime() + userTimezoneOffset);
+    let StartDateObj = new Date(this.StartDate);
+    const userTimezoneOffset = StartDateObj.getTimezoneOffset() * 60000;
+    StartDateObj = new Date(StartDateObj.getTime() + userTimezoneOffset);
 
-    this.EndDateObj = new Date(this.EndDate);
-    this.EndDateObj = new Date(this.EndDateObj.getTime() + userTimezoneOffset);
+    let EndDateObj = new Date(this.EndDate);
+    EndDateObj = new Date(EndDateObj.getTime() + userTimezoneOffset);
+
+    this.DateObj = [StartDateObj, EndDateObj];
   }
 
   calculate() {
