@@ -37,9 +37,8 @@
   <ng-template #body let-row let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
         @if(showSpan(table, rowIndex)) {
       <tr class="group-row">
-        <td></td>
-        <td></td>
-        <td [attr.colspan]="columns.length + (canEdit ? 1 : 0)">
+        <td [attr.colspan]="rowSpanColumn()"></td>
+        <td [attr.colspan]="columns.length - rowSpanColumn() + (canEdit ? 1 : 0)">
           {{row[spanRowsBy]}}
         </td>
       </tr>

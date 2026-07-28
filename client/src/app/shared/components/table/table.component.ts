@@ -116,17 +116,21 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
 
   showSpan(table: Table, index: number) {
     if (this.spanRowsBy) {
-      if (table.sortOrder === 1) {
-        index = this.rows.length - index;
-      } else {
-        // Continue
-      }
       return (
         table.sortField === this.sortBy &&
         this.rows.at(index - 1)?.[this.spanRowsBy] !== this.rows.at(index)?.[this.spanRowsBy]
       );
     } else {
       return false;
+    }
+  }
+
+  rowSpanColumn() {
+    const col = this.cols.findIndex((x) => x.rowSpan);
+    if (col === -1) {
+      return 1;
+    } else {
+      return col + 1;
     }
   }
 

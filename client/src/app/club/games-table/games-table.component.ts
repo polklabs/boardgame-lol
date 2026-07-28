@@ -45,7 +45,7 @@ export class GamesTableComponent {
 
   columns: Column<GameEntity>[] = [
     { id: 'EventsName', name: 'Event', dataType: 'text' },
-    { id: 'dateSortOrder', name: 'Date', dataType: 'date' },
+    { id: 'dateSortOrder', name: 'Date', dataType: 'date', rowSpan: true },
     { id: 'BoardGameName', name: 'Game', dataType: 'text' },
     { id: 'HighScore', name: 'Points', dataType: 'score', boardGame: (x) => x.BoardGame },
     { id: 'WinnerTeams', name: 'Winner(s)', dataType: 'array', keys: 'DisplayName' },

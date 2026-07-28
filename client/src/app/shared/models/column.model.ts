@@ -10,6 +10,7 @@ interface IColumnBase<T, K = unknown> {
   // Optional
   sort?: boolean;
   class?: string;
+  rowSpan?: boolean;
 }
 
 interface ITextColumn<T> extends IColumnBase<T> {
