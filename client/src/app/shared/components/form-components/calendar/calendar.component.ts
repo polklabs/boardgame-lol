@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, forwardRef, inject } from '@angular/core';
+import { Component, Input, forwardRef, inject, input } from '@angular/core';
 import {
   ControlValueAccessor,
   FormGroupDirective,
@@ -31,7 +31,8 @@ export class CalendarComponent<T> extends ControlBase<T, unknown> implements Con
   @Input() icon = '';
   @Input() iconPosition: 'left' | 'right' = 'right';
   @Input() showClear = false;
-  @Input() maxDate = endOfDay(new Date());
+  @Input() maxDate: Date | null = endOfDay(new Date());
+  readonly range = input(false);
 
   get formGroup() {
     return this.formGroupDirective.form;

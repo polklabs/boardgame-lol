@@ -31,18 +31,13 @@
           [entityType]="entityType"
           [hiddenFields]="hideFields"></app-textinput>
 
-        <div class="flex-grow gap-8 width-100">
-          <app-calendar
-            formControlName="StartDate"
-            label="Start Date"
-            [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-calendar>
-          <app-calendar
-            formControlName="EndDate"
-            label="End Date"
-            [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-calendar>
-        </div>
+        <app-calendar
+          formControlName="DateObj"
+          label="Date Range"
+          [entityType]="entityType"
+          [hiddenFields]="hideFields"
+          [maxDate]="null"
+          [range]="true"></app-calendar>
 
         <div class="dialog-footer">
           <div>

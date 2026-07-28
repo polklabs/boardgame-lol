@@ -156,11 +156,8 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
         const lastBoardGame = this.apiService.games.raw[0]?.BoardGame;
         this.game.BoardGame = lastBoardGame ?? firstBoardGame ?? null;
         this.game.BoardGameId = this.game.BoardGame?.BoardGameId ?? null;
-        this.game.Date = new Date();
       } else {
-        const date = new Date(this.game.Date);
-        const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-        this.game.Date = new Date(date.getTime() + userTimezoneOffset);
+        // Nothing
       }
 
       this.hideFields = new Set();
@@ -555,8 +552,8 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       return;
     } else {
       const gameData = this.formGroup.getRawValue();
-      gameData.Date = format(gameData.Date, 'yyyy-MM-dd');
-      const oldDate = format(this.game.Date, 'yyyy-MM-dd');
+      gameData.Date = format(gameData.DateObj, 'yyyy-MM-dd');
+      const oldDate = format(this.game.DateObj, 'yyyy-MM-dd');
 
       if (this.isNew || oldDate !== gameData.Date) {
         gameData.SortIndex = this.apiService.games.raw

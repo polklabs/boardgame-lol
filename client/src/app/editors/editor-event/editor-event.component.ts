@@ -82,17 +82,6 @@ export class EditorEventComponent implements OnInit {
       this.isNew = false;
     }
 
-    if (this.isNew) {
-      // Continue
-    } else {
-      const startDate = new Date(this.event.StartDate);
-      const userTimezoneOffset = startDate.getTimezoneOffset() * 60000;
-      this.event.StartDate = new Date(startDate.getTime() + userTimezoneOffset);
-
-      const endDate = new Date(this.event.EndDate);
-      this.event.EndDate = new Date(endDate.getTime() + userTimezoneOffset);
-    }
-
     this.hideFields = new Set();
     this.formGroup = buildForm(this.fb, this.entityType, new EventEntity());
 
@@ -118,8 +107,8 @@ export class EditorEventComponent implements OnInit {
     } else {
       const eventData = this.formGroup.getRawValue();
 
-      eventData.StartDate = format(eventData.StartDate, 'yyyy-MM-dd');
-      eventData.EndDate = format(eventData.EndDate, 'yyyy-MM-dd');
+      eventData.StartDate = format(eventData.DateObj[0], 'yyyy-MM-dd');
+      eventData.EndDate = eventData.DateObj[1] ? format(eventData.DateObj[1], 'yyyy-MM-dd') : eventData.StartDate;
 
       const result = await this.apiService.postEvent(this.event.EventId === '', new EventEntity(eventData));
       if (result) {
