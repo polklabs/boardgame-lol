@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { isGuid, newGuid } from 'libs/utils/guid-utils';
 import { ValidationError } from 'src/errors/validation.error';
 import { AuthorizationError } from 'src/errors/authorization.error';
-import { ClubUserEntity, TP, T } from 'libs/index';
+import { ClubUserEntity, TP } from 'libs/index';
 
 @Injectable()
 export class ClubUserManager extends BaseManager<ClubUserEntity> {
@@ -20,10 +20,11 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     }
 
     if (isGuid(userId) && isGuid(clubId)) {
-      const data = this.loadManyCustom('', `WHERE ClubUser.UserId = ? AND ClubUser.ClubId = ? LIMIT 1`, [
-        userId,
-        clubId,
-      ]);
+      const data = this.loadManyCustom(
+        '',
+        `WHERE ${TP(ClubUserEntity, 'UserId')} = ? AND ${TP(ClubUserEntity, 'ClubId')} = ? LIMIT 1`,
+        [userId, clubId],
+      );
       if (data.length <= 0) {
         throw new AuthorizationError('You do not have access to modify this club');
       } else {
@@ -38,7 +39,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     if (isGuid(userId) && isGuid(clubId)) {
       const data = this.loadManyCustom(
         '',
-        `WHERE ClubUser.UserId = ? AND ClubUser.ClubId = ? AND ClubUser.Admin = ? LIMIT 1`,
+        `WHERE ${TP(ClubUserEntity, 'UserId')} = ? AND ${TP(ClubUserEntity, 'ClubId')} = ? AND ${TP(ClubUserEntity, 'Admin')} = ? LIMIT 1`,
         [userId, clubId!, '1'],
       );
       if (data.length <= 0) {
@@ -54,7 +55,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
   loadManyWithAdmin(userId: string) {
     return this.db.AllRaw<{ ClubId: string }>(
       `SELECT ${TP(ClubUserEntity, 'ClubId')}
-        FROM ${T(ClubUserEntity)}
+        FROM ${TP(ClubUserEntity)}
         WHERE ${TP(ClubUserEntity, 'UserId')} = ? AND ${TP(ClubUserEntity, 'Admin')} = ?`,
       [userId, '1'],
     );

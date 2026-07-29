@@ -3,7 +3,7 @@ import { BaseManager } from './Base.manager';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
 import { UserEntity } from 'libs/models/User.entity';
-import { newGuid } from 'libs/index';
+import { newGuid, TP } from 'libs/index';
 
 const usernameRegex = /^(?=.{4,32}$)(?![_.-])(?!.*[_.]{2})[a-zA-Z0-9._-]+(?<![_.-])$/;
 
@@ -43,13 +43,16 @@ export class UserManager extends BaseManager<UserEntity> {
   }
 
   public getUser(userId: string) {
-    return this.db.GetRaw<UserEntity>(`SELECT * FROM  User WHERE UserId = ? LIMIT 1`, [userId]);
+    return this.db.GetRaw<UserEntity>(
+      `SELECT ${TP(UserEntity, '*')} FROM ${TP(UserEntity)} WHERE ${TP(UserEntity, 'UserId')} = ? LIMIT 1`,
+      [userId],
+    );
   }
 
   public findUser(username: string) {
     username = username.toLowerCase().trim();
     return this.db.GetRaw<UserEntity>(
-      `SELECT * FROM  User WHERE Email = ? COLLATE NOCASE OR Username = ? COLLATE NOCASE LIMIT 1`,
+      `SELECT ${TP(UserEntity, '*')} FROM  ${TP(UserEntity)} WHERE ${TP(UserEntity, 'Email')} = ? COLLATE NOCASE OR ${TP(UserEntity, 'Username')} = ? COLLATE NOCASE LIMIT 1`,
       [username, username],
     );
   }
@@ -58,7 +61,7 @@ export class UserManager extends BaseManager<UserEntity> {
     email = email.toLowerCase().trim();
     return (
       this.db.GetRaw<{ count: number }>(
-        `SELECT COUNT(*) AS count FROM User WHERE Email = ? COLLATE NOCASE LIMIT 1`,
+        `SELECT COUNT(*) AS count FROM ${TP(UserEntity)} WHERE ${TP(UserEntity, 'Email')} = ? COLLATE NOCASE LIMIT 1`,
         email,
       )?.count === 0
     );
@@ -68,7 +71,7 @@ export class UserManager extends BaseManager<UserEntity> {
     username = username.trim();
     return (
       this.db.GetRaw<{ count: number }>(
-        `SELECT COUNT(*) AS count FROM User WHERE Username = ? COLLATE NOCASE LIMIT 1`,
+        `SELECT COUNT(*) AS count FROM ${TP(UserEntity)} WHERE ${TP(UserEntity, 'Username')} = ? COLLATE NOCASE LIMIT 1`,
         username,
       )?.count === 0
     );
