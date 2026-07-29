@@ -73,7 +73,7 @@ export class AppController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('clubs')
   getPublicClubs() {
-    return this.clubManager.loadMany('Public', ['1']);
+    return this.clubManager.loadManyWithName();
   }
 
   @Throttle(publicThrottle)

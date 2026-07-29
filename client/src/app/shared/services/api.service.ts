@@ -73,7 +73,7 @@ export class ApiService {
     return this.club?.ClubId;
   }
   private set club(club: ClubEntity | undefined) {
-    this.club$.next(new ClubEntity(club, true));
+    this.club$.next(new ClubEntity(club));
   }
 
   unloadClub() {

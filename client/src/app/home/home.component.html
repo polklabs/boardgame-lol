@@ -27,6 +27,11 @@
   <div class="club-card" [routerLink]="'/club/' + club.ClubId">
     <app-club-title [club]="club" fontSize="28px"></app-club-title>
     <p>{{ club.Summary }}</p>
+    <app-stats-table [header]="''" [customHeight]="0" [customTitleWidth]="0" [items]="[
+      {title: 'Plays', value: club.GameCount},
+      {title: 'Players', value: club.PlayerCount},
+      {title: 'Games', value: club.BoardGameCount},
+    ]"></app-stats-table>
     <small>Created by: {{ club.CreatedBy }}</small>
   </div>
 </ng-template>

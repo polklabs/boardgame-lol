@@ -6,8 +6,7 @@
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    margin: auto;
-    margin-top: 16px;
+    margin: 16px auto;
 
     .stats-header {
       background-color: var(--surface-a);
@@ -53,7 +52,7 @@
     .cell-title {
       width: 1px;
       min-width: 150px;
-      padding-right: 10px;
+      padding: 0 15px;
       > div {
         display: flex;
         flex-direction: column;

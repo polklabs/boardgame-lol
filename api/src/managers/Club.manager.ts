@@ -3,7 +3,7 @@ import { BaseManager } from './Base.manager';
 import { newGuid } from 'libs/utils/guid-utils';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
-import { ClubEntity, ClubUserEntity } from 'libs/index';
+import { BoardGameEntity, ClubEntity, ClubUserEntity, GameEntity, PlayerEntity, T, TP, UserEntity } from 'libs/index';
 import { ClubUserManager } from './ClubUser.manager';
 
 @Injectable()
@@ -13,6 +13,21 @@ export class ClubManager extends BaseManager<ClubEntity> {
     protected clubUserManager: ClubUserManager,
   ) {
     super(ClubEntity);
+  }
+
+  loadManyWithName(userId = ''): ClubEntity[] {
+    return this.db.AllRaw<ClubEntity>(
+      `SELECT Club.*,
+            (SELECT COUNT(*) FROM ${T(PlayerEntity)} WHERE ${TP(PlayerEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')}) AS PlayerCount,
+            (SELECT COUNT(*) FROM ${T(GameEntity)} WHERE ${TP(GameEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')}) AS GameCount,
+            (SELECT COUNT(*) FROM ${T(BoardGameEntity)} WHERE ${TP(BoardGameEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')}) AS BoardGameCount,
+            ${TP(UserEntity, 'Username')} as CreatedBy
+          FROM ${T(ClubEntity)}
+          INNER JOIN ${T(ClubUserEntity)} ON ${TP(ClubUserEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')}
+          INNER JOIN ${T(UserEntity)} ON ${TP(UserEntity, 'UserId')} = ${TP(ClubEntity, 'CreatedBy')}
+          WHERE ${TP(ClubUserEntity, 'UserId')} = ? OR ${TP(ClubEntity, 'Public')} = ?`,
+      [userId, '1'],
+    );
   }
 
   put(userId: string, entity: ClubEntity) {

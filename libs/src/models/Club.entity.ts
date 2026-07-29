@@ -64,11 +64,20 @@ export class ClubEntity extends BaseEntity {
   BackgroundColor: string = '';
 
   @Ignore()
+  PlayerCount: number = 0;
+
+  @Ignore()
+  GameCount: number = 0;
+
+  @Ignore()
+  BoardGameCount: number = 0;
+
+  @Ignore()
   calculated = false;
 
-  constructor(partial: Partial<ClubEntity> = {}, copyIgnored = false) {
+  constructor(partial: Partial<ClubEntity> = {}) {
     super();
-    this.assign(partial, ClubEntity, copyIgnored);
+    this.assign(partial, ClubEntity, true);
   }
 
   calculate(): void {

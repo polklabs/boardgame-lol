@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { TagComponent } from '../tag/tag.component';
 import { MapPipe } from '../../pipes/map.pipe';
 import { PopoverModule } from 'primeng/popover';
@@ -26,7 +26,11 @@ export class StatsTableComponent {
   readonly headerIcon = input<string>();
   readonly items = input.required<StatsTableItem[]>();
   readonly smallHeader = input<boolean>(false);
+  
   readonly customHeight = input<number>(67);
+  readonly customTitleWidth = input<number>(150);
+
+  hasIcons = computed(() => this.items().some(x => x.emoji));
 
   isTag(item: unknown) {
     return item instanceof TagEntity;

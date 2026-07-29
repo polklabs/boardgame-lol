@@ -1,22 +1,26 @@
 @if (items().length > 0) {
   <div class="stats-table-wrapper">
-    <div class="stats-header" [ngClass]="{ 'small-header': smallHeader() }">
-      {{ headerIcon() }} {{ header() }} {{ headerIcon() }}
-    </div>
+    @if (header().length > 0) {
+      <div class="stats-header" [ngClass]="{ 'small-header': smallHeader() }">
+        {{ headerIcon() }} {{ header() }} {{ headerIcon() }}
+      </div>
+    }
 
     <table>
       @for (item of items(); track $index) {
         @if (item.value !== undefined || (item.content ?? []).length > 0) {
           <tr (click)="item.tooltip ? formulaPopup.toggle($event) : ''" [ngStyle]="{ height: customHeight() + 'px' }">
-            <td class="cell-icon">
-              @if (item.emoji) {
-                <span>{{ item.emoji }}</span>
-              }
-              @if (item.tooltip) {
-                <i class="info-icon pi pi-info-circle" [pTooltip]="item.tooltip"></i>
-              }
-            </td>
-            <td class="cell-title">
+            @if (hasIcons()) {
+              <td class="cell-icon">
+                @if (item.emoji) {
+                  <span>{{ item.emoji }}</span>
+                }
+                @if (item.tooltip) {
+                  <i class="info-icon pi pi-info-circle" [pTooltip]="item.tooltip"></i>
+                }
+              </td>
+            }
+            <td class="cell-title" [ngStyle]="{ 'min-width': customTitleWidth() + 'px' }">
               <div>
                 <span>{{ item.title }}</span>
                 @if (item.subtitle) {
