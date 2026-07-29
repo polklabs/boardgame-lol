@@ -1,5 +1,4 @@
-@let g = game();
-@if (g) {
+@if (game(); as g) {
   <p-dialog
     [visible]="visible()"
     (visibleChange)="closeDetails.emit()"
@@ -11,12 +10,12 @@
     position="center">
     <ng-template #header>
       <div class="details-header">
-        <span>{{ g.BoardGameName }} - {{g.DateObj | date: 'MMM d, yyyy'}}</span>
+        <span>{{ g.BoardGameName }} - {{ g.DateObj | date: 'MMM d, yyyy' }}</span>
       </div>
     </ng-template>
 
     <div class="flex-column gap-8">
-      <app-stats-table header="Stats" [smallHeader]="true" [items]="stats" [customHeight]="40"></app-stats-table>
+      <app-stats-table header="Stats" [smallHeader]="true" [items]="stats()" [customHeight]="40"></app-stats-table>
 
       <app-table [columns]="columns" [rows]="g.Scores" [canEdit]="false" [showExpansion]="false" [tiny]="true">
         <ng-template templateId="DisplayName" let-row>

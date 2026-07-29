@@ -1,4 +1,4 @@
-import { Component, input, OnChanges, output } from '@angular/core';
+import { Component, computed, input, output, Signal } from '@angular/core';
 import { PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { DialogModule } from 'primeng/dialog';
 import { Column } from '../../shared/models/column.model';
@@ -23,28 +23,15 @@ import { format } from 'date-fns';
   templateUrl: './player-detail.component.html',
   styleUrl: './player-detail.component.scss',
 })
-export class PlayerDetailComponent implements OnChanges {
+export class PlayerDetailComponent {
   readonly player = input<PlayerEntity>();
   readonly visible = input.required<boolean>();
   readonly closeDetails = output<void>();
 
-  stats: StatsTableItem[] = [];
-
-  columns: Column<PlayerGameEntity>[] = [
-    { id: 'won', name: '', dataType: 'custom', class: 'shrink' },
-    { id: 'Date', dataType: 'date', fieldFunc: (x) => x.Game!.Date },
-    { id: 'Game', dataType: 'text', fieldFunc: (x) => x.Game!.BoardGame!.Name },
-    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
-    { id: 'Name', name: 'Team Name', dataType: 'text' },
-
-    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnPlayerGames'),
-  ];
-
-  ngOnChanges(): void {
+  stats: Signal<StatsTableItem[]> = computed(() => {
     const p = this.player();
     if (p) {
-      this.stats = [
+      return [
         {
           title: 'Wins',
           value: p.WinCount,
@@ -81,7 +68,18 @@ export class PlayerDetailComponent implements OnChanges {
         })),
       ];
     } else {
-      this.stats = [];
+      return [];
     }
-  }
+  });
+
+  columns: Column<PlayerGameEntity>[] = [
+    { id: 'won', name: '', dataType: 'custom', class: 'shrink' },
+    { id: 'Date', dataType: 'date', fieldFunc: (x) => x.Game!.Date },
+    { id: 'Game', dataType: 'text', fieldFunc: (x) => x.Game!.BoardGame!.Name },
+    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
+    { id: 'Name', name: 'Team Name', dataType: 'text' },
+
+    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
+    ...getTagColumns('DisplayOnPlayerGames'),
+  ];
 }

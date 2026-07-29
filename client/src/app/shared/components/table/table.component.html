@@ -81,8 +81,7 @@
                 {{ property(row, column) | map: column.keys }}
               }
               @case ('score') {
-                @let boardGame = column.boardGame(row);
-                {{ property(row, column) | score: boardGame }}
+                {{ property(row, column) | score: column.boardGame(row) }}
               }
               @case ('tag') {
                 @for (tag of property(row, column); track tag.TagId) {
@@ -103,8 +102,7 @@
       @if (canEdit) {
         <td pFrozenColumn alignFrozen="right" class="button-cell">
           <div class="flex-nowrap justify-content-end">
-            @let editTemplate = templateMap.get('edit');
-            @if (editTemplate) {
+            @if (templateMap.get('edit'); as editTemplate) {
               <ng-container [ngTemplateOutlet]="editTemplate" [ngTemplateOutletContext]="{ $implicit: row, table, rowIndex }"></ng-container>
             }
             <p-button

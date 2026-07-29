@@ -1,4 +1,4 @@
-import { Component, input, OnChanges, output } from '@angular/core';
+import { Component, computed, input, output, Signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { StatsTableComponent, StatsTableItem } from '../../shared/components/stats-table/stats-table.component';
 import { TableComponent } from '../../shared/components/table/table.component';
@@ -16,28 +16,16 @@ import { getTagColumns } from '../../shared/helpers/data.helper';
   templateUrl: './board-game-detail.component.html',
   styleUrl: './board-game-detail.component.scss',
 })
-export class BoardGameDetailComponent implements OnChanges {
+export class BoardGameDetailComponent {
   readonly boardGame = input<BoardGameEntity>();
   readonly winCount = input.required<WinCount[]>();
   readonly visible = input.required<boolean>();
   readonly closeDetails = output<void>();
 
-  stats: StatsTableItem[] = [];
-
-  columns: Column<WinCount>[] = [
-    { id: 'name', sort: true, dataType: 'text' },
-    { id: 'wins', sort: true, dataType: 'text' },
-    { id: 'winPercent', name: 'Win %', sort: true, dataType: 'number', suffix: '%' },
-    { id: 'totalPoints', name: 'Total Points', sort: true, dataType: 'score', boardGame: (row) => row.boardGame },
-    { id: 'nonScoreCount', name: 'Non-Scoring', sort: true, dataType: 'number' },
-    { id: 'tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnPlayers'),
-  ];
-
-  ngOnChanges(): void {
+  stats: Signal<StatsTableItem[]> = computed(() => {
     const bg = this.boardGame();
     if (bg) {
-      this.stats = [
+      return [
         { title: 'Play Count', value: bg.PlayCount },
         { title: 'Champion', value: bg.ChampionWins, content: bg.Champions },
         {
@@ -60,7 +48,17 @@ export class BoardGameDetailComponent implements OnChanges {
         })),
       ];
     } else {
-      this.stats = [];
+      return [];
     }
-  }
+  });
+
+  columns: Column<WinCount>[] = [
+    { id: 'name', sort: true, dataType: 'text' },
+    { id: 'wins', sort: true, dataType: 'text' },
+    { id: 'winPercent', name: 'Win %', sort: true, dataType: 'number', suffix: '%' },
+    { id: 'totalPoints', name: 'Total Points', sort: true, dataType: 'score', boardGame: (row) => row.boardGame },
+    { id: 'nonScoreCount', name: 'Non-Scoring', sort: true, dataType: 'number' },
+    { id: 'tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
+    ...getTagColumns('DisplayOnPlayers'),
+  ];
 }

@@ -1,4 +1,4 @@
-import { Component, input, OnChanges, output } from '@angular/core';
+import { Component, computed, input, output, Signal } from '@angular/core';
 import { GameEntity, PlayerGameEntity } from 'libs/index';
 import { DialogModule } from 'primeng/dialog';
 import { StatsTableItem, StatsTableComponent } from '../../shared/components/stats-table/stats-table.component';
@@ -15,24 +15,15 @@ import { DatePipe } from '@angular/common';
   templateUrl: './play-detail.component.html',
   styleUrl: './play-detail.component.scss',
 })
-export class PlayDetailComponent implements OnChanges {
+export class PlayDetailComponent {
   readonly game = input<GameEntity>();
   readonly visible = input.required<boolean>();
   readonly closeDetails = output<void>();
 
-  stats: StatsTableItem[] = [];
-
-  columns: Column<PlayerGameEntity>[] = [
-    { id: 'DisplayName', name: 'Name', dataType: 'text' },
-    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
-    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnPlayerGames'),
-  ];
-
-  ngOnChanges(): void {
+  stats: Signal<StatsTableItem[]> = computed(() => {
     const g = this.game();
     if (g) {
-      this.stats = [
+      return [
         { title: 'Event', content: g.Events.length > 0 ? g.Events : undefined },
         { title: 'Notes', content: g.Notes ? [g.Notes] : undefined },
         { title: 'Player Count', value: g.PlayerCount },
@@ -43,7 +34,14 @@ export class PlayDetailComponent implements OnChanges {
         })),
       ];
     } else {
-      this.stats = [];
+      return [];
     }
-  }
+  });
+
+  columns: Column<PlayerGameEntity>[] = [
+    { id: 'DisplayName', name: 'Name', dataType: 'text' },
+    { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
+    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
+    ...getTagColumns('DisplayOnPlayerGames'),
+  ];
 }

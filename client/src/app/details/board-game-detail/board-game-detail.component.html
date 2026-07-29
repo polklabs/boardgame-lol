@@ -1,5 +1,4 @@
-@let bg = boardGame();
-@if (bg) {
+@if (boardGame(); as bg) {
   <p-dialog
     [visible]="visible()"
     (visibleChange)="closeDetails.emit()"
@@ -16,7 +15,7 @@
     </ng-template>
 
     <div class="flex-column gap-8">
-      <app-stats-table header="Stats" [smallHeader]="true" [items]="stats" [customHeight]="40"></app-stats-table>
+      <app-stats-table header="Stats" [smallHeader]="true" [items]="stats()" [customHeight]="40"></app-stats-table>
 
       <app-trophy-list [filter]="bg" [smallHeader]="true"></app-trophy-list>
 
