@@ -2,10 +2,19 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import 'reflect-metadata';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { ConsoleLogger } from '@nestjs/common';
 // import helmet from 'helmet';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: new ConsoleLogger({
+      json: true,
+      colors: true,
+    }),
+  });
+
+  app.enableShutdownHooks();
+
   // app.use(helmet());
 
   // Enable CORS

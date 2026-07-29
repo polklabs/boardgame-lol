@@ -1,11 +1,11 @@
 import { Database } from 'better-sqlite3';
-import { BadRequestException, Injectable, OnModuleDestroy } from '@nestjs/common';
+import { BadRequestException, Injectable, OnApplicationShutdown } from '@nestjs/common';
 
 type NullString = string | null;
 export type DbVars = NullString | NullString[] | { [key: string]: NullString };
 
 @Injectable()
-export class DbService implements OnModuleDestroy {
+export class DbService implements OnApplicationShutdown {
   private db?: Database;
 
   constructor() {
@@ -16,7 +16,7 @@ export class DbService implements OnModuleDestroy {
     console.log('SQLite DB opened in WAL mode');
   }
 
-  onModuleDestroy() {
+  onApplicationShutdown() {
     try {
       if (this.db) {
         this.db.pragma('wal_checkpoint(TRUNCATE)');
