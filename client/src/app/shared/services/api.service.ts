@@ -91,6 +91,7 @@ export class ApiService {
     }
 
     this.clubs.overwriteAll(data);
+    this.clubs.sort((a, b) => a.Name.localeCompare(b.Name));
     this.calculatedFields();
   }
 
