@@ -84,9 +84,11 @@
                 {{ property(row, column) | score: column.boardGame(row) }}
               }
               @case ('tag') {
-                @for (tag of property(row, column); track tag.TagId) {
-                  <app-tag [tag]="tag"></app-tag>
-                }
+                <div class="tag-wrapper">
+                  @for (tag of property(row, column); track tag.TagId) {
+                    <app-tag [tag]="tag"></app-tag>
+                  }
+                </div>
               }
               @default {
                 {{ property(row, column) }}
