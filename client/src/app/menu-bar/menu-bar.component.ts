@@ -1,5 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { Router } from '@angular/router';
@@ -9,6 +21,29 @@ import { Observable, Subscription, combineLatest, of } from 'rxjs';
 import { MenuModule } from 'primeng/menu';
 import { LoginComponent } from '../login/login.component';
 import { PasswordUpdateComponent } from '../password-update/password-update.component';
+import { MenuItem } from 'primeng/api';
+import { debounce } from 'lodash-es';
+
+function actionToBtn(data: [string, string, EventEmitter<void>]) {
+  return {
+    label: data[0],
+    icon: 'pi pi-' + data[1],
+    command: () => {
+      data[2].emit();
+    },
+  };
+}
+
+type Buttons =
+  | 'clubEdit'
+  | 'clubAdd'
+  | 'tagEdit'
+  | 'eventEdit'
+  | 'playerEdit'
+  | 'playerAdd'
+  | 'gameAdd'
+  | 'boardGameEdit'
+  | 'boardGameAdd';
 
 @Component({
   selector: 'app-menu-bar',
@@ -16,12 +51,15 @@ import { PasswordUpdateComponent } from '../password-update/password-update.comp
   templateUrl: './menu-bar.component.html',
   styleUrl: './menu-bar.component.scss',
 })
-export class MenuBarComponent implements OnInit, OnDestroy {
+export class MenuBarComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('header', { static: true }) header!: ElementRef;
+
   private router = inject(Router);
   private apiService = inject(ApiService);
   private userService = inject(UserService);
+  private cdr = inject(ChangeDetectorRef);
 
-  @Input() page: 'home' | 'club' | 'player' | 'board-game' = 'home';
+  @Input() page: 'home' | 'club' = 'home';
 
   @Output() editClub = new EventEmitter();
   @Output() newClub = new EventEmitter();
@@ -35,6 +73,11 @@ export class MenuBarComponent implements OnInit, OnDestroy {
   @Output() newGame = new EventEmitter();
 
   @Output() editTags = new EventEmitter();
+  @Output() editEvents = new EventEmitter();
+
+  collapseView = false;
+  fullViewWidth = 0;
+  collapseDebounce = debounce(this.calculateView.bind(this), 50);
 
   canEdit = false;
   loggedIn$: Observable<boolean> = of(false);
@@ -42,22 +85,19 @@ export class MenuBarComponent implements OnInit, OnDestroy {
   showLogin = false;
   showPassword = false;
 
-  items = [
-    {
-      label: 'Club',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editClub.emit();
-      },
-    },
-    {
-      label: 'Tags',
-      icon: 'pi pi-th-large',
-      command: () => {
-        this.editTags.emit();
-      },
-    },
-  ];
+  actions: Record<Buttons, MenuItem> = {
+    clubEdit: actionToBtn(['Club', 'pencil', this.editClub]),
+    clubAdd: actionToBtn(['Club', 'plus', this.newClub]),
+    tagEdit: actionToBtn(['Tags', 'th-large', this.editTags]),
+    eventEdit: actionToBtn(['Events', 'calendar-plus', this.editEvents]),
+    playerEdit: actionToBtn(['Player', 'pencil', this.editPlayer]),
+    playerAdd: actionToBtn(['Player', 'plus', this.newPlayer]),
+    gameAdd: actionToBtn(['Play', 'plus', this.newGame]),
+    boardGameEdit: actionToBtn(['BoardGame', 'pencil', this.editBoardGame]),
+    boardGameAdd: actionToBtn(['BoardGame', 'plus', this.newBoardGame]),
+  };
+
+  items = [this.actions.clubEdit, this.actions.tagEdit, this.actions.eventEdit];
 
   userItems = [
     {
@@ -77,102 +117,22 @@ export class MenuBarComponent implements OnInit, OnDestroy {
   ];
 
   editClubItems = [
-    {
-      label: 'Play',
-      icon: 'pi pi-plus',
-      command: () => {
-        this.newGame.emit();
-      },
-    },
-    {
-      label: 'BoardGame',
-      icon: 'pi pi-plus',
-      command: () => {
-        this.newBoardGame.emit();
-      },
-    },
-    {
-      label: 'Player',
-      icon: 'pi pi-plus',
-      command: () => {
-        this.newPlayer.emit();
-      },
-    },
-    {
-      label: 'Club',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editClub.emit();
-      },
-    },
-    {
-      label: 'Tags',
-      icon: 'pi pi-th-large',
-      command: () => {
-        this.editTags.emit();
-      },
-    },
+    
+    this.actions.gameAdd,
+    this.actions.boardGameAdd,
+    this.actions.playerAdd,
+    this.actions.clubEdit,
+    this.actions.tagEdit,
+    this.actions.eventEdit,
   ];
 
-  editPlayerItems = [
-    {
-      label: 'Player',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editPlayer.emit();
-      },
-    },
-    {
-      label: 'Club',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editClub.emit();
-      },
-    },
-    {
-      label: 'Tags',
-      icon: 'pi pi-th-large',
-      command: () => {
-        this.editTags.emit();
-      },
-    },
-  ];
+  editItems = [this.actions.clubEdit, this.actions.tagEdit, this.actions.eventEdit];
+  addItems = [this.actions.gameAdd, this.actions.boardGameAdd, this.actions.playerAdd];
 
-  editBoardGameItems = [
-    {
-      label: 'BoardGame',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editBoardGame.emit();
-      },
-    },
-    {
-      label: 'Club',
-      icon: 'pi pi-pencil',
-      command: () => {
-        this.editClub.emit();
-      },
-    },
-    {
-      label: 'Tags',
-      icon: 'pi pi-th-large',
-      command: () => {
-        this.editTags.emit();
-      },
-    },
-  ];
-
-  editHomeItems = [
-    {
-      label: 'Club',
-      icon: 'pi pi-plus',
-      command: () => {
-        this.newClub.emit();
-      },
-    },
-  ];
+  editHomeItems = [this.actions['clubAdd']];
 
   subscriptions = new Subscription();
+  observer = new ResizeObserver(() => {});
 
   ngOnInit() {
     if (this.page === 'home') {
@@ -192,8 +152,16 @@ export class MenuBarComponent implements OnInit, OnDestroy {
     this.loggedIn$ = this.userService.loggedIn$;
   }
 
+  ngAfterViewInit(): void {
+    this.observer = new ResizeObserver(() => {
+      this.collapseDebounce();
+    });
+    this.observer.observe(this.header.nativeElement);
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.observer.disconnect();
   }
 
   navigateHome() {
@@ -202,5 +170,28 @@ export class MenuBarComponent implements OnInit, OnDestroy {
 
   username() {
     return this.userService.username;
+  }
+
+  calculateView() {
+    const width = this.header.nativeElement.clientWidth;
+    const scrollWidth = this.header.nativeElement.scrollWidth;
+    if (width < scrollWidth) {
+      this.collapseView = true;
+      this.fullViewWidth = width;
+    } else if (width < this.fullViewWidth) {
+      if (this.collapseView || width < scrollWidth) {
+        this.collapseView = true;
+      } else {
+        // Leave as is
+      }
+      this.fullViewWidth = width;
+    } else if (width > this.fullViewWidth) {
+      this.collapseView = false;
+      this.fullViewWidth = width;
+      setTimeout(() => this.calculateView(), 0);
+    } else {
+      // Keep
+    }
+    this.cdr.detectChanges();
   }
 }

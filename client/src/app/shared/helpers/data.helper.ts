@@ -4,7 +4,7 @@ import { Column } from '../models/column.model';
 export function isEmptyLike(value: unknown): boolean {
   if (value == null) {
     return true; // null or undefined
-  } else if (typeof value === 'number' && value === 0) {
+  } else if (typeof value === 'number' && (value === 0 || value === Infinity || value === -Infinity)) {
     return true;
   } else if (typeof value === 'string' && value.trim() === '') {
     return true;

@@ -1,37 +1,4 @@
 :host ::ng-deep {
-  td {
-    .p-button {
-      height: 24px;
-      padding: 0;
-      border-radius: 32px;
-    }
-    &:has(p-button) {
-      padding: 0;
-    }
-  }
-
-  thead {
-    z-index: 3;
-  }
-
-  .p-datatable .p-datatable-tbody > tr > td {
-    &:has(.bar-percent) {
-      position: relative;
-      span {
-        position: relative;
-        z-index: 1;
-      }
-      .bar-percent {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        background-color: rgba(10, 50, 200, 0.3);
-        z-index: 0;
-      }
-    }
-  }
-
   .p-tablist-tab-list {
     background: none;
     border-bottom: 1px solid #424b57;

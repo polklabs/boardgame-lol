@@ -20,6 +20,7 @@ import { join } from 'path';
 import { ClubUserManager } from 'src/managers/ClubUser.manager';
 import { ValidationError } from 'src/errors/validation.error';
 import { AuthorizationError } from 'src/errors/authorization.error';
+import { ClubManager } from 'src/managers/Club.manager';
 
 const validateThrottle = { default: { limit: 5, ttl: 300000 } }; // 5 tries in 5 minutes
 const secureThrottle = { default: { limit: 5, ttl: 60000 } }; // 5 tries per minute
@@ -33,6 +34,7 @@ export class AuthController {
     private authService: AuthService,
     private userManager: UserManager,
     private clubUserManager: ClubUserManager,
+    private clubManager: ClubManager,
   ) {}
 
   getUserId(request: any) {
@@ -160,14 +162,7 @@ export class AuthController {
   @Get('club_access')
   getClubAccess(@Request() req: any) {
     try {
-      return this.clubUserManager.loadManyWithName(this.getUserId(req)).map((x) => ({
-        ClubId: x.ClubId,
-        Name: x.Name,
-        Summary: x.Summary,
-        Font: x.Font,
-        Color: x.Color,
-        CreatedBy: x.Username,
-      }));
+      return this.clubManager.loadManyWithName(this.getUserId(req));
     } catch (e) {
       this.handleErrors(e);
     }

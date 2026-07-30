@@ -32,6 +32,7 @@ import { TrophyFatalPair } from '../trophies/trophy-fatal-pair';
 import { TrophyWinningPair } from '../trophies/trophy-winning-pair';
 import { TrophyPlayerIsCharacter } from '../trophies/trophy-player-is-character';
 import { TrophyPlayerIsRole } from '../trophies/trophy-player-is-role';
+import { TrophyEventChampion } from '../trophies/trophy-event-champion';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +43,7 @@ export class TrophyService {
     MostPlays: new TrophyMostPlays(4),
     LongestWinStreak: new TrophyLongestWinStreak(4),
     BestComeback: new TrophyComebackKid(4),
+    TrophyEventChampion: new TrophyEventChampion(3),
     MaxUniqueWins: new TrophyMaxUniqueWins(3),
     MostTies: new TrophyMostTies(3),
     TieBreaker: new TrophyTieBreaker(3),

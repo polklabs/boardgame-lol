@@ -8,10 +8,11 @@ import { Observable, of } from 'rxjs';
 import { ClubEntity } from 'libs/index';
 import { EditorClubComponent } from '../editors/editor-club/editor-club.component';
 import { ClubTitleComponent } from '../shared/components/club-title/club-title.component';
+import { StatsTableComponent } from '../shared/components/stats-table/stats-table.component';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, MenuBarComponent, EditorClubComponent, ClubTitleComponent],
+  imports: [CommonModule, RouterModule, MenuBarComponent, EditorClubComponent, ClubTitleComponent, StatsTableComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

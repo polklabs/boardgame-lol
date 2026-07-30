@@ -29,7 +29,7 @@
         formControlName="BoardGameId"
         label="BoardGame"
         [entityType]="entityType"
-        [hiddenFields]="hideFields"
+        [appHide]="hideFields"
         [options]="(boardGameList$ | async) ?? []"
         [showClear]="false"
         optionLabel="Name"
@@ -37,7 +37,14 @@
         [addNewButton]="true"
         (addNew)="addBoardGame()"></app-dropdown>
 
+      <div class="flex gap-4 justify-content-space-between">
+        <app-checkbox formControlName="WinOverride" label="Override Winner" [appHide]="hideFields"></app-checkbox>
+        <app-checkbox formControlName="HigherWins" label="Highest Score Wins" [appHide]="hideFields"></app-checkbox>
+      </div>
+
       <p-orderList
+        [appHide]="hideFields"
+        hideName="Notes"
         [value]="playerScores"
         [selection]="selectedPlayerScores"
         [dragdrop]="game?.BoardGame?.ScoreType === 'rank'"
@@ -100,15 +107,15 @@
 
       <div class="flex-grow gap-8 width-100">
         <app-calendar
-          formControlName="Date"
+          formControlName="DateObj"
           label="Date"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-calendar>
+          [appHide]="hideFields"></app-calendar>
         <app-number-input
           formControlName="Players"
           label="Custom Player Count"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"
+          [appHide]="hideFields"
           [locked]="true"
           [maxFractionDigits]="0"></app-number-input>
       </div>
@@ -119,10 +126,10 @@
         filterBool="DisplayOnGames"
         [filterBoardGame]="game?.BoardGameId"
         [entityType]="entityType"
-        [hiddenFields]="hideFields"
+        [appHide]="hideFields"
         [options$]="tagList$"></app-tags>
 
-      <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
+      <app-textarea formControlName="Notes" [entityType]="entityType" [appHide]="hideFields"></app-textarea>
     </form>
     <div class="flex dialog-footer">
       <div>
@@ -171,9 +178,9 @@
             @switch (game?.BoardGame?.ScoreType) {
               <!-- POINTS -->
               @case ('points') {
-                @if (showTiebreaker && playerGame.Points === maxPoints) {
+                @if (getValue('WinOverride')) {
                   <p-checkbox
-                    pTooltip="Tie breaker winner."
+                    pTooltip="Winner Override"
                     [ngModel]="playerGame.TieBreaker"
                     (onChange)="tieBreak(playerGame, $event.checked)"
                     [binary]="true" />

@@ -3,7 +3,7 @@ import { BaseManager } from './Base.manager';
 import { Injectable } from '@nestjs/common';
 import { newGuid } from 'libs/utils/guid-utils';
 import { ValidationError } from 'src/errors/validation.error';
-import { GameEntity, GameReturn, PlayerGameEntity, T, TagPlayerGameEntity, TP } from 'libs/index';
+import { GameEntity, GameReturn, PlayerGameEntity, TagPlayerGameEntity, TP } from 'libs/index';
 import { BoardGameManager } from './BoardGame.manager';
 import { PlayerGameManager } from './PlayerGame.manager';
 import { PlayerManager } from './Player.manager';
@@ -41,12 +41,12 @@ export class GameManager extends BaseManager<GameEntity> {
 
     const transactions: unknown[] = [];
 
-    this.tagManager.upsert('game', userId, entity.ClubId!, tags, entity.GameId!, transactions);
-
     this.Validate(entity, playerGames);
     this.CheckForeignKeys(entity);
 
     transactions.push(this.runInsert(userId, entity, true));
+
+    this.tagManager.upsert('game', userId, entity.ClubId!, tags, entity.GameId!, transactions);
 
     playerGames.forEach((pg) => {
       pg.ClubId = entity.ClubId;
@@ -60,6 +60,7 @@ export class GameManager extends BaseManager<GameEntity> {
     });
 
     playerGamePlayers.forEach((pgp) => {
+      pgp.GameId = entity.GameId;
       pgp.ClubId = entity.ClubId;
       transactions.push(this.playerGamePlayerManager.put(userId, pgp));
     });
@@ -72,7 +73,7 @@ export class GameManager extends BaseManager<GameEntity> {
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId),
       TagGames: this.tagManager.tagGame.loadMany('GameId', entity.GameId),
       TagPlayerGames: this.tagManager.tagPlayerGame.loadManyCustom(
-        `INNER JOIN ${T(PlayerGameEntity)} ON ${TP(PlayerGameEntity, 'PlayerGameId')} = ${TP(TagPlayerGameEntity, 'PlayerGameId')}`,
+        `INNER JOIN ${TP(PlayerGameEntity)} ON ${TP(PlayerGameEntity, 'PlayerGameId')} = ${TP(TagPlayerGameEntity, 'PlayerGameId')}`,
         `WHERE ${TP(PlayerGameEntity, 'GameId')} = ?`,
         [entity.GameId],
       ),
@@ -153,7 +154,7 @@ export class GameManager extends BaseManager<GameEntity> {
       PlayerGames: this.playerGameManager.loadMany('GameId', entity.GameId),
       TagGames: this.tagManager.tagGame.loadMany('GameId', entity.GameId),
       TagPlayerGames: this.tagManager.tagPlayerGame.loadManyCustom(
-        `INNER JOIN ${T(PlayerGameEntity)} ON ${TP(PlayerGameEntity, 'PlayerGameId')} = ${TP(TagPlayerGameEntity, 'PlayerGameId')}`,
+        `INNER JOIN ${TP(PlayerGameEntity)} ON ${TP(PlayerGameEntity, 'PlayerGameId')} = ${TP(TagPlayerGameEntity, 'PlayerGameId')}`,
         `WHERE ${TP(PlayerGameEntity, 'GameId')} = ?`,
         [entity.GameId],
       ),

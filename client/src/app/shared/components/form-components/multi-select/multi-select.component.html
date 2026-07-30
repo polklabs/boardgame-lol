@@ -1,0 +1,38 @@
+<app-control-wrapper
+  #ControlWrapper
+  [label]="label"
+  [controlName]="formControlName"
+  [formGroup]="formGroup"
+  [entityType]="entityType"
+  textInputType="array">
+  <p-multiselect
+    #dropdown
+    inputId="{{ formControlName }}"
+    formControlName="{{ formControlName }}"
+    [options]="(options$ ? (options$ | async) ?? [] : options ?? []) | sort: optionLabel"
+    [optionLabel]="optionLabel"
+    [optionValue]="optionValue"
+    [maxSelectedLabels]="maxSelectedLabels === -1 ? selectionLimit : maxSelectedLabels"
+    [selectionLimit]="selectionLimit"
+    [showClear]="showClear"
+    [filter]="showFilter"
+    [selectedItemsLabel]="selectedItemsLabel"
+    appendTo="body"
+    display="chip"
+    (onFocus)="onFocus($event)">
+    @if (addNewButton) {
+      <ng-template #footer>
+        <div>
+          <p-button
+            (onClick)="onAddNew(dropdown)"
+            label="Add New"
+            fluid
+            severity="secondary"
+            text
+            size="small"
+            icon="pi pi-plus" />
+        </div>
+      </ng-template>
+    }
+  </p-multiselect>
+</app-control-wrapper>

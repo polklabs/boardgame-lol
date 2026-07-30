@@ -1,0 +1,18 @@
+<app-control-wrapper
+  #ControlWrapper
+  [label]="label"
+  [controlName]="formControlName"
+  [formGroup]="formGroup"
+  [entityType]="entityType"
+  [textInputType]="inputType"
+  [iconPosition]="icon ? iconPosition : ''">
+  <i class="{{ icon }}"></i>
+  <input
+    id="{{ formControlName }}"
+    type="{{ inputType }}"
+    pInputText
+    [pAutoFocus]="autoFocus"
+    formControlName="{{ formControlName }}"
+    [value]="formGroup.value[formControlName]"
+    [ngClass]="{ 'ng-invalid ng-dirty': ControlWrapper.isFieldInvalid() }" />
+</app-control-wrapper>

@@ -69,6 +69,7 @@ export class UserService {
     let data = (await this.httpService.get<ClubEntity[]>(['auth', 'club_access'])) ?? [];
     data = data.map((x) => new ClubEntity(x));
     data.forEach((x) => x.calculate());
+    data.sort((a, b) => a.Name.localeCompare(b.Name));
     this.accessIds$.next(data);
   }
 

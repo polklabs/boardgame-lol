@@ -20,13 +20,13 @@
           formControlName="Name"
           label="Club Name"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-textinput>
+          [appHide]="hideFields"></app-textinput>
 
         <app-textarea
           formControlName="Summary"
           label="Summary"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-textarea>
+          [appHide]="hideFields"></app-textarea>
 
         <app-checkbox formControlName="Public" label="Is Public"></app-checkbox>
 
@@ -42,7 +42,7 @@
             <app-textinput
               formControlName="Color"
               [entityType]="entityType"
-              [hiddenFields]="hideFields"></app-textinput>
+              [appHide]="hideFields"></app-textinput>
             <div class="flex gap-8">
               @for (preset of presetColors; track preset) {
                 <p-button variant="outlined" [severity]="preset.severity" (onClick)="setColor(preset.color)">

@@ -22,7 +22,7 @@
             formControlName="Name"
             label="Team Name"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-textinput>
+            [appHide]="hideFields"></app-textinput>
         </div>
 
         @if (getValue('Team')) {
@@ -30,7 +30,7 @@
             formControlName="Players"
             label="Players"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"
+            [appHide]="hideFields"
             [options$]="playerList$"
             [maxSelectedLabels]="-1"
             optionLabel="Name"
@@ -41,7 +41,7 @@
             formControlName="Players"
             label="Player"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"
+            [appHide]="hideFields"
             [options$]="playerList$"
             optionLabel="Name"
             [addNewButton]="true"
@@ -52,14 +52,14 @@
           <app-checkbox
             formControlName="ScoringPlayer"
             label="Has Score"
-            [hiddenFields]="hideFields"></app-checkbox>
+            [appHide]="hideFields"></app-checkbox>
           @if (scoreType === 'points') {
             <app-number-input
               style="flex-grow: 1"
               formControlName="Points"
               label="Points"
               [entityType]="entityType"
-              [hiddenFields]="hideFields"
+              [appHide]="hideFields"
               [boardGame]="playerGame.Game?.BoardGame"></app-number-input>
           } @else if (scoreType === 'win-lose') {
             <app-checkbox
@@ -75,7 +75,7 @@
           filterBool="DisplayOnPlayerGames"
           [filterBoardGame]="boardGameId"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"
+          [appHide]="hideFields"
           [options$]="tagList$"></app-tags>
 
         <div class="dialog-footer">

@@ -16,15 +16,15 @@ import { PasswordModule } from 'primeng/password';
 import { HttpService } from '../shared/services/http.service';
 import { MessageService } from 'primeng/api';
 import { DividerModule } from 'primeng/divider';
-import { TextInputComponent } from '../shared/components/textinput/textinput.component';
-import { PasswordComponent } from '../shared/components/password/password.component';
+import { TextInputComponent } from '../shared/components/form-components/textinput/textinput.component';
+import { PasswordComponent } from '../shared/components/form-components/password/password.component';
 import { Observable, catchError, delay, from, map, of, switchMap } from 'rxjs';
 import { CountdownConfig, CountdownEvent, CountdownModule } from 'ngx-countdown';
 import { minMaxValidator } from '../shared/validators/min-max.validator';
 import { UserEntity } from 'libs/index';
 import { UserService } from '../shared/services/user.service';
 import { DialogModule } from 'primeng/dialog';
-import { CheckboxComponent } from '../shared/components/checkbox/checkbox.component';
+import { CheckboxComponent } from '../shared/components/form-components/checkbox/checkbox.component';
 
 type LoginPost = { Username: string; Password: string; RememberMe: boolean; Verification?: string };
 type LoginResp = { ok: boolean; access_token?: string; emojis?: string[] };

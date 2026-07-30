@@ -18,6 +18,7 @@ import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
 import { Ignore } from '../decorators/ignore.decorator';
 import { Pattern } from '../decorators/pattern.decorator';
 import { getAccessibleBackground } from '../utils/color-utils';
+import { EventEntity } from './Event.entity';
 
 export type ClubReturn = {
   Club: ClubEntity;
@@ -31,6 +32,7 @@ export type ClubReturn = {
   TagGames: TagGameEntity[];
   TagPlayers: TagPlayerEntity[];
   TagPlayerGames: TagPlayerGameEntity[];
+  Events: EventEntity[];
 };
 
 @TableName('Club')
@@ -62,11 +64,20 @@ export class ClubEntity extends BaseEntity {
   BackgroundColor: string = '';
 
   @Ignore()
+  PlayerCount: number = 0;
+
+  @Ignore()
+  GameCount: number = 0;
+
+  @Ignore()
+  BoardGameCount: number = 0;
+
+  @Ignore()
   calculated = false;
 
-  constructor(partial: Partial<ClubEntity> = {}, copyIgnored = false) {
+  constructor(partial: Partial<ClubEntity> = {}) {
     super();
-    this.assign(partial, ClubEntity, copyIgnored);
+    this.assign(partial, ClubEntity, true);
   }
 
   calculate(): void {

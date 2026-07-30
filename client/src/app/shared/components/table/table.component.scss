@@ -1,4 +1,50 @@
 :host ::ng-deep {
+  .tiny {
+    td,
+    th {
+      &:last-child {
+        width: unset;
+      }
+      width: 1px;
+    }
+  }
+
+  td {
+    .p-button {
+      height: 24px;
+      padding: 0;
+      border-radius: 32px;
+    }
+    &:has(p-button) {
+      padding: 0;
+    }
+    &.shrink {
+      width: 0;
+    }
+  }
+
+  thead {
+    z-index: 3;
+  }
+
+  .p-datatable .p-datatable-tbody > tr > td {
+    &:has(.bar-percent) {
+      position: relative;
+      span {
+        position: relative;
+        z-index: 1;
+      }
+      .bar-percent {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(10, 50, 200, 0.3);
+        z-index: 0;
+      }
+    }
+  }
+
   td .p-datatable-table-container .p-datatable-table {
     width: unset !important;
     min-width: 200px !important;
@@ -13,6 +59,17 @@
     .p-button {
       width: 36px;
       height: 36px;
+    }
+  }
+
+  .row-span {
+    border-right: solid 3px !important;
+  }
+
+  tr.row-expansion {
+    cursor: pointer;
+    &:hover {
+      background-color: var(--p-surface-950) !important;
     }
   }
 }

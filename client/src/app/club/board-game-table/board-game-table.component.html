@@ -2,10 +2,9 @@
   <app-table
     [columns]="columns"
     [rows]="boardGames"
-    [baseTable]="true"
     [canEdit]="canEdit"
     (edit)="boardGameEdit.emit($event)"
-    dataKey="BoardGameId"
+    (expand)="openBoardGameDetail($event)"
     sortBy="PlayCount"
     [showExpansion]="showExpansion.bind(this)">
     <ng-template templateId="PlayCount" let-boardGame>
@@ -19,13 +18,22 @@
     <ng-template templateId="ChampionWins" let-boardGame>
       {{ boardGame.ChampionWins | hide | number: '1.0-0' }} - {{ boardGame.Champions | map: 'ShortName' }}
     </ng-template>
-
-    <ng-template templateId="expansion" let-boardGame>
-      <app-table [columns]="expansionColumns" [rows]="WinCounts[boardGame.BoardGameId]" sortBy="wins">
-        <ng-template templateId="wins" let-row>
-          {{ row.wins | number: '1.0-0' }} / {{ row.plays | number: '1.0-0' }}
-        </ng-template>
-      </app-table>
+    <ng-template templateId="MinPlayers" let-boardGame>
+      @if (boardGame.PlayCount > 0) {
+        @if (boardGame.MinPlayers !== boardGame.MaxPlayers) {
+          {{ boardGame.MinPlayers }} - {{ boardGame.MaxPlayers }}
+        } @else {
+          {{ boardGame.MaxPlayers }}
+        }
+      } @else {
+        0
+      }
     </ng-template>
   </app-table>
 </div>
+
+<app-board-game-detail
+  [boardGame]="boardGameDetails"
+  [visible]="boardGameDetailsShow"
+  [winCount]="WinCounts[boardGameDetails?.BoardGameId ?? '']"
+  (closeDetails)="boardGameDetailsShow = false"></app-board-game-detail>

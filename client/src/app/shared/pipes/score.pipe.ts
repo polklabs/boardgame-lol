@@ -10,7 +10,13 @@ export class ScorePipe implements PipeTransform {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transform(value: any, boardGame?: BoardGameEntity | null): string {
-    if (value === null || value === undefined || boardGame?.ScoreType !== 'points') {
+    if (
+      value === null ||
+      value === undefined ||
+      boardGame?.ScoreType !== 'points' ||
+      value === Infinity ||
+      value === -Infinity
+    ) {
       return '';
     } else {
       const num = new DecimalPipe(this._locale).transform(value, '1.0-3');

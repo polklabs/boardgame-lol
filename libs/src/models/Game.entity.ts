@@ -15,6 +15,7 @@ import { TagGameEntity } from './TagGame.entity';
 import { TagPlayerGameEntity } from './TagPlayerGame.entity';
 import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
 import { format } from 'date-fns';
+import { EventEntity } from './Event.entity';
 
 export type GameReturn = {
   Game: GameEntity;
@@ -35,7 +36,7 @@ export class GameEntity extends BaseEntity {
   @ForeignKey(BoardGameEntity)
   BoardGameId: string = '';
 
-  Date: Date | string = new Date().toISOString();
+  Date: string = new Date().toISOString();
 
   @Nullable()
   @MinMax(0, 99999, 'number')
@@ -48,6 +49,9 @@ export class GameEntity extends BaseEntity {
   @Nullable()
   @MinMax(0, CHARACTER_LIMIT_LONG, 'string')
   Notes: string | null = null;
+
+  @Nullable()
+  HigherWins: boolean | null = null;
 
   get dateSortOrder() {
     return `${this.Date}T${String(this.SortIndex).padStart(6, '0')}`;
@@ -95,6 +99,15 @@ export class GameEntity extends BaseEntity {
   WinnerTeams: PlayerGameEntity[] = [];
 
   @Ignore()
+  Events: EventEntity[] = [];
+
+  @Ignore()
+  EventsName?: string;
+
+  @Ignore()
+  WinOverride = false;
+
+  @Ignore()
   calculated = false;
 
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
@@ -137,6 +150,13 @@ export class GameEntity extends BaseEntity {
     this.Winners = this.placePlayers(0);
     this.WinnerTeams = this.place(0);
     this.HighScore = this.place(0).at(0)?.Points ?? null;
+    this.EventsName =
+      this.Events.length > 0
+        ? this.Events.map((e) => e.Name)
+            .toSorted((a, b) => a?.localeCompare(b))
+            .join(', ')
+        : undefined;
+    this.WinOverride = this.Scores.some((s) => s.TieBreaker);
     this.calculated = true;
   }
 

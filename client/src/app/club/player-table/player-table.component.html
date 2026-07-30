@@ -3,9 +3,9 @@
   <app-table
     [columns]="columns"
     [rows]="games"
-    [baseTable]="true"
     [canEdit]="canEdit"
     (edit)="playerEdit.emit($event)"
+    (expand)="openPlayerDetail($event)"
     dataKey="PlayerId"
     sortBy="WinCount">
     <ng-template templateId="Name" let-player>
@@ -28,13 +28,7 @@
     <ng-template templateId="BestGameWins" let-player>
       {{ player.BestGameWins | hide | number: '1.0-0' }} - {{ player.BestGames | map: 'Name' }}
     </ng-template>
-
-    <ng-template templateId="expansion" let-player>
-      <app-table [columns]="expansionColumns" [rows]="player.PlayerGames">
-        <ng-template templateId="won" let-row>
-          <app-trophy-icon [score]="row"></app-trophy-icon>
-        </ng-template>
-      </app-table>
-    </ng-template>
   </app-table>
 </div>
+
+<app-player-detail [visible]="playerDetailsShow" [player]="playerDetails!" (closeDetails)="playerDetailsShow = false"></app-player-detail>

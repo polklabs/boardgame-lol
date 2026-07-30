@@ -9,12 +9,12 @@
   @if (formGroup && boardGame) {
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
-        <app-textinput formControlName="Name" [entityType]="entityType" [hiddenFields]="hideFields"></app-textinput>
+        <app-textinput formControlName="Name" [entityType]="entityType" [appHide]="hideFields"></app-textinput>
         <app-dropdown
           formControlName="ScoreType"
           label="Score Type"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"
+          [appHide]="hideFields"
           [options]="scoreTypes"
           optionLabel="label"
           optionValue="value"
@@ -24,19 +24,19 @@
             formControlName="ScorePrefix"
             label="Score Prefix"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-textinput>
+            [appHide]="hideFields"></app-textinput>
           <app-textinput
             formControlName="ScoreSuffix"
             label="Score Suffix"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-textinput>
+            [appHide]="hideFields"></app-textinput>
           <app-number-input
             formControlName="ExampleScore"
             label="Example Score"
             [prefix]="formGroup.value.ScorePrefix"
             [suffix]="formGroup.value.ScoreSuffix"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-number-input>
+            [appHide]="hideFields"></app-number-input>
         </div>
 
         <div class="flex-grow gap-8 width-100">
@@ -46,22 +46,27 @@
             [prefix]="formGroup.value.ScorePrefix"
             [suffix]="formGroup.value.ScoreSuffix"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-number-input>
+            [appHide]="hideFields"></app-number-input>
           <app-number-input
             formControlName="PointAdjustStep"
             label="Point Adjustment Step Override"
             [prefix]="formGroup.value.ScorePrefix"
             [suffix]="formGroup.value.ScoreSuffix"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-number-input>
+            [appHide]="hideFields"></app-number-input>
         </div>
+
+        <app-checkbox
+          formControlName="HigherWins"
+          label="Highest Score Wins"
+          [hiddenFields]="hideFields"></app-checkbox>
 
         <app-tags
           formControlName="Tags"
           label="Tags"
           filterBool="DisplayOnBoardGames"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"
+          [appHide]="hideFields"
           [options$]="tagList$"></app-tags>
 
         <div class="flex-grow gap-8 width-100">
@@ -73,7 +78,7 @@
             optionValue="value"
             [reverseSort]="true"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-dropdown>
+            [appHide]="hideFields"></app-dropdown>
           <app-multi-select
             formControlName="NewGameRefCopyItems"
             label="Copy Attributes"
@@ -82,7 +87,7 @@
             optionValue="value"
             [maxSelectedLabels]="-1"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-multi-select>
+            [appHide]="hideFields"></app-multi-select>
         </div>
 
         <div class="dialog-footer">

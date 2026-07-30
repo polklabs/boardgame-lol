@@ -9,12 +9,12 @@ import { TagModule } from 'primeng/tag';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
-import { getTagColumns } from '../../shared/helpers/data.helper';
 import { MapPipe } from '../../shared/pipes/map.pipe';
+import { BoardGameDetailComponent } from '../../details/board-game-detail/board-game-detail.component';
 
-type WinCount = {
+export type WinCount = {
   playerId: string;
-  tags: TagEntity[];
+  Tags: TagEntity[];
   name: string;
   wins: number;
   nonScoreCount: number;
@@ -26,7 +26,17 @@ type WinCount = {
 
 @Component({
   selector: 'app-board-game-table',
-  imports: [TableModule, ButtonModule, TagModule, CommonModule, HidePipe, TableComponent, TemplateIdDirective, MapPipe],
+  imports: [
+    TableModule,
+    ButtonModule,
+    TagModule,
+    CommonModule,
+    HidePipe,
+    TableComponent,
+    TemplateIdDirective,
+    MapPipe,
+    BoardGameDetailComponent,
+  ],
   templateUrl: './board-game-table.component.html',
   styleUrl: './board-game-table.component.scss',
 })
@@ -38,6 +48,9 @@ export class BoardGameTableComponent implements OnChanges {
 
   @Output() boardGameEdit = new EventEmitter<BoardGameEntity>();
 
+  boardGameDetails?: BoardGameEntity;
+  boardGameDetailsShow = false;
+
   WinCounts: {
     [boardGameId: string]: WinCount[];
   } = {};
@@ -46,28 +59,20 @@ export class BoardGameTableComponent implements OnChanges {
     { id: 'Name', name: 'Game', dataType: 'text', sort: true },
     { id: 'PlayCount', name: 'Plays', dataType: 'custom', sort: true },
     { id: 'ChampionWins', name: 'Champion(s)', dataType: 'custom', sort: true },
-    { id: 'MaxPlayers', name: 'Max Players', dataType: 'number', sort: true },
-    { id: 'AveragePlayers', name: 'Avg Players', dataType: 'decimal', sort: true },
+    { id: 'MinPlayers', name: 'Players', dataType: 'custom', sort: true },
     { id: 'MaxScore', name: 'High Score', dataType: 'score', boardGame: (row) => row, sort: true },
-    { id: 'AverageScore', name: 'Avg Score', dataType: 'score', boardGame: (row) => row, sort: true },
-    { id: 'AverageWinningScore', name: 'Avg Winning Score', dataType: 'score', boardGame: (row) => row, sort: true },
-    { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnBoardGames'),
-  ];
-
-  expansionColumns: Column<WinCount>[] = [
-    { id: 'name', sort: true, dataType: 'text' },
-    { id: 'tags', dataType: 'tag' },
-    { id: 'wins', sort: true, dataType: 'text' },
-    { id: 'winPercent', name: 'Win %', sort: true, dataType: 'number', suffix: '%' },
-    { id: 'totalPoints', name: 'Total Points', sort: true, dataType: 'score', boardGame: (row) => row.boardGame },
-    { id: 'nonScoreCount', name: 'Non-Scoring', sort: true, dataType: 'number' },
+    { id: 'Tags', dataType: 'tag' },
   ];
 
   mostPlays = this.trophyService.getTrophy('MostPlays');
 
   ngOnChanges(): void {
     this.calculateWinCounts();
+  }
+
+  openBoardGameDetail(boardGame: BoardGameEntity) {
+    this.boardGameDetails = boardGame;
+    this.boardGameDetailsShow = true;
   }
 
   calculateWinCounts() {
@@ -98,7 +103,7 @@ export class BoardGameTableComponent implements OnChanges {
               this.WinCounts[boardGameId].push({
                 playerId: p.PlayerId,
                 name: p.ShortName,
-                tags: p.Tags,
+                Tags: p.Tags,
                 wins: won ? 1 : 0,
                 plays: played,
                 winPercent: won ? 100 : 0,

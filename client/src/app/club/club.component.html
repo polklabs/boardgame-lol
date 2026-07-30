@@ -5,7 +5,8 @@
     (editTags)="tagsEdit()"
     (newGame)="newGame()"
     (newBoardGame)="newBoardGame()"
-    (newPlayer)="newPlayer()"></app-menu-bar>
+    (newPlayer)="newPlayer()"
+    (editEvents)="eventsEdit()"></app-menu-bar>
 
   @if (editorClubVisible) {
     <app-editor-club
@@ -39,6 +40,12 @@
     @if (editorTagsVisible) {
       <app-editor-tags [editorVisible]="editorTagsVisible" (closeEditor)="editorTagsVisible = false"></app-editor-tags>
     }
+
+    @if (editorEventsVisible) {
+      <app-editor-event
+        [editorVisible]="editorEventsVisible"
+        (closeEditor)="editorEventsVisible = false"></app-editor-event>
+    }
   }
 
   <app-club-title [club]="club" fontSize="42px"></app-club-title>
@@ -53,50 +60,34 @@
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="overview">
-          @defer (when tabComponent.value() === 'overview'; prefetch on idle) {
+          @if (tabComponent.value() === 'overview') {
             <app-stats></app-stats>
-          } @loading {
-            <div class="progress-spinner-wrapper">
-              <p-progressSpinner></p-progressSpinner>
-            </div>
           }
         </p-tabpanel>
         <p-tabpanel value="plays">
-          @defer (when tabComponent.value() === 'plays'; prefetch on idle) {
+          @if (tabComponent.value() === 'plays') {
             <app-games-table
               [games$]="games$"
               [canEdit]="canEdit"
               (gameEdit)="gameEdit($event)"
               (moveUp)="moveUp($event)"
               (moveDown)="moveDown($event)"></app-games-table>
-          } @loading {
-            <div class="progress-spinner-wrapper">
-              <p-progressSpinner></p-progressSpinner>
-            </div>
           }
         </p-tabpanel>
         <p-tabpanel value="players">
-          @defer (when tabComponent.value() === 'players'; prefetch on idle) {
+          @if (tabComponent.value() === 'players') {
             <app-player-table
               [players$]="players$"
               [canEdit]="canEdit"
               (playerEdit)="playerEdit($event)"></app-player-table>
-          } @loading {
-            <div class="progress-spinner-wrapper">
-              <p-progressSpinner></p-progressSpinner>
-            </div>
           }
         </p-tabpanel>
         <p-tabpanel value="games">
-          @defer (when tabComponent.value() === 'games'; prefetch on idle) {
+          @if (tabComponent.value() === 'games') {
             <app-board-game-table
               [boardGames]="(boardGames$ | async) ?? []"
               [canEdit]="canEdit"
               (boardGameEdit)="boardGameEdit($event)"></app-board-game-table>
-          } @loading {
-            <div class="progress-spinner-wrapper">
-              <p-progressSpinner></p-progressSpinner>
-            </div>
           }
         </p-tabpanel>
       </p-tabpanels>

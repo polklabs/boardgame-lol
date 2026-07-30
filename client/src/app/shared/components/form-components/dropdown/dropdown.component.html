@@ -1,0 +1,35 @@
+<app-control-wrapper
+  #ControlWrapper
+  [label]="label"
+  [controlName]="formControlName"
+  [formGroup]="formGroup"
+  [entityType]="entityType"
+  textInputType="dropdown">
+  <p-select
+    #select
+    inputId="{{ formControlName }}"
+    formControlName="{{ formControlName }}"
+    [options]="(options$ ? (options$ | async) ?? [] : options ?? []) | sort: optionLabel : reverseSort"
+    [showClear]="showClear"
+    [filter]="showFilter"
+    (onChange)="onModelChange($event.value)"
+    [optionLabel]="optionLabel"
+    [optionValue]="optionValue"
+    appendTo="body"
+    [ngClass]="{ 'ng-invalid ng-dirty': false }">
+    @if (addNewButton) {
+      <ng-template #footer>
+        <div>
+          <p-button
+            (onClick)="onAddNew(select)"
+            label="Add New"
+            fluid
+            severity="secondary"
+            text
+            size="small"
+            icon="pi pi-plus" />
+        </div>
+      </ng-template>
+    }
+  </p-select>
+</app-control-wrapper>

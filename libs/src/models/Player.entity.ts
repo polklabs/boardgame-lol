@@ -70,10 +70,16 @@ export class PlayerEntity extends BaseEntity {
   FirstSeen?: Date | string;
 
   @Ignore()
+  LastSeen?: Date | string;
+
+  @Ignore()
   ShortName: string = '';
 
   @Ignore()
   hasMostWins: boolean = false;
+
+  @Ignore()
+  totalPoints = 0;
 
   @Ignore()
   calculated = false;
@@ -88,7 +94,8 @@ export class PlayerEntity extends BaseEntity {
     this.calculateWins();
     this.calculateBestGames();
     this.calculateBestGameWins();
-    this.calculateFirstSeen();
+    this.calculateSeen();
+    this.calculateTotalPoints();
     this.calculated = true;
   }
 
@@ -117,15 +124,18 @@ export class PlayerEntity extends BaseEntity {
     }
   }
 
-  calculateFirstSeen() {
-    const minDate = Math.min(
-      ...this.PlayerGames.filter((pg) => pg.Game).map((pg) => new Date(pg.Game!.DateObj).getTime()),
+  calculateSeen() {
+    const minDate = Math.min(...this.PlayerGames.map((pg) => new Date(pg.Game?.DateObj ?? Infinity).getTime()));
+    const maxDate = Math.max(...this.PlayerGames.map((pg) => new Date(pg.Game?.DateObj ?? -Infinity).getTime()));
+    this.FirstSeen = minDate === Infinity ? undefined : new Date(minDate);
+    this.LastSeen = maxDate === -Infinity ? undefined : new Date(maxDate);
+  }
+
+  calculateTotalPoints() {
+    this.totalPoints = this.ScoringGames.reduce(
+      (prev, curr) => prev + (curr.Game?.ScoreType === 'points' ? (curr.Points ?? 0) : 0),
+      0,
     );
-    if (minDate === Infinity) {
-      this.FirstSeen = undefined;
-    } else {
-      this.FirstSeen = new Date(minDate);
-    }
   }
 
   static postCalculate(players: PlayerEntity[]) {

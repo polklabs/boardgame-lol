@@ -18,15 +18,16 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
-import { CheckboxComponent } from '../../shared/components/checkbox/checkbox.component';
-import { NumberInputComponent } from '../../shared/components/number-input/number-input.component';
-import { TagsComponent } from '../../shared/components/tags/tags.component';
+import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
+import { NumberInputComponent } from '../../shared/components/form-components/number-input/number-input.component';
+import { TagsComponent } from '../../shared/components/form-components/tags/tags.component';
 import { ApiService } from '../../shared/services/api.service';
 import { EditorPlayerComponent } from '../editor-player/editor-player.component';
-import { MultiSelectComponent } from '../../shared/components/multi-select/multi-select.component';
+import { MultiSelectComponent } from '../../shared/components/form-components/multi-select/multi-select.component';
 import { Subscription } from 'rxjs';
-import { TextInputComponent } from '../../shared/components/textinput/textinput.component';
-import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
+import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
+import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
+import { HideDirective } from "../../shared/directives/hide.directive";
 
 type EntityType = PlayerGameEntity;
 
@@ -46,7 +47,8 @@ type EntityType = PlayerGameEntity;
     MultiSelectComponent,
     DropdownComponent,
     TextInputComponent,
-  ],
+    HideDirective
+],
   templateUrl: './editor-player-game.component.html',
   styleUrl: './editor-player-game.component.scss',
 })
