@@ -29,13 +29,13 @@
           formControlName="Name"
           label="Event Name"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-textinput>
+          [appHide]="hideFields"></app-textinput>
 
         <app-calendar
           formControlName="DateObj"
           label="Date Range"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"
+          [appHide]="hideFields"
           [maxDate]="null"
           [range]="true"></app-calendar>
 

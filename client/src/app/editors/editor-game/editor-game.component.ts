@@ -40,6 +40,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { sortPlayerGames } from '../../shared/helpers/data.helper';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
+import { HideDirective } from '../../shared/directives/hide.directive';
 
 type EntityType = GameEntity;
 
@@ -71,6 +72,7 @@ const POINT_VALUES = [1, 5, 10, 50, 100, 150, 200];
     TooltipModule,
     TagComponent,
     ScorePipe,
+    HideDirective,
   ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',

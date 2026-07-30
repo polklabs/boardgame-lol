@@ -27,6 +27,7 @@ import { MultiSelectComponent } from '../../shared/components/form-components/mu
 import { Subscription } from 'rxjs';
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
+import { HideDirective } from "../../shared/directives/hide.directive";
 
 type EntityType = PlayerGameEntity;
 
@@ -46,7 +47,8 @@ type EntityType = PlayerGameEntity;
     MultiSelectComponent,
     DropdownComponent,
     TextInputComponent,
-  ],
+    HideDirective
+],
   templateUrl: './editor-player-game.component.html',
   styleUrl: './editor-player-game.component.scss',
 })

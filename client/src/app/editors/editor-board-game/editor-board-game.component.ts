@@ -28,6 +28,8 @@ import { NumberInputComponent } from '../../shared/components/form-components/nu
 import { MultiSelectComponent } from '../../shared/components/form-components/multi-select/multi-select.component';
 import { NameValue } from '../../shared/models/name-value.model';
 import { format } from 'date-fns';
+import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
+import { HideDirective } from '../../shared/directives/hide.directive';
 
 type EntityType = BoardGameEntity;
 
@@ -45,6 +47,8 @@ type EntityType = BoardGameEntity;
     TagsComponent,
     MultiSelectComponent,
     NumberInputComponent,
+    CheckboxComponent,
+    HideDirective,
   ],
   templateUrl: './editor-board-game.component.html',
   styleUrl: './editor-board-game.component.scss',
@@ -158,12 +162,14 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
       this.hideFields.delete('ExampleScore');
       this.hideFields.delete('PointAdjustBase');
       this.hideFields.delete('PointAdjustStep');
+      this.hideFields.delete('HigherWins');
     } else {
       this.hideFields.add('ScorePrefix');
       this.hideFields.add('ScoreSuffix');
       this.hideFields.add('ExampleScore');
       this.hideFields.add('PointAdjustBase');
       this.hideFields.add('PointAdjustStep');
+      this.hideFields.add('HigherWins');
     }
   }
 

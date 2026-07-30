@@ -25,6 +25,7 @@ import { CheckboxComponent } from '../../shared/components/form-components/check
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
 import { ClubTitleComponent } from '../../shared/components/club-title/club-title.component';
+import { HideDirective } from '../../shared/directives/hide.directive';
 
 type EntityType = ClubEntity;
 
@@ -42,6 +43,7 @@ type EntityType = ClubEntity;
     ColorPickerModule,
     DropdownComponent,
     ClubTitleComponent,
+    HideDirective,
   ],
   templateUrl: './editor-club.component.html',
   styleUrl: './editor-club.component.scss',

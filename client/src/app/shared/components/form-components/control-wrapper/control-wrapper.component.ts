@@ -16,7 +16,6 @@ export class ControlWrapperComponent {
   @Input() controlName!: string;
   @Input() formGroup!: FormGroup;
   @Input() label?: string;
-  @Input() hiddenFields: Set<string> = new Set();
   @Input() entityType?: unknown;
   @Input() textInputType = 'text';
   @Input() iconPosition = 'right';
@@ -24,10 +23,6 @@ export class ControlWrapperComponent {
 
   isLocked() {
     return this.locked && this.formGroup.controls[this.controlName].value !== null;
-  }
-
-  isShown(): boolean {
-    return this.hiddenFields.has(this.controlName) === false;
   }
 
   isFieldInvalid(): boolean {

@@ -20,6 +20,7 @@ import { Router } from '@angular/router';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 import { TagsComponent } from '../../shared/components/form-components/tags/tags.component';
 import { Observable, of } from 'rxjs';
+import { HideDirective } from "../../shared/directives/hide.directive";
 
 type EntityType = PlayerEntity;
 
@@ -33,7 +34,8 @@ type EntityType = PlayerEntity;
     ReactiveFormsModule,
     CheckboxComponent,
     TagsComponent,
-  ],
+    HideDirective
+],
   templateUrl: './editor-player.component.html',
   styleUrl: './editor-player.component.scss',
 })

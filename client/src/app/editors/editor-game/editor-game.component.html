@@ -29,7 +29,7 @@
         formControlName="BoardGameId"
         label="BoardGame"
         [entityType]="entityType"
-        [hiddenFields]="hideFields"
+        [appHide]="hideFields"
         [options]="(boardGameList$ | async) ?? []"
         [showClear]="false"
         optionLabel="Name"
@@ -43,6 +43,8 @@
       </div>
 
       <p-orderList
+        [appHide]="hideFields"
+        hideName="Notes"
         [value]="playerScores"
         [selection]="selectedPlayerScores"
         [dragdrop]="game?.BoardGame?.ScoreType === 'rank'"
@@ -108,12 +110,12 @@
           formControlName="DateObj"
           label="Date"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"></app-calendar>
+          [appHide]="hideFields"></app-calendar>
         <app-number-input
           formControlName="Players"
           label="Custom Player Count"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"
+          [appHide]="hideFields"
           [locked]="true"
           [maxFractionDigits]="0"></app-number-input>
       </div>
@@ -124,10 +126,10 @@
         filterBool="DisplayOnGames"
         [filterBoardGame]="game?.BoardGameId"
         [entityType]="entityType"
-        [hiddenFields]="hideFields"
+        [appHide]="hideFields"
         [options$]="tagList$"></app-tags>
 
-      <app-textarea formControlName="Notes" [entityType]="entityType" [hiddenFields]="hideFields"></app-textarea>
+      <app-textarea formControlName="Notes" [entityType]="entityType" [appHide]="hideFields"></app-textarea>
     </form>
     <div class="flex dialog-footer">
       <div>

@@ -14,12 +14,12 @@
             formControlName="Name"
             label="Player Name"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-textinput>
+            [appHide]="hideFields"></app-textinput>
           <app-textinput
             formControlName="Nickname"
             label="Player Nickname"
             [entityType]="entityType"
-            [hiddenFields]="hideFields"></app-textinput>
+            [appHide]="hideFields"></app-textinput>
         </div>
         <app-checkbox formControlName="IsRealPerson" label="Is Real Person"></app-checkbox>
 
@@ -28,7 +28,7 @@
           label="Tags"
           filterBool="DisplayOnPlayers"
           [entityType]="entityType"
-          [hiddenFields]="hideFields"
+          [appHide]="hideFields"
           [options$]="tagList$"></app-tags>
 
         <div class="dialog-footer">

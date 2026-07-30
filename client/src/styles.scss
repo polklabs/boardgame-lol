@@ -158,12 +158,12 @@ body {
 form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
   padding-top: 0.5rem;
 }
 
 .p-floatlabel {
   margin-bottom: 0.8rem;
+  margin-top: 16px;
   display: flex;
   flex-direction: column;
   label {

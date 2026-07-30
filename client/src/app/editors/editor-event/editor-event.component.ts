@@ -11,6 +11,7 @@ import { Column } from '../../shared/models/column.model';
 import { format } from 'date-fns';
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { CalendarComponent } from '../../shared/components/form-components/calendar/calendar.component';
+import { HideDirective } from '../../shared/directives/hide.directive';
 
 type EntityType = EventEntity;
 
@@ -24,6 +25,7 @@ type EntityType = EventEntity;
     ReactiveFormsModule,
     CalendarComponent,
     TableComponent,
+    HideDirective,
   ],
   templateUrl: './editor-event.component.html',
   styleUrl: './editor-event.component.scss',

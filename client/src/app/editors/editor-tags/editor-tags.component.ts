@@ -16,6 +16,7 @@ import { FieldsetModule } from 'primeng/fieldset';
 import { SortPipe } from '../../shared/pipes/sort.pipe';
 import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
 import { Subscription } from 'rxjs';
+import { HideDirective } from "../../shared/directives/hide.directive";
 
 type EntityType = TagEntity;
 
@@ -42,7 +43,8 @@ const TAG_KEY_DISPLAY: Record<(typeof DISPLAY_FIELDS)[number], string> = {
     FieldsetModule,
     SortPipe,
     DropdownComponent,
-  ],
+    HideDirective
+],
   templateUrl: './editor-tags.component.html',
   styleUrl: './editor-tags.component.scss',
 })
