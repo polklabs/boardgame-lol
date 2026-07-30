@@ -50,6 +50,9 @@ export class GameEntity extends BaseEntity {
   @MinMax(0, CHARACTER_LIMIT_LONG, 'string')
   Notes: string | null = null;
 
+  @Nullable()
+  HigherWins: boolean | null = null;
+
   get dateSortOrder() {
     return `${this.Date}T${String(this.SortIndex).padStart(6, '0')}`;
   }
@@ -102,6 +105,9 @@ export class GameEntity extends BaseEntity {
   EventsName?: string;
 
   @Ignore()
+  WinOverride = false;
+
+  @Ignore()
   calculated = false;
 
   constructor(partial: Partial<GameEntity> = {}, copyIgnored = false) {
@@ -150,6 +156,7 @@ export class GameEntity extends BaseEntity {
             .toSorted((a, b) => a?.localeCompare(b))
             .join(', ')
         : undefined;
+    this.WinOverride = this.Scores.some((s) => s.TieBreaker);
     this.calculated = true;
   }
 

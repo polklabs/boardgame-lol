@@ -37,6 +37,11 @@
         [addNewButton]="true"
         (addNew)="addBoardGame()"></app-dropdown>
 
+      <div class="flex gap-4 justify-content-space-between">
+        <app-checkbox formControlName="WinOverride" label="Override Winner" [appHide]="hideFields"></app-checkbox>
+        <app-checkbox formControlName="HigherWins" label="Highest Score Wins" [appHide]="hideFields"></app-checkbox>
+      </div>
+
       <p-orderList
         [value]="playerScores"
         [selection]="selectedPlayerScores"
@@ -171,9 +176,9 @@
             @switch (game?.BoardGame?.ScoreType) {
               <!-- POINTS -->
               @case ('points') {
-                @if (showTiebreaker && playerGame.Points === maxPoints) {
+                @if (getValue('WinOverride')) {
                   <p-checkbox
-                    pTooltip="Tie breaker winner."
+                    pTooltip="Winner Override"
                     [ngModel]="playerGame.TieBreaker"
                     (onChange)="tieBreak(playerGame, $event.checked)"
                     [binary]="true" />

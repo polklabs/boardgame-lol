@@ -39,6 +39,7 @@ import { NumberInputComponent } from '../../shared/components/form-components/nu
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { sortPlayerGames } from '../../shared/helpers/data.helper';
+import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 
 type EntityType = GameEntity;
 
@@ -65,6 +66,7 @@ const POINT_VALUES = [1, 5, 10, 50, 100, 150, 200];
     OrderListModule,
     InputGroupAddonModule,
     NumberInputComponent,
+    CheckboxComponent,
     TagsComponent,
     TooltipModule,
     TagComponent,
@@ -110,8 +112,6 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   showCustomPointsDialog = false;
   customPointAdjustment: number | null = null;
 
-  showTiebreaker = false;
-  maxPoints = 0;
   maxVirtualPoints = 0;
 
   pointGroupButtonValues: number[] = [];
@@ -151,31 +151,30 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
 
       this.grabLists();
 
+      this.hideFields = new Set();
+      this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
+      const instance = new GameEntity(this.game);
+      instance.WinOverride = this.game.WinOverride;
+      this.formGroup.patchValue(instance);
+
       if (this.isNew) {
-        const firstBoardGame = this.apiService.boardGames.raw[0];
-        const lastBoardGame = this.apiService.games.raw[0]?.BoardGame;
-        this.game.BoardGame = lastBoardGame ?? firstBoardGame ?? null;
-        this.game.BoardGameId = this.game.BoardGame?.BoardGameId ?? null;
+        Object.keys(this.formGroup.controls).forEach((k) => {
+          this.hideFields.add(k as keyof GameEntity);
+        });
+        this.hideFields.delete('BoardGameId');
       } else {
         // Nothing
       }
 
-      this.hideFields = new Set();
-      this.formGroup = buildForm(this.fb, this.entityType, new GameEntity());
-      this.formGroup.patchValue(new GameEntity(this.game));
-
-      if (this.isNew) {
-        this.tryCopyFromRef();
-      } else {
-        // Skip
-      }
-
       this.subscriptions.add(
         this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
+          const previous = this.game!.BoardGame;
+          this.hideFields.clear();
           this.game!.BoardGameId = value;
           this.game!.BoardGame = this.apiService.boardGames.getOne(value);
+          this.boardGameSideEffects();
           this.updateScoring();
-          this.tryCopyFromRef();
+          this.tryCopyFromRef(previous !== null);
         }),
       );
 
@@ -185,6 +184,23 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
           this.updatePlayerCount();
         }),
       );
+
+      this.subscriptions.add(
+        this.getControl('HigherWins')?.valueChanges.subscribe((value) => {
+          this.game!.HigherWins = value;
+          this.updateScoring();
+        }),
+      );
+
+      this.subscriptions.add(
+        this.getControl('WinOverride')?.valueChanges.subscribe(() => {
+          this.playerScores.forEach((pg) => (pg.TieBreaker = false));
+          this.updateScoring();
+        }),
+      );
+
+      this.boardGameSideEffects();
+      this.updateScoring();
 
       const observer = new ResizeObserver(() => {
         this.calculatePointButtons();
@@ -210,12 +226,31 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   grabLists() {
     this.playerScores = this.apiService.playerGames.raw
       .filter((x) => x.GameId === this.game?.GameId)
-      .map((m) => new PlayerGameEntity(m, true));
-    this.updateScoring();
+      .map((m) => {
+        const toReturn = new PlayerGameEntity(m, true);
+        toReturn.Game = this.game!;
+        return toReturn;
+      });
   }
 
   getControl(key: keyof EntityType) {
     return this.formGroup.get(key);
+  }
+
+  getValue(key: keyof EntityType) {
+    return this.getControl(key)?.value;
+  }
+
+  boardGameSideEffects() {
+    this.game!.HigherWins = this.game!.BoardGame?.HigherWins ?? true;
+    this.getControl('HigherWins')?.setValue(this.game!.HigherWins);
+    if (this.game!.ScoreType === 'points') {
+      this.hideFields.delete('HigherWins');
+      this.hideFields.delete('WinOverride');
+    } else {
+      this.hideFields.add('HigherWins');
+      this.hideFields.add('WinOverride');
+    }
   }
 
   calculatePointButtons() {
@@ -331,16 +366,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
         });
         break;
       case 'points':
-        this.maxPoints = Math.max(...this.playerScores.map((x) => x.Points ?? -Infinity));
         this.maxVirtualPoints = Math.max(...this.playerScores.map((x) => x.VirtualPoints ?? -Infinity));
-        this.showTiebreaker =
-          this.playerScores.reduce((prev, curr) => prev + (curr.Points === this.maxPoints ? 1 : 0), 0) > 1;
-
-        if (this.showTiebreaker) {
-          // continue
-        } else {
-          this.playerScores.forEach((pg) => (pg.TieBreaker = false));
-        }
         break;
       default:
         break;
@@ -374,6 +400,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
         Points: player ? 0 : null,
         ScoringPlayer: player,
       });
+      this.playerGameEdit.Game = this.game!;
       const existingPlayers = new Set(this.playerScores.flatMap((x) => x.Players.map((p) => p.PlayerId)));
       this.playerGameEdit.Players = [this.apiService.players.raw.find((x) => !existingPlayers.has(x.PlayerId))].filter(
         (x) => x !== undefined,
@@ -384,6 +411,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
 
   savePlayerGame(pg?: PlayerGameEntity) {
     if (pg) {
+      pg.Game = this.game!;
       const scoreIndex = this.playerScores.indexOf(pg);
       if (scoreIndex !== -1) {
         this.playerScores.splice(scoreIndex, 1);
@@ -461,7 +489,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
     this.game!.Players = this.getControl('Players')?.value;
   }
 
-  tryCopyFromRef() {
+  tryCopyFromRef(ask: boolean) {
     const id = this.game?.BoardGame?.NewGameRefId;
     const items = new Set(this.game?.BoardGame?.NewGameRefCopyItems ?? []);
     if (this.game?.GameId !== id && id && items.size > 0) {
@@ -470,7 +498,6 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    const ask = (!this.isNew || this.formGroup.dirty) && this.game?.BoardGame?.NewGameRefId;
     if (ask) {
       this.confirmationService.confirm({
         message: `Copying: ${[...items].map((x) => CopyAttrsMapping[x]).join(', ')}.<br><br>This may overwrite existing data. Do you want to proceed?`,
@@ -561,6 +588,12 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
           .reduce((index, game) => Math.max(index, (game.SortIndex ?? 0) + 1), 0);
       } else {
         // Continue
+      }
+
+      if (gameData.HigherWins === this.game.BoardGame?.HigherWins || this.game.ScoreType !== 'points') {
+        gameData.HigherWins = null;
+      } else {
+        // Keep override
       }
 
       const game = new GameEntity(gameData);

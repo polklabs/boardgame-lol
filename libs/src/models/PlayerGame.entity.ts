@@ -43,7 +43,8 @@ export class PlayerGameEntity extends BaseEntity {
     if (this.Points === null) {
       return null;
     } else {
-      return this.Points * 2 + (this.TieBreaker ? 1 : 0);
+      const multiplier = (this.Game?.HigherWins ?? this.Game?.BoardGame?.HigherWins ?? true) ? 1 : -1;
+      return this.TieBreaker ? Infinity : this.Points * multiplier;
     }
   }
 

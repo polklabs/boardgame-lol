@@ -54,6 +54,8 @@ export class BoardGameEntity extends BaseEntity {
   @Enum(ScoreTypes)
   ScoreType: ScoreType = 'points';
 
+  HigherWins = true;
+
   @Nullable()
   @MinMax(1, CHARACTER_LIMIT_BYTE, 'string')
   @Sanitize()
