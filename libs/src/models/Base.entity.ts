@@ -23,13 +23,13 @@ export abstract class BaseEntity {
 
   @Exclude()
   CreatedDate?: string = new Date().toISOString();
-  
+
   @Exclude()
   CreatedBy?: string = 'ANON';
-  
+
   @Exclude()
   LastModifiedDate?: string = new Date().toISOString();
-  
+
   @Exclude()
   LastModifiedBy?: string = 'ANON';
 
@@ -73,6 +73,23 @@ export abstract class BaseEntity {
         }
       }
     }
+  }
+
+  getDbValues<T extends BaseEntity>(primaryKeys: (keyof T)[] = []) {
+    const keys = Object.keys(this).filter((key) => !primaryKeys.includes(key as keyof T));
+    const values = keys.map((key) => {
+      const value = (this as any)[key];
+      if (value === true) {
+        return 1;
+      } else if (value === false) {
+        return 0;
+      } else if (typeof value === 'string') {
+        return value.trim();
+      } else {
+        return value;
+      }
+    });
+    return { values, keys };
   }
 
   resetCalculated<T extends this>(newObj: T, ignored: string[]) {

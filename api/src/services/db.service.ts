@@ -1,5 +1,6 @@
 import { Database } from 'better-sqlite3';
 import { BadRequestException, Injectable, OnApplicationShutdown } from '@nestjs/common';
+import { BaseEntity } from 'libs/index';
 
 type NullString = string | null;
 export type DbVars = NullString | NullString[] | { [key: string]: NullString };
@@ -82,13 +83,13 @@ export class DbService implements OnApplicationShutdown {
     return db.prepare(query).get(vars) as T | undefined;
   }
 
-  Insert<T extends object>(
+  Insert<T extends BaseEntity>(
     tableName: string,
     entity: T,
     transaction: boolean,
     transactions: any[],
     runTransactionsFirst: boolean,
-  ): any | undefined {
+  ): any {
     const db = this.getDb();
     if (!db) {
       return;
@@ -96,20 +97,10 @@ export class DbService implements OnApplicationShutdown {
       // continue
     }
 
-    const keys = Object.keys(entity);
-    const valuePlaceholder = keys.map(() => '?');
-    const values = keys.map((key) => {
-      const value = (entity as any)[key];
-      if (value === true) {
-        return 1;
-      } else if (value === false) {
-        return 0;
-      } else {
-        return value;
-      }
-    });
+    const { values, keys } = entity.getDbValues();
+    const valuePlaceholder = keys.map(() => `?`);
 
-    const queryString = `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${valuePlaceholder.join()})`;
+    const queryString = `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${valuePlaceholder.join(', ')})`;
 
     const insert = db.prepare(queryString);
 
@@ -130,7 +121,7 @@ export class DbService implements OnApplicationShutdown {
     }
   }
 
-  Update<T extends object>(
+  Update<T extends BaseEntity>(
     tableName: string,
     primaryKeys: (keyof T)[],
     secondaryKey: keyof T | undefined,
@@ -138,7 +129,7 @@ export class DbService implements OnApplicationShutdown {
     transaction: boolean,
     transactions: any[],
     runTransactionsFirst: boolean,
-  ): any | undefined {
+  ): any {
     const db = this.getDb();
     if (!db) {
       return;
@@ -147,18 +138,8 @@ export class DbService implements OnApplicationShutdown {
     }
 
     const PkValues = primaryKeys.map((p) => entity[p] as any);
-    const keys = Object.keys(entity).filter((key) => !primaryKeys.some((p) => p === key));
+    const { values, keys } = entity.getDbValues(primaryKeys);
     const keyValuePlaceholder = keys.map((key) => `${key} = ?`);
-    const values = keys.map((key) => {
-      const value = (entity as any)[key];
-      if (value === true) {
-        return 1;
-      } else if (value === false) {
-        return 0;
-      } else {
-        return value;
-      }
-    });
 
     const pkQuery = primaryKeys.map((p) => `${String(p)} = ?`).join(' AND ');
     let queryString = `UPDATE ${tableName} SET ${keyValuePlaceholder.join(', ')} WHERE ${pkQuery}`;
@@ -200,7 +181,7 @@ export class DbService implements OnApplicationShutdown {
     transaction: boolean,
     transactions: any[],
     runTransactionsFirst: boolean,
-  ): any | undefined {
+  ): any {
     const db = this.getDb();
     if (!db) {
       return;
