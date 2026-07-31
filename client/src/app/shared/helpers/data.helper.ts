@@ -36,7 +36,11 @@ export function tagFilter(tags: TagEntity[], category: TagCategory): TagEntity[]
   return tags.filter((t) => t.Category === category);
 }
 
-export function sortPlayerGames(playerGames: PlayerGameEntity[], game?: GameEntity): PlayerGameEntity[] {
+export function sortPlayerGames(
+  short: boolean,
+  playerGames: PlayerGameEntity[],
+  game?: GameEntity,
+): PlayerGameEntity[] {
   if (playerGames.length === 0) {
     return playerGames;
   } else {
@@ -56,7 +60,11 @@ export function sortPlayerGames(playerGames: PlayerGameEntity[], game?: GameEnti
       default:
         sortValue = (b.Points ?? -Infinity) - (a.Points ?? -Infinity);
     }
-    return sortValue || a.DisplayName.localeCompare(b.DisplayName);
+    if (short) {
+      return sortValue || a.DisplayNameShort.localeCompare(b.DisplayNameShort);
+    } else {
+      return sortValue || a.DisplayNameFull.localeCompare(b.DisplayNameFull);
+    }
   });
   return playerGames;
 }

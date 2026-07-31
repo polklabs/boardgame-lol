@@ -15,12 +15,21 @@
             label="Player Name"
             [entityType]="entityType"
             [appHide]="hideFields"></app-textinput>
-          <app-textinput
-            formControlName="Nickname"
-            label="Player Nickname"
+          <app-dropdown
+            formControlName="PreferredName"
             [entityType]="entityType"
-            [appHide]="hideFields"></app-textinput>
+            [appHide]="hideFields"
+            [options]="nameShortenings"
+            optionLabel="label"
+            optionValue="value"></app-dropdown>
         </div>
+
+        <app-textinput
+          formControlName="Nickname"
+          label="Player Nickname"
+          [entityType]="entityType"
+          [appHide]="hideFields"></app-textinput>
+
         <app-checkbox formControlName="IsRealPerson" label="Is Real Person"></app-checkbox>
 
         <app-tags

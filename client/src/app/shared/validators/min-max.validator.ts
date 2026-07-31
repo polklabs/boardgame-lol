@@ -15,11 +15,10 @@ export function minMaxValidator<T>(entityType: new (partial: Partial<T>) => T, p
 
     if (minMax) {
       let minMaxValid = true;
-      if (
-        (minMax.type === 'string' && typeof value === 'string') ||
-        (minMax.type === 'array' && Array.isArray(value))
-      ) {
+      if (minMax.type === 'array' && Array.isArray(value)) {
         minMaxValid = value.length >= (minMax.min ?? -Infinity) && value.length <= (minMax.max ?? Infinity);
+      } else if (minMax.type === 'string' && typeof value === 'string') {
+        minMaxValid = value.trim().length >= (minMax.min ?? -Infinity) && value.trim().length <= (minMax.max ?? Infinity);
       } else if (minMax.type === 'number') {
         minMaxValid = +value >= (minMax.min ?? -Infinity) && +value <= (minMax.max ?? Infinity);
       } else {

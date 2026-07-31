@@ -39,7 +39,7 @@ export class PlayDetailComponent {
   });
 
   columns: Column<PlayerGameEntity>[] = [
-    { id: 'DisplayName', name: 'Name', dataType: 'text' },
+    { id: 'DisplayNameFull', name: 'Name', dataType: 'text' },
     { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
     ...getTagColumns('DisplayOnPlayerGames'),

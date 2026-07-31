@@ -452,6 +452,7 @@ export class ApiService {
       t.Tag = this.tags.getOne(t.TagId);
     });
 
+    this.boardGames.sort((a, b) => a.Name.localeCompare(b.Name));
     this.boardGames.list.forEach((bg) => {
       bg.Games = this.games.list.filter((x) => x.BoardGameId === bg.BoardGameId);
       bg.Tags = this.tagBoardGames.list
@@ -487,7 +488,7 @@ export class ApiService {
     this.games.sort((a, b) => b.dateSortOrder.localeCompare(a.dateSortOrder));
     this.games.list.forEach((game) => {
       game.BoardGame = this.boardGames.getOne(game.BoardGameId);
-      game.Scores = sortPlayerGames(this.playerGames.getByForeignKey(game.GameId), game);
+      game.Scores = sortPlayerGames(false, this.playerGames.getByForeignKey(game.GameId), game);
       game.Tags = this.tagGames.list
         .filter((x) => x.GameId === game.GameId)
         .map((t) => t.Tag)
@@ -504,6 +505,8 @@ export class ApiService {
     });
 
     this.calculatedFields();
+
+    this.players.sort((a, b) => a.FullName.localeCompare(b.FullName));
   }
 
   private calculatedFields() {

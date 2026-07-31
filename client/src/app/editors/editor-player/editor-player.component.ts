@@ -4,6 +4,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   Output,
   SimpleChanges,
   inject,
@@ -13,14 +14,15 @@ import { TextInputComponent } from '../../shared/components/form-components/text
 import { ButtonModule } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { buildForm } from '../../shared/form.utils';
-import { PlayerEntity, TagEntity } from 'libs/index';
+import { NameShortening, NameShortenings, PlayerEntity, TagEntity } from 'libs/index';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ApiService } from '../../shared/services/api.service';
 import { Router } from '@angular/router';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 import { TagsComponent } from '../../shared/components/form-components/tags/tags.component';
-import { Observable, of } from 'rxjs';
-import { HideDirective } from "../../shared/directives/hide.directive";
+import { Observable, of, Subscription } from 'rxjs';
+import { HideDirective } from '../../shared/directives/hide.directive';
+import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
 
 type EntityType = PlayerEntity;
 
@@ -34,12 +36,13 @@ type EntityType = PlayerEntity;
     ReactiveFormsModule,
     CheckboxComponent,
     TagsComponent,
-    HideDirective
-],
+    DropdownComponent,
+    HideDirective,
+  ],
   templateUrl: './editor-player.component.html',
   styleUrl: './editor-player.component.scss',
 })
-export class EditorPlayerComponent implements OnChanges {
+export class EditorPlayerComponent implements OnChanges, OnDestroy {
   private fb = inject(FormBuilder);
   private apiService = inject(ApiService);
   private messageService = inject(MessageService);
@@ -61,9 +64,12 @@ export class EditorPlayerComponent implements OnChanges {
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
+  nameShortenings = NameShortenings.map((x) => ({ label: x, value: x }));
   subtypes: string[] = [];
 
   tagList$: Observable<TagEntity[]> = of([]);
+
+  subscriptions = new Subscription();
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('player' in changes) {
@@ -71,6 +77,10 @@ export class EditorPlayerComponent implements OnChanges {
     } else {
       this.closeEditor.emit();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   updateEditor(): void {
@@ -90,6 +100,13 @@ export class EditorPlayerComponent implements OnChanges {
       const instance = new PlayerEntity(this.player);
       instance.Tags = [...this.player.Tags];
       this.formGroup.patchValue(instance);
+
+      this.subscriptions.add(
+        this.getControl('PreferredName')?.valueChanges.subscribe((value) => {
+          this.updatePreferredName(value);
+        }),
+      );
+      this.updatePreferredName(instance.PreferredName);
     } else {
       // No Changes
     }
@@ -102,6 +119,15 @@ export class EditorPlayerComponent implements OnChanges {
 
   grabLists() {
     this.tagList$ = this.apiService.tags.raw$;
+  }
+
+  updatePreferredName(value: NameShortening) {
+    if (value === 'custom') {
+      this.hideFields.delete('Nickname');
+    } else {
+      this.hideFields.add('Nickname');
+      this.getControl('Nickname')?.setValue(null);
+    }
   }
 
   async submit(close: boolean) {

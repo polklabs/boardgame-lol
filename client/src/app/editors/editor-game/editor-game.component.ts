@@ -373,7 +373,7 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       default:
         break;
     }
-    this.playerScores = [...sortPlayerGames(this.playerScores)];
+    this.playerScores = [...sortPlayerGames(true, this.playerScores)];
   }
 
   getTrophyColor(playerGame: PlayerGameEntity): string {

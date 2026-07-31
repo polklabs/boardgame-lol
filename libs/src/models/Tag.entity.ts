@@ -13,7 +13,6 @@ import { Pattern } from '../decorators/pattern.decorator';
 import { Enum } from '../decorators/enum.decorator';
 import { ForeignKey } from '../decorators/foreign-key.decorator';
 import { BoardGameEntity } from './BoardGame.entity';
-import { PlayerEntity } from './Player.entity';
 
 export const TagCategories = ['character', 'faction', 'role', 'victory-method', 'death-cause', 'version', 'event'] as const;
 export type TagCategory = (typeof TagCategories)[number];

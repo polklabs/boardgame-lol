@@ -48,7 +48,7 @@ export class GamesTableComponent {
     { id: 'dateSortOrder', name: 'Date', dataType: 'date', rowSpan: true },
     { id: 'BoardGameName', name: 'Game', dataType: 'text' },
     { id: 'HighScore', name: 'Points', dataType: 'score', boardGame: (x) => x.BoardGame },
-    { id: 'WinnerTeams', name: 'Winner(s)', dataType: 'array', keys: 'DisplayName' },
+    { id: 'WinnerTeams', name: 'Winner(s)', dataType: 'array', keys: 'DisplayNameShort' },
     { id: 'Notes', class: 'notes-column', dataType: 'text' },
     { id: 'PlayerCount', name: 'Players', dataType: 'number' },
     { id: 'Tags', dataType: 'tag' },

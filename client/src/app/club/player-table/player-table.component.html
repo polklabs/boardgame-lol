@@ -9,11 +9,7 @@
     dataKey="PlayerId"
     sortBy="WinCount">
     <ng-template templateId="Name" let-player>
-      @if (player.Nickname) {
-        {{ player.Nickname }} - {{ player.Name }}
-      } @else {
-        {{ player.Name }}
-      }
+      {{ player.FullName }}
 
       @if (player.hasMostWins) {
         <i class="pi pi-crown" style="color: gold"></i>

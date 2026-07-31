@@ -74,8 +74,20 @@ export class PlayerGameEntity extends BaseEntity {
   @Ignore()
   calculated = false;
 
-  get DisplayName(): string {
-    return (this.Name ? `${this.Name}: ` : '') + this.Players?.map((p) => p.ShortName ?? p.Name).join(', ');
+  get DisplayNameFull(): string {
+    if (this.Name) {
+      return (this.Name ? `${this.Name}: ` : '') + this.Players?.map((p) => p.ShortName).join(', ');
+    } else {
+      return this.Players?.map((p) => p.FullName).join(', ');
+    }
+  }
+
+  get DisplayNameShort(): string {
+    if (this.Name) {
+      return (this.Name ? `${this.Name}: ` : '') + this.Players?.map((p) => p.ShortName).join(', ');
+    } else {
+      return this.Players?.map((p) => p.ShortName).join(', ');
+    }
   }
 
   constructor(partial: Partial<PlayerGameEntity> = {}, copyIgnored = false) {

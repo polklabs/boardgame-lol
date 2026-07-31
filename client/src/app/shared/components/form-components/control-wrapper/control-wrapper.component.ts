@@ -62,10 +62,11 @@ export class ControlWrapperComponent {
         const value = control.value;
         const minMax = getMinMax(this.entityType)[this.controlName];
         if (this.textInputType === 'text') {
-          if (value.length < (minMax.min ?? -Infinity)) {
-            return `${value.length}/${minMax.max} Minimum Length: ${minMax.min}`;
+          const trimmed = value.trim();
+          if (trimmed.length < (minMax.min ?? -Infinity)) {
+            return `${trimmed.length}/${minMax.max} Minimum Length: ${minMax.min}`;
           } else {
-            return `${value.length}/${minMax.max} Exceeds Character Limit`;
+            return `${trimmed.length}/${minMax.max} Exceeds Character Limit`;
           }
         } else if (this.textInputType === 'array') {
           if (value.length < (minMax.min ?? -Infinity)) {
@@ -119,7 +120,11 @@ export class ControlWrapperComponent {
       minMax?.max !== undefined &&
       (this.textInputType === 'text' || this.textInputType === 'array')
     ) {
-      return this.lengthText(minMax, value);
+      if (typeof value === 'string') {
+        return this.lengthText(minMax, value.trim());
+      } else {
+        return this.lengthText(minMax, value);
+      }
     } else {
       return '';
     }

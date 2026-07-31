@@ -12,11 +12,15 @@ import { Mode } from '../utils/helper-utils';
 import { TagEntity } from './Tag.entity';
 import { TagPlayerEntity } from './TagPlayer.entity';
 import { Nullable } from '../decorators/nullable.decorator';
+import { Enum } from '../decorators/enum.decorator';
 
 export type PlayerReturn = {
   Player: PlayerEntity;
   TagPlayers: TagPlayerEntity[];
 };
+
+export const NameShortenings = ['first', 'middle', 'last', 'full', 'custom'] as const;
+export type NameShortening = (typeof NameShortenings)[number];
 
 @TableName('Player')
 export class PlayerEntity extends BaseEntity {
@@ -29,6 +33,9 @@ export class PlayerEntity extends BaseEntity {
   @MinMax(1, CHARACTER_LIMIT_TINY, 'string')
   @Sanitize()
   Name: string = '';
+
+  @Enum(NameShortenings)
+  PreferredName: NameShortening = 'first';
 
   @Nullable()
   @MinMax(1, CHARACTER_LIMIT_BYTE * 4, 'string')
@@ -74,6 +81,9 @@ export class PlayerEntity extends BaseEntity {
 
   @Ignore()
   ShortName: string = '';
+
+  @Ignore()
+  FullName: string = '';
 
   @Ignore()
   hasMostWins: boolean = false;
@@ -141,21 +151,51 @@ export class PlayerEntity extends BaseEntity {
   static postCalculate(players: PlayerEntity[]) {
     const maxWins = Math.max(...players.map((x) => x.Wins.length));
 
+    const nameMap = new Map<string, number>();
     players.forEach((p) => {
-      p.ShortName = p.Nickname || '';
-      if (players.some((x) => x.PlayerId !== p.PlayerId && x.Name?.startsWith(p.ShortName!))) {
-        p.ShortName = p.Name.split(' ')[0];
-      } else {
-        // continue
-      }
-
-      if (players.some((x) => x.PlayerId !== p.PlayerId && x.Name?.startsWith(p.ShortName!))) {
+      const wordsArray = [...(p.Name.match(/\S+/g) ?? [])];
+      if (wordsArray.length <= 1) {
         p.ShortName = p.Name;
-      } else {
-        // continue
       }
+      switch (p.PreferredName) {
+        case 'first':
+          p.ShortName = wordsArray[0];
+          break;
+        case 'last':
+          p.ShortName = wordsArray.at(-1) ?? p.Name;
+          break;
+        case 'custom':
+          p.ShortName = p.Nickname ?? p.Name;
+          break;
+        case 'middle': {
+          const middle = wordsArray.slice(1, -1);
+          if (middle.length >= 1) {
+            p.ShortName = middle.join(' ');
+          } else {
+            p.ShortName = p.Name;
+          }
+          break;
+        }
+        case 'full':
+        default:
+          p.ShortName = p.Name;
+          break;
+      }
+      nameMap.set(p.ShortName, (nameMap.get(p.ShortName) ?? 0) + 1);
 
       p.hasMostWins = p.Wins.length > 0 && p.Wins.length >= maxWins;
+    });
+
+    players.forEach((p) => {
+      if ((nameMap.get(p.ShortName) ?? 0) > 1) {
+        p.ShortName = p.Name;
+      }
+
+      if (p.Nickname) {
+        p.FullName = `${p.Nickname} - ${p.Name}`;
+      } else {
+        p.FullName = p.Name;
+      }
     });
   }
 }

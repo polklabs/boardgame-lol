@@ -102,7 +102,7 @@ export class BoardGameTableComponent implements OnChanges {
             } else {
               this.WinCounts[boardGameId].push({
                 playerId: p.PlayerId,
-                name: p.ShortName,
+                name: p.FullName,
                 Tags: p.Tags,
                 wins: won ? 1 : 0,
                 plays: played,
