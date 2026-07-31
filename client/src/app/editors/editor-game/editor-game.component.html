@@ -201,7 +201,7 @@
                 } @else {
                   <div class="empty-trophy"></div>
                 }
-                <span>{{ playerGame.DisplayName }}</span>
+                <span>{{ playerGame.DisplayNameShort }}</span>
               }
               <!-- WIN/LOSE -->
               @case ('win-lose') {
@@ -214,12 +214,12 @@
                 } @else {
                   <div class="empty-trophy"></div>
                 }
-                <span>{{ playerGame.DisplayName }}</span>
+                <span>{{ playerGame.DisplayNameShort }}</span>
               }
             }
           } @else {
             <i class="pi pi-ban"></i>
-            <span>{{ playerGame.DisplayName }}</span>
+            <span>{{ playerGame.DisplayNameShort }}</span>
           }
         </span>
         <div class="flex gap-8 edit-btns">

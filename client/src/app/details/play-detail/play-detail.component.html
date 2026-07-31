@@ -18,10 +18,10 @@
       <app-stats-table header="Stats" [smallHeader]="true" [items]="stats()" [customHeight]="40"></app-stats-table>
 
       <app-table [columns]="columns" [rows]="g.Scores" [canEdit]="false" [showExpansion]="false" [tiny]="true">
-        <ng-template templateId="DisplayName" let-row>
+        <ng-template templateId="DisplayNameFull" let-row>
           <div class="flex-nowrap gap-8">
             <app-trophy-icon [score]="row"></app-trophy-icon>
-            <span>{{ row.DisplayName }}</span>
+            <span>{{ row.DisplayNameFull }}</span>
           </div>
         </ng-template>
       </app-table>
