@@ -195,10 +195,9 @@ p-select {
   }
 }
 
-.dialog-footer {
-  display: flex;
+p-dialog .p-dialog-footer,
+.p-dialog .p-dialog-footer {
   justify-content: space-between;
-  margin-top: 8px;
   gap: 4px;
   > div {
     display: flex;

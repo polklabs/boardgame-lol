@@ -49,10 +49,7 @@
         }
 
         <div class="flex gap-4 justify-content-space-between">
-          <app-checkbox
-            formControlName="ScoringPlayer"
-            label="Has Score"
-            [appHide]="hideFields"></app-checkbox>
+          <app-checkbox formControlName="ScoringPlayer" label="Has Score" [appHide]="hideFields"></app-checkbox>
           @if (scoreType === 'points') {
             <app-number-input
               style="flex-grow: 1"
@@ -62,10 +59,7 @@
               [appHide]="hideFields"
               [boardGame]="playerGame.Game?.BoardGame"></app-number-input>
           } @else if (scoreType === 'win-lose') {
-            <app-checkbox
-              formControlName="Points"
-              label="Won Game"
-              [hiddenFields]="hideFields"></app-checkbox>
+            <app-checkbox formControlName="Points" label="Won Game" [hiddenFields]="hideFields"></app-checkbox>
           }
         </div>
 
@@ -77,17 +71,17 @@
           [entityType]="entityType"
           [appHide]="hideFields"
           [options$]="tagList$"></app-tags>
-
-        <div class="dialog-footer">
-          <div>
-            <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
-          </div>
-          <div>
-            <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-            <p-button label="Apply" [outlined]="true" (onClick)="submit()"></p-button>
-          </div>
-        </div>
       </form>
     </div>
+
+    <ng-template #footer>
+      <div>
+        <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
+      </div>
+      <div>
+        <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
+        <p-button label="Apply" [outlined]="true" (onClick)="submit()"></p-button>
+      </div>
+    </ng-template>
   }
 </p-dialog>

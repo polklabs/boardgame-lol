@@ -39,10 +39,7 @@
 
         <div class="flex-nowrap gap-8">
           <div class="color-list gap-8">
-            <app-textinput
-              formControlName="Color"
-              [entityType]="entityType"
-              [appHide]="hideFields"></app-textinput>
+            <app-textinput formControlName="Color" [entityType]="entityType" [appHide]="hideFields"></app-textinput>
             <div class="flex gap-8">
               @for (preset of presetColors; track preset) {
                 <p-button variant="outlined" [severity]="preset.severity" (onClick)="setColor(preset.color)">
@@ -58,20 +55,19 @@
             [inline]="true"
             defaultColor="000000" />
         </div>
-
-        <div class="dialog-footer">
-          <div>
-            @if (club && (adminIds | async)?.includes(club.ClubId)) {
-              <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
-            }
-          </div>
-          <div>
-            <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-            <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
-            <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
-          </div>
-        </div>
       </form>
     </div>
+    <ng-template #footer>
+      <div>
+        @if (club && (adminIds | async)?.includes(club.ClubId)) {
+          <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
+        }
+      </div>
+      <div>
+        <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
+        <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
+        <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
+      </div>
+    </ng-template>
   }
 </p-dialog>

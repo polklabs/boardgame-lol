@@ -85,17 +85,17 @@
             [inline]="true"
             defaultColor="000000" />
         </div>
-
-        <div class="dialog-footer">
-          <div>
-            <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
-          </div>
-          <div>
-            <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="cancelEdit()"></p-button>
-            <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
-          </div>
-        </div>
       </form>
     </div>
+
+    <ng-template #footer>
+      <div>
+        <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
+      </div>
+      <div>
+        <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="cancelEdit()"></p-button>
+        <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+      </div>
+    </ng-template>
   }
 </p-dialog>

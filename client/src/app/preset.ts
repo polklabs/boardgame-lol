@@ -57,8 +57,11 @@ export const LaraDark = definePreset(Lara, {
       header: {
         padding: '0.5rem 1rem 4px',
       },
+      footer: {
+        padding: '4px 1rem 0.5rem',
+      },
       content: {
-        padding: '0 1rem 1rem',
+        padding: '0.5rem 1rem',
       },
     },
     togglebutton: {

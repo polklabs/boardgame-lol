@@ -89,18 +89,17 @@
             [entityType]="entityType"
             [appHide]="hideFields"></app-multi-select>
         </div>
-
-        <div class="dialog-footer">
-          <div>
-            <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
-          </div>
-          <div>
-            <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-            <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
-            <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
-          </div>
-        </div>
       </form>
     </div>
+    <ng-template #footer>
+      <div>
+        <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
+      </div>
+      <div>
+        <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
+        <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
+        <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
+      </div>
+    </ng-template>
   }
 </p-dialog>

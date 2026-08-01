@@ -570,7 +570,6 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
       // Continue
     }
 
-    console.log(this.playerScores);
     this.updateScoring();
     this.updatePlayerCount();
   }
