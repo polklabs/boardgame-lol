@@ -49,7 +49,10 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
   @Input() canEdit = false;
 
   @Input() groupRowsBy: keyof T | null = null;
-  @Input() spanRowsBy: keyof T | null = null;
+  @Input() isRowSpan: (item: T) => boolean = () => false;
+  @Input() rowSpanBy: keyof T | null = null;
+
+  @Input() virtualScroll = false;
 
   readonly tiny = input(false);
 
@@ -114,17 +117,6 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
     }
   }
 
-  showSpan(table: Table, index: number) {
-    if (this.spanRowsBy) {
-      return (
-        table.sortField === this.sortBy &&
-        this.rows.at(index - 1)?.[this.spanRowsBy] !== this.rows.at(index)?.[this.spanRowsBy]
-      );
-    } else {
-      return false;
-    }
-  }
-
   rowSpanColumn() {
     const col = this.cols.findIndex((x) => x.rowSpan);
     if (col === -1) {
@@ -172,7 +164,7 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   property(row: T | undefined, column: Column<T>): any {
-    if (row === undefined) {
+    if (row === undefined || this.isRowSpan(row)) {
       return undefined;
     } else if (column.dataType === 'custom') {
       return 'Custom Column';

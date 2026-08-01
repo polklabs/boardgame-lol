@@ -3,6 +3,7 @@
     [columns]="columns"
     [rows]="boardGames"
     [canEdit]="canEdit"
+    [virtualScroll]="true"
     (edit)="boardGameEdit.emit($event)"
     (expand)="openBoardGameDetail($event)"
     sortBy="PlayCount"

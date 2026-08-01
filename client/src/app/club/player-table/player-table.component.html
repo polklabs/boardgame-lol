@@ -4,6 +4,7 @@
     [columns]="columns"
     [rows]="games"
     [canEdit]="canEdit"
+    [virtualScroll]="true"
     (edit)="playerEdit.emit($event)"
     (expand)="openPlayerDetail($event)"
     dataKey="PlayerId"

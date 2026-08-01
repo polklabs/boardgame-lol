@@ -3,15 +3,13 @@
   [value]="rows"
   [sortField]="sortBy"
   [sortOrder]="sortOrder"
-  class="p-datatable-sm {{tiny() ? 'tiny' : ''}}"
+  class="p-datatable-sm {{ tiny() ? 'tiny' : '' }}"
   [tableStyle]="{ 'min-width': '50rem' }"
   [scrollable]="true"
   [stripedRows]="true"
   scrollHeight="flex"
-  
-  [virtualScroll]="false"
-  [virtualScrollItemSize]="37"
-  >
+  [virtualScroll]="virtualScroll"
+  [virtualScrollItemSize]="37">
   <ng-template #header>
     <tr>
       @if (showExpansion !== false) {
@@ -35,86 +33,91 @@
     </tr>
   </ng-template>
   <ng-template #body let-row let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
-        @if(showSpan(table, rowIndex)) {
+    @if (isRowSpan(row)) {
       <tr class="group-row">
         <td [attr.colspan]="rowSpanColumn()"></td>
         <td [attr.colspan]="columns.length - rowSpanColumn() + (canEdit ? 1 : 0)">
-          {{row[spanRowsBy]}}
+          {{ row[rowSpanBy] }}
         </td>
       </tr>
-    }
-    @let expansion = canShowExpansion(row);
-    <tr [ngClass]="{'row-expansion': expansion}">
-      @if (showExpansion !== false) {
-        <td class="button-cell">
-          @if (expansion) {
-          <p-button
-              type="button"
-              pRipple
-              [text]="true"
-              [rounded]="true"
-              [plain]="true"
-              icon="pi pi-window-maximize"
-              (onClick)="rowClick(row)" />
-          }
-        </td>
-      }
-      @for (column of cols; track column) {
-        @let rowGroupLen = rowGroup(row, rowIndex, column);
-        @if (rowGroupLen > 0) {
-        <td class="{{ column.class ?? '' }}" [attr.rowspan]="rowGroupLen" [ngClass]="{'row-span': rowGroupLen > 1}" (click)="rowClick(row)">
-          @let template = templateMap.get(column.id);
-          @if (template) {
-            <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
-          } @else {
-            @switch (column.dataType) {
-              @case ('date') {
-                {{ property(row, column) | date: 'yyyy/M/d' }}
-              }
-              @case ('number') {
-                {{ property(row, column) | hide | number: '1.0-0' }}
-              }
-              @case ('decimal') {
-                {{ property(row, column) | hide | number: '1.0-' + (column.decimalPlaces ?? 1) }}
-              }
-              @case ('array') {
-                {{ property(row, column) | map: column.keys }}
-              }
-              @case ('score') {
-                {{ property(row, column) | score: column.boardGame(row) }}
-              }
-              @case ('tag') {
-                <div class="tag-wrapper">
-                  @for (tag of property(row, column); track tag.TagId) {
-                    <app-tag [tag]="tag"></app-tag>
+    } @else {
+      @let expansion = canShowExpansion(row);
+      <tr [ngClass]="{ 'row-expansion': expansion }">
+        @if (showExpansion !== false) {
+          <td class="button-cell">
+            @if (expansion) {
+              <p-button
+                type="button"
+                pRipple
+                [text]="true"
+                [rounded]="true"
+                [plain]="true"
+                icon="pi pi-window-maximize"
+                (onClick)="rowClick(row)" />
+            }
+          </td>
+        }
+        @for (column of cols; track column) {
+          @let rowGroupLen = rowGroup(row, rowIndex, column);
+          @if (rowGroupLen > 0) {
+            <td
+              class="{{ column.class ?? '' }}"
+              [attr.rowspan]="rowGroupLen"
+              [ngClass]="{ 'row-span': rowGroupLen > 1 }"
+              (click)="rowClick(row)">
+              @let template = templateMap.get(column.id);
+              @if (template) {
+                <ng-container
+                  [ngTemplateOutlet]="template"
+                  [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
+              } @else {
+                @switch (column.dataType) {
+                  @case ('date') {
+                    {{ property(row, column) | date: 'yyyy/M/d' }}
                   }
-                </div>
+                  @case ('number') {
+                    {{ property(row, column) | hide | number: '1.0-0' }}
+                  }
+                  @case ('decimal') {
+                    {{ property(row, column) | hide | number: '1.0-' + (column.decimalPlaces ?? 1) }}
+                  }
+                  @case ('array') {
+                    {{ property(row, column) | map: column.keys }}
+                  }
+                  @case ('score') {
+                    {{ property(row, column) | score: column.boardGame(row) }}
+                  }
+                  @case ('tag') {
+                    <div class="tag-wrapper">
+                      @for (tag of property(row, column); track tag.TagId) {
+                        <app-tag [tag]="tag"></app-tag>
+                      }
+                    </div>
+                  }
+                  @default {
+                    {{ property(row, column) }}
+                  }
+                }
+                @if ('suffix' in column && column.suffix && hasData(row, column)) {
+                  {{ column.suffix }}
+                }
               }
-              @default {
-                {{ property(row, column) }}
-              }
-            }
-            @if ('suffix' in column && column.suffix && hasData(row, column)) {
-              {{ column.suffix }}
-            }
+            </td>
           }
-        </td>
-      }
-      }
-      @if (canEdit) {
-        <td pFrozenColumn alignFrozen="right" class="button-cell">
-          <div class="flex-nowrap justify-content-end">
-            @if (templateMap.get('edit'); as editTemplate) {
-              <ng-container [ngTemplateOutlet]="editTemplate" [ngTemplateOutletContext]="{ $implicit: row, table, rowIndex }"></ng-container>
-            }
-            <p-button
-              (onClick)="edit.emit(row)"
-              icon="pi pi-pencil"
-              [rounded]="true"
-              [text]="true"></p-button>
-          </div>
-        </td>
-      }
-    </tr>
+        }
+        @if (canEdit) {
+          <td pFrozenColumn alignFrozen="right" class="button-cell">
+            <div class="flex-nowrap justify-content-end">
+              @if (templateMap.get('edit'); as editTemplate) {
+                <ng-container
+                  [ngTemplateOutlet]="editTemplate"
+                  [ngTemplateOutletContext]="{ $implicit: row, rowIndex }"></ng-container>
+              }
+              <p-button (onClick)="edit.emit(row)" icon="pi pi-pencil" [rounded]="true" [text]="true"></p-button>
+            </div>
+          </td>
+        }
+      </tr>
+    }
   </ng-template>
 </p-table>
