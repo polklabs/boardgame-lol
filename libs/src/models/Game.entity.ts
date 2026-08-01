@@ -14,7 +14,7 @@ import { TagEntity } from './Tag.entity';
 import { TagGameEntity } from './TagGame.entity';
 import { TagPlayerGameEntity } from './TagPlayerGame.entity';
 import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { EventEntity } from './Event.entity';
 
 export type GameReturn = {
@@ -36,7 +36,7 @@ export class GameEntity extends BaseEntity {
   @ForeignKey(BoardGameEntity)
   BoardGameId: string = '';
 
-  Date: string = new Date().toISOString();
+  Date: string = format(new Date(), 'yyyy-MM-dd');
 
   @Nullable()
   @MinMax(0, 99999, 'number')
@@ -115,9 +115,7 @@ export class GameEntity extends BaseEntity {
     this.assign(partial, GameEntity, copyIgnored);
 
     this.Tags = partial.Tags ?? [];
-    this.DateObj = new Date(this.Date);
-    const userTimezoneOffset = this.DateObj.getTimezoneOffset() * 60000;
-    this.DateObj = new Date(this.DateObj.getTime() + userTimezoneOffset);
+    this.DateObj = parse(this.Date, 'yyyy-MM-dd', new Date());
   }
 
   findPlace(pg: PlayerGameEntity): number | null {
