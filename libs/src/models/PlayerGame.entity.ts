@@ -96,6 +96,8 @@ export class PlayerGameEntity extends BaseEntity {
     this.ScoringPlayer = partial.ScoringPlayer ?? true;
     this.PlayerLinks = partial.PlayerLinks ?? [];
     this.Tags = partial.Tags ?? [];
+
+    this.Points = this.ScoringPlayer ? this.Points : null;
   }
 
   calculate() {
