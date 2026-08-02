@@ -47,7 +47,9 @@
       </div>
       <div>
         <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
-        <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
+        @if (standalone) {
+          <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
+        }
         <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
       </div>
     </ng-template>

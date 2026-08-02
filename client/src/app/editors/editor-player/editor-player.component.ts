@@ -143,7 +143,7 @@ export class EditorPlayerComponent implements OnChanges, OnDestroy {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Player' });
 
         if (close) {
-          this.closeEditor.emit();
+          this.closeEditor.emit(result);
         } else {
           this.player = result;
           this.updateEditor();
@@ -163,17 +163,13 @@ export class EditorPlayerComponent implements OnChanges, OnDestroy {
       rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       accept: async () => {
-        if (this.standalone) {
-          const result = await this.apiService.deletePlayer(this.player!.PlayerId);
-          if (result) {
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Player' });
-            this.closeEditor.emit();
-            this.router.navigateByUrl(`/club/${this.apiService.club?.ClubId}`);
-          } else {
-            // Do nothing
-          }
+        const result = await this.apiService.deletePlayer(this.player!.PlayerId);
+        if (result) {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Player' });
+          this.closeEditor.emit();
+          this.router.navigateByUrl(`/club/${this.apiService.club?.ClubId}`);
         } else {
-          this.deleteEntity.emit(this.player);
+          // Do nothing
         }
       },
     });

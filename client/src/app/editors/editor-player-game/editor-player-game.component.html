@@ -1,8 +1,8 @@
 <app-editor-player
   [editorVisible]="playerEditorVisible"
   [player]="playerEdit"
-  [standalone]="true"
-  (closeEditor)="playerEditorVisible = false"></app-editor-player>
+  [standalone]="false"
+  (closeEditor)="closePlayerEditor($event)"></app-editor-player>
 
 <p-dialog
   [header]="title"
