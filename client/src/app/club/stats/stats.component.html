@@ -50,29 +50,29 @@
     @if (ShowCharts) {
       @if (rankOverTimeOptions) {
         <div class="card">
-          <h3 style="text-align: center">Rank Over Time</h3>
-          <p-chart type="line" [data]="rankOverTimeData" [options]="rankOverTimeOptions" [plugins]="chartPlugins" />
+          <h3 style="text-align: center">Rank Over Time (Top 7)</h3>
+          <p-chart type="line" [data]="rankOverTimeData" [options]="rankOverTimeOptions" />
         </div>
       }
 
       @if (countByDayOptions) {
         <div class="card">
           <h3 style="text-align: center">Play Count by Day of Week</h3>
-          <p-chart type="bar" [data]="countByDayData" [options]="countByDayOptions" [plugins]="chartPlugins" />
+          <p-chart type="bar" [data]="countByDayData" [options]="countByDayOptions" />
         </div>
       }
 
       @if (countByMonthOptions) {
         <div class="card">
           <h3 style="text-align: center">Total Play Count by Month</h3>
-          <p-chart type="bar" [data]="countByMonthData" [options]="countByMonthOptions" [plugins]="chartPlugins" />
+          <p-chart type="bar" [data]="countByMonthData" [options]="countByMonthOptions" />
         </div>
       }
 
       @if (winsOverTimeOptions) {
         <div class="card">
-          <h3 style="text-align: center">Wins Over Time</h3>
-          <p-chart type="line" [data]="winsOverTimeData" [options]="winsOverTimeOptions" [plugins]="chartPlugins" />
+          <h3 style="text-align: center">Wins Over Time (Top 7)</h3>
+          <p-chart type="line" [data]="winsOverTimeData" [options]="winsOverTimeOptions" />
         </div>
       }
     }

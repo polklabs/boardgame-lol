@@ -4,7 +4,6 @@ import { addDays, addYears, format } from 'date-fns';
 import { ApiService } from '../../shared/services/api.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
-import autocolors from 'chartjs-plugin-autocolors';
 import { GameEntity, ScoreTypeMapping, ScoreTypes } from 'libs/index';
 import { Subscription } from 'rxjs';
 import { TrophyService } from '../../shared/services/trophy.service';
@@ -68,7 +67,6 @@ export class StatsComponent implements OnInit {
   countByMonthData: ChartData = { labels: [], datasets: [] };
   countByMonthOptions?: ChartOptions;
 
-  chartPlugins = [autocolors];
 
   gameTypeMeterMax = 0;
   gameTypeMeter: MeterItem[] = [
@@ -267,6 +265,11 @@ export class StatsComponent implements OnInit {
       });
     });
 
+    this.winsOverTimeData.datasets.sort(
+      (a, b) => ((b.data.at(-1) ?? 0) as number) - ((a.data.at(-1) ?? 0) as number) || a.label!.localeCompare(b.label!),
+    );
+    this.winsOverTimeData.datasets = this.winsOverTimeData.datasets.slice(0, 7);
+
     this.winsOverTimeOptions = {
       maintainAspectRatio: false,
       aspectRatio: 0.6,
@@ -279,6 +282,7 @@ export class StatsComponent implements OnInit {
         tooltip: {
           callbacks: {
             label: function (context) {
+              console.log(context);
               const data = context.dataset.data as number[];
               if (context.dataIndex > 0) {
                 const lastValue = data.at(context.dataIndex - 1) ?? 0;
@@ -368,6 +372,11 @@ export class StatsComponent implements OnInit {
         tension: 0.4,
       });
     });
+
+    this.rankOverTimeData.datasets.sort(
+      (a, b) => ((b.data.at(-1) ?? 0) as number) - ((a.data.at(-1) ?? 0) as number) || a.label!.localeCompare(b.label!),
+    );
+    this.rankOverTimeData.datasets = this.rankOverTimeData.datasets.slice(0, 7);
 
     this.rankOverTimeOptions = {
       maintainAspectRatio: false,
