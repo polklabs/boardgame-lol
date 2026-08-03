@@ -18,6 +18,7 @@ export type WinCount = {
   name: string;
   wins: number;
   nonScoreCount: number;
+  losses: number;
   plays: number;
   winPercent: number;
   totalPoints?: number;
@@ -92,9 +93,11 @@ export class BoardGameTableComponent implements OnChanges {
             const won = pg.Won;
 
             const played = pg.ScoringPlayer ? 1 : 0;
+            const lost = !won && pg.ScoringPlayer;
 
             if (winRow) {
               winRow.wins += won ? 1 : 0;
+              winRow.losses += lost ? 1 : 0;
               winRow.plays += played;
               winRow.nonScoreCount += 1 - played;
               winRow.winPercent = winRow.plays > 0 ? (winRow.wins / winRow.plays) * 100 : 0;
@@ -105,6 +108,7 @@ export class BoardGameTableComponent implements OnChanges {
                 name: p.FullName,
                 Tags: p.Tags,
                 wins: won ? 1 : 0,
+                losses: lost ? 1 : 0,
                 plays: played,
                 winPercent: won ? 100 : 0,
                 nonScoreCount: 1 - played,
