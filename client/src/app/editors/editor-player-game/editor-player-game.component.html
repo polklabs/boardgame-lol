@@ -35,6 +35,7 @@
             [maxSelectedLabels]="-1"
             optionLabel="Name"
             [addNewButton]="true"
+            [showFilter]="true"
             (addNew)="addPlayer()"></app-multi-select>
         } @else {
           <app-dropdown
@@ -45,6 +46,7 @@
             [options$]="playerList$"
             optionLabel="Name"
             [addNewButton]="true"
+            [showFilter]="true"
             (addNew)="addPlayer()"></app-dropdown>
         }
 
