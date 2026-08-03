@@ -79,6 +79,7 @@ export class ApiService {
   unloadClub() {
     this.club = undefined;
     this.entityWrappers.forEach((w) => w.clear());
+    this.filter({});
   }
 
   async fetchPublicClubs() {
