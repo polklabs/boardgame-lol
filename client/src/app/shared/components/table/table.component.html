@@ -33,15 +33,15 @@
     </tr>
   </ng-template>
   <ng-template #body let-row let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
+    @let expansion = canShowExpansion(row);
     @if (isRowSpan(row)) {
       <tr class="group-row">
-        <td [attr.colspan]="rowSpanColumn()"></td>
-        <td [attr.colspan]="columns.length - rowSpanColumn() + (canEdit ? 1 : 0)">
+        <td [attr.colspan]="rowSpanColumn() + (expansion?1:0)"></td>
+        <td [attr.colspan]="cols.length - rowSpanColumn() + (canEdit ? 1 : 0)">
           {{ row[rowSpanBy] }}
         </td>
       </tr>
     } @else {
-      @let expansion = canShowExpansion(row);
       <tr [ngClass]="{ 'row-expansion': expansion }">
         @if (showExpansion !== false) {
           <td class="button-cell">

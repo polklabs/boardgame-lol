@@ -120,9 +120,11 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
   rowSpanColumn() {
     const col = this.cols.findIndex((x) => x.rowSpan);
     if (col === -1) {
+      console.log(1);
       return 1;
     } else {
-      return col + 1;
+      console.log(col+1);
+      return col;
     }
   }
 
