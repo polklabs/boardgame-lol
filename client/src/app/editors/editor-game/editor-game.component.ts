@@ -7,7 +7,6 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
   Output,
   SimpleChanges,
   ViewChild,
@@ -41,6 +40,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { sortPlayerGames } from '../../shared/helpers/data.helper';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 import { HideDirective } from '../../shared/directives/hide.directive';
+import { WakeLockWrapper } from '../../shared/models/wake-lock.model';
 
 type EntityType = GameEntity;
 
@@ -77,7 +77,7 @@ const POINT_VALUES = [1, 5, 10, 50, 100, 150, 200];
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
 })
-export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
+export class EditorGameComponent extends WakeLockWrapper implements OnChanges, OnDestroy {
   private fb = inject(FormBuilder);
   private apiService = inject(ApiService);
   private messageService = inject(MessageService);
@@ -119,18 +119,6 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
   pointGroupButtonValues: number[] = [];
 
   subscriptions = new Subscription();
-
-  wakeLock?: WakeLockSentinel;
-
-  ngOnInit(): void {
-    navigator.wakeLock
-      .request()
-      .then((lock) => {
-        this.wakeLock = lock;
-        console.log('Wake lock success');
-      })
-      .catch(() => console.warn('Wake lock failed'));
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('game' in changes) {
@@ -214,15 +202,8 @@ export class EditorGameComponent implements OnInit, OnChanges, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  ngOnDestroy(): void {
+  protected override onDestroyChild(): void {
     this.subscriptions.unsubscribe();
-
-    if (this.wakeLock) {
-      this.wakeLock.release();
-      console.log('Wake lock released');
-    } else {
-      // Continue
-    }
   }
 
   grabLists() {
