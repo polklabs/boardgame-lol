@@ -3,7 +3,6 @@ import { TagComponent } from '../tag/tag.component';
 import { MapPipe } from '../../pipes/map.pipe';
 import { PopoverModule } from 'primeng/popover';
 import { DecimalPipe, NgClass, NgStyle } from '@angular/common';
-import { TooltipModule } from 'primeng/tooltip';
 import { TagEntity } from 'libs/index';
 
 export type StatsTableItem = {
@@ -17,7 +16,7 @@ export type StatsTableItem = {
 
 @Component({
   selector: 'app-stats-table',
-  imports: [TagComponent, MapPipe, PopoverModule, DecimalPipe, TooltipModule, NgClass, NgStyle],
+  imports: [TagComponent, MapPipe, PopoverModule, DecimalPipe, NgClass, NgStyle],
   templateUrl: './stats-table.component.html',
   styleUrl: './stats-table.component.scss',
 })
