@@ -20,6 +20,10 @@ import { FilterComponent } from './filter/filter.component';
 import { ClubTitleComponent } from '../shared/components/club-title/club-title.component';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { EditorEventComponent } from '../editors/editor-event/editor-event.component';
+import { BoardGameDetailComponent } from '../details/board-game-detail/board-game-detail.component';
+import { DetailService } from '../shared/services/detail.service';
+import { PlayDetailComponent } from "../details/play-detail/play-detail.component";
+import { PlayerDetailComponent } from "../details/player-detail/player-detail.component";
 
 @Component({
   selector: 'app-club',
@@ -40,7 +44,10 @@ import { EditorEventComponent } from '../editors/editor-event/editor-event.compo
     FilterComponent,
     ClubTitleComponent,
     ProgressSpinnerModule,
-  ],
+    BoardGameDetailComponent,
+    PlayDetailComponent,
+    PlayerDetailComponent
+],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })
@@ -49,6 +56,7 @@ export class ClubComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private apiService = inject(ApiService);
   private userService = inject(UserService);
+  detailService = inject(DetailService);
 
   club?: ClubEntity;
   canEdit = false;

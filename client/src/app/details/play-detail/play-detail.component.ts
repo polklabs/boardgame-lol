@@ -1,4 +1,4 @@
-import { Component, computed, input, output, Signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, input, Signal } from '@angular/core';
 import { GameEntity, PlayerGameEntity } from 'libs/index';
 import { DialogModule } from 'primeng/dialog';
 import { StatsTableItem, StatsTableComponent } from '../../shared/components/stats-table/stats-table.component';
@@ -8,6 +8,7 @@ import { getTagColumns } from '../../shared/helpers/data.helper';
 import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-icon.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
 import { DatePipe } from '@angular/common';
+import { DetailService } from '../../shared/services/detail.service';
 
 @Component({
   selector: 'app-play-detail',
@@ -15,10 +16,12 @@ import { DatePipe } from '@angular/common';
   templateUrl: './play-detail.component.html',
   styleUrl: './play-detail.component.scss',
 })
-export class PlayDetailComponent {
+export class PlayDetailComponent implements AfterViewInit {
+  detailService = inject(DetailService);
+
   readonly game = input<GameEntity>();
-  readonly visible = input.required<boolean>();
-  readonly closeDetails = output<void>();
+
+  visible = false;
 
   stats: Signal<StatsTableItem[]> = computed(() => {
     const g = this.game();
@@ -44,4 +47,10 @@ export class PlayDetailComponent {
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
     ...getTagColumns('DisplayOnPlayerGames'),
   ];
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.visible = true;
+    }, 50);
+  }
 }

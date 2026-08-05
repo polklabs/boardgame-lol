@@ -1,7 +1,7 @@
 @if (game(); as g) {
   <p-dialog
-    [visible]="visible()"
-    (visibleChange)="closeDetails.emit()"
+    [visible]="visible"
+    (visibleChange)="detailService.hideDetail()"
     [modal]="true"
     [style]="{ 'min-width': '300px' }"
     [draggable]="false"

@@ -3,6 +3,7 @@ import {
   Component,
   ContentChildren,
   EventEmitter,
+  inject,
   input,
   Input,
   OnChanges,
@@ -21,6 +22,7 @@ import { isEmptyLike } from '../../helpers/data.helper';
 import { ScorePipe } from '../../pipes/score.pipe';
 import { ButtonModule } from 'primeng/button';
 import { MapPipe } from '../../pipes/map.pipe';
+import { DetailService } from '../../services/detail.service';
 
 @Component({
   selector: 'app-table',
@@ -40,6 +42,8 @@ import { MapPipe } from '../../pipes/map.pipe';
   styleUrl: './table.component.scss',
 })
 export class TableComponent<T extends object> implements OnChanges, AfterContentInit {
+  detailService = inject(DetailService);
+
   @ContentChildren(TemplateIdDirective) templates!: QueryList<TemplateIdDirective>;
 
   @Input() columns: Column<T>[] = [];
@@ -59,7 +63,6 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
   @Input() showExpansion: ((item: T) => boolean) | boolean = true;
 
   @Output() edit = new EventEmitter<T>();
-  @Output() expand = new EventEmitter<T>();
 
   cols: Column<T>[] = [];
 
@@ -111,7 +114,7 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
 
   rowClick(row: T): void {
     if (this.canShowExpansion(row)) {
-      this.expand.emit(row);
+      this.detailService.showDetail(row);
     } else {
       // Nothing
     }
@@ -120,10 +123,8 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
   rowSpanColumn() {
     const col = this.cols.findIndex((x) => x.rowSpan);
     if (col === -1) {
-      console.log(1);
       return 1;
     } else {
-      console.log(col+1);
       return col;
     }
   }

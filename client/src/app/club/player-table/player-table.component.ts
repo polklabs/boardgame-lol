@@ -12,7 +12,6 @@ import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
 import { MapPipe } from '../../shared/pipes/map.pipe';
-import { PlayerDetailComponent } from '../../details/player-detail/player-detail.component';
 
 @Component({
   selector: 'app-player-table',
@@ -25,7 +24,6 @@ import { PlayerDetailComponent } from '../../details/player-detail/player-detail
     TableComponent,
     TemplateIdDirective,
     MapPipe,
-    PlayerDetailComponent,
   ],
   templateUrl: './player-table.component.html',
   styleUrl: './player-table.component.scss',
@@ -38,9 +36,6 @@ export class PlayerTableComponent {
 
   @Output() playerEdit = new EventEmitter<PlayerEntity>();
 
-  playerDetails?: PlayerEntity;
-  playerDetailsShow = false;
-
   mostWins: ITrophy = this.trophyService.getTrophy('MostWins');
 
   columns: Column<PlayerEntity>[] = [
@@ -52,9 +47,4 @@ export class PlayerTableComponent {
     { id: 'FirstSeen', name: 'First Seen', sort: true, dataType: 'date' },
     { id: 'Tags', dataType: 'tag' },
   ];
-
-  openPlayerDetail(player: PlayerEntity) {
-    this.playerDetails = player;
-    this.playerDetailsShow = true;
-  }
 }

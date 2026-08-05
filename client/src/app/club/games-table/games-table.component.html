@@ -5,7 +5,6 @@
     [canEdit]="canEdit"
     [virtualScroll]="true"
     (edit)="gameEdit.emit($event)"
-    (expand)="openPlayDetail($event)"
     [isRowSpan]="isRowSpan"
     rowSpanBy="year"
     groupRowsBy="EventsName">
@@ -27,8 +26,3 @@
     </ng-template>
   </app-table>
 </div>
-
-<app-play-detail
-  [visible]="playDetailsShow"
-  [game]="playDetails!"
-  (closeDetails)="playDetailsShow = false"></app-play-detail>

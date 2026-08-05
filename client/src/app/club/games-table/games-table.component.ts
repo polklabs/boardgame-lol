@@ -11,7 +11,6 @@ import { InputIconModule } from 'primeng/inputicon';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
-import { PlayDetailComponent } from '../../details/play-detail/play-detail.component';
 
 @Component({
   selector: 'app-games-table',
@@ -25,7 +24,6 @@ import { PlayDetailComponent } from '../../details/play-detail/play-detail.compo
     InputIconModule,
     TableComponent,
     TemplateIdDirective,
-    PlayDetailComponent,
   ],
   templateUrl: './games-table.component.html',
   styleUrl: './games-table.component.scss',
@@ -41,9 +39,6 @@ export class GamesTableComponent implements OnInit {
   games: GameEntity[] = [];
 
   isRowSpan = (r: GameEntity) => r.GameId === '';
-
-  playDetails?: GameEntity;
-  playDetailsShow = false;
 
   columns: Column<GameEntity>[] = [
     { id: 'EventsName', name: 'Event', dataType: 'text' },
@@ -76,11 +71,6 @@ export class GamesTableComponent implements OnInit {
         i++;
       }
     });
-  }
-
-  openPlayDetail(play: GameEntity) {
-    this.playDetails = play;
-    this.playDetailsShow = true;
   }
 
   canAdjustOrder(games: GameEntity[], index: number): boolean {

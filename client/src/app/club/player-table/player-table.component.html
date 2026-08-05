@@ -6,7 +6,6 @@
     [canEdit]="canEdit"
     [virtualScroll]="true"
     (edit)="playerEdit.emit($event)"
-    (expand)="openPlayerDetail($event)"
     dataKey="PlayerId"
     sortBy="WinCount">
     <ng-template templateId="Name" let-player>
@@ -27,5 +26,3 @@
     </ng-template>
   </app-table>
 </div>
-
-<app-player-detail [visible]="playerDetailsShow" [player]="playerDetails!" (closeDetails)="playerDetailsShow = false"></app-player-detail>

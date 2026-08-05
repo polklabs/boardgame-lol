@@ -97,3 +97,16 @@
     <app-filter></app-filter>
   </div>
 </div>
+
+<!-- Details -->
+@switch (detailService.detailView$ | async) {
+  @case ('boardGame') {
+    <app-board-game-detail [boardGame]="detailService.detailBoardGame"></app-board-game-detail>
+  }
+  @case ('game') {
+    <app-play-detail [game]="detailService.detailGame"></app-play-detail>
+  }
+  @case ('player') {
+    <app-player-detail [player]="detailService.detailPlayer"></app-player-detail>
+  }
+}
