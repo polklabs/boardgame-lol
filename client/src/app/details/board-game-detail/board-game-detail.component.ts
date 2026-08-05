@@ -1,12 +1,12 @@
-import { Component, computed, input, output, Signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, input, Signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { StatsTableComponent, StatsTableItem } from '../../shared/components/stats-table/stats-table.component';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { Column } from '../../shared/models/column.model';
-import { BoardGameEntity } from 'libs/index';
-import { WinCount } from '../../club/board-game-table/board-game-table.component';
+import { BoardGameEntity, WinCount } from 'libs/index';
 import { TrophyListComponent } from '../../club/trophy-list/trophy-list.component';
 import { getTagColumns } from '../../shared/helpers/data.helper';
+import { DetailService } from '../../shared/services/detail.service';
 
 @Component({
   selector: 'app-board-game-detail',
@@ -14,11 +14,12 @@ import { getTagColumns } from '../../shared/helpers/data.helper';
   templateUrl: './board-game-detail.component.html',
   styleUrl: './board-game-detail.component.scss',
 })
-export class BoardGameDetailComponent {
+export class BoardGameDetailComponent implements AfterViewInit {
+  detailService = inject(DetailService);
+
   readonly boardGame = input<BoardGameEntity>();
-  readonly winCount = input.required<WinCount[]>();
-  readonly visible = input.required<boolean>();
-  readonly closeDetails = output<void>();
+
+  visible = false;
 
   stats: Signal<StatsTableItem[]> = computed(() => {
     const bg = this.boardGame();
@@ -60,4 +61,10 @@ export class BoardGameDetailComponent {
     { id: 'tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
     ...getTagColumns('DisplayOnPlayers'),
   ];
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.visible = true;
+    }, 50);
+  }
 }

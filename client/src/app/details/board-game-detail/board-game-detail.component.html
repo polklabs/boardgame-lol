@@ -1,7 +1,7 @@
 @if (boardGame(); as bg) {
   <p-dialog
-    [visible]="visible()"
-    (visibleChange)="closeDetails.emit()"
+    [visible]="visible"
+    (visibleChange)="detailService.hideDetail()"
     [modal]="true"
     [style]="{ 'min-width': '300px' }"
     [draggable]="false"
@@ -21,7 +21,7 @@
 
       <app-table
         [columns]="columns"
-        [rows]="winCount()"
+        [rows]="boardGame()?.WinCounts ?? []"
         [canEdit]="false"
         [showExpansion]="false"
         [tiny]="true"></app-table>

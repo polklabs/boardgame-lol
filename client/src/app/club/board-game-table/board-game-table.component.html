@@ -5,7 +5,6 @@
     [canEdit]="canEdit"
     [virtualScroll]="true"
     (edit)="boardGameEdit.emit($event)"
-    (expand)="openBoardGameDetail($event)"
     sortBy="PlayCount"
     [showExpansion]="showExpansion.bind(this)">
     <ng-template templateId="PlayCount" let-boardGame>
@@ -32,9 +31,3 @@
     </ng-template>
   </app-table>
 </div>
-
-<app-board-game-detail
-  [boardGame]="boardGameDetails"
-  [visible]="boardGameDetailsShow"
-  [winCount]="WinCounts[boardGameDetails?.BoardGameId ?? '']"
-  (closeDetails)="boardGameDetailsShow = false"></app-board-game-detail>

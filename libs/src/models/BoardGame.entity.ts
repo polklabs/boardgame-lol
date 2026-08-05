@@ -14,6 +14,20 @@ import { Mode } from '../utils/helper-utils';
 import { TagEntity } from './Tag.entity';
 import { TagBoardGameEntity } from './TagBoardGame.entity';
 import { ForeignKey } from '../decorators/foreign-key.decorator';
+import { PlayerGameEntity } from './PlayerGame.entity';
+
+export type WinCount = {
+  playerId: string;
+  Tags: TagEntity[];
+  name: string;
+  wins: number;
+  nonScoreCount: number;
+  losses: number;
+  plays: number;
+  winPercent: number;
+  totalPoints?: number;
+  boardGame: BoardGameEntity | null | undefined;
+};
 
 export const ScoreTypes = ['points', 'rank', 'win-lose'] as const;
 export type ScoreType = (typeof ScoreTypes)[number];
@@ -135,6 +149,9 @@ export class BoardGameEntity extends BaseEntity {
   AverageWinningScore = 0;
 
   @Ignore()
+  WinCounts: WinCount[] = [];
+
+  @Ignore()
   calculated = false;
 
   constructor(partial: Partial<BoardGameEntity> = {}, copyIgnored = false) {
@@ -171,7 +188,9 @@ export class BoardGameEntity extends BaseEntity {
   calculatePlayers() {
     this.MaxPlayers = Math.max(...this.Games.map((g) => g.PlayerCount), 0);
     this.MinPlayers = Math.min(...this.Games.map((g) => g.PlayerCount), Infinity);
-    this.UniquePlayers = new Set(this.Games.flatMap((g) => g.Scores.flatMap((s) => s.Players.map((p) => p.PlayerId)))).size;
+    this.UniquePlayers = new Set(
+      this.Games.flatMap((g) => g.Scores.flatMap((s) => s.Players.map((p) => p.PlayerId))),
+    ).size;
     if (this.Games.length > 0) {
       this.AveragePlayers = this.Games.reduce((sum, game) => sum + game.PlayerCount, 0) / this.Games.length;
     } else {
@@ -205,5 +224,54 @@ export class BoardGameEntity extends BaseEntity {
       this.AverageScore = -Infinity;
       this.AverageWinningScore = -Infinity;
     }
+  }
+
+  static postCalculate(boardGames: BoardGameEntity[]) {
+    const getPoints = (playerGame: PlayerGameEntity, curr?: number) => {
+      if (playerGame.Game?.BoardGame?.ScoreType === 'points') {
+        return (curr ?? 0) + (playerGame.Points ?? 0);
+      } else {
+        return undefined;
+      }
+    };
+
+    boardGames.forEach((bg) => {
+      bg.WinCounts = [];
+      bg.Games.forEach((g) => {
+        g.Scores.forEach((pg) => {
+          pg.Players.forEach((p) => {
+            const winRow = bg.WinCounts.find((x) => x.playerId === p.PlayerId);
+            const won = pg.Won;
+
+            const played = pg.ScoringPlayer ? 1 : 0;
+            const lost = !won && pg.ScoringPlayer;
+
+            if (winRow) {
+              winRow.wins += won ? 1 : 0;
+              winRow.losses += lost ? 1 : 0;
+              winRow.plays += played;
+              winRow.nonScoreCount += 1 - played;
+              winRow.winPercent = winRow.plays > 0 ? (winRow.wins / winRow.plays) * 100 : 0;
+              winRow.totalPoints = getPoints(pg, winRow.totalPoints);
+            } else {
+              bg.WinCounts.push({
+                playerId: p.PlayerId,
+                name: p.FullName,
+                Tags: p.Tags,
+                wins: won ? 1 : 0,
+                losses: lost ? 1 : 0,
+                plays: played,
+                winPercent: won ? 100 : 0,
+                nonScoreCount: 1 - played,
+                totalPoints: getPoints(pg),
+                boardGame: pg.Game?.BoardGame,
+              });
+            }
+          });
+        });
+      });
+
+      bg.WinCounts.sort((a, b) => b.wins - a.wins || b.winPercent - a.winPercent || a.name.localeCompare(b.name));
+    });
   }
 }
