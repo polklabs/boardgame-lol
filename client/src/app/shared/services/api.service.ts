@@ -79,7 +79,7 @@ export class ApiService {
   unloadClub() {
     this.club = undefined;
     this.entityWrappers.forEach((w) => w.clear());
-    this.filter({});
+    this.filter({}, false);
   }
 
   async fetchPublicClubs() {
@@ -401,11 +401,15 @@ export class ApiService {
     }
   }
 
-  filter(filter: Partial<FilterModel>) {
+  filter(filter: Partial<FilterModel>, triggerUpdate = true) {
     this.filters.assign(filter);
     this.filterEnabled$.next(this.filters.enabled);
     this.updateReferences();
-    this.dataUpdate$.next();
+    if (triggerUpdate) {
+      this.dataUpdate$.next();
+    } else {
+      // continue
+    }
   }
 
   private updateReferences() {
@@ -518,5 +522,6 @@ export class ApiService {
     this.entityWrappers.forEach((w) => w.calculate());
 
     PlayerEntity.postCalculate(this.players.raw);
+    BoardGameEntity.postCalculate(this.boardGames.raw);
   }
 }
