@@ -9,10 +9,11 @@ import { TrophyIconComponent } from '../../shared/components/trophy-icon/trophy-
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
 import { DatePipe } from '@angular/common';
 import { DetailService } from '../../shared/services/detail.service';
+import { DetailLinkComponent } from "../../shared/components/detail-link/detail-link.component";
 
 @Component({
   selector: 'app-play-detail',
-  imports: [DialogModule, StatsTableComponent, TableComponent, TrophyIconComponent, TemplateIdDirective, DatePipe],
+  imports: [DialogModule, StatsTableComponent, TableComponent, TrophyIconComponent, TemplateIdDirective, DatePipe, DetailLinkComponent],
   templateUrl: './play-detail.component.html',
   styleUrl: './play-detail.component.scss',
 })

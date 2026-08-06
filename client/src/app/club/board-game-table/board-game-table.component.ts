@@ -9,11 +9,11 @@ import { TagModule } from 'primeng/tag';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
-import { MapPipe } from '../../shared/pipes/map.pipe';
+import { DetailLinkComponent } from "../../shared/components/detail-link/detail-link.component";
 
 @Component({
   selector: 'app-board-game-table',
-  imports: [TableModule, ButtonModule, TagModule, CommonModule, HidePipe, TableComponent, TemplateIdDirective, MapPipe],
+  imports: [TableModule, ButtonModule, TagModule, CommonModule, HidePipe, TableComponent, TemplateIdDirective, DetailLinkComponent],
   templateUrl: './board-game-table.component.html',
   styleUrl: './board-game-table.component.scss',
 })

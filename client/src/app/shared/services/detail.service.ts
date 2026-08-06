@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BoardGameEntity, GameEntity, PlayerEntity } from 'libs/index';
+import { BoardGameEntity, GameEntity, PlayerEntity, PlayerGameEntity } from 'libs/index';
 import { BehaviorSubject, take } from 'rxjs';
 import { ApiService } from './api.service';
 
@@ -71,6 +71,15 @@ export class DetailService {
     });
   }
 
+  canShowDetail(detailEntity: object) {
+    return (
+      detailEntity instanceof BoardGameEntity ||
+      detailEntity instanceof GameEntity ||
+      detailEntity instanceof PlayerEntity ||
+      (detailEntity instanceof PlayerGameEntity && detailEntity.Players.length === 1)
+    );
+  }
+
   showDetail(detailEntity: object) {
     if (detailEntity instanceof BoardGameEntity) {
       this._detailView$.next('boardGame');
@@ -81,12 +90,17 @@ export class DetailService {
     } else if (detailEntity instanceof PlayerEntity) {
       this._detailView$.next('player');
       this.setParams(detailEntity.PlayerId);
+    } else if (detailEntity instanceof PlayerGameEntity && detailEntity.Players.length === 1) {
+      this._detailView$.next('player');
+      this.setParams(detailEntity.Players[0].PlayerId);
+      detailEntity = detailEntity.Players[0];
     } else {
       this.clearParams();
-      throw new TypeError('Unknown entity', detailEntity);
+      console.warn('Unknown entity', detailEntity);
+      return false;
     }
-    this._detailEntity = detailEntity;
-    console.log(detailEntity)
+    this._detailEntity = detailEntity as EntityOptions;
+    return true;
   }
 
   hideDetail() {

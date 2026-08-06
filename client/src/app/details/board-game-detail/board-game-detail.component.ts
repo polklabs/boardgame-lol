@@ -7,6 +7,7 @@ import { BoardGameEntity, WinCount } from 'libs/index';
 import { TrophyListComponent } from '../../club/trophy-list/trophy-list.component';
 import { getTagColumns } from '../../shared/helpers/data.helper';
 import { DetailService } from '../../shared/services/detail.service';
+import { ApiService } from '../../shared/services/api.service';
 
 @Component({
   selector: 'app-board-game-detail',
@@ -16,6 +17,7 @@ import { DetailService } from '../../shared/services/detail.service';
 })
 export class BoardGameDetailComponent implements AfterViewInit {
   detailService = inject(DetailService);
+  api = inject(ApiService);
 
   readonly boardGame = input<BoardGameEntity>();
 
@@ -66,5 +68,14 @@ export class BoardGameDetailComponent implements AfterViewInit {
     setTimeout(() => {
       this.visible = true;
     }, 50);
+  }
+
+  rowClicked(winCount: WinCount) {
+    const player = this.api.players.getOne(winCount.playerId);
+    if (player) {
+      this.detailService.showDetail(player);
+    } else {
+      // Continue
+    }
   }
 }

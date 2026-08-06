@@ -22,7 +22,8 @@
       }
     </ng-template>
     <ng-template templateId="BestGameWins" let-player>
-      {{ player.BestGameWins | hide | number: '1.0-0' }} - {{ player.BestGames | map: 'Name' }}
+      {{ player.BestGameWins | hide | number: '1.0-0' }} - <app-detail-link [objects]="player.BestGames" keys="Name" [hasLinks]="true"></app-detail-link>
+      
     </ng-template>
   </app-table>
 </div>

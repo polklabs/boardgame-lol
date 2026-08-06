@@ -21,8 +21,8 @@ import { TemplateIdDirective } from '../../directives/template-id.directive';
 import { isEmptyLike } from '../../helpers/data.helper';
 import { ScorePipe } from '../../pipes/score.pipe';
 import { ButtonModule } from 'primeng/button';
-import { MapPipe } from '../../pipes/map.pipe';
 import { DetailService } from '../../services/detail.service';
+import { DetailLinkComponent } from '../detail-link/detail-link.component';
 
 @Component({
   selector: 'app-table',
@@ -35,8 +35,8 @@ import { DetailService } from '../../services/detail.service';
     CommonModule,
     ScorePipe,
     ButtonModule,
-    MapPipe,
     CommonModule,
+    DetailLinkComponent,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -61,8 +61,11 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
   readonly tiny = input(false);
 
   @Input() showExpansion: ((item: T) => boolean) | boolean = true;
+  @Input() canOpenDetail: boolean = false;
+  @Input() canClick: boolean = false;
 
   @Output() edit = new EventEmitter<T>();
+  @Output() rowClicked = new EventEmitter<T>();
 
   cols: Column<T>[] = [];
 
@@ -115,8 +118,12 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
   rowClick(row: T): void {
     if (this.canShowExpansion(row)) {
       this.detailService.showDetail(row);
+    } else if (this.canOpenDetail) {
+      this.detailService.showDetail(row);
+    } else if (this.canClick) {
+      this.rowClicked.emit(row);
     } else {
-      // Nothing
+      // Continue
     }
   }
 
@@ -135,6 +142,10 @@ export class TableComponent<T extends object> implements OnChanges, AfterContent
     } else {
       return this.showExpansion(row);
     }
+  }
+
+  showClickable(row: T) {
+    return this.canShowExpansion(row) || this.canOpenDetail || this.canClick;
   }
 
   rowGroup(row: T, index: number, col: Column<T>): number {

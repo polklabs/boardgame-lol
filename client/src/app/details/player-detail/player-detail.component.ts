@@ -91,4 +91,12 @@ export class PlayerDetailComponent implements AfterViewInit {
       this.visible = true;
     }, 50);
   }
+
+  rowClicked(row: PlayerGameEntity) {
+    if (row.Game) {
+      this.detailService.showDetail(row.Game);
+    } else {
+      // Continue
+    }
+  }
 }

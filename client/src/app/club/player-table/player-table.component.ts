@@ -11,7 +11,7 @@ import { TagModule } from 'primeng/tag';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
 import { TemplateIdDirective } from '../../shared/directives/template-id.directive';
-import { MapPipe } from '../../shared/pipes/map.pipe';
+import { DetailLinkComponent } from '../../shared/components/detail-link/detail-link.component';
 
 @Component({
   selector: 'app-player-table',
@@ -23,7 +23,7 @@ import { MapPipe } from '../../shared/pipes/map.pipe';
     HidePipe,
     TableComponent,
     TemplateIdDirective,
-    MapPipe,
+    DetailLinkComponent
   ],
   templateUrl: './player-table.component.html',
   styleUrl: './player-table.component.scss',

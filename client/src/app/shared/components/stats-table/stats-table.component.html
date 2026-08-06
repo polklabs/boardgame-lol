@@ -30,15 +30,20 @@
             </td>
             <td class="cell-content">
               @if (item.content) {
-                <!-- prettier-ignore -->
                 <span>
-                @for (content of item.content; track content) {
-                  @if (isTag(content)) {
-                    <app-tag [tag]="content"></app-tag>
-                  } @else {
-                    {{ content | map: ['ShortName', 'Name', 'Text'] }}@if (!$last) {, }
+                  @for (content of item.content; track content) {
+                    @if (isTag(content)) {
+                      <app-tag [tag]="content"></app-tag>
+                    } @else {
+                      <app-detail-link
+                        [objects]="[content]"
+                        [keys]="['ShortName', 'Name', 'Text']"
+                        [hasLinks]="true"></app-detail-link>
+                      @if (!$last) {
+                        ,
+                      }
+                    }
                   }
-                }
                 </span>
               }
             </td>

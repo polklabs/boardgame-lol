@@ -42,7 +42,7 @@
         </td>
       </tr>
     } @else {
-      <tr [ngClass]="{ 'row-expansion': expansion }">
+      <tr [ngClass]="{ 'row-expansion': showClickable(row) }">
         @if (showExpansion !== false) {
           <td class="button-cell">
             @if (expansion) {
@@ -82,7 +82,7 @@
                     {{ property(row, column) | hide | number: '1.0-' + (column.decimalPlaces ?? 1) }}
                   }
                   @case ('array') {
-                    {{ property(row, column) | map: column.keys }}
+                    <app-detail-link [objects]="property(row, column)" [keys]="column.keys" [hasLinks]="column.hasLinks"></app-detail-link>
                   }
                   @case ('score') {
                     {{ property(row, column) | score: column.boardGame(row) }}

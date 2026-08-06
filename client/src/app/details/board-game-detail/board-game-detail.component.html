@@ -24,7 +24,9 @@
         [rows]="boardGame()?.WinCounts ?? []"
         [canEdit]="false"
         [showExpansion]="false"
-        [tiny]="true"></app-table>
+        [tiny]="true"
+        [canClick]="true"
+        (rowClicked)="rowClicked($event)"></app-table>
     </div>
   </p-dialog>
 }

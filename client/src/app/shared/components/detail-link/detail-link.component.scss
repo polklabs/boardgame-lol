@@ -1,0 +1,8 @@
+:host ::ng-deep {
+  .detail-link {
+    &:hover {
+      cursor: help;
+      text-decoration: underline;
+    }
+  }
+}

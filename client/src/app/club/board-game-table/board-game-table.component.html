@@ -16,7 +16,8 @@
       }
     </ng-template>
     <ng-template templateId="ChampionWins" let-boardGame>
-      {{ boardGame.ChampionWins | hide | number: '1.0-0' }} - {{ boardGame.Champions | map: 'ShortName' }}
+      {{ boardGame.ChampionWins | hide | number: '1.0-0' }} -
+      <app-detail-link [objects]="boardGame.Champions" keys="ShortName" [hasLinks]="true"></app-detail-link>
     </ng-template>
     <ng-template templateId="MinPlayers" let-boardGame>
       @if (boardGame.PlayCount > 0) {

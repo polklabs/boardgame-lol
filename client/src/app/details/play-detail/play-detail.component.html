@@ -10,14 +10,23 @@
     position="center">
     <ng-template #header>
       <div class="details-header">
-        <span>{{ g.BoardGameName }} - {{ g.DateObj | date: 'MMM d, yyyy' }}</span>
+        <span>
+          <app-detail-link [objects]="[g.BoardGame]" keys="Name" [hasLinks]="true"></app-detail-link>
+          - {{ g.DateObj | date: 'MMM d, yyyy' }}
+        </span>
       </div>
     </ng-template>
 
     <div class="flex-column gap-8">
       <app-stats-table header="Stats" [smallHeader]="true" [items]="stats()" [customHeight]="40"></app-stats-table>
 
-      <app-table [columns]="columns" [rows]="g.Scores" [canEdit]="false" [showExpansion]="false" [tiny]="true">
+      <app-table
+        [columns]="columns"
+        [rows]="g.Scores"
+        [canEdit]="false"
+        [showExpansion]="false"
+        [tiny]="true"
+        [canOpenDetail]="true">
         <ng-template templateId="DisplayNameFull" let-row>
           <div class="flex-nowrap gap-8">
             <app-trophy-icon [score]="row"></app-trophy-icon>

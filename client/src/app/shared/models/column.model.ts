@@ -30,6 +30,7 @@ interface ITagColumn<T> extends IColumnBase<T, TagEntity[]> {
 interface IArrayColumn<T> extends IColumnBase<T, unknown[]> {
   dataType: 'array';
   keys: string | string[];
+  hasLinks: boolean;
 }
 
 interface IDateColumn<T> extends IColumnBase<T, string | number | Date> {
