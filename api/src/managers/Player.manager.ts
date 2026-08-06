@@ -16,7 +16,7 @@ export class PlayerManager extends BaseManager<PlayerEntity> {
     super(PlayerEntity);
   }
 
-  put(userId: string, entity: PlayerEntity, resetID = true, transact = false): PlayerReturn {
+  put(userId: string, entity: PlayerEntity, resetID = true): PlayerReturn {
     const tags = entity.Tags;
     entity = this.new(entity);
     if (resetID) {
@@ -24,6 +24,8 @@ export class PlayerManager extends BaseManager<PlayerEntity> {
     } else {
       // Continue
     }
+
+    this.clubUserManager.hasAccess(userId, entity.ClubId);
 
     this.SanitizeInputs(entity);
 
@@ -35,16 +37,11 @@ export class PlayerManager extends BaseManager<PlayerEntity> {
 
     this.CheckForeignKeys(entity);
 
-    if (transact) {
-      return this.runInsert(userId, entity, true, transactions);
-    } else {
-      this.clubUserManager.hasAccess(userId, entity.ClubId);
-      this.runInsert(userId, entity, false, transactions);
-      return {
-        Player: this.loadOne(entity.PlayerId)!,
-        TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', entity.ClubId, 'PlayerId', entity.PlayerId),
-      };
-    }
+    this.runInsert(userId, entity, false, transactions);
+    return {
+      Player: this.loadOne(entity.PlayerId)!,
+      TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', entity.ClubId, 'PlayerId', entity.PlayerId),
+    };
   }
 
   patch(userId: string, entity: PlayerEntity): PlayerReturn {

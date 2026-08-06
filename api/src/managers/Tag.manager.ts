@@ -95,7 +95,7 @@ export class TagManager extends BaseManager<TagEntity> {
     }
   }
 
-  put(userId: string, entity: TagEntity, resetID = true, transact = false) {
+  put(userId: string, entity: TagEntity, resetID = true) {
     entity = this.new(entity);
     if (resetID) {
       entity.TagId = newGuid();
@@ -103,22 +103,21 @@ export class TagManager extends BaseManager<TagEntity> {
       // Continue
     }
 
+    this.clubUserManager.hasAccess(userId, entity.ClubId);
+
     this.SanitizeInputs(entity);
     this.Validate(entity);
 
     this.CheckForeignKeys(entity);
 
-    if (transact) {
-      return this.runInsert(userId, entity, true);
-    } else {
-      this.clubUserManager.hasAccess(userId, entity.ClubId);
-      this.runInsert(userId, entity, false);
-      return this.loadOne(entity.TagId);
-    }
+    this.runInsert(userId, entity, false);
+    return this.loadOne(entity.TagId);
   }
 
   patch(userId: string, entity: TagEntity) {
     entity = this.new(entity);
+
+    this.clubUserManager.hasAccess(userId, entity.ClubId);
 
     this.SanitizeInputs(entity);
     this.Validate(entity);

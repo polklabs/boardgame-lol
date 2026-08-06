@@ -16,7 +16,7 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
     super(BoardGameEntity);
   }
 
-  put(userId: string, entity: BoardGameEntity, resetID = true, transact = false): BoardGameReturn {
+  put(userId: string, entity: BoardGameEntity, resetID = true): BoardGameReturn {
     const tags = entity.Tags;
     entity = this.new(entity);
     if (resetID) {
@@ -24,6 +24,8 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
     } else {
       // Continue
     }
+
+    this.clubUserManager.hasAccess(userId, entity.ClubId);
 
     this.SanitizeInputs(entity);
 
@@ -35,21 +37,12 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
 
     this.CheckForeignKeys(entity);
 
-    if (transact) {
-      return this.runInsert(userId, entity, true, transactions);
-    } else {
-      this.clubUserManager.hasAccess(userId, entity.ClubId);
-      this.runInsert(userId, entity, false, transactions);
-      return {
-        BoardGame: this.loadOne(entity.BoardGameId)!,
-        TagBoardGames: this.tagManager.tagBoardGame.loadMany(
-          'ClubId',
-          entity.ClubId,
-          'BoardGameId',
-          entity.BoardGameId,
-        ),
-      };
-    }
+    this.clubUserManager.hasAccess(userId, entity.ClubId);
+    this.runInsert(userId, entity, false, transactions);
+    return {
+      BoardGame: this.loadOne(entity.BoardGameId)!,
+      TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', entity.ClubId, 'BoardGameId', entity.BoardGameId),
+    };
   }
 
   patch(userId: string, entity: BoardGameEntity): BoardGameReturn {

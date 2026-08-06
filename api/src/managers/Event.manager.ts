@@ -14,13 +14,15 @@ export class EventManager extends BaseManager<EventEntity> {
     super(EventEntity);
   }
 
-  put(userId: string, entity: EventEntity, resetID = true, transact = false): EventEntity {
+  put(userId: string, entity: EventEntity, resetID = true): EventEntity {
     entity = this.new(entity);
     if (resetID) {
       entity.EventId = newGuid();
     } else {
       // Continue
     }
+
+    this.clubUserManager.hasAccess(userId, entity.ClubId);
 
     this.SanitizeInputs(entity);
 
@@ -30,13 +32,8 @@ export class EventManager extends BaseManager<EventEntity> {
 
     this.CheckForeignKeys(entity);
 
-    if (transact) {
-      return this.runInsert(userId, entity, true, transactions);
-    } else {
-      this.clubUserManager.hasAccess(userId, entity.ClubId);
-      this.runInsert(userId, entity, false, transactions);
-      return this.loadOne(entity.EventId)!;
-    }
+    this.runInsert(userId, entity, false, transactions);
+    return this.loadOne(entity.EventId)!;
   }
 
   patch(userId: string, entity: EventEntity): EventEntity {
