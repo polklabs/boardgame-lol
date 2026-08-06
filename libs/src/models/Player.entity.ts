@@ -74,6 +74,12 @@ export class PlayerEntity extends BaseEntity {
   BestGameWins: number = 0;
 
   @Ignore()
+  WorstGames: BoardGameEntity[] = [];
+
+  @Ignore()
+  WorstGameWins: number = 0;
+
+  @Ignore()
   FirstSeen?: Date | string;
 
   @Ignore()
@@ -103,7 +109,7 @@ export class PlayerEntity extends BaseEntity {
   calculate() {
     this.calculateWins();
     this.calculateBestGames();
-    this.calculateBestGameWins();
+    this.calculateWorstGames();
     this.calculateSeen();
     this.calculateTotalPoints();
     this.calculated = true;
@@ -122,15 +128,27 @@ export class PlayerEntity extends BaseEntity {
       this.Wins.filter((x) => x.Game).map((x) => x.Game!.BoardGame!),
       (x) => x.BoardGameId,
     ).filter(Boolean);
-  }
-
-  calculateBestGameWins() {
     if (this.BestGames.length > 0) {
       this.BestGameWins = this.Wins.reduce((count, win) => {
         return win.Game?.BoardGameId === this.BestGames[0].BoardGameId ? count + 1 : count;
       }, 0);
     } else {
       this.BestGameWins = 0;
+    }
+  }
+
+  calculateWorstGames() {
+    const lostGames = this.PlayerGames.filter((x) => x.Game && x.ScoringPlayer && !x.Won);
+    this.WorstGames = Mode(
+      lostGames.map((x) => x.Game!.BoardGame!),
+      (x) => x.BoardGameId,
+    ).filter(Boolean);
+    if (this.WorstGames.length > 0) {
+      this.WorstGameWins = lostGames.reduce((count, loss) => {
+        return loss.Game?.BoardGameId === this.WorstGames[0].BoardGameId ? count + 1 : count;
+      }, 0);
+    } else {
+      this.WorstGameWins = 0;
     }
   }
 

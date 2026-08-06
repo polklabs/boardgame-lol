@@ -57,6 +57,11 @@ export class PlayerDetailComponent implements AfterViewInit {
           content: p.BestGames,
         },
         {
+          title: 'Worst Game(s)',
+          value: p.WorstGameWins,
+          content: p.WorstGames,
+        },
+        {
           title: 'First Seen',
           content: [format(p.FirstSeen ?? 0, 'yyyy/M/d')],
         },
