@@ -15,7 +15,7 @@ export class PlayerGamePlayerManager extends BaseManager<PlayerGamePlayerEntity>
 
     this.SanitizeInputs(entity);
 
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
@@ -27,7 +27,7 @@ export class PlayerGamePlayerManager extends BaseManager<PlayerGamePlayerEntity>
 
     this.SanitizeInputs(entity);
 
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
@@ -38,8 +38,8 @@ export class PlayerGamePlayerManager extends BaseManager<PlayerGamePlayerEntity>
     return this.runDelete([gameId, playerGameId, playerId], secondaryId, true);
   }
 
-  public Validate(entity: PlayerGamePlayerEntity): string[] {
-    const errors = super.Validate(entity);
+  public Validate(userId: string, entity: PlayerGamePlayerEntity): string[] {
+    const errors = super.Validate(userId, entity);
 
     if (errors.length > 0) {
       throw new ValidationError(errors);

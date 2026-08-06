@@ -76,7 +76,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     }
 
     this.SanitizeInputs(entity);
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.hasAdminAccess(userId, entity.ClubUserId);
 

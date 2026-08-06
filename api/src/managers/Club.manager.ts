@@ -49,7 +49,7 @@ export class ClubManager extends BaseManager<ClubEntity> {
     entity.ClubId = newGuid();
 
     this.SanitizeInputs(entity);
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     const transactions: unknown[] = [];
 
@@ -74,7 +74,7 @@ export class ClubManager extends BaseManager<ClubEntity> {
     this.clubUserManager.hasAccess(userId, entity.ClubId);
 
     this.SanitizeInputs(entity);
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.runUpdate(userId, entity);
 
@@ -87,8 +87,8 @@ export class ClubManager extends BaseManager<ClubEntity> {
     this.runDelete(primaryId, undefined);
   }
 
-  public Validate(entity: ClubEntity): string[] {
-    const errors = super.Validate(entity);
+  public Validate(userId: string, entity: ClubEntity): string[] {
+    const errors = super.Validate(userId, entity);
 
     // Other validation checks
 

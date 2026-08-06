@@ -41,7 +41,7 @@ export class GameManager extends BaseManager<GameEntity> {
 
     const transactions: unknown[] = [];
 
-    this.Validate(entity, playerGames);
+    this.Validate(userId, entity, playerGames);
     this.CheckForeignKeys(entity);
 
     transactions.push(this.runInsert(userId, entity, true));
@@ -143,7 +143,7 @@ export class GameManager extends BaseManager<GameEntity> {
       }
     });
 
-    this.Validate(entity, playerGames);
+    this.Validate(userId, entity, playerGames);
     this.CheckForeignKeys(entity);
 
     this.runUpdate(userId, entity, false, transactions);
@@ -199,8 +199,8 @@ export class GameManager extends BaseManager<GameEntity> {
     return this.runDelete(primaryId, secondaryId, false);
   }
 
-  public Validate(entity: GameEntity, playerGames: PlayerGameEntity[]): string[] {
-    const errors = super.Validate(entity);
+  public Validate(userId: string, entity: GameEntity, playerGames: PlayerGameEntity[]): string[] {
+    const errors = super.Validate(userId, entity);
 
     // Other validation checks
     const tieBreakerCount = playerGames.reduce((prev, curr) => prev + (curr.TieBreaker ? 1 : 0), 0);

@@ -28,7 +28,7 @@ export class EventManager extends BaseManager<EventEntity> {
 
     const transactions: unknown[] = [];
 
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
@@ -45,7 +45,7 @@ export class EventManager extends BaseManager<EventEntity> {
 
     const transactions: unknown[] = [];
 
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
@@ -59,8 +59,8 @@ export class EventManager extends BaseManager<EventEntity> {
     this.runDelete(primaryId, secondaryId);
   }
 
-  public Validate(entity: EventEntity): string[] {
-    const errors = super.Validate(entity);
+  public Validate(userId: string, entity: EventEntity): string[] {
+    const errors = super.Validate(userId, entity);
 
     if (errors.length > 0) {
       throw new ValidationError(errors);

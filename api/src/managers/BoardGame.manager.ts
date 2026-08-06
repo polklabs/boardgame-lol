@@ -33,7 +33,7 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
 
     this.tagManager.upsert('boardGame', userId, entity.ClubId!, tags, entity.BoardGameId!, transactions);
 
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
@@ -57,7 +57,7 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
 
     this.tagManager.upsert('boardGame', userId, entity.ClubId!, tags, entity.BoardGameId!, transactions);
 
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
@@ -74,8 +74,8 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
     this.runDelete(primaryId, secondaryId);
   }
 
-  public Validate(entity: BoardGameEntity): string[] {
-    const errors = super.Validate(entity);
+  public Validate(userId: string, entity: BoardGameEntity): string[] {
+    const errors = super.Validate(userId, entity);
 
     if (errors.length > 0) {
       throw new ValidationError(errors);

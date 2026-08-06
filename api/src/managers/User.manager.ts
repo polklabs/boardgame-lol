@@ -13,8 +13,8 @@ export class UserManager extends BaseManager<UserEntity> {
     super(UserEntity);
   }
 
-  public Validate(entity: UserEntity): string[] {
-    const errors = super.Validate(entity);
+  public Validate(userId: string, entity: UserEntity): string[] {
+    const errors = super.Validate(userId, entity);
 
     // Only allow [a-z, A-Z, 0-9, -, _] in username
     if (usernameRegex.test(entity.Username) === false) {
@@ -81,7 +81,7 @@ export class UserManager extends BaseManager<UserEntity> {
     entity = this.new(entity);
     entity.UserId = newGuid();
 
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.runInsert(userId, entity);
   }
