@@ -15,8 +15,8 @@ import { Throttle } from '@nestjs/throttler';
 import { AuthGuard } from './auth.guard';
 import { ThrottlerBehindProxyGuard } from 'src/guards/throttler-behind-proxy.guard';
 import { UserManager } from 'src/managers/User.manager';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { ClubUserManager } from 'src/managers/ClubUser.manager';
 import { ValidationError } from 'src/errors/validation.error';
 import { AuthorizationError } from 'src/errors/authorization.error';
@@ -153,26 +153,6 @@ export class AuthController {
         const file = readFileSync('/app/data/1000_common_passwords.json', 'utf8');
         return file;
       }
-    } catch (e) {
-      this.handleErrors(e);
-    }
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('club_access')
-  getClubAccess(@Request() req: any) {
-    try {
-      return this.clubManager.loadManyWithName(this.getUserId(req));
-    } catch (e) {
-      this.handleErrors(e);
-    }
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('club_access_admin')
-  getClubAccessAdmin(@Request() req: any) {
-    try {
-      return this.clubUserManager.loadManyWithAdmin(this.getUserId(req)).map((x) => x.ClubId);
     } catch (e) {
       this.handleErrors(e);
     }

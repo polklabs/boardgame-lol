@@ -59,7 +59,7 @@
     </div>
     <ng-template #footer>
       <div>
-        @if (club && (adminIds | async)?.includes(club.ClubId)) {
+        @if (club.Admin) {
           <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
         }
       </div>

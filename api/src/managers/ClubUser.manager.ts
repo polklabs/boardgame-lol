@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { isGuid, newGuid } from 'libs/utils/guid-utils';
 import { ValidationError } from 'src/errors/validation.error';
 import { AuthorizationError } from 'src/errors/authorization.error';
-import { ClubUserEntity, TP } from 'libs/index';
+import { ClubUserEntity, TP, UserEntity } from 'libs/index';
 
 @Injectable()
 export class ClubUserManager extends BaseManager<ClubUserEntity> {
@@ -52,13 +52,17 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     }
   }
 
-  loadManyWithAdmin(userId: string) {
-    return this.db.AllRaw<{ ClubId: string }>(
-      `SELECT ${TP(ClubUserEntity, 'ClubId')}
-        FROM ${TP(ClubUserEntity)}
-        WHERE ${TP(ClubUserEntity, 'UserId')} = ? AND ${TP(ClubUserEntity, 'Admin')} = ?`,
-      [userId, '1'],
-    );
+  loadManyWithUsername(clubId: string) {
+    return this.db
+      .AllRaw<ClubUserEntity>(
+        `SELECT ${TP(ClubUserEntity, '*')},
+            ${TP(UserEntity, 'Username')} as usernameEmail
+          FROM ${TP(ClubUserEntity)}
+          INNER JOIN ${TP(UserEntity)} ON ${TP(UserEntity, 'UserId')} = ${TP(ClubUserEntity, 'UserId')}
+          WHERE ${TP(ClubUserEntity, 'ClubId')} = ?`,
+        [clubId],
+      )
+      .map((x) => new ClubUserEntity(x));
   }
 
   put(userId: string, entity: ClubUserEntity) {

@@ -29,6 +29,8 @@ import { BoardGameEntity, ClubEntity, PlayerEntity, TagEntity, ClubReturn, GameE
 import { TagManager } from './managers/Tag.manager';
 import { PlayerGamePlayerManager } from './managers/PlayerGamePlayer.manager';
 import { EventManager } from './managers/Event.manager';
+import { AuthCheckGuard } from './auth/auth-check.guard';
+import { ClubUserManager } from './managers/ClubUser.manager';
 
 const publicThrottle = { default: { limit: 200, ttl: 600000 } };
 const authThrottle = { default: { limit: 30, ttl: 30000 } };
@@ -38,6 +40,7 @@ const authThrottle = { default: { limit: 30, ttl: 30000 } };
 export class AppController {
   constructor(
     private clubManager: ClubManager,
+    private clubUserManager: ClubUserManager,
     private gameManager: GameManager,
     private boardGameManager: BoardGameManager,
     private playerGameManager: PlayerGameManager,
@@ -52,6 +55,14 @@ export class AppController {
       return request['user'].userId;
     } else {
       throw new UnauthorizedException();
+    }
+  }
+
+  tryGetUserId(request: any) {
+    try {
+      return this.getUserId(request);
+    } catch {
+      return undefined;
     }
   }
 
@@ -70,32 +81,36 @@ export class AppController {
   /// Club
   /// --------------------------------------------------------------------------------
   @Throttle(publicThrottle)
+  @UseGuards(AuthCheckGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('clubs')
-  getPublicClubs() {
-    return this.clubManager.loadManyWithName();
+  getPublicClubs(@Request() req: any) {
+    return this.clubManager.loadManyWithAuth(this.tryGetUserId(req));
   }
 
   @Throttle(publicThrottle)
+  @UseGuards(AuthCheckGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('club/:clubId')
-  getClub(@Param() params: { clubId: string }): ClubReturn {
+  getClub(@Request() req: any, @Param() params: { clubId: string }): ClubReturn {
     const clubId = params.clubId;
-    const Club = this.clubManager.loadOne(clubId);
+    const userId = this.tryGetUserId(req);
+    const Club = this.clubManager.loadOneWithAuth(clubId, userId);
     if (Club) {
       return {
         Club,
-        Games: this.gameManager.loadMany('ClubId', clubId),
-        PlayerGamePlayers: this.playerGamePlayerManager.loadMany('ClubId', clubId),
-        PlayerGames: this.playerGameManager.loadMany('ClubId', clubId),
-        BoardGames: this.boardGameManager.loadMany('ClubId', clubId),
-        Players: this.playerManager.loadMany('ClubId', clubId),
-        Tags: this.tagManager.loadMany('ClubId', clubId),
-        TagBoardGames: this.tagManager.tagBoardGame.loadMany('ClubId', clubId),
-        TagGames: this.tagManager.tagGame.loadMany('ClubId', clubId),
-        TagPlayers: this.tagManager.tagPlayer.loadMany('ClubId', clubId),
-        TagPlayerGames: this.tagManager.tagPlayerGame.loadMany('ClubId', clubId),
-        Events: this.eventManager.loadMany('ClubId', clubId),
+        ClubUsers: Club.CanEdit ? this.clubUserManager.loadManyWithUsername(clubId) : [],
+        Games: this.gameManager.loadMany(ClubEntity, clubId),
+        PlayerGamePlayers: this.playerGamePlayerManager.loadMany(ClubEntity, clubId),
+        PlayerGames: this.playerGameManager.loadMany(ClubEntity, clubId),
+        BoardGames: this.boardGameManager.loadMany(ClubEntity, clubId),
+        Players: this.playerManager.loadMany(ClubEntity, clubId),
+        Tags: this.tagManager.loadMany(ClubEntity, clubId),
+        TagBoardGames: this.tagManager.tagBoardGame.loadMany(ClubEntity, clubId),
+        TagGames: this.tagManager.tagGame.loadMany(ClubEntity, clubId),
+        TagPlayers: this.tagManager.tagPlayer.loadMany(ClubEntity, clubId),
+        TagPlayerGames: this.tagManager.tagPlayerGame.loadMany(ClubEntity, clubId),
+        Events: this.eventManager.loadMany(ClubEntity, clubId),
       };
     } else {
       throw new NotFoundException();

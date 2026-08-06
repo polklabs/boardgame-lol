@@ -15,6 +15,7 @@ import {
   TagEntity,
   ClubReturn,
   EventEntity,
+  ClubUserEntity,
 } from 'libs/index';
 import { TagGameEntity } from 'libs/models/TagGame.entity';
 import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
@@ -31,6 +32,7 @@ export class ApiService {
   private httpService = inject(HttpService);
 
   readonly clubs = new EntityWrapper(ClubEntity).setAutoClear(false);
+  readonly clubUsers = new EntityWrapper(ClubUserEntity);
   readonly boardGames = new EntityWrapper(BoardGameEntity);
   readonly playerGames = new EntityWrapper(PlayerGameEntity);
   readonly playerGamePlayers = new EntityWrapper(PlayerGamePlayerEntity);
@@ -45,6 +47,7 @@ export class ApiService {
 
   private entityWrappers = [
     this.clubs,
+    this.clubUsers,
     this.games,
     this.boardGames,
     this.playerGames,
@@ -82,7 +85,7 @@ export class ApiService {
     this.filter({}, false);
   }
 
-  async fetchPublicClubs() {
+  async fetchClubs() {
     const data = await this.httpService.get<ClubEntity[]>(['api', 'clubs']);
 
     if (data) {
@@ -115,6 +118,7 @@ export class ApiService {
     }
 
     this.club = data.Club;
+    this.clubUsers.overwriteAll(data.ClubUsers);
     this.boardGames.overwriteAll(data.BoardGames);
     this.games.overwriteAll(data.Games);
     this.playerGames.overwriteAll(data.PlayerGames);
@@ -139,7 +143,6 @@ export class ApiService {
     }
 
     if (result) {
-      this.unloadClub();
       this.club = result;
       this.clubs.upsert(result);
       this.updateReferences();
@@ -440,6 +443,12 @@ export class ApiService {
     }
 
     // Assign Internal References ----------------------------------
+
+    if (this.club) {
+      this.club.Users = this.clubUsers.list;
+    } else {
+      // Continue
+    }
 
     this.tagBoardGames.list.forEach((t) => {
       t.Tag = this.tags.getOne(t.TagId);

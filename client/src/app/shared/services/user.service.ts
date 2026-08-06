@@ -2,19 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { tokenGetter, tokenSetter } from '../../app.config';
 import { BehaviorSubject } from 'rxjs';
-import { ClubEntity, JwtModel } from 'libs/index';
-import { HttpService } from './http.service';
+import { JwtModel } from 'libs/index';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   private jwtHelper = inject(JwtHelperService);
-  private httpService = inject(HttpService);
+  private api = inject(ApiService);
 
   loggedIn$ = new BehaviorSubject<boolean>(false);
-  accessIds$ = new BehaviorSubject<ClubEntity[]>([]);
-  adminIds$ = new BehaviorSubject<string[]>([]);
 
   private jwt: JwtModel | null = null;
 
@@ -40,7 +38,6 @@ export class UserService {
     if (isLoggedIn) {
       this.jwt = this.jwtHelper.decodeToken(tokenGetter());
       void this.loadClubAccess();
-      void this.loadClubAdminAccess();
     } else {
       // Do nothing
     }
@@ -50,7 +47,7 @@ export class UserService {
     tokenSetter('');
     this.loggedIn$.next(false);
     this.jwt = null;
-    this.accessIds$.next([]);
+    void this.loadClubAccess();
   }
 
   login(token: string) {
@@ -58,7 +55,6 @@ export class UserService {
     this.loggedIn$.next(true);
     this.jwt = this.jwtHelper.decodeToken(tokenGetter());
     void this.loadClubAccess();
-    void this.loadClubAdminAccess();
   }
 
   isLoggedIn(): boolean {
@@ -66,14 +62,13 @@ export class UserService {
   }
 
   async loadClubAccess() {
-    let data = (await this.httpService.get<ClubEntity[]>(['auth', 'club_access'])) ?? [];
-    data = data.map((x) => new ClubEntity(x));
-    data.forEach((x) => x.calculate());
-    data.sort((a, b) => a.Name.localeCompare(b.Name));
-    this.accessIds$.next(data);
-  }
-
-  async loadClubAdminAccess() {
-    this.adminIds$.next((await this.httpService.get(['auth', 'club_access_admin'])) ?? []);
+    const clubId = this.api.clubId;
+    if (clubId) {
+      this.api.unloadClub();
+      this.api.fetchClub(clubId);
+    } else {
+      // Continue
+    }
+    this.api.fetchClubs();
   }
 }

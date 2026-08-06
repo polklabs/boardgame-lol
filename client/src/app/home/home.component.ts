@@ -3,8 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ApiService } from '../shared/services/api.service';
 import { Router, RouterModule } from '@angular/router';
 import { MenuBarComponent } from '../menu-bar/menu-bar.component';
-import { UserService } from '../shared/services/user.service';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { ClubEntity } from 'libs/index';
 import { EditorClubComponent } from '../editors/editor-club/editor-club.component';
 import { ClubTitleComponent } from '../shared/components/club-title/club-title.component';
@@ -19,7 +18,6 @@ import { StatsTableComponent } from '../shared/components/stats-table/stats-tabl
 export class HomeComponent implements OnInit {
   private router = inject(Router);
   private apiService = inject(ApiService);
-  private userService = inject(UserService);
 
   clubList$: Observable<ClubEntity[]> = of([]);
   publicClubList$: Observable<ClubEntity[]> = of([]);
@@ -28,14 +26,14 @@ export class HomeComponent implements OnInit {
   editClub?: ClubEntity;
 
   ngOnInit() {
-    this.clubList$ = this.userService.accessIds$;
-    this.publicClubList$ = this.apiService.clubs.list$;
+    this.clubList$ = this.apiService.clubs.list$.pipe(map((x) => x.filter((c) => c.CanEdit)));
+    this.publicClubList$ = this.apiService.clubs.list$.pipe(map((x) => x.filter((c) => c.Public)));
     void this.loadData();
   }
 
   async loadData() {
     this.apiService.unloadClub();
-    await this.apiService.fetchPublicClubs();
+    await this.apiService.fetchClubs();
   }
 
   async navigateToClub(clubId: string | null) {

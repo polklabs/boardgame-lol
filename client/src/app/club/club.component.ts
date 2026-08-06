@@ -22,8 +22,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { EditorEventComponent } from '../editors/editor-event/editor-event.component';
 import { BoardGameDetailComponent } from '../details/board-game-detail/board-game-detail.component';
 import { DetailService } from '../shared/services/detail.service';
-import { PlayDetailComponent } from "../details/play-detail/play-detail.component";
-import { PlayerDetailComponent } from "../details/player-detail/player-detail.component";
+import { PlayDetailComponent } from '../details/play-detail/play-detail.component';
+import { PlayerDetailComponent } from '../details/player-detail/player-detail.component';
 
 @Component({
   selector: 'app-club',
@@ -46,8 +46,8 @@ import { PlayerDetailComponent } from "../details/player-detail/player-detail.co
     ProgressSpinnerModule,
     BoardGameDetailComponent,
     PlayDetailComponent,
-    PlayerDetailComponent
-],
+    PlayerDetailComponent,
+  ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })
@@ -95,12 +95,10 @@ export class ClubComponent implements OnInit, OnDestroy {
     this.activeTab = this.route.snapshot.fragment ?? 'overview';
 
     this.subscriptions.add(
-      combineLatest([this.apiService.club$, this.userService.accessIds$, this.apiService.filterEnabled$]).subscribe(
-        ([club, access, filter]) => {
-          this.club = club;
-          this.canEdit = access.some((x) => x.ClubId === club?.ClubId) && !filter;
-        },
-      ),
+      combineLatest([this.apiService.club$, this.apiService.filterEnabled$]).subscribe(([club, filter]) => {
+        this.club = club;
+        this.canEdit = (club?.CanEdit ?? false) && !filter;
+      }),
     );
 
     this.games$ = this.apiService.games.list$;

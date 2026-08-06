@@ -93,11 +93,8 @@ export class EditorClubComponent implements OnChanges {
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
-  adminIds: Observable<string[]> = of([]);
-
-  constructor() {
-    this.adminIds = this.userService.adminIds$;
-  }
+  userId = this.userService.userId;
+  users: ClubUserEntity[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('club' in changes) {
