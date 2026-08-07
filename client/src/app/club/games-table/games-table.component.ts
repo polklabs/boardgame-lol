@@ -38,7 +38,7 @@ export class GamesTableComponent implements OnInit {
 
   games: GameEntity[] = [];
 
-  isRowSpan = (r: GameEntity) => r.GameId === '';
+  isRowSpan = (r?: GameEntity) => (r ? r.GameId === '' : false);
 
   columns: Column<GameEntity>[] = [
     { id: 'EventsName', name: 'Event', dataType: 'text' },
@@ -74,14 +74,14 @@ export class GamesTableComponent implements OnInit {
   }
 
   canAdjustOrder(games: GameEntity[], index: number): boolean {
-    return games.at(index - 1)?.Date === games[index].Date || games.at(index + 1)?.Date === games[index].Date;
+    return this.canAdjustDown(games, index) || this.canAdjustUp(games, index);
   }
 
   canAdjustDown(games: GameEntity[], index: number): boolean {
-    return games.at(index + 1)?.Date === games[index].Date;
+    return games.at(index + 1)?.Date === games[index].Date && !this.isRowSpan(games.at(index + 1));
   }
 
   canAdjustUp(games: GameEntity[], index: number): boolean {
-    return games.at(index - 1)?.Date === games[index].Date;
+    return games.at(index - 1)?.Date === games[index].Date && !this.isRowSpan(games.at(index - 1));
   }
 }
