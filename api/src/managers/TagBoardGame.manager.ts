@@ -14,7 +14,7 @@ export class TagBoardGameManager extends BaseManager<TagBoardGameEntity> {
     entity = this.new(entity);
 
     this.SanitizeInputs(entity);
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
@@ -25,7 +25,7 @@ export class TagBoardGameManager extends BaseManager<TagBoardGameEntity> {
     entity = this.new(entity);
 
     this.SanitizeInputs(entity);
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
@@ -36,8 +36,8 @@ export class TagBoardGameManager extends BaseManager<TagBoardGameEntity> {
     return this.runDelete([tagId, boardGameId], secondaryId, true);
   }
 
-  public Validate(entity: TagBoardGameEntity): string[] {
-    const errors = super.Validate(entity);
+  public Validate(userId: string, entity: TagBoardGameEntity): string[] {
+    const errors = super.Validate(userId, entity);
 
     if (errors.length > 0) {
       throw new ValidationError(errors);

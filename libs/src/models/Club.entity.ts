@@ -19,9 +19,11 @@ import { Ignore } from '../decorators/ignore.decorator';
 import { Pattern } from '../decorators/pattern.decorator';
 import { getAccessibleBackground } from '../utils/color-utils';
 import { EventEntity } from './Event.entity';
+import { ClubUserEntity } from './ClubUser.entity';
 
 export type ClubReturn = {
   Club: ClubEntity;
+  ClubUsers: ClubUserEntity[];
   Games: GameEntity[];
   PlayerGames: PlayerGameEntity[];
   PlayerGamePlayers: PlayerGamePlayerEntity[];
@@ -33,6 +35,11 @@ export type ClubReturn = {
   TagPlayers: TagPlayerEntity[];
   TagPlayerGames: TagPlayerGameEntity[];
   Events: EventEntity[];
+};
+
+export type ClubEditReturn = {
+  Club: ClubEntity;
+  ClubUsers: ClubUserEntity[];
 };
 
 @TableName('Club')
@@ -71,6 +78,15 @@ export class ClubEntity extends BaseEntity {
 
   @Ignore()
   BoardGameCount: number = 0;
+
+  @Ignore()
+  Users: ClubUserEntity[] = [];
+
+  @Ignore()
+  Admin = false;
+
+  @Ignore()
+  CanEdit = false;
 
   @Ignore()
   calculated = false;

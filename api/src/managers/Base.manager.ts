@@ -235,7 +235,7 @@ export abstract class BaseManager<T extends BaseEntity> {
       this.tableName,
       this.primaryKeys.map(String),
       primaryIds,
-      String(this.secondaryKey),
+      this.secondaryKey ? String(this.secondaryKey) : undefined,
       secondaryId,
       transaction,
       transactions,
@@ -309,7 +309,7 @@ export abstract class BaseManager<T extends BaseEntity> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Validate(entity: T, _extra: unknown[] = []): string[] {
+  Validate(userId: string, entity: T, _extra: unknown[] = []): string[] {
     const errors: string[] = [];
 
     const keys = Object.keys(entity) as (keyof T)[];

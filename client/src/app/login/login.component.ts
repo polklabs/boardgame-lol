@@ -125,7 +125,7 @@ export class LoginComponent implements OnInit {
       delay(500),
       switchMap((username) => {
         this.usernameIcon = 'pi pi-spin pi-spinner';
-        return from(this.httpService.get<boolean>(['aut', 'username_check', username], false)).pipe(
+        return from(this.httpService.get<boolean>(['auth', 'username_check', username], false)).pipe(
           map((isAvail) => {
             this.usernameIcon = isAvail ? 'pi pi-check' : 'pi pi-times';
             return isAvail ? null : { unavailable: true };

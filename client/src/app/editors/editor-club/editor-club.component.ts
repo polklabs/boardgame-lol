@@ -13,19 +13,21 @@ import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ClubEntity, getAccessibleBackground } from 'libs/index';
+import { ClubEntity, ClubUserEntity, getAccessibleBackground } from 'libs/index';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { buildForm } from '../../shared/form.utils';
-import { UserService } from '../../shared/services/user.service';
-import { Observable, of } from 'rxjs';
 import { TextareaComponent } from '../../shared/components/form-components/textarea/textarea.component';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
 import { ClubTitleComponent } from '../../shared/components/club-title/club-title.component';
 import { HideDirective } from '../../shared/directives/hide.directive';
+import { UserService } from '../../shared/services/user.service';
+import { TableModule } from 'primeng/table';
+import { InputTextModule } from 'primeng/inputtext';
+import { CheckboxModule } from 'primeng/checkbox';
 
 type EntityType = ClubEntity;
 
@@ -44,6 +46,9 @@ type EntityType = ClubEntity;
     DropdownComponent,
     ClubTitleComponent,
     HideDirective,
+    TableModule,
+    InputTextModule,
+    CheckboxModule,
   ],
   templateUrl: './editor-club.component.html',
   styleUrl: './editor-club.component.scss',
@@ -93,11 +98,9 @@ export class EditorClubComponent implements OnChanges {
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
-  adminIds: Observable<string[]> = of([]);
-
-  constructor() {
-    this.adminIds = this.userService.adminIds$;
-  }
+  admin = false;
+  userId = this.userService.userId;
+  users: ClubUserEntity[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('club' in changes) {
@@ -117,9 +120,13 @@ export class EditorClubComponent implements OnChanges {
         this.isNew = false;
       }
 
+      this.admin = this.club.Admin;
+
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new ClubEntity());
       this.formGroup.patchValue(new ClubEntity(this.club));
+
+      this.users = this.club.Users.toSorted((a, b) => a.usernameEmail.localeCompare(b.usernameEmail));
     } else {
       // No Changes
     }
@@ -154,10 +161,10 @@ export class EditorClubComponent implements OnChanges {
     if (this.formGroup.invalid || !this.club) {
       return;
     } else {
-      const result = await this.apiService.postClub(
-        this.club.ClubId === '',
-        new ClubEntity(this.formGroup.getRawValue()),
-      );
+      const club = new ClubEntity(this.formGroup.getRawValue());
+      club.Users = this.users.map((x) => new ClubUserEntity(x)).filter(x => !x.toDelete && !x.UserId);
+
+      const result = await this.apiService.postClub(this.club.ClubId === '', club);
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Club' });
 
@@ -192,5 +199,10 @@ export class EditorClubComponent implements OnChanges {
         }
       },
     });
+  }
+
+  addUser() {
+    this.users.push(new ClubUserEntity({ ClubId: this.club?.ClubId, Admin: false }));
+    console.log(this.users.at(-1));
   }
 }

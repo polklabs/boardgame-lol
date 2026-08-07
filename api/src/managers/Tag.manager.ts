@@ -106,7 +106,7 @@ export class TagManager extends BaseManager<TagEntity> {
     this.clubUserManager.hasAccess(userId, entity.ClubId);
 
     this.SanitizeInputs(entity);
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
@@ -120,7 +120,7 @@ export class TagManager extends BaseManager<TagEntity> {
     this.clubUserManager.hasAccess(userId, entity.ClubId);
 
     this.SanitizeInputs(entity);
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
@@ -134,8 +134,8 @@ export class TagManager extends BaseManager<TagEntity> {
     return this.runDelete([primaryId], secondaryId, true);
   }
 
-  public Validate(entity: TagEntity): string[] {
-    const errors = super.Validate(entity);
+  public Validate(userId: string, entity: TagEntity): string[] {
+    const errors = super.Validate(userId, entity);
 
     if (errors.length > 0) {
       throw new ValidationError(errors);

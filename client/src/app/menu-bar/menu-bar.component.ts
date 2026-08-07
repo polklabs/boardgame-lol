@@ -17,7 +17,7 @@ import { SplitButtonModule } from 'primeng/splitbutton';
 import { Router } from '@angular/router';
 import { UserService } from '../shared/services/user.service';
 import { ApiService } from '../shared/services/api.service';
-import { Observable, Subscription, combineLatest, of } from 'rxjs';
+import { Observable, Subscription, of } from 'rxjs';
 import { MenuModule } from 'primeng/menu';
 import { LoginComponent } from '../login/login.component';
 import { PasswordUpdateComponent } from '../password-update/password-update.component';
@@ -117,7 +117,6 @@ export class MenuBarComponent implements OnInit, OnDestroy, AfterViewInit {
   ];
 
   editClubItems = [
-    
     this.actions.gameAdd,
     this.actions.boardGameAdd,
     this.actions.playerAdd,
@@ -143,8 +142,8 @@ export class MenuBarComponent implements OnInit, OnDestroy, AfterViewInit {
       );
     } else {
       this.subscriptions.add(
-        combineLatest([this.apiService.club$, this.userService.accessIds$]).subscribe(([club, access]) => {
-          this.canEdit = access.some((x) => x.ClubId === club?.ClubId);
+        this.apiService.club$.subscribe((club) => {
+          this.canEdit = club?.CanEdit ?? false;
         }),
       );
     }
