@@ -1,0 +1,17 @@
+:host ::ng-deep {
+  .club-users-wrapper {
+    border: solid 1px var(--p-surface-600);
+    border-radius: 8px;
+    > div {
+      padding: 0 8px;
+      align-items: center;
+    }
+    table {
+      margin-bottom: 4px;
+      tbody tr td {
+        border: solid 0 var(--p-surface-600);
+        border-top-width: 1px;
+      }
+    }
+  }
+}

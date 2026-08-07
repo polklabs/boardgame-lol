@@ -30,6 +30,30 @@
 
         <app-checkbox formControlName="Public" label="Is Public"></app-checkbox>
 
+        <div class="club-users-wrapper">
+          <div class="flex justify-content-space-between">
+            <h2>Managers/Admins</h2>
+            <p-button
+              label="Add New"
+              [outlined]="true"
+              severity="primary"
+              (onClick)="addUser()"
+              [disabled]="!admin"></p-button>
+          </div>
+          <p-table [value]="users" [stripedRows]="true" size="small">
+            <ng-template #header>
+              <tr>
+                <th id="username">Name</th>
+                <th id="isAdmin">Admin</th>
+                <th id="toDelete">Delete</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-user>
+              <ng-component [ngTemplateOutlet]="userRow" [ngTemplateOutletContext]="{ $implicit: user }"></ng-component>
+            </ng-template>
+          </p-table>
+        </div>
+
         <app-dropdown
           [entityType]="entityType"
           formControlName="Font"
@@ -71,3 +95,33 @@
     </ng-template>
   }
 </p-dialog>
+
+<ng-template #userRow let-user>
+  <tr>
+    <td>
+      @if (user.UserId === '') {
+        <input type="text" pInputText [(ngModel)]="user.usernameEmail" [ngModelOptions]="{ standalone: true }" />
+      } @else if (user.UserId === userId) {
+        {{ user.usernameEmail }} (YOU)
+      } @else {
+        {{ user.usernameEmail }}
+      }
+    </td>
+    <td>
+      <p-checkbox
+        [(ngModel)]="user.Admin"
+        [binary]="true"
+        [ngModelOptions]="{ standalone: true }"
+        [disabled]="user.UserId === userId || !admin"></p-checkbox>
+    </td>
+
+    <td>
+      <p-checkbox
+        [(ngModel)]="user.toDelete"
+        [binary]="true"
+        [ngModelOptions]="{ standalone: true }"
+        [invalid]="user.toDelete"
+        [disabled]="user.UserId === userId || !admin"></p-checkbox>
+    </td>
+  </tr>
+</ng-template>

@@ -3,7 +3,16 @@ import { BaseManager } from './Base.manager';
 import { newGuid } from 'libs/utils/guid-utils';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
-import { BoardGameEntity, ClubEntity, ClubUserEntity, GameEntity, PlayerEntity, TP, UserEntity } from 'libs/index';
+import {
+  BoardGameEntity,
+  ClubEditReturn,
+  ClubEntity,
+  ClubUserEntity,
+  GameEntity,
+  PlayerEntity,
+  TP,
+  UserEntity,
+} from 'libs/index';
 import { ClubUserManager } from './ClubUser.manager';
 
 @Injectable()
@@ -44,7 +53,8 @@ export class ClubManager extends BaseManager<ClubEntity> {
     );
   }
 
-  put(userId: string, entity: ClubEntity) {
+  put(userId: string, entity: ClubEntity): ClubEditReturn {
+    let users = entity.Users;
     entity = this.new(entity);
     entity.ClubId = newGuid();
 
@@ -53,36 +63,77 @@ export class ClubManager extends BaseManager<ClubEntity> {
 
     const transactions: unknown[] = [];
 
-    const clubUser = new ClubUserEntity({
-      ClubUserId: newGuid(),
-      Admin: true,
-      ClubId: entity.ClubId,
-      UserId: userId,
-    });
+    // Filter out currently logged in user, we will recreate the entity
+    users = users.filter((x) => x.UserId !== userId);
+    users.push(
+      new ClubUserEntity({
+        Admin: true,
+        ClubId: entity.ClubId,
+        UserId: userId,
+      }),
+    );
 
-    transactions.push(this.clubUserManager.runInsert(userId, clubUser, true));
+    users.forEach((u) => {
+      transactions.push(this.clubUserManager.put(userId, u));
+    });
 
     this.CheckForeignKeys(entity);
 
     this.runInsert(userId, entity, false, transactions);
 
-    return this.loadOne(entity.ClubId);
+    return {
+      Club: this.loadOneWithAuth(entity.ClubId, userId)!,
+      ClubUsers: this.clubUserManager.loadManyWithUsername(entity.ClubId),
+    };
   }
 
-  patch(userId: string, entity: ClubEntity) {
+  patch(userId: string, entity: ClubEntity): ClubEditReturn {
+    let users = entity.Users;
     entity = this.new(entity);
     this.clubUserManager.hasAccess(userId, entity.ClubId);
+
+    let admin = false;
+    try {
+      this.clubUserManager.hasAdminAccess(userId, entity.ClubId);
+      admin = true;
+    } finally {
+      // Continue
+    }
 
     this.SanitizeInputs(entity);
     this.Validate(userId, entity);
 
-    this.runUpdate(userId, entity);
+    const transactions: unknown[] = [];
 
-    return this.loadOne(entity.ClubId);
+    if (admin) {
+      const oldUsers = new Set(this.clubUserManager.loadMany('ClubId', entity.ClubId).map((x) => x.UserId));
+      users = users.filter((x) => x.UserId !== userId);
+      const toDelete = users.filter((x) => x.toDelete);
+      users = users.filter((x) => !x.toDelete);
+      users.forEach((u) => {
+        if (oldUsers.has(u.UserId)) {
+          transactions.push(this.clubUserManager.patch(userId, u));
+        } else {
+          transactions.push(this.clubUserManager.put(userId, u));
+        }
+      });
+      toDelete.forEach((u) => {
+        transactions.push(this.clubUserManager.delete(userId, u));
+      });
+    } else {
+      // Cannot edit club users
+    }
+
+    this.runUpdate(userId, entity, false, transactions);
+
+    return {
+      Club: this.loadOneWithAuth(entity.ClubId, userId)!,
+      ClubUsers: this.clubUserManager.loadManyWithUsername(entity.ClubId),
+    };
   }
 
   delete(clubId: string, primaryId: string) {
-    this.clubUserManager.hasAccess(clubId, primaryId);
+    this.clubUserManager.hasAdminAccess(clubId, primaryId);
 
     this.runDelete(primaryId, undefined);
   }

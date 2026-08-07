@@ -1,14 +1,18 @@
 import { DbService } from 'src/services/db.service';
 import { BaseManager } from './Base.manager';
 import { Injectable } from '@nestjs/common';
-import { isGuid, newGuid } from 'libs/utils/guid-utils';
+import { isGuid } from 'libs/utils/guid-utils';
 import { ValidationError } from 'src/errors/validation.error';
 import { AuthorizationError } from 'src/errors/authorization.error';
 import { ClubUserEntity, TP, UserEntity } from 'libs/index';
+import { UserManager } from './User.manager';
 
 @Injectable()
 export class ClubUserManager extends BaseManager<ClubUserEntity> {
-  constructor(protected db: DbService) {
+  constructor(
+    protected db: DbService,
+    private userManager: UserManager,
+  ) {
     super(ClubUserEntity);
   }
 
@@ -66,11 +70,17 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
   }
 
   put(userId: string, entity: ClubUserEntity) {
+    const usernameEmail = entity.usernameEmail;
     entity = this.new(entity);
-    entity.ClubUserId = newGuid();
 
-    if (entity.UserId === userId) {
-      throw new ValidationError(['You cannot add your own access']);
+    if (!entity.UserId) {
+      const user = this.userManager.findUser(usernameEmail);
+      if (user) {
+        // Continue
+        entity.UserId = user.UserId;
+      } else {
+        throw new ValidationError([`User '${usernameEmail}' does not exist`]);
+      }
     } else {
       // continue
     }
@@ -78,50 +88,38 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     this.SanitizeInputs(entity);
     this.Validate(userId, entity);
 
-    this.hasAdminAccess(userId, entity.ClubUserId);
+    this.CheckForeignKeys(entity);
 
-    this.runInsert(userId, entity);
-
-    return this.loadOne(entity.ClubUserId);
+    return this.runInsert(userId, entity, true);
   }
 
   patch(userId: string, entity: ClubUserEntity) {
     entity = this.new(entity);
 
-    if (entity.UserId === userId) {
-      throw new ValidationError(['You cannot edit your own access']);
-    } else {
-      // continue
-    }
-
     this.SanitizeInputs(entity);
-    this.Validate(entity);
+    this.Validate(userId, entity);
 
-    this.hasAdminAccess(userId, entity.ClubId);
+    this.CheckForeignKeys(entity);
 
-    this.runUpdate(userId, entity);
-
-    return this.loadOne(entity.ClubUserId);
+    return this.runUpdate(userId, entity, true);
   }
 
-  delete(userId: string, primaryId: string, secondaryId: string) {
-    this.hasAdminAccess(userId, secondaryId);
+  delete(userId: string, entity: ClubUserEntity) {
+    this.Validate(userId, entity);
 
-    const row = this.loadOne(primaryId);
-
-    if (row === undefined || row.UserId === userId) {
-      throw new ValidationError(['You cannot delete your own access']);
-    } else {
-      // continue
-    }
-
-    this.runDelete(primaryId, secondaryId);
+    return this.runDelete([entity.ClubId, entity.UserId], undefined, true);
   }
 
-  public Validate(entity: ClubUserEntity): string[] {
-    const errors = super.Validate(entity);
+  public Validate(userId: string, entity: ClubUserEntity): string[] {
+    const errors = super.Validate(userId, entity);
 
     // Other validation checks
+
+    if (entity.UserId === userId) {
+      errors.push('You cannot edit your own access');
+    } else {
+      // continue
+    }
 
     if (errors.length > 0) {
       throw new ValidationError(errors);

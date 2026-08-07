@@ -16,6 +16,7 @@ import {
   ClubReturn,
   EventEntity,
   ClubUserEntity,
+  ClubEditReturn,
 } from 'libs/index';
 import { TagGameEntity } from 'libs/models/TagGame.entity';
 import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
@@ -135,18 +136,18 @@ export class ApiService {
   }
 
   async postClub(isNew: boolean, data: ClubEntity) {
-    let result: ClubEntity | null = null;
+    let result: ClubEditReturn | null = null;
     if (isNew) {
-      result = await this.httpService.put(['api', 'club'], data);
+      result = await this.httpService.put<ClubEntity, ClubEditReturn>(['api', 'club'], data);
     } else {
-      result = await this.httpService.patch(['api', 'club'], data);
+      result = await this.httpService.patch<ClubEntity, ClubEditReturn>(['api', 'club'], data);
     }
 
     if (result) {
-      this.club = result;
-      this.clubs.upsert(result);
+      this.club = new ClubEntity(result.Club);
+      this.clubUsers.overwriteAll(result.ClubUsers);
       this.updateReferences();
-      return this.clubs.getOne(result.ClubId);
+      return this.club;
     } else {
       return null;
     }

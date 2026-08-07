@@ -37,6 +37,11 @@ export type ClubReturn = {
   Events: EventEntity[];
 };
 
+export type ClubEditReturn = {
+  Club: ClubEntity;
+  ClubUsers: ClubUserEntity[];
+};
+
 @TableName('Club')
 export class ClubEntity extends BaseEntity {
   @PrimaryKey()
