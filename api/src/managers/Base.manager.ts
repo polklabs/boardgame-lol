@@ -235,7 +235,7 @@ export abstract class BaseManager<T extends BaseEntity> {
       this.tableName,
       this.primaryKeys.map(String),
       primaryIds,
-      String(this.secondaryKey),
+      this.secondaryKey ? String(this.secondaryKey) : undefined,
       secondaryId,
       transaction,
       transactions,
