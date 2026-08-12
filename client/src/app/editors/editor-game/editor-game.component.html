@@ -38,11 +38,6 @@
         [addNewButton]="true"
         (addNew)="addBoardGame()"></app-dropdown>
 
-      <div class="flex gap-4 justify-content-space-between">
-        <app-checkbox formControlName="WinOverride" label="Override Winner" [appHide]="hideFields"></app-checkbox>
-        <app-checkbox formControlName="HigherWins" label="Highest Score Wins" [appHide]="hideFields"></app-checkbox>
-      </div>
-
       <p-orderList
         [appHide]="hideFields"
         hideName="Notes"
@@ -57,7 +52,9 @@
         <ng-template #header>
           <div class="order-list-header flex justify-content-space-between">
             <div class="p-orderlist-title">
-              {{ game?.BoardGame?.scoreTypeText ?? '' }} Scores ({{ game?.PlayerCount ?? 0 }})
+              {{ game?.BoardGame?.scoreTypeText ?? '' }} Scores ({{ game?.PlayerCount ?? 0 }} player{{
+                (game?.PlayerCount ?? 0) === 1 ? '' : 's'
+              }})
             </div>
             <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
           </div>
@@ -112,25 +109,38 @@
           label="Date"
           [entityType]="entityType"
           [appHide]="hideFields"></app-calendar>
-        <app-number-input
-          formControlName="Players"
-          label="Custom Player Count"
+        <app-tags
+          formControlName="Tags"
+          label="Tags"
+          filterBool="DisplayOnGames"
+          [filterBoardGame]="game?.BoardGameId"
           [entityType]="entityType"
           [appHide]="hideFields"
-          [locked]="true"
-          [maxFractionDigits]="0"></app-number-input>
+          [options$]="tagList$"></app-tags>
       </div>
 
-      <app-tags
-        formControlName="Tags"
-        label="Tags"
-        filterBool="DisplayOnGames"
-        [filterBoardGame]="game?.BoardGameId"
-        [entityType]="entityType"
-        [appHide]="hideFields"
-        [options$]="tagList$"></app-tags>
-
       <app-textarea formControlName="Notes" [entityType]="entityType" [appHide]="hideFields"></app-textarea>
+
+      <p-button
+        icon="pi pi-cog"
+        [label]="(showAdvanced ? 'Hide' : 'Show') + ' Advanced'"
+        variant="text"
+        severity="secondary"
+        (click)="showAdvanced = !showAdvanced" />
+
+      @if (showAdvanced) {
+        <div class="flex gap-4 justify-content-space-between">
+          <app-checkbox formControlName="WinOverride" label="Override Winner" [appHide]="hideFields"></app-checkbox>
+          <app-checkbox formControlName="HigherWins" label="Highest Score Wins" [appHide]="hideFields"></app-checkbox>
+          <app-number-input
+            formControlName="Players"
+            label="Custom Player Count"
+            [entityType]="entityType"
+            [appHide]="hideFields"
+            [locked]="true"
+            [maxFractionDigits]="0"></app-number-input>
+        </div>
+      }
     </form>
   </div>
   <ng-template #footer>

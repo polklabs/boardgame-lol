@@ -118,6 +118,8 @@ export class EditorGameComponent extends WakeLockWrapper implements OnChanges, O
 
   pointGroupButtonValues: number[] = [];
 
+  showAdvanced = false;
+
   subscriptions = new Subscription();
 
   ngOnChanges(changes: SimpleChanges): void {
