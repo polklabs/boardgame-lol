@@ -4,7 +4,7 @@
   [sortField]="sortBy"
   [sortOrder]="sortOrder"
   class="p-datatable-sm {{ tiny() ? 'tiny' : '' }}"
-  [tableStyle]="{ 'min-width': 'calc(min(50rem, 100vw - 36px))' }"
+  [tableStyle]="{ 'min-width': 'min(50rem, -36px + 100vw, 100%)' }"
   [scrollable]="true"
   [stripedRows]="true"
   scrollHeight="flex"
