@@ -1,12 +1,9 @@
 <!-- In der clurb we all fam -->
-<p-dialog
-  [header]="title"
+<app-dialog
+  [title]="title"
   [visible]="editorVisible"
   (visibleChange)="closeEditor.emit()"
-  [modal]="true"
-  [style]="{ width: '650px', 'min-width': '300px' }"
-  [draggable]="false"
-  position="bottom">
+  [editor]="true">
   @if (formGroup && club) {
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
@@ -81,7 +78,9 @@
         </div>
       </form>
     </div>
-    <ng-template #footer>
+  }
+  <ng-container class="dialog-footer">
+    @if (formGroup && club) {
       <div>
         @if (club.Admin) {
           <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
@@ -92,9 +91,9 @@
         <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
         <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
       </div>
-    </ng-template>
-  }
-</p-dialog>
+    }
+  </ng-container>
+</app-dialog>
 
 <ng-template #userRow let-user>
   <tr>

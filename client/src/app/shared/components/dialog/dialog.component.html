@@ -1,0 +1,20 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visibleChange.emit()"
+  [modal]="true"
+  [style]="{ width: '650px', 'min-width': '300px' }"
+  [draggable]="false"
+  [dismissableMask]="!editor()"
+  [focusOnShow]="false"
+  [closeIcon]="closeIcon()"
+  [position]="editor() ? 'bottom' : 'center'">
+  <ng-template #header>
+    <ng-content select=".dialog-title">{{ title() }}</ng-content>
+  </ng-template>
+
+  <ng-content />
+
+  <ng-template #footer>
+    <ng-content select=".dialog-footer"></ng-content>
+  </ng-template>
+</p-dialog>

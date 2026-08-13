@@ -12,25 +12,17 @@
   (closeEditor)="savePlayerGame($event)"
   (deleteEntity)="deletePlayerGame($event)"></app-editor-player-game>
 
-<p-dialog
-  [visible]="editorVisible"
-  (visibleChange)="closeEditor.emit()"
-  [modal]="true"
-  [focusOnShow]="false"
-  [style]="{ width: '650px', 'min-width': '300px', 'max-height': 'calc(100% - 60px)' }"
-  [draggable]="false"
-  position="bottom">
-  <ng-template #header>
-    <div class="dialog-header">
-      <span>{{ title }}</span>
-      <p-button
-        icon="pi pi-cog"
-        severity="secondary"
-        [rounded]="true"
-        [pTooltip]="showAdvanced ? 'Hide Advanced' : 'Show Advanced'"
-        (click)="showAdvanced = !showAdvanced" />
-    </div>
-  </ng-template>
+<app-dialog [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
+  <div class="dialog-title dialog-header">
+    <span>{{ title }}</span>
+    <p-button
+      icon="pi pi-cog"
+      severity="secondary"
+      [rounded]="true"
+      [pTooltip]="showAdvanced ? 'Hide Advanced' : 'Show Advanced'"
+      (click)="showAdvanced = !showAdvanced" />
+  </div>
+
   <div class="form" #gameEditDialog>
     <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
       <!-- BoardGame -->
@@ -147,7 +139,7 @@
       }
     </form>
   </div>
-  <ng-template #footer>
+  <ng-container class="dialog-footer">
     <div>
       @if (isNew === false) {
         <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
@@ -158,8 +150,8 @@
       <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
       <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
     </div>
-  </ng-template>
-</p-dialog>
+  </ng-container>
+</app-dialog>
 
 <p-dialog [(visible)]="showCustomPointsDialog" [modal]="true" [style]="{ width: '25rem' }" header="Adjust Points">
   <div class="custom-point-adjustment">
@@ -205,9 +197,7 @@
                 } @else {
                   <div class="empty-trophy"></div>
                 }
-                <span class="player-name">
-                  {{ playerGame.DisplayNameShort }}:
-                </span>
+                <span class="player-name">{{ playerGame.DisplayNameShort }}:</span>
                 <span>{{ playerGame.Points | score: game?.BoardGame }}</span>
               }
               <!-- RANK -->

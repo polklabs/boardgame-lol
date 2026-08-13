@@ -9,7 +9,6 @@ import {
   SimpleChanges,
   inject,
 } from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { ButtonModule } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -23,13 +22,13 @@ import { TagsComponent } from '../../shared/components/form-components/tags/tags
 import { Observable, of, Subscription } from 'rxjs';
 import { HideDirective } from '../../shared/directives/hide.directive';
 import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
+import { DialogComponent } from "../../shared/components/dialog/dialog.component";
 
 type EntityType = PlayerEntity;
 
 @Component({
   selector: 'app-editor-player',
   imports: [
-    DialogModule,
     TextInputComponent,
     ButtonModule,
     FormsModule,
@@ -38,7 +37,8 @@ type EntityType = PlayerEntity;
     TagsComponent,
     DropdownComponent,
     HideDirective,
-  ],
+    DialogComponent
+],
   templateUrl: './editor-player.component.html',
   styleUrl: './editor-player.component.scss',
 })

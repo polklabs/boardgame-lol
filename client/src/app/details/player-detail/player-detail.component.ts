@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, computed, inject, input, Signal } from '@angular/core';
 import { PlayerEntity, PlayerGameEntity } from 'libs/index';
-import { DialogModule } from 'primeng/dialog';
 import { Column } from '../../shared/models/column.model';
 import { getTagColumns } from '../../shared/helpers/data.helper';
 import { TableComponent } from '../../shared/components/table/table.component';
@@ -10,17 +9,11 @@ import { StatsTableComponent, StatsTableItem } from '../../shared/components/sta
 import { TrophyListComponent } from '../../club/trophy-list/trophy-list.component';
 import { format } from 'date-fns';
 import { DetailService } from '../../shared/services/detail.service';
+import { DialogComponent } from "../../shared/components/dialog/dialog.component";
 
 @Component({
   selector: 'app-player-detail',
-  imports: [
-    DialogModule,
-    TableComponent,
-    TrophyIconComponent,
-    TemplateIdDirective,
-    StatsTableComponent,
-    TrophyListComponent,
-  ],
+  imports: [TableComponent, TrophyIconComponent, TemplateIdDirective, StatsTableComponent, TrophyListComponent, DialogComponent],
   templateUrl: './player-detail.component.html',
   styleUrl: './player-detail.component.scss',
 })

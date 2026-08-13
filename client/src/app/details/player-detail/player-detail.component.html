@@ -1,25 +1,15 @@
 @if (player(); as p) {
-  <p-dialog
-    [visible]="true"
-    (visibleChange)="detailService.hideDetail()"
-    [modal]="true"
-    [style]="{ 'min-width': '300px' }"
-    [draggable]="false"
-    [dismissableMask]="true"
-    closeIcon="pi pi-window-minimize"
-    position="center">
-    <ng-template #header>
-      <div class="details-header">
-        @if (p.Nickname) {
-          <span>{{ p.Nickname }} - {{ p.Name }}</span>
-        } @else {
-          <span>{{ p.Name }}</span>
-        }
-        @if (p.hasMostWins) {
-          <i class="pi pi-crown" style="color: gold"></i>
-        }
-      </div>
-    </ng-template>
+  <app-dialog closeIcon="pi pi-window-minimize" (visibleChange)="detailService.hideDetail()">
+    <div class="dialog-title details-header">
+      @if (p.Nickname) {
+        <span>{{ p.Nickname }} - {{ p.Name }}</span>
+      } @else {
+        <span>{{ p.Name }}</span>
+      }
+      @if (p.hasMostWins) {
+        <i class="pi pi-crown" style="color: gold"></i>
+      }
+    </div>
 
     <div class="flex-column gap-8">
       <app-stats-table header="Stats" [smallHeader]="true" [items]="stats()" [customHeight]="40"></app-stats-table>
@@ -39,5 +29,5 @@
         </ng-template>
       </app-table>
     </div>
-  </p-dialog>
+  </app-dialog>
 }

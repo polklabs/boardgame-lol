@@ -15,7 +15,6 @@ import { ConfirmationService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
 
 import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
@@ -28,6 +27,7 @@ import { Subscription } from 'rxjs';
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
 import { HideDirective } from '../../shared/directives/hide.directive';
+import { DialogComponent } from "../../shared/components/dialog/dialog.component";
 
 type EntityType = PlayerGameEntity;
 
@@ -38,7 +38,6 @@ type EntityType = PlayerGameEntity;
     ReactiveFormsModule,
     ButtonModule,
     CheckboxModule,
-    DialogModule,
     TooltipModule,
     CheckboxComponent,
     NumberInputComponent,
@@ -48,7 +47,8 @@ type EntityType = PlayerGameEntity;
     DropdownComponent,
     TextInputComponent,
     HideDirective,
-  ],
+    DialogComponent
+],
   templateUrl: './editor-player-game.component.html',
   styleUrl: './editor-player-game.component.scss',
 })

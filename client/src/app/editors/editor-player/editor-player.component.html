@@ -1,11 +1,4 @@
-<p-dialog
-  [header]="title"
-  [visible]="editorVisible"
-  (visibleChange)="closeEditor.emit()"
-  [modal]="true"
-  [style]="{ width: '650px', 'min-width': '300px' }"
-  [draggable]="false"
-  position="bottom">
+<app-dialog [title]="title" [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
   @if (formGroup && player) {
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
@@ -41,7 +34,9 @@
           [options$]="tagList$"></app-tags>
       </form>
     </div>
-    <ng-template #footer>
+  }
+  <ng-container class="dialog-footer">
+    @if (formGroup && player) {
       <div>
         <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
       </div>
@@ -52,6 +47,6 @@
         }
         <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
       </div>
-    </ng-template>
-  }
-</p-dialog>
+    }
+  </ng-container>
+</app-dialog>

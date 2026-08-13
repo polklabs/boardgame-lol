@@ -9,7 +9,6 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -28,6 +27,7 @@ import { UserService } from '../../shared/services/user.service';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
+import { DialogComponent } from "../../shared/components/dialog/dialog.component";
 
 type EntityType = ClubEntity;
 
@@ -35,7 +35,6 @@ type EntityType = ClubEntity;
   selector: 'app-editor-club',
   imports: [
     CommonModule,
-    DialogModule,
     TextInputComponent,
     TextareaComponent,
     ButtonModule,
@@ -49,7 +48,8 @@ type EntityType = ClubEntity;
     TableModule,
     InputTextModule,
     CheckboxModule,
-  ],
+    DialogComponent
+],
   templateUrl: './editor-club.component.html',
   styleUrl: './editor-club.component.scss',
 })

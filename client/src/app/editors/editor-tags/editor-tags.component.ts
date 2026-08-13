@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DISPLAY_FIELDS, getAccessibleBackground, TagCategory, TagCategoryMapping, TagEntity } from 'libs/index';
-import { DialogModule } from 'primeng/dialog';
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { buildForm } from '../../shared/form.utils';
@@ -17,6 +16,7 @@ import { SortPipe } from '../../shared/pipes/sort.pipe';
 import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
 import { Subscription } from 'rxjs';
 import { HideDirective } from "../../shared/directives/hide.directive";
+import { DialogComponent } from "../../shared/components/dialog/dialog.component";
 
 type EntityType = TagEntity;
 
@@ -33,7 +33,6 @@ const TAG_KEY_DISPLAY: Record<(typeof DISPLAY_FIELDS)[number], string> = {
     KeyValuePipe,
     TagModule,
     ColorPickerModule,
-    DialogModule,
     TextInputComponent,
     ButtonModule,
     FormsModule,
@@ -43,7 +42,8 @@ const TAG_KEY_DISPLAY: Record<(typeof DISPLAY_FIELDS)[number], string> = {
     FieldsetModule,
     SortPipe,
     DropdownComponent,
-    HideDirective
+    HideDirective,
+    DialogComponent
 ],
   templateUrl: './editor-tags.component.html',
   styleUrl: './editor-tags.component.scss',

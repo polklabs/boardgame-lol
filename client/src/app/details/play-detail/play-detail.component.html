@@ -1,21 +1,11 @@
 @if (game(); as g) {
-  <p-dialog
-    [visible]="visible"
-    (visibleChange)="detailService.hideDetail()"
-    [modal]="true"
-    [style]="{ 'min-width': '300px' }"
-    [draggable]="false"
-    [dismissableMask]="true"
-    closeIcon="pi pi-window-minimize"
-    position="center">
-    <ng-template #header>
-      <div class="details-header">
-        <span>
-          <app-detail-link [objects]="[g.BoardGame]" keys="Name" [hasLinks]="true"></app-detail-link>
-          - {{ g.DateObj | date: 'MMM d, yyyy' }}
-        </span>
-      </div>
-    </ng-template>
+  <app-dialog (visibleChange)="detailService.hideDetail()" closeIcon="pi pi-window-minimize">
+    <div class="dialog-title details-header">
+      <span>
+        <app-detail-link [objects]="[g.BoardGame]" keys="Name" [hasLinks]="true"></app-detail-link>
+        - {{ g.DateObj | date: 'MMM d, yyyy' }}
+      </span>
+    </div>
 
     <div class="flex-column gap-8">
       <app-stats-table header="Stats" [smallHeader]="true" [items]="stats()" [customHeight]="40"></app-stats-table>
@@ -35,5 +25,5 @@
         </ng-template>
       </app-table>
     </div>
-  </p-dialog>
+  </app-dialog>
 }

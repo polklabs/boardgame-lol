@@ -41,6 +41,7 @@ import { sortPlayerGames } from '../../shared/helpers/data.helper';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 import { HideDirective } from '../../shared/directives/hide.directive';
 import { WakeLockWrapper } from '../../shared/models/wake-lock.model';
+import { DialogComponent } from "../../shared/components/dialog/dialog.component";
 
 type EntityType = GameEntity;
 
@@ -73,7 +74,8 @@ const POINT_VALUES = [1, 5, 10, 50, 100, 150, 200];
     TagComponent,
     ScorePipe,
     HideDirective,
-  ],
+    DialogComponent
+],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
 })

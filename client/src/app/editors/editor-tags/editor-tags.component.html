@@ -1,13 +1,4 @@
-<p-dialog
-  contentStyleClass="tag-editor-dialog"
-  [header]="title"
-  [visible]="editorVisible"
-  (visibleChange)="closeEditor.emit()"
-  [modal]="true"
-  [style]="{ width: '650px', 'min-width': '300px' }"
-  [draggable]="false"
-  appendTo="body"
-  position="bottom">
+<app-dialog [title]="title" [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
   <div class="flex-column gap-8">
     @for (kv of tags | keyvalue | sort: 'key'; track kv.key) {
       <p-fieldset [legend]="kv.key">
@@ -87,8 +78,9 @@
         </div>
       </form>
     </div>
-
-    <ng-template #footer>
+  }
+  <ng-container class="dialog-footer">
+    @if (formGroup && tag) {
       <div>
         <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
       </div>
@@ -96,6 +88,6 @@
         <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="cancelEdit()"></p-button>
         <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
       </div>
-    </ng-template>
-  }
-</p-dialog>
+    }
+  </ng-container>
+</app-dialog>

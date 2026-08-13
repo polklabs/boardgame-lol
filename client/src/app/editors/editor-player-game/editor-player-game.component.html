@@ -4,14 +4,7 @@
   [standalone]="false"
   (closeEditor)="closePlayerEditor($event)"></app-editor-player>
 
-<p-dialog
-  [header]="title"
-  [visible]="editorVisible"
-  (visibleChange)="closeEditor.emit()"
-  [modal]="true"
-  [style]="{ width: '650px', 'min-width': '300px' }"
-  [draggable]="false"
-  position="bottom">
+<app-dialog [title]="title" [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
   @if (formGroup && playerGame) {
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit()">
@@ -75,8 +68,10 @@
           [options$]="tagList$"></app-tags>
       </form>
     </div>
+  }
 
-    <ng-template #footer>
+  <ng-container class="dialog-footer">
+    @if (formGroup && playerGame) {
       <div>
         <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
       </div>
@@ -84,6 +79,6 @@
         <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
         <p-button label="Apply" [outlined]="true" (onClick)="submit()"></p-button>
       </div>
-    </ng-template>
-  }
-</p-dialog>
+    }
+  </ng-container>
+</app-dialog>

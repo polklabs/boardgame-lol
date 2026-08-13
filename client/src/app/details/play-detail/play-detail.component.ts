@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, computed, inject, input, Signal } from '@angular/core';
 import { GameEntity, PlayerGameEntity } from 'libs/index';
-import { DialogModule } from 'primeng/dialog';
 import { StatsTableItem, StatsTableComponent } from '../../shared/components/stats-table/stats-table.component';
 import { Column } from '../../shared/models/column.model';
 import { TableComponent } from '../../shared/components/table/table.component';
@@ -10,10 +9,11 @@ import { TemplateIdDirective } from '../../shared/directives/template-id.directi
 import { DatePipe } from '@angular/common';
 import { DetailService } from '../../shared/services/detail.service';
 import { DetailLinkComponent } from "../../shared/components/detail-link/detail-link.component";
+import { DialogComponent } from "../../shared/components/dialog/dialog.component";
 
 @Component({
   selector: 'app-play-detail',
-  imports: [DialogModule, StatsTableComponent, TableComponent, TrophyIconComponent, TemplateIdDirective, DatePipe, DetailLinkComponent],
+  imports: [StatsTableComponent, TableComponent, TrophyIconComponent, TemplateIdDirective, DatePipe, DetailLinkComponent, DialogComponent],
   templateUrl: './play-detail.component.html',
   styleUrl: './play-detail.component.scss',
 })

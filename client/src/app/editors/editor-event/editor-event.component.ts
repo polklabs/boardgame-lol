@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { buildForm } from '../../shared/form.utils';
@@ -12,13 +11,13 @@ import { format } from 'date-fns';
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { CalendarComponent } from '../../shared/components/form-components/calendar/calendar.component';
 import { HideDirective } from '../../shared/directives/hide.directive';
+import { DialogComponent } from '../../shared/components/dialog/dialog.component';
 
 type EntityType = EventEntity;
 
 @Component({
   selector: 'app-editor-event',
   imports: [
-    DialogModule,
     TextInputComponent,
     ButtonModule,
     FormsModule,
@@ -26,6 +25,7 @@ type EntityType = EventEntity;
     CalendarComponent,
     TableComponent,
     HideDirective,
+    DialogComponent,
   ],
   templateUrl: './editor-event.component.html',
   styleUrl: './editor-event.component.scss',
