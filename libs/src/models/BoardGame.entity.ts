@@ -186,6 +186,7 @@ export class BoardGameEntity extends BaseEntity {
   }
 
   calculatePlayers() {
+    calculationsComplete(this.Games.flatMap(x => x.Scores));
     this.MaxPlayers = Math.max(...this.Games.map((g) => g.PlayerCount), 0);
     this.MinPlayers = Math.min(...this.Games.map((g) => g.PlayerCount), Infinity);
     this.UniquePlayers = new Set(

@@ -49,9 +49,9 @@ export class ApiService {
   private entityWrappers = [
     this.clubs,
     this.clubUsers,
-    this.games,
-    this.boardGames,
+    this.games,    
     this.playerGames,
+    this.boardGames,
     this.playerGamePlayers,
     this.players,
     this.tags,
