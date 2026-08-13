@@ -17,6 +17,7 @@
   [visible]="editorVisible"
   (visibleChange)="closeEditor.emit()"
   [modal]="true"
+  [focusOnShow]="false"
   [style]="{ width: '650px', 'min-width': '300px', 'max-height': 'calc(100% - 60px)' }"
   [draggable]="false"
   position="bottom">
