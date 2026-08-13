@@ -341,8 +341,8 @@ export class EditorGameComponent extends WakeLockWrapper implements OnChanges, O
         break;
       case 'win-lose':
         this.playerScores.forEach((pg) => {
-          if (pg.Points === null) {
-            // continue
+          if (pg.Points === null || !pg.ScoringPlayer) {
+            pg.Points = null;
           } else if (pg.Points > 0) {
             pg.Points = 1;
           } else {
