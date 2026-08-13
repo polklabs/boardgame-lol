@@ -521,6 +521,9 @@ export class ApiService {
 
     this.calculatedFields();
 
+    this.playerGames.list.forEach(pg => {
+      pg.Players.sort((a,b) => a.ShortName.localeCompare(b.ShortName));
+    })
     this.players.sort((a, b) => a.FullName.localeCompare(b.FullName));
   }
 
