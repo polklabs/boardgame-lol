@@ -13,7 +13,6 @@
   (deleteEntity)="deletePlayerGame($event)"></app-editor-player-game>
 
 <p-dialog
-  [header]="title"
   [visible]="editorVisible"
   (visibleChange)="closeEditor.emit()"
   [modal]="true"
@@ -21,6 +20,17 @@
   [style]="{ width: '650px', 'min-width': '300px', 'max-height': 'calc(100% - 60px)' }"
   [draggable]="false"
   position="bottom">
+  <ng-template #header>
+    <div class="dialog-header">
+      <span>{{ title }}</span>
+      <p-button
+        icon="pi pi-cog"
+        severity="secondary"
+        [rounded]="true"
+        [pTooltip]="showAdvanced ? 'Hide Advanced' : 'Show Advanced'"
+        (click)="showAdvanced = !showAdvanced" />
+    </div>
+  </ng-template>
   <div class="form" #gameEditDialog>
     <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
       <!-- BoardGame -->
@@ -121,13 +131,6 @@
       </div>
 
       <app-textarea formControlName="Notes" [entityType]="entityType" [appHide]="hideFields"></app-textarea>
-
-      <p-button
-        icon="pi pi-cog"
-        [label]="(showAdvanced ? 'Hide' : 'Show') + ' Advanced'"
-        variant="text"
-        severity="secondary"
-        (click)="showAdvanced = !showAdvanced" />
 
       @if (showAdvanced) {
         <div class="flex gap-4 justify-content-space-between">
