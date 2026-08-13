@@ -43,10 +43,14 @@ export class PlayerDetailComponent implements AfterViewInit {
           title: 'Losses',
           value: p.LossCount,
         },
-        {
-          title: 'Non-Scoring',
-          value: p.NonScoreCount,
-        },
+        ...(p.NonScoreCount > 0
+          ? [
+              {
+                title: 'Non-Scoring',
+                value: p.NonScoreCount,
+              },
+            ]
+          : []),
         {
           title: 'Total Points',
           value: p.totalPoints > 0 ? p.totalPoints : undefined,
