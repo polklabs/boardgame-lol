@@ -118,9 +118,10 @@ export class PlayerEntity extends BaseEntity {
   calculateWins() {
     calculationsComplete(this.PlayerGames.map((x) => x.Game));
     this.Wins = this.ScoringGames.filter((pg) => pg.Game?.place(0).includes(pg)).reverse();
-    this.WinCount = this.Wins.length;
-    this.LossCount = this.ScoringGames.length - this.WinCount;
-    this.NonScoreCount = this.PlayerGames.length - (this.WinCount + this.LossCount);
+    const winIds = new Set(this.Wins.map(x => x.GameId));
+    this.WinCount = winIds.size;
+    this.LossCount = (new Set(this.ScoringGames.filter(x => !winIds.has(x.GameId)))).size;
+    this.NonScoreCount = this.PlayerGames.filter(x => !x.ScoringPlayer).length;
   }
 
   calculateBestGames() {
