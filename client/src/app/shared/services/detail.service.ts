@@ -37,9 +37,7 @@ export class DetailService {
 
   constructor() {
     this.api.dataUpdate$.pipe(take(2)).subscribe(() => {
-      console.log('data update');
       const detailId = this.route.snapshot.queryParamMap.get('detail');
-      console.log(detailId);
       if (detailId) {
         // Continue
       } else {
