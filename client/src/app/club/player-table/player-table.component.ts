@@ -40,9 +40,9 @@ export class PlayerTableComponent {
 
   columns: Column<PlayerEntity>[] = [
     { id: 'Name', sort: true, dataType: 'custom' },
-    { id: 'WinCount', name: 'Wins', sort: true, dataType: 'custom' },
-    { id: 'LossCount', name: 'Losses', sort: true, dataType: 'number' },
-    { id: 'NonScoreCount', name: 'Non-Scoring', sort: true, dataType: 'number' },
+    { id: 'WinCount', name: 'Wins', sort: true, dataType: 'custom', shrink: true },
+    { id: 'LossCount', name: 'Losses', sort: true, dataType: 'number', shrink: true },
+    { id: 'NonScoreCount', name: 'Non-Scoring', sort: true, dataType: 'number', shrink: true },
     { id: 'BestGameWins', name: 'Best Game(s)', sort: true, dataType: 'custom' },
     { id: 'FirstSeen', name: 'First Seen', sort: true, dataType: 'date' },
     { id: 'Tags', dataType: 'tag' },

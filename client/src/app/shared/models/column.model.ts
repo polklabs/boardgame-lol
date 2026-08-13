@@ -11,6 +11,7 @@ interface IColumnBase<T, K = unknown> {
   sort?: boolean;
   class?: string;
   rowSpan?: boolean;
+  shrink?: boolean;
 }
 
 interface ITextColumn<T> extends IColumnBase<T> {

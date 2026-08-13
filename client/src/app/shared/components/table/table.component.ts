@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import { Column } from '../../models/column.model';
 import { Table, TableModule } from 'primeng/table';
-import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe, NgStyle } from '@angular/common';
 import { TagComponent } from '../tag/tag.component';
 import { HidePipe } from '../../pipes/hide.pipe';
 import { TemplateIdDirective } from '../../directives/template-id.directive';
@@ -37,6 +37,7 @@ import { DetailLinkComponent } from '../detail-link/detail-link.component';
     ButtonModule,
     CommonModule,
     DetailLinkComponent,
+    NgStyle,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',

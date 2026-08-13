@@ -20,6 +20,7 @@
           id="{{ column.id }}"
           [pSortableColumn]="column.sort ? column.id : undefined"
           [id]="column.id"
+          [ngStyle]="{'width': column.shrink ? '1px' : ''}"
           class="{{ column.class ?? '' }}">
           {{ column.name ?? (column.id | titlecase) }}
           @if (column.sort) {

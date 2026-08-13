@@ -41,7 +41,7 @@ export class GamesTableComponent implements OnInit {
   isRowSpan = (r?: GameEntity) => (r ? r.GameId === '' : false);
 
   columns: Column<GameEntity>[] = [
-    { id: 'EventsName', name: 'Event', dataType: 'text' },
+    { id: 'EventsName', name: 'Event', dataType: 'text', shrink: true },
     { id: 'dateSortOrder', name: 'Date', dataType: 'date', rowSpan: true },
     { id: 'BoardGameName', name: 'Game', dataType: 'text' },
     { id: 'HighScore', name: 'Points', dataType: 'score', boardGame: (x) => x.BoardGame },
