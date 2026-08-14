@@ -8,13 +8,18 @@ export class TrophySnail extends ITrophy {
 
   calculate(api: ApiService) {
     api.players.list.forEach((p) => {
-      const length = p.ScoringGames.findIndex((x) => x.Won);
-      if (length <= 0) {
-        // Skip
-      } else if (length > this.value) {
-        this.value = length;
+      const index = p.ScoringGames.findLastIndex((x) => x.Won)
+      if (index === -1) {
+        return;
+      } else {
+        // Continue
+      }
+      
+      const count = p.ScoringGames.length - index - 1;
+      if (count > this.value) {
+        this.value = count;
         this.array = [p];
-      } else if (length === this.value) {
+      } else if (count === this.value) {
         this.array.push(p);
       } else {
         // Skip
