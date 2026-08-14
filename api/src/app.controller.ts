@@ -32,7 +32,7 @@ import { EventManager } from './managers/Event.manager';
 import { AuthCheckGuard } from './auth/auth-check.guard';
 import { ClubUserManager } from './managers/ClubUser.manager';
 
-const publicThrottle = { default: { limit: 200, ttl: 600000 } };
+const publicThrottle = { default: { limit: 60, ttl: 600000 } };
 const authThrottle = { default: { limit: 30, ttl: 30000 } };
 
 @Controller('api')
@@ -70,7 +70,7 @@ export class AppController {
     if (e instanceof ValidationError) {
       throw new HttpException(e.message, HttpStatus.UNPROCESSABLE_ENTITY);
     } else if (e instanceof AuthorizationError) {
-      throw new HttpException(e.message, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(e.message, HttpStatus.FORBIDDEN);
     } else {
       console.error(e);
       throw new HttpException(e.toString(), HttpStatus.BAD_REQUEST);
@@ -99,7 +99,7 @@ export class AppController {
     if (Club) {
       return {
         Club,
-        ClubUsers: Club.CanEdit ? this.clubUserManager.loadManyWithUsername(clubId) : [],
+        ClubUsers: (!!userId && Club.CanEdit) ? this.clubUserManager.loadManyWithUsername(clubId) : [],
         Games: this.gameManager.loadMany(ClubEntity, clubId),
         PlayerGamePlayers: this.playerGamePlayerManager.loadMany(ClubEntity, clubId),
         PlayerGames: this.playerGameManager.loadMany(ClubEntity, clubId),
