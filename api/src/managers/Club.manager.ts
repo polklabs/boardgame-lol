@@ -132,10 +132,10 @@ export class ClubManager extends BaseManager<ClubEntity> {
     };
   }
 
-  delete(clubId: string, primaryId: string) {
-    this.clubUserManager.hasAdminAccess(clubId, primaryId);
+  delete(userId: string,clubId: string) {
+    this.clubUserManager.hasAdminAccess(userId, clubId);
 
-    this.runDelete(primaryId, undefined);
+    this.runDelete(clubId, undefined);
   }
 
   public Validate(userId: string, entity: ClubEntity): string[] {
