@@ -54,11 +54,17 @@
         [ngClass]="{ 'can-order': game?.BoardGame?.ScoreType === 'rank' }">
         <ng-template #header>
           <div class="order-list-header flex justify-content-space-between">
-            <div class="p-orderlist-title">
-              {{ game?.BoardGame?.scoreTypeText ?? '' }} Scores ({{ game?.PlayerCount ?? 0 }} player{{
-                (game?.PlayerCount ?? 0) === 1 ? '' : 's'
-              }})
-            </div>
+            @if (game?.getPlayerCount(); as playerCount) {
+              <div class="p-orderlist-title">
+                {{ game?.BoardGame?.scoreTypeText ?? '' }} Scores ({{ playerCount ?? 0 }} player{{
+                  (playerCount ?? 0) === 1 ? '' : 's'
+                }})
+              </div>
+            } @else {
+              <div class="p-orderlist-title">
+                {{ game?.BoardGame?.scoreTypeText ?? '' }} Scores (0 players)
+              </div>
+            }
             <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
           </div>
           <div #addPointGroup class="add-point-group">

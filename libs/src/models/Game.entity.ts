@@ -69,10 +69,6 @@ export class GameEntity extends BaseEntity {
     return this.BoardGame?.Name;
   }
 
-  get PlayerCount() {
-    return this.Players ?? this.Scores.reduce((prev, curr) => prev + (curr.ScoringPlayer ? curr.Players.length : 0), 0);
-  }
-
   @Ignore()
   @MinMax(0, 8, 'array')
   Tags: TagEntity[] = [];
@@ -106,6 +102,9 @@ export class GameEntity extends BaseEntity {
 
   @Ignore()
   WinOverride = false;
+
+  @Ignore()
+  PlayerCount = 0;
 
   @Ignore()
   calculated = false;
@@ -143,6 +142,10 @@ export class GameEntity extends BaseEntity {
     }
   }
 
+  getPlayerCount() {
+    return (new Set(this.Scores.filter(x => x.ScoringPlayer).flatMap(x => x.Players.map(p => p.PlayerId)))).size;
+  }
+
   calculate() {
     this.calculateWinners();
     this.Winners = this.placePlayers(0);
@@ -155,6 +158,7 @@ export class GameEntity extends BaseEntity {
             .join(', ')
         : undefined;
     this.WinOverride = this.Scores.some((s) => s.TieBreaker);
+    this.PlayerCount = this.getPlayerCount();
     this.calculated = true;
   }
 

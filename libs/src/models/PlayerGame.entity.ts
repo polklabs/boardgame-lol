@@ -93,16 +93,15 @@ export class PlayerGameEntity extends BaseEntity {
   constructor(partial: Partial<PlayerGameEntity> = {}, copyIgnored = false) {
     super();
     this.assign(partial, PlayerGameEntity, copyIgnored);
-    this.ScoringPlayer = partial.ScoringPlayer ?? true;
     this.PlayerLinks = partial.PlayerLinks ?? [];
     this.Tags = partial.Tags ?? [];
 
+    this.ScoringPlayer = partial.ScoringPlayer ?? this.Points !== null;
     this.Points = this.ScoringPlayer ? this.Points : null;
   }
 
   calculate() {
     calculationsComplete(this.Game);
-    this.ScoringPlayer = this.Points !== null;
     this.Won = this.Game?.place(0).includes(this) ?? false;
     this.calculated = true;
   }
