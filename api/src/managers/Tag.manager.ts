@@ -8,7 +8,6 @@ import { TagGameManager } from './TagGame.manager';
 import { TagPlayerManager } from './TagPlayer.manager';
 import { TagGameEntity } from 'libs/models/TagGame.entity';
 import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
-import { ClubUserManager } from './ClubUser.manager';
 import { TagPlayerGameManager } from './TagPlayerGame.manager';
 
 type TagLink = 'boardGame' | 'game' | 'player' | 'playerGame';
@@ -17,7 +16,6 @@ type TagLink = 'boardGame' | 'game' | 'player' | 'playerGame';
 export class TagManager extends BaseManager<TagEntity> {
   constructor(
     protected db: DbService,
-    protected clubUserManager: ClubUserManager,
     public tagBoardGame: TagBoardGameManager,
     public tagGame: TagGameManager,
     public tagPlayer: TagPlayerManager,

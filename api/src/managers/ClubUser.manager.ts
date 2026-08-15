@@ -71,7 +71,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
 
   put(userId: string, ClubId: string, entity: ClubUserEntity) {
     const usernameEmail = entity.usernameEmail;
-    entity = this.new({...entity, ClubId});
+    entity = this.new({ ...entity, ClubId });
 
     if (!entity.UserId) {
       const user = this.userManager.findUser(usernameEmail);
@@ -94,7 +94,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
   }
 
   patch(userId: string, ClubId: string, entity: ClubUserEntity) {
-    entity = this.new({...entity, ClubId});
+    entity = this.new({ ...entity, ClubId });
 
     this.SanitizeInputs(entity);
     this.Validate(userId, entity);

@@ -3,14 +3,10 @@ import { DbService } from 'src/services/db.service';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
 import { newGuid, EventEntity } from 'libs/index';
-import { ClubUserManager } from './ClubUser.manager';
 
 @Injectable()
 export class EventManager extends BaseManager<EventEntity> {
-  constructor(
-    protected db: DbService,
-    protected clubUserManager: ClubUserManager,
-  ) {
+  constructor(protected db: DbService) {
     super(EventEntity);
   }
 

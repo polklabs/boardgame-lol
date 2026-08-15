@@ -10,7 +10,6 @@ import { TagManager } from './Tag.manager';
 export class PlayerManager extends BaseManager<PlayerEntity> {
   constructor(
     protected db: DbService,
-    protected clubUserManager: ClubUserManager,
     protected tagManager: TagManager,
   ) {
     super(PlayerEntity);

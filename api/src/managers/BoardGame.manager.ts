@@ -3,14 +3,12 @@ import { DbService } from 'src/services/db.service';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
 import { BoardGameEntity, BoardGameReturn, newGuid } from 'libs/index';
-import { ClubUserManager } from './ClubUser.manager';
 import { TagManager } from './Tag.manager';
 
 @Injectable()
 export class BoardGameManager extends BaseManager<BoardGameEntity> {
   constructor(
     protected db: DbService,
-    protected clubUserManager: ClubUserManager,
     protected tagManager: TagManager,
   ) {
     super(BoardGameEntity);

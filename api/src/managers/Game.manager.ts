@@ -4,10 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { newGuid } from 'libs/utils/guid-utils';
 import { ValidationError } from 'src/errors/validation.error';
 import { GameEntity, GameReturn, PlayerGameEntity, TagPlayerGameEntity, TP } from 'libs/index';
-import { BoardGameManager } from './BoardGame.manager';
 import { PlayerGameManager } from './PlayerGame.manager';
-import { PlayerManager } from './Player.manager';
-import { ClubUserManager } from './ClubUser.manager';
 import { TagManager } from './Tag.manager';
 import { PlayerGamePlayerManager } from './PlayerGamePlayer.manager';
 
@@ -15,11 +12,8 @@ import { PlayerGamePlayerManager } from './PlayerGamePlayer.manager';
 export class GameManager extends BaseManager<GameEntity> {
   constructor(
     protected db: DbService,
-    protected boardGameManager: BoardGameManager,
     protected playerGamePlayerManager: PlayerGamePlayerManager,
     protected playerGameManager: PlayerGameManager,
-    protected playerManager: PlayerManager,
-    protected clubUserManager: ClubUserManager,
     protected tagManager: TagManager,
   ) {
     super(GameEntity);
