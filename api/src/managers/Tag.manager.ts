@@ -69,13 +69,13 @@ export class TagManager extends BaseManager<TagEntity> {
   private getTagLinkPut(tagLink: TagLink, userId: string, ClubId: string, TagId: string, linkId: string): unknown {
     switch (tagLink) {
       case 'boardGame':
-        return this.tagBoardGame.put(userId, new TagBoardGameEntity({ TagId, ClubId, BoardGameId: linkId }));
+        return this.tagBoardGame.put(userId, ClubId, new TagBoardGameEntity({ TagId, ClubId, BoardGameId: linkId }));
       case 'game':
-        return this.tagGame.put(userId, new TagGameEntity({ TagId, ClubId, GameId: linkId }));
+        return this.tagGame.put(userId, ClubId, new TagGameEntity({ TagId, ClubId, GameId: linkId }));
       case 'player':
-        return this.tagPlayer.put(userId, new TagPlayerEntity({ TagId, ClubId, PlayerId: linkId }));
+        return this.tagPlayer.put(userId, ClubId, new TagPlayerEntity({ TagId, ClubId, PlayerId: linkId }));
       case 'playerGame':
-        return this.tagPlayerGame.put(userId, new TagPlayerGameEntity({ TagId, ClubId, PlayerGameId: linkId }));
+        return this.tagPlayerGame.put(userId, ClubId, new TagPlayerGameEntity({ TagId, ClubId, PlayerGameId: linkId }));
       default:
         throw new NotImplementedException();
     }
@@ -95,15 +95,8 @@ export class TagManager extends BaseManager<TagEntity> {
     }
   }
 
-  put(userId: string, entity: TagEntity, resetID = true) {
-    entity = this.new(entity);
-    if (resetID) {
-      entity.TagId = newGuid();
-    } else {
-      // Continue
-    }
-
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
+  put(userId: string, ClubId: string, entity: TagEntity) {
+    entity = this.new({ ...entity, ClubId, TagId: newGuid() });
 
     this.SanitizeInputs(entity);
     this.Validate(userId, entity);
@@ -114,10 +107,8 @@ export class TagManager extends BaseManager<TagEntity> {
     return this.loadOne(entity.TagId);
   }
 
-  patch(userId: string, entity: TagEntity) {
-    entity = this.new(entity);
-
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
+  patch(userId: string, ClubId: string, entity: TagEntity) {
+    entity = this.new({ ...entity, ClubId });
 
     this.SanitizeInputs(entity);
     this.Validate(userId, entity);
@@ -129,9 +120,8 @@ export class TagManager extends BaseManager<TagEntity> {
     return this.loadOne(entity.TagId);
   }
 
-  delete(userId: string, primaryId: string, secondaryId: string) {
-    this.clubUserManager.hasAccess(userId, secondaryId);
-    return this.runDelete([primaryId], secondaryId, true);
+  delete(tagId: string, clubId: string) {
+    return this.runDelete(tagId, clubId, true);
   }
 
   public Validate(userId: string, entity: TagEntity): string[] {

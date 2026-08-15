@@ -49,7 +49,7 @@ export class ApiService {
   private entityWrappers = [
     this.clubs,
     this.clubUsers,
-    this.games,    
+    this.games,
     this.playerGames,
     this.boardGames,
     this.playerGamePlayers,
@@ -78,6 +78,24 @@ export class ApiService {
   }
   private set club(club: ClubEntity | undefined) {
     this.club$.next(new ClubEntity(club));
+  }
+
+  private post<T, K = T>(put: boolean, entityType: string, data: T, ...extraIds: (string | number | null)[]) {
+    const path = ['api', entityType, this.clubId, ...extraIds];
+    if (put) {
+      return this.httpService.put<T, K>(path, data);
+    } else {
+      return this.httpService.patch<T, K>(path, data);
+    }
+  }
+
+  private delete(entityType: string, ...extraIds: (string | number | null)[]) {
+    if (!extraIds.every(Boolean)) {
+      console.log(`${entityType} id is empty`);
+      return null;
+    } else {
+      return this.httpService.delete(['api', entityType, this.clubId, ...extraIds]);
+    }
   }
 
   unloadClub() {
@@ -154,12 +172,7 @@ export class ApiService {
   }
 
   async postGame(isNew: boolean, data: GameEntity): Promise<GameEntity | null> {
-    let result: GameReturn | null = null;
-    if (isNew) {
-      result = await this.httpService.put(['api', 'game'], data);
-    } else {
-      result = await this.httpService.patch(['api', 'game'], data);
-    }
+    const result: GameReturn | null = await this.post(isNew, 'game', data);
 
     if (result) {
       this.games.upsert(result.Game);
@@ -180,12 +193,7 @@ export class ApiService {
   }
 
   async postPlayer(isNew: boolean, entity: PlayerEntity) {
-    let result: PlayerReturn | null = null;
-    if (isNew) {
-      result = await this.httpService.put(['api', 'player'], entity);
-    } else {
-      result = await this.httpService.patch(['api', 'player'], entity);
-    }
+    const result: PlayerReturn | null = await this.post(isNew, 'player', entity);
 
     if (result) {
       this.players.upsert(result.Player);
@@ -199,12 +207,7 @@ export class ApiService {
   }
 
   async postBoardGame(isNew: boolean, entity: BoardGameEntity) {
-    let result: BoardGameReturn | null = null;
-    if (isNew) {
-      result = await this.httpService.put(['api', 'board-game'], entity);
-    } else {
-      result = await this.httpService.patch(['api', 'board-game'], entity);
-    }
+    const result: BoardGameReturn | null = await this.post(isNew, 'board-game', entity);
 
     if (result) {
       this.boardGames.upsert(result.BoardGame);
@@ -218,12 +221,7 @@ export class ApiService {
   }
 
   async postTag(isNew: boolean, entity: TagEntity) {
-    let result: TagEntity | null = null;
-    if (isNew) {
-      result = await this.httpService.put(['api', 'tag'], entity);
-    } else {
-      result = await this.httpService.patch(['api', 'tag'], entity);
-    }
+    const result: TagEntity | null = await this.post(isNew, 'tag', entity);
 
     if (result) {
       this.tags.upsert(result);
@@ -236,12 +234,7 @@ export class ApiService {
   }
 
   async postEvent(isNew: boolean, entity: EventEntity) {
-    let result: EventEntity | null = null;
-    if (isNew) {
-      result = await this.httpService.put(['api', 'event'], entity);
-    } else {
-      result = await this.httpService.patch(['api', 'event'], entity);
-    }
+    const result: EventEntity | null = await this.post(isNew, 'event', entity);
 
     if (result) {
       this.events.upsert(result);
@@ -254,14 +247,7 @@ export class ApiService {
   }
 
   async deleteGame(gameId: string) {
-    if (gameId === '') {
-      console.log('gameId is empty');
-      return false;
-    } else {
-      // continue
-    }
-
-    const result = await this.httpService.delete(['api', 'game', this.clubId, gameId]);
+    const result = await this.delete('game', gameId);
 
     if (result) {
       this.games.deleteOne(gameId);
@@ -280,10 +266,7 @@ export class ApiService {
   }
 
   async updateGameIndex(gameId: string | null, direction: number) {
-    const result = await this.httpService.patch<null, GameEntity[]>(
-      ['api', 'game', this.clubId, gameId, direction],
-      null,
-    );
+    const result = await this.post<null, GameEntity[]>(false, 'game', null, gameId, direction);
 
     if (result) {
       this.games.upsert(result);
@@ -296,14 +279,7 @@ export class ApiService {
   }
 
   async deletePlayer(playerId: string) {
-    if (playerId === '') {
-      console.log('playerId is empty');
-      return false;
-    } else {
-      // continue
-    }
-
-    const result = await this.httpService.delete(['api', 'player', this.clubId, playerId]);
+    const result = await this.delete('player', playerId);
 
     if (result) {
       this.players.deleteOne(playerId);
@@ -318,14 +294,7 @@ export class ApiService {
   }
 
   async deleteBoardGame(boardGameId: string) {
-    if (boardGameId === '') {
-      console.log('boardGameId is empty');
-      return false;
-    } else {
-      // continue
-    }
-
-    const result = await this.httpService.delete(['api', 'board-game', this.clubId, boardGameId]);
+    const result = await this.delete('board-game', boardGameId);
 
     if (result) {
       this.boardGames.deleteOne(boardGameId);
@@ -343,14 +312,7 @@ export class ApiService {
   }
 
   async deleteTag(tagId: string) {
-    if (tagId === '') {
-      console.log('tagId is empty');
-      return false;
-    } else {
-      // continue
-    }
-
-    const result = await this.httpService.delete(['api', 'tag', this.clubId, tagId]);
+    const result = await this.delete('tag', tagId);
 
     if (result) {
       this.tags.deleteOne(tagId);
@@ -367,15 +329,8 @@ export class ApiService {
     }
   }
 
-  async deleteClub(clubId: string) {
-    if (clubId === '') {
-      console.log('clubId is empty');
-      return false;
-    } else {
-      // continue
-    }
-
-    const result = await this.httpService.delete(['api', 'club', clubId]);
+  async deleteClub() {
+    const result = await this.delete('club');
 
     if (result) {
       this.unloadClub();
@@ -386,14 +341,7 @@ export class ApiService {
   }
 
   async deleteEvent(eventId: string) {
-    if (eventId === '') {
-      console.log('eventId is empty');
-      return false;
-    } else {
-      // continue
-    }
-
-    const result = await this.httpService.delete(['api', 'event', this.clubId, eventId]);
+    const result = await this.delete('event', eventId);
 
     if (result) {
       this.events.deleteOne(eventId);
@@ -521,9 +469,9 @@ export class ApiService {
 
     this.calculatedFields();
 
-    this.playerGames.list.forEach(pg => {
-      pg.Players.sort((a,b) => a.ShortName.localeCompare(b.ShortName));
-    })
+    this.playerGames.list.forEach((pg) => {
+      pg.Players.sort((a, b) => a.ShortName.localeCompare(b.ShortName));
+    });
     this.players.sort((a, b) => a.FullName.localeCompare(b.FullName));
   }
 

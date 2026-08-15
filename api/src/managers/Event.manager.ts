@@ -14,15 +14,8 @@ export class EventManager extends BaseManager<EventEntity> {
     super(EventEntity);
   }
 
-  put(userId: string, entity: EventEntity, resetID = true): EventEntity {
-    entity = this.new(entity);
-    if (resetID) {
-      entity.EventId = newGuid();
-    } else {
-      // Continue
-    }
-
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
+  put(userId: string, ClubId: string, entity: EventEntity): EventEntity {
+    entity = this.new({ ...entity, ClubId, EventId: newGuid() });
 
     this.SanitizeInputs(entity);
 
@@ -36,10 +29,8 @@ export class EventManager extends BaseManager<EventEntity> {
     return this.loadOne(entity.EventId)!;
   }
 
-  patch(userId: string, entity: EventEntity): EventEntity {
-    entity = this.new(entity);
-
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
+  patch(userId: string, ClubId: string, entity: EventEntity): EventEntity {
+    entity = this.new({ ...entity, ClubId });
 
     this.SanitizeInputs(entity);
 
@@ -54,9 +45,8 @@ export class EventManager extends BaseManager<EventEntity> {
     return this.loadOne(entity.EventId)!;
   }
 
-  delete(userId: string, primaryId: string, secondaryId: string) {
-    this.clubUserManager.hasAccess(userId, secondaryId);
-    this.runDelete(primaryId, secondaryId);
+  delete(eventId: string, clubId: string) {
+    this.runDelete(eventId, clubId);
   }
 
   public Validate(userId: string, entity: EventEntity): string[] {

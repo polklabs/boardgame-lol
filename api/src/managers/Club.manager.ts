@@ -55,8 +55,8 @@ export class ClubManager extends BaseManager<ClubEntity> {
 
   put(userId: string, entity: ClubEntity): ClubEditReturn {
     let users = entity.Users;
-    entity = this.new(entity);
-    entity.ClubId = newGuid();
+    const ClubId = newGuid();
+    entity = this.new({ ...entity, ClubId });
 
     this.SanitizeInputs(entity);
     this.Validate(userId, entity);
@@ -68,13 +68,13 @@ export class ClubManager extends BaseManager<ClubEntity> {
     users.push(
       new ClubUserEntity({
         Admin: true,
-        ClubId: entity.ClubId,
+        ClubId,
         UserId: userId,
       }),
     );
 
     users.forEach((u) => {
-      transactions.push(this.clubUserManager.put(userId, u));
+      transactions.push(this.clubUserManager.put(userId, ClubId, u));
     });
 
     this.CheckForeignKeys(entity);
@@ -90,11 +90,11 @@ export class ClubManager extends BaseManager<ClubEntity> {
   patch(userId: string, entity: ClubEntity): ClubEditReturn {
     let users = entity.Users;
     entity = this.new(entity);
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
+    const clubId = entity.ClubId;
 
     let admin = false;
     try {
-      this.clubUserManager.hasAdminAccess(userId, entity.ClubId);
+      this.clubUserManager.hasAdminAccess(userId, clubId);
       admin = true;
     } finally {
       // Continue
@@ -106,19 +106,19 @@ export class ClubManager extends BaseManager<ClubEntity> {
     const transactions: unknown[] = [];
 
     if (admin) {
-      const oldUsers = new Set(this.clubUserManager.loadMany('ClubId', entity.ClubId).map((x) => x.UserId));
+      const oldUsers = new Set(this.clubUserManager.loadMany('ClubId', clubId).map((x) => x.UserId));
       users = users.filter((x) => x.UserId !== userId);
       const toDelete = users.filter((x) => x.toDelete);
       users = users.filter((x) => !x.toDelete);
       users.forEach((u) => {
         if (oldUsers.has(u.UserId)) {
-          transactions.push(this.clubUserManager.patch(userId, u));
+          transactions.push(this.clubUserManager.patch(userId, clubId, u));
         } else {
-          transactions.push(this.clubUserManager.put(userId, u));
+          transactions.push(this.clubUserManager.put(userId, clubId, u));
         }
       });
       toDelete.forEach((u) => {
-        transactions.push(this.clubUserManager.delete(userId, u));
+        transactions.push(this.clubUserManager.delete(userId, clubId, u));
       });
     } else {
       // Cannot edit club users
@@ -132,9 +132,7 @@ export class ClubManager extends BaseManager<ClubEntity> {
     };
   }
 
-  delete(userId: string,clubId: string) {
-    this.clubUserManager.hasAdminAccess(userId, clubId);
-
+  delete(clubId: string) {
     this.runDelete(clubId, undefined);
   }
 

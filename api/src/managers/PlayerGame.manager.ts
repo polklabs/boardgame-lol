@@ -14,14 +14,9 @@ export class PlayerGameManager extends BaseManager<PlayerGameEntity> {
     super(PlayerGameEntity);
   }
 
-  put(userId: string, entity: PlayerGameEntity, resetID = true) {
+  put(userId: string, ClubId: string, entity: PlayerGameEntity) {
     const tags = entity.Tags;
-    entity = this.new(entity);
-    if (resetID) {
-      entity.PlayerGameId = newGuid();
-    } else {
-      // Continue
-    }
+    entity = this.new({...entity, ClubId});
 
     this.SanitizeInputs(entity);
 
@@ -36,9 +31,9 @@ export class PlayerGameManager extends BaseManager<PlayerGameEntity> {
     return this.runInsert(userId, entity, true, transactions);
   }
 
-  patch(userId: string, entity: PlayerGameEntity) {
+  patch(userId: string, ClubId: string, entity: PlayerGameEntity) {
     const tags = entity.Tags;
-    entity = this.new(entity);
+    entity = this.new({...entity, ClubId});
 
     this.SanitizeInputs(entity);
 
@@ -53,8 +48,8 @@ export class PlayerGameManager extends BaseManager<PlayerGameEntity> {
     return this.runUpdate(userId, entity, true, transactions);
   }
 
-  delete(primaryId: string, secondaryId: string) {
-    return this.runDelete(primaryId, secondaryId, true);
+  delete(playerGameId: string, clubId: string) {
+    return this.runDelete(playerGameId, clubId, true);
   }
 
   public Validate(userId: string, entity: PlayerGameEntity): string[] {

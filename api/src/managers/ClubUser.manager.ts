@@ -69,9 +69,9 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
       .map((x) => new ClubUserEntity(x));
   }
 
-  put(userId: string, entity: ClubUserEntity) {
+  put(userId: string, ClubId: string, entity: ClubUserEntity) {
     const usernameEmail = entity.usernameEmail;
-    entity = this.new(entity);
+    entity = this.new({...entity, ClubId});
 
     if (!entity.UserId) {
       const user = this.userManager.findUser(usernameEmail);
@@ -93,8 +93,8 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     return this.runInsert(userId, entity, true);
   }
 
-  patch(userId: string, entity: ClubUserEntity) {
-    entity = this.new(entity);
+  patch(userId: string, ClubId: string, entity: ClubUserEntity) {
+    entity = this.new({...entity, ClubId});
 
     this.SanitizeInputs(entity);
     this.Validate(userId, entity);
@@ -104,10 +104,10 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     return this.runUpdate(userId, entity, true);
   }
 
-  delete(userId: string, entity: ClubUserEntity) {
+  delete(userId: string, clubId: string, entity: ClubUserEntity) {
     this.Validate(userId, entity);
 
-    return this.runDelete([entity.ClubId, entity.UserId], undefined, true);
+    return this.runDelete([clubId, entity.UserId], undefined, true);
   }
 
   public Validate(userId: string, entity: ClubUserEntity): string[] {

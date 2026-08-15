@@ -17,7 +17,7 @@ import { BadRequestException } from '@nestjs/common';
 export abstract class BaseManager<T extends BaseEntity> {
   protected abstract db: DbService;
 
-  public readonly new: (data: T) => T;
+  public readonly new: (data: Partial<T>) => T;
 
   protected primaryKeys: (keyof T)[];
   protected secondaryKey: keyof T | undefined;
@@ -40,7 +40,7 @@ export abstract class BaseManager<T extends BaseEntity> {
     this.enums = getEnum(entityType) as EnumValue;
     this.sanitize = getSanitize(entityType) as SanitizeTags;
 
-    this.new = (data: T) => {
+    this.new = (data: Partial<T>) => {
       const e = new entityType(data);
       this.ignore.forEach((i) => {
         delete e[i];

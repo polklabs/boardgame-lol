@@ -182,14 +182,14 @@ export class EditorClubComponent implements OnChanges {
 
   toDeleteEntity() {
     this.confirmationService.confirm({
-      message: 'Are you sure that you want to proceed?',
+      message: 'This will delete everything related to this club and cannot be undone. Are you sure that you want to proceed?',
       header: 'Deleting Club',
       icon: 'pi pi-exclamation-triangle',
       acceptIcon: 'none',
       rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       accept: async () => {
-        const result = await this.apiService.deleteClub(this.club!.ClubId);
+        const result = await this.apiService.deleteClub();
         if (result) {
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Club' });
           this.closeEditor.emit();

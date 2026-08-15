@@ -16,16 +16,9 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
     super(BoardGameEntity);
   }
 
-  put(userId: string, entity: BoardGameEntity, resetID = true): BoardGameReturn {
+  put(userId: string, ClubId: string, entity: BoardGameEntity): BoardGameReturn {
     const tags = entity.Tags;
-    entity = this.new(entity);
-    if (resetID) {
-      entity.BoardGameId = newGuid();
-    } else {
-      // Continue
-    }
-
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
+    entity = this.new({ ...entity, ClubId, BoardGameId: newGuid() });
 
     this.SanitizeInputs(entity);
 
@@ -37,7 +30,6 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
 
     this.CheckForeignKeys(entity);
 
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
     this.runInsert(userId, entity, false, transactions);
     return {
       BoardGame: this.loadOne(entity.BoardGameId)!,
@@ -45,11 +37,9 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
     };
   }
 
-  patch(userId: string, entity: BoardGameEntity): BoardGameReturn {
+  patch(userId: string, ClubId: string, entity: BoardGameEntity): BoardGameReturn {
     const tags = entity.Tags;
-    entity = this.new(entity);
-
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
+    entity = this.new({ ...entity, ClubId });
 
     this.SanitizeInputs(entity);
 
@@ -69,9 +59,8 @@ export class BoardGameManager extends BaseManager<BoardGameEntity> {
     };
   }
 
-  delete(userId: string, primaryId: string, secondaryId: string) {
-    this.clubUserManager.hasAccess(userId, secondaryId);
-    this.runDelete(primaryId, secondaryId);
+  delete(boardGameId: string, clubId: string) {
+    this.runDelete(boardGameId, clubId);
   }
 
   public Validate(userId: string, entity: BoardGameEntity): string[] {

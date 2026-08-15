@@ -16,16 +16,9 @@ export class PlayerManager extends BaseManager<PlayerEntity> {
     super(PlayerEntity);
   }
 
-  put(userId: string, entity: PlayerEntity, resetID = true): PlayerReturn {
+  put(userId: string, ClubId: string, entity: PlayerEntity): PlayerReturn {
     const tags = entity.Tags;
-    entity = this.new(entity);
-    if (resetID) {
-      entity.PlayerId = newGuid();
-    } else {
-      // Continue
-    }
-
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
+    entity = this.new({ ...entity, ClubId, PlayerId: newGuid() });
 
     this.SanitizeInputs(entity);
 
@@ -44,11 +37,9 @@ export class PlayerManager extends BaseManager<PlayerEntity> {
     };
   }
 
-  patch(userId: string, entity: PlayerEntity): PlayerReturn {
+  patch(userId: string, ClubId: string, entity: PlayerEntity): PlayerReturn {
     const tags = entity.Tags;
-    entity = this.new(entity);
-
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
+    entity = this.new({ ...entity, ClubId });
 
     this.SanitizeInputs(entity);
 
@@ -68,9 +59,8 @@ export class PlayerManager extends BaseManager<PlayerEntity> {
     };
   }
 
-  delete(userId: string, primaryId: string, secondaryId: string) {
-    this.clubUserManager.hasAccess(userId, secondaryId);
-    this.runDelete(primaryId, secondaryId);
+  delete(playerId: string, clubId: string) {
+    this.runDelete(playerId, clubId);
   }
 
   public Validate(userId: string, entity: PlayerEntity): string[] {

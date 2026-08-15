@@ -10,8 +10,8 @@ export class PlayerGamePlayerManager extends BaseManager<PlayerGamePlayerEntity>
     super(PlayerGamePlayerEntity);
   }
 
-  put(userId: string, entity: PlayerGamePlayerEntity) {
-    entity = this.new(entity);
+  put(userId: string, ClubId: string, entity: PlayerGamePlayerEntity) {
+    entity = this.new({...entity, ClubId});
 
     this.SanitizeInputs(entity);
 
@@ -22,8 +22,8 @@ export class PlayerGamePlayerManager extends BaseManager<PlayerGamePlayerEntity>
     return this.runInsert(userId, entity, true);
   }
 
-  patch(userId: string, entity: PlayerGamePlayerEntity) {
-    entity = this.new(entity);
+  patch(userId: string, ClubId: string, entity: PlayerGamePlayerEntity) {
+    entity = this.new({...entity, ClubId});
 
     this.SanitizeInputs(entity);
 
@@ -34,8 +34,8 @@ export class PlayerGamePlayerManager extends BaseManager<PlayerGamePlayerEntity>
     return this.runUpdate(userId, entity, true);
   }
 
-  delete(gameId: string, playerGameId: string, playerId: string, secondaryId: string) {
-    return this.runDelete([gameId, playerGameId, playerId], secondaryId, true);
+  delete(gameId: string, playerGameId: string, playerId: string, clubId: string) {
+    return this.runDelete([gameId, playerGameId, playerId], clubId, true);
   }
 
   public Validate(userId: string, entity: PlayerGamePlayerEntity): string[] {

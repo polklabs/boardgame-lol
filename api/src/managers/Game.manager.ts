@@ -25,34 +25,29 @@ export class GameManager extends BaseManager<GameEntity> {
     super(GameEntity);
   }
 
-  put(userId: string, game: GameEntity): GameReturn {
-    const tags = game.Tags;
-    const entity = this.new(game);
-    entity.GameId = newGuid();
+  put(userId: string, ClubId: string, entity: GameEntity): GameReturn {
+    const tags = entity.Tags;
+    const scores = entity.Scores;
+    entity = this.new({ ...entity, ClubId, GameId: newGuid() });
 
-    const playerGames = game.Scores;
-    const playerGamePlayers = playerGames.flatMap((pg) => pg.PlayerLinks);
-
-    this.AssertClubIds(game);
-
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
+    const playerGamePlayers = scores.flatMap((pg) => pg.PlayerLinks);
 
     this.SanitizeInputs(entity);
 
     const transactions: unknown[] = [];
 
-    this.Validate(userId, entity, playerGames);
+    this.Validate(userId, entity, scores);
     this.CheckForeignKeys(entity);
 
     transactions.push(this.runInsert(userId, entity, true));
 
     this.tagManager.upsert('game', userId, entity.ClubId!, tags, entity.GameId!, transactions);
 
-    playerGames.forEach((pg) => {
+    scores.forEach((pg) => {
       pg.ClubId = entity.ClubId;
       pg.PlayerGameId = newGuid();
       pg.GameId = entity.GameId;
-      transactions.push(this.playerGameManager.put(userId, pg, false));
+      transactions.push(this.playerGameManager.put(userId, ClubId, pg));
       pg.PlayerLinks.forEach((pgp) => {
         pgp.PlayerGameId = pg.PlayerGameId;
         pgp.GameId = pg.GameId;
@@ -62,7 +57,7 @@ export class GameManager extends BaseManager<GameEntity> {
     playerGamePlayers.forEach((pgp) => {
       pgp.GameId = entity.GameId;
       pgp.ClubId = entity.ClubId;
-      transactions.push(this.playerGamePlayerManager.put(userId, pgp));
+      transactions.push(this.playerGamePlayerManager.put(userId, ClubId, pgp));
     });
 
     this.db.Transact(transactions);
@@ -80,16 +75,13 @@ export class GameManager extends BaseManager<GameEntity> {
     };
   }
 
-  patch(userId: string, game: GameEntity): GameReturn {
-    const tags = game.Tags;
-    const entity = this.new(game);
+  patch(userId: string, ClubId: string, entity: GameEntity): GameReturn {
+    const tags = entity.Tags;
+    const playerGames = entity.Scores;
 
-    const playerGames = game.Scores;
+    entity = this.new({ ...entity, ClubId });
+
     const playerGamePlayers = playerGames.flatMap((pg) => pg.PlayerLinks);
-
-    this.AssertClubIds(game);
-
-    this.clubUserManager.hasAccess(userId, entity.ClubId);
 
     this.SanitizeInputs(entity);
 
@@ -103,11 +95,11 @@ export class GameManager extends BaseManager<GameEntity> {
       pg.ClubId = entity.ClubId;
       pg.GameId = entity.GameId;
       if (oldPlayerGames.has(pg.PlayerGameId)) {
-        transactions.push(this.playerGameManager.patch(userId, pg));
+        transactions.push(this.playerGameManager.patch(userId, ClubId, pg));
         oldPlayerGames.delete(pg.PlayerGameId);
       } else {
         pg.PlayerGameId = newGuid();
-        transactions.push(this.playerGameManager.put(userId, pg, false));
+        transactions.push(this.playerGameManager.put(userId, ClubId, pg));
       }
       pg.PlayerLinks.forEach((pgp) => {
         pgp.PlayerGameId = pg.PlayerGameId;
@@ -126,10 +118,10 @@ export class GameManager extends BaseManager<GameEntity> {
       pgp.ClubId = entity.ClubId;
       const pgpId = `${pgp.PlayerGameId};${pgp.PlayerId}`;
       if (oldPlayerGamePlayers.has(pgpId)) {
-        transactions.push(this.playerGamePlayerManager.patch(userId, pgp));
+        transactions.push(this.playerGamePlayerManager.patch(userId, ClubId, pgp));
         oldPlayerGamePlayers.delete(pgpId);
       } else {
-        transactions.push(this.playerGamePlayerManager.put(userId, pgp));
+        transactions.push(this.playerGamePlayerManager.put(userId, ClubId, pgp));
       }
     });
     oldPlayerGamePlayerRows.forEach((pgp) => {
@@ -161,11 +153,9 @@ export class GameManager extends BaseManager<GameEntity> {
     };
   }
 
-  updateSortIndex(userId: string, primaryId: string, secondaryId: string, direction: number) {
-    this.clubUserManager.hasAccess(userId, secondaryId);
-
-    const games = this.loadMany('ClubId', secondaryId);
-    const primary = games.find((x) => x.GameId === primaryId);
+  updateSortIndex(userId: string, clubId: string, gameId: string, direction: number) {
+    const games = this.loadMany('ClubId', clubId);
+    const primary = games.find((x) => x.GameId === gameId);
 
     if (primary) {
       const toUpdate = games
@@ -194,9 +184,8 @@ export class GameManager extends BaseManager<GameEntity> {
     return [];
   }
 
-  delete(userId: string, primaryId: string, secondaryId: string) {
-    this.clubUserManager.hasAccess(userId, secondaryId);
-    return this.runDelete(primaryId, secondaryId, false);
+  delete(gameId: string, clubId: string) {
+    return this.runDelete(gameId, clubId, false);
   }
 
   public Validate(userId: string, entity: GameEntity, playerGames: PlayerGameEntity[]): string[] {
@@ -214,20 +203,6 @@ export class GameManager extends BaseManager<GameEntity> {
       throw new ValidationError(errors);
     } else {
       return [];
-    }
-  }
-
-  private AssertClubIds(game: GameEntity) {
-    const id = game.ClubId;
-    const valid = [
-      ...game.Scores.flatMap((pg) => pg.PlayerLinks).map((x) => x.ClubId),
-      ...game.Scores.map((x) => x.ClubId),
-    ].every((x) => x === id);
-
-    if (valid) {
-      return true;
-    } else {
-      throw new ValidationError(['Mismatching Clubs']);
     }
   }
 }

@@ -10,8 +10,8 @@ export class TagPlayerGameManager extends BaseManager<TagPlayerGameEntity> {
     super(TagPlayerGameEntity);
   }
 
-  put(userId: string, entity: TagPlayerGameEntity) {
-    entity = this.new(entity);
+  put(userId: string, ClubId: string, entity: TagPlayerGameEntity) {
+    entity = this.new({...entity, ClubId});
 
     this.SanitizeInputs(entity);
     this.Validate(userId, entity);
@@ -21,8 +21,8 @@ export class TagPlayerGameManager extends BaseManager<TagPlayerGameEntity> {
     return this.runInsert(userId, entity, true);
   }
 
-  patch(userId: string, entity: TagPlayerGameEntity) {
-    entity = this.new(entity);
+  patch(userId: string, ClubId: string, entity: TagPlayerGameEntity) {
+    entity = this.new({...entity, ClubId});
 
     this.SanitizeInputs(entity);
     this.Validate(userId, entity);
@@ -32,8 +32,8 @@ export class TagPlayerGameManager extends BaseManager<TagPlayerGameEntity> {
     return this.runUpdate(userId, entity, true);
   }
 
-  delete(tagId: string, boardGameId: string, secondaryId: string) {
-    return this.runDelete([tagId, boardGameId], secondaryId, true);
+  delete(tagId: string, boardGameId: string, clubId: string) {
+    return this.runDelete([tagId, boardGameId], clubId, true);
   }
 
   public Validate(userId: string, entity: TagPlayerGameEntity): string[] {
