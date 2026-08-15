@@ -14,6 +14,7 @@ import {
   UseInterceptors,
   UnauthorizedException,
   NotFoundException,
+  Inject,
 } from '@nestjs/common';
 import { ValidationError } from './errors/validation.error';
 import { AuthorizationError } from './errors/authorization.error';
@@ -31,14 +32,18 @@ import { PlayerGamePlayerManager } from './managers/PlayerGamePlayer.manager';
 import { EventManager } from './managers/Event.manager';
 import { AuthCheckGuard } from './auth/auth-check.guard';
 import { ClubUserManager } from './managers/ClubUser.manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 const publicThrottle = { default: { limit: 60, ttl: 600000 } };
 const authThrottle = { default: { limit: 30, ttl: 30000 } };
 
 @Controller('api')
 @UseGuards(ThrottlerBehindProxyGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 export class AppController {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private clubManager: ClubManager,
     private clubUserManager: ClubUserManager,
     private gameManager: GameManager,
@@ -50,7 +55,7 @@ export class AppController {
     private eventManager: EventManager,
   ) {}
 
-  getUserId(request: any) {
+  getUserId(request: any): string {
     if (request['user']) {
       return request['user'].userId;
     } else {
@@ -79,6 +84,10 @@ export class AppController {
     }
   }
 
+  bustCache() {
+    this.cacheManager.del('clubs');
+  }
+
   handleErrors(e: any) {
     if (e instanceof ValidationError) {
       throw new HttpException(e.message, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -95,15 +104,25 @@ export class AppController {
   /// --------------------------------------------------------------------------------
   @Throttle(publicThrottle)
   @UseGuards(AuthCheckGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get('clubs')
-  getPublicClubs(@Request() req: any) {
-    return this.clubManager.loadManyWithAuth(this.tryGetUserId(req));
+  async getPublicClubs(@Request() req: any) {
+    const userId = this.tryGetUserId(req);
+    if (userId) {
+      return this.clubManager.loadManyWithAuth(userId);
+    } else {
+      const cachedClubs = await this.cacheManager.get<ClubEntity[]>('clubs');
+      if (cachedClubs) {
+        return cachedClubs;
+      } else {
+        const toReturn = this.clubManager.loadManyWithAuth(userId);
+        await this.cacheManager.set('clubs', toReturn, 1000 * 60 * 60);
+        return toReturn;
+      }
+    }
   }
 
   @Throttle(publicThrottle)
   @UseGuards(AuthCheckGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get('club/:clubId')
   getClub(@Request() req: any, @Param() params: { clubId: string }): ClubReturn {
     const clubId = params.clubId;
@@ -132,11 +151,12 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Put('club')
   addClub(@Request() req: any, @Body() entity: ClubEntity) {
     try {
-      return this.clubManager.put(this.getUserId(req), entity);
+      const id = this.getUserId(req);
+      this.bustCache();
+      return this.clubManager.put(id, entity);
     } catch (e) {
       this.handleErrors(e);
     }
@@ -144,11 +164,11 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Patch('club')
   updateClub(@Request() req: any, @Body() entity: ClubEntity) {
     try {
       const ids = this.getClubAccess(req, entity);
+      this.bustCache();
       return this.clubManager.patch(ids.userId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -157,11 +177,11 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Delete('game/:clubId')
+  @Delete('club/:clubId')
   deleteClub(@Request() req: any, @Param() params: { clubId: string }) {
     try {
       const ids = this.getClubAccess(req, params, true);
+      this.bustCache();
       this.clubManager.delete(ids.clubId);
     } catch (e) {
       this.handleErrors(e);
@@ -174,11 +194,11 @@ export class AppController {
   /// --------------------------------------------------------------------------------
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Put('game/:clubId')
   addGame(@Request() req: any, @Param() params: { clubId: string }, @Body() wrapper: GameEntity) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.bustCache();
       return this.gameManager.put(ids.userId, ids.clubId, wrapper);
     } catch (e) {
       this.handleErrors(e);
@@ -187,7 +207,6 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Patch('game/:clubId')
   updateGame(@Request() req: any, @Param() params: { clubId: string }, @Body() wrapper: GameEntity) {
     try {
@@ -200,12 +219,12 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Delete('game/:clubId/:gameId')
   deleteGame(@Request() req: any, @Param() params: { clubId: string; gameId: string }) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.gameManager.delete(ids.clubId, params.clubId);
+      this.bustCache();
+      this.gameManager.delete(params.gameId, ids.clubId);
     } catch (e) {
       this.handleErrors(e);
     }
@@ -214,7 +233,6 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Patch('game/:clubId/:gameId/:direction')
   updateSortIndex(@Request() req: any, @Param() params: { clubId: string; gameId: string; direction: number }) {
     try {
@@ -230,11 +248,11 @@ export class AppController {
   /// --------------------------------------------------------------------------------
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Put('player/:clubId')
   addPlayer(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: PlayerEntity) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.bustCache();
       return this.playerManager.put(ids.userId, ids.clubId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -243,7 +261,6 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Patch('player/:clubId')
   updatePlayer(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: PlayerEntity) {
     try {
@@ -256,12 +273,12 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Delete('player/:clubId/:playerId')
   deletePlayer(@Request() req: any, @Param() params: { clubId: string; playerId: string }) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.playerManager.delete(ids.clubId, params.clubId);
+      this.bustCache();
+      this.playerManager.delete(params.playerId, ids.clubId);
     } catch (e) {
       this.handleErrors(e);
     }
@@ -273,11 +290,11 @@ export class AppController {
   /// --------------------------------------------------------------------------------
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Put('board-game/:clubId')
   addBoardGame(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: BoardGameEntity) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.bustCache();
       return this.boardGameManager.put(ids.userId, ids.clubId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -286,7 +303,6 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Patch('board-game/:clubId')
   updateBoardGame(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: BoardGameEntity) {
     try {
@@ -299,12 +315,12 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Delete('board-game/:clubId/:boardGameId')
   deleteBoardGame(@Request() req: any, @Param() params: { clubId: string; boardGameId: string }) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.boardGameManager.delete(ids.clubId, params.clubId);
+      this.bustCache();
+      this.boardGameManager.delete(params.boardGameId, ids.clubId);
     } catch (e) {
       this.handleErrors(e);
     }
@@ -316,7 +332,6 @@ export class AppController {
   /// --------------------------------------------------------------------------------
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Put('tag/:clubId')
   addTag(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: TagEntity) {
     try {
@@ -329,7 +344,6 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Patch('tag/:clubId')
   updateTag(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: TagEntity) {
     try {
@@ -342,12 +356,11 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Delete('tag/:clubId/:tagId')
   deleteTag(@Request() req: any, @Param() params: { clubId: string; tagId: string }) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.tagManager.delete(ids.clubId, params.clubId);
+      this.tagManager.delete(params.tagId, ids.clubId);
     } catch (e) {
       this.handleErrors(e);
     }
@@ -359,7 +372,6 @@ export class AppController {
   /// --------------------------------------------------------------------------------
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Put('event/:clubId')
   addEvent(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: EventEntity) {
     try {
@@ -372,7 +384,6 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Patch('event/:clubId')
   updateEvent(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: EventEntity) {
     try {
@@ -385,12 +396,11 @@ export class AppController {
 
   @Throttle(authThrottle)
   @UseGuards(AuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Delete('event/:clubId/:eventId')
   deleteEvent(@Request() req: any, @Param() params: { clubId: string; eventId: string }) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.eventManager.delete(ids.clubId, params.clubId);
+      this.eventManager.delete(params.eventId, ids.clubId);
     } catch (e) {
       this.handleErrors(e);
     }

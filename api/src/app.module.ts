@@ -26,6 +26,7 @@ import { TagPlayerManager } from './managers/TagPlayer.manager';
 import { TagPlayerGameManager } from './managers/TagPlayerGame.manager';
 import { PlayerGamePlayerManager } from './managers/PlayerGamePlayer.manager';
 import { EventManager } from './managers/Event.manager';
+import { CacheModule } from '@nestjs/cache-manager';
 
 const clientPath = process.env.CLIENT_PATH ?? join(__dirname, '../../../../dist/client/browser');
 
@@ -63,6 +64,7 @@ const clientPath = process.env.CLIENT_PATH ?? join(__dirname, '../../../../dist/
     }),
     ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
     ScheduleModule.forRoot(),
+    CacheModule.register()
   ],
 })
 export class AppModule {}
