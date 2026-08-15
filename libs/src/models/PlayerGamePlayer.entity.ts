@@ -7,10 +7,12 @@ import { PlayerGameEntity } from './PlayerGame.entity';
 import { PlayerEntity } from './Player.entity';
 import { GameEntity } from './Game.entity';
 import { Ignore } from '../decorators/ignore.decorator';
+import { Exclude } from 'class-transformer';
 
 @TableName('PlayerGamePlayer')
 export class PlayerGamePlayerEntity extends BaseEntity {
   @SecondaryKey
+  @Exclude()
   ClubId: string = '';
 
   @PrimaryKey()

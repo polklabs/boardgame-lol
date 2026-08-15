@@ -6,6 +6,7 @@ import { SecondaryKey } from '../decorators/secondary-key.decorator';
 import { Ignore } from '../decorators/ignore.decorator';
 import { CHARACTER_LIMIT_TINY } from '../constants';
 import { GameEntity } from './Game.entity';
+import { Exclude } from 'class-transformer';
 
 @TableName('Event')
 export class EventEntity extends BaseEntity {
@@ -13,6 +14,7 @@ export class EventEntity extends BaseEntity {
   EventId: string = '';
 
   @SecondaryKey
+  @Exclude()
   ClubId: string = '';
 
   StartDate: string = new Date().toISOString();

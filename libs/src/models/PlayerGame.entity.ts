@@ -12,6 +12,7 @@ import { TagEntity } from './Tag.entity';
 import { Sanitize } from '../decorators/sanitize.decorator';
 import { CHARACTER_LIMIT_TINY, POINT_MAX } from '../constants';
 import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
+import { Exclude } from 'class-transformer';
 
 @TableName('PlayerGame')
 export class PlayerGameEntity extends BaseEntity {
@@ -19,6 +20,7 @@ export class PlayerGameEntity extends BaseEntity {
   PlayerGameId: string = '';
 
   @SecondaryKey
+  @Exclude()
   ClubId: string = '';
 
   @ForeignKey(GameEntity)

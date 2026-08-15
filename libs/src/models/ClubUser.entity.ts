@@ -5,11 +5,13 @@ import { ForeignKey } from '../decorators/foreign-key.decorator';
 import { UserEntity } from './User.entity';
 import { Ignore } from '../decorators/ignore.decorator';
 import { ClubEntity } from './Club.entity';
+import { Exclude } from 'class-transformer';
 
 @TableName('ClubUser')
 export class ClubUserEntity extends BaseEntity {
   @PrimaryKey()
   @ForeignKey(ClubEntity)
+  @Exclude()
   ClubId: string = '';
 
   @PrimaryKey()

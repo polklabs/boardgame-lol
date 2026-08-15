@@ -15,6 +15,7 @@ import { TagEntity } from './Tag.entity';
 import { TagBoardGameEntity } from './TagBoardGame.entity';
 import { ForeignKey } from '../decorators/foreign-key.decorator';
 import { PlayerGameEntity } from './PlayerGame.entity';
+import { Exclude } from 'class-transformer';
 
 export type WinCount = {
   playerId: string;
@@ -59,6 +60,7 @@ export class BoardGameEntity extends BaseEntity {
   BoardGameId: string = '';
 
   @SecondaryKey
+  @Exclude()
   ClubId: string = '';
 
   @MinMax(1, CHARACTER_LIMIT_SHORT, 'string')

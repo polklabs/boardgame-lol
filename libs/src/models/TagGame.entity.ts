@@ -7,10 +7,12 @@ import { Ignore } from '../decorators/ignore.decorator';
 import { ITag } from './ITag';
 import { PrimaryKey } from '../decorators/primary-key.decorator';
 import { GameEntity } from './Game.entity';
+import { Exclude } from 'class-transformer';
 
 @TableName('TagGame')
 export class TagGameEntity extends BaseEntity implements ITag {
   @SecondaryKey
+  @Exclude()
   ClubId: string = '';
 
   @PrimaryKey()

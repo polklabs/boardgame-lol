@@ -13,6 +13,7 @@ import { TagEntity } from './Tag.entity';
 import { TagPlayerEntity } from './TagPlayer.entity';
 import { Nullable } from '../decorators/nullable.decorator';
 import { Enum } from '../decorators/enum.decorator';
+import { Exclude } from 'class-transformer';
 
 export type PlayerReturn = {
   Player: PlayerEntity;
@@ -28,6 +29,7 @@ export class PlayerEntity extends BaseEntity {
   PlayerId: string = '';
 
   @SecondaryKey
+  @Exclude()
   ClubId: string = '';
 
   @MinMax(1, CHARACTER_LIMIT_TINY, 'string')

@@ -16,6 +16,7 @@ import { TagPlayerGameEntity } from './TagPlayerGame.entity';
 import { PlayerGamePlayerEntity } from './PlayerGamePlayer.entity';
 import { format, parse } from 'date-fns';
 import { EventEntity } from './Event.entity';
+import { Exclude } from 'class-transformer';
 
 export type GameReturn = {
   Game: GameEntity;
@@ -31,6 +32,7 @@ export class GameEntity extends BaseEntity {
   GameId: string = '';
 
   @SecondaryKey
+  @Exclude()
   ClubId: string = '';
 
   @ForeignKey(BoardGameEntity)

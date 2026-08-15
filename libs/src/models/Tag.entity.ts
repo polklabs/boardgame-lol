@@ -13,6 +13,7 @@ import { Pattern } from '../decorators/pattern.decorator';
 import { Enum } from '../decorators/enum.decorator';
 import { ForeignKey } from '../decorators/foreign-key.decorator';
 import { BoardGameEntity } from './BoardGame.entity';
+import { Exclude } from 'class-transformer';
 
 export const TagCategories = ['character', 'faction', 'role', 'victory-method', 'death-cause', 'version', 'event'] as const;
 export type TagCategory = (typeof TagCategories)[number];
@@ -48,6 +49,7 @@ export class TagEntity extends BaseEntity implements ITag {
   TagId: string = '';
 
   @SecondaryKey
+  @Exclude()
   ClubId: string = '';
 
   @Nullable()
