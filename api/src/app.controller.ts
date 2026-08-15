@@ -106,18 +106,22 @@ export class AppController {
   @UseGuards(AuthCheckGuard)
   @Get('clubs')
   async getPublicClubs(@Request() req: any) {
+    let cachedClubs = await this.cacheManager.get<ClubEntity[]>('clubs');
+    if (cachedClubs) {
+      // Continue
+    } else {
+      cachedClubs = this.clubManager.loadManyWithoutAuth();
+      await this.cacheManager.set('clubs', cachedClubs, 1000 * 60 * 60);
+    }
+
     const userId = this.tryGetUserId(req);
     if (userId) {
-      return this.clubManager.loadManyWithAuth(userId);
+      const toReturn = this.clubManager.loadManyWithAuth(userId);
+      console.log(cachedClubs.length, toReturn.length);
+      const ids = new Set(toReturn.map((x) => x.ClubId));
+      return [...cachedClubs.filter((x) => !ids.has(x.ClubId)), ...toReturn];
     } else {
-      const cachedClubs = await this.cacheManager.get<ClubEntity[]>('clubs');
-      if (cachedClubs) {
-        return cachedClubs;
-      } else {
-        const toReturn = this.clubManager.loadManyWithAuth(userId);
-        await this.cacheManager.set('clubs', toReturn, 1000 * 60 * 60);
-        return toReturn;
-      }
+      return cachedClubs;
     }
   }
 
