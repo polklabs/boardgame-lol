@@ -22,19 +22,23 @@ export class EmailService {
   }
 
   sendEmail(subject: string, text: string, html: string, to: string) {
-    if (!this.transporter) {
-      return 'Mailer Transporter Does Not Exist';
-    } else {
-      // continue
-    }
+    try {
+      if (!this.transporter) {
+        return 'Mailer Transporter Does Not Exist';
+      } else {
+        // continue
+      }
 
-    this.transporter.sendMail({
-      from: '"BoardGame.lol" <boardgame-lol@polklabs.com>',
-      to,
-      subject,
-      html,
-      text,
-    });
+      this.transporter.sendMail({
+        from: '"BoardGame.lol" <boardgame-lol@polklabs.com>',
+        to,
+        subject,
+        html,
+        text,
+      });
+    } catch {
+      return 'Cannot send email';
+    }
   }
 
   formatEmailHtml(header: string, content: string, footer = 'Powered by Polklabs'): string {
