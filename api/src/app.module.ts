@@ -27,6 +27,7 @@ import { TagPlayerGameManager } from './managers/TagPlayerGame.manager';
 import { PlayerGamePlayerManager } from './managers/PlayerGamePlayer.manager';
 import { EventManager } from './managers/Event.manager';
 import { CacheModule } from '@nestjs/cache-manager';
+import { CacheService } from './services/cache.service';
 
 const clientPath = process.env.CLIENT_PATH ?? join(__dirname, '../../../../dist/client/browser');
 
@@ -34,6 +35,7 @@ const clientPath = process.env.CLIENT_PATH ?? join(__dirname, '../../../../dist/
   controllers: [AppController, AuthController],
   providers: [
     DbService,
+    CacheService,
     BoardGameManager,
     GameManager,
     ClubManager,

@@ -14,7 +14,6 @@ import {
   UseInterceptors,
   UnauthorizedException,
   NotFoundException,
-  Inject,
 } from '@nestjs/common';
 import { ValidationError } from './errors/validation.error';
 import { AuthorizationError } from './errors/authorization.error';
@@ -32,8 +31,7 @@ import { PlayerGamePlayerManager } from './managers/PlayerGamePlayer.manager';
 import { EventManager } from './managers/Event.manager';
 import { AuthCheckGuard } from './auth/auth-check.guard';
 import { ClubUserManager } from './managers/ClubUser.manager';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import { CacheService } from './services/cache.service';
 
 const publicThrottle = { default: { limit: 60, ttl: 600000 } };
 const authThrottle = { default: { limit: 30, ttl: 30000 } };
@@ -43,7 +41,7 @@ const authThrottle = { default: { limit: 30, ttl: 30000 } };
 @UseInterceptors(ClassSerializerInterceptor)
 export class AppController {
   constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private cache: CacheService,
     private clubManager: ClubManager,
     private clubUserManager: ClubUserManager,
     private gameManager: GameManager,
@@ -84,10 +82,6 @@ export class AppController {
     }
   }
 
-  bustCache() {
-    this.cacheManager.del('clubs');
-  }
-
   handleErrors(e: any) {
     if (e instanceof ValidationError) {
       throw new HttpException(e.message, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -106,22 +100,15 @@ export class AppController {
   @UseGuards(AuthCheckGuard)
   @Get('clubs')
   async getPublicClubs(@Request() req: any) {
-    let cachedClubs = await this.cacheManager.get<ClubEntity[]>('clubs');
-    if (cachedClubs) {
-      // Continue
-    } else {
-      cachedClubs = this.clubManager.loadManyWithoutAuth();
-      await this.cacheManager.set('clubs', cachedClubs, 1000 * 60 * 60);
-    }
+    const cached = await this.cache.fetch('clubs', '', () => this.clubManager.loadManyWithoutAuth());
 
     const userId = this.tryGetUserId(req);
     if (userId) {
       const toReturn = this.clubManager.loadManyWithAuth(userId);
-      console.log(cachedClubs.length, toReturn.length);
       const ids = new Set(toReturn.map((x) => x.ClubId));
-      return [...cachedClubs.filter((x) => !ids.has(x.ClubId)), ...toReturn];
+      return [...cached.filter((x) => !ids.has(x.ClubId)), ...toReturn];
     } else {
-      return cachedClubs;
+      return cached;
     }
   }
 
@@ -159,7 +146,7 @@ export class AppController {
   addClub(@Request() req: any, @Body() entity: ClubEntity) {
     try {
       const id = this.getUserId(req);
-      this.bustCache();
+      this.cache.bust('put', 'c');
       return this.clubManager.put(id, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -172,7 +159,7 @@ export class AppController {
   updateClub(@Request() req: any, @Body() entity: ClubEntity) {
     try {
       const ids = this.getClubAccess(req, entity);
-      this.bustCache();
+      this.cache.bust('put', 'c', ids.clubId);
       return this.clubManager.patch(ids.userId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -185,7 +172,7 @@ export class AppController {
   deleteClub(@Request() req: any, @Param() params: { clubId: string }) {
     try {
       const ids = this.getClubAccess(req, params, true);
-      this.bustCache();
+      this.cache.bust('del', 'c', ids.clubId);
       this.clubManager.delete(ids.clubId);
     } catch (e) {
       this.handleErrors(e);
@@ -202,7 +189,7 @@ export class AppController {
   addGame(@Request() req: any, @Param() params: { clubId: string }, @Body() wrapper: GameEntity) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.bustCache();
+      this.cache.bust('put', 'g', ids.clubId);
       return this.gameManager.put(ids.userId, ids.clubId, wrapper);
     } catch (e) {
       this.handleErrors(e);
@@ -215,6 +202,7 @@ export class AppController {
   updateGame(@Request() req: any, @Param() params: { clubId: string }, @Body() wrapper: GameEntity) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.cache.bust('patch', 'g', ids.clubId);
       return this.gameManager.patch(ids.userId, ids.clubId, wrapper);
     } catch (e) {
       this.handleErrors(e);
@@ -227,7 +215,7 @@ export class AppController {
   deleteGame(@Request() req: any, @Param() params: { clubId: string; gameId: string }) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.bustCache();
+      this.cache.bust('del', 'g', ids.clubId);
       this.gameManager.delete(params.gameId, ids.clubId);
     } catch (e) {
       this.handleErrors(e);
@@ -241,6 +229,7 @@ export class AppController {
   updateSortIndex(@Request() req: any, @Param() params: { clubId: string; gameId: string; direction: number }) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.cache.bust('patch', 'g', ids.clubId);
       return this.gameManager.updateSortIndex(ids.userId, ids.clubId, params.gameId, +params.direction);
     } catch (e) {
       this.handleErrors(e);
@@ -256,7 +245,7 @@ export class AppController {
   addPlayer(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: PlayerEntity) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.bustCache();
+      this.cache.bust('put', 'p', ids.clubId);
       return this.playerManager.put(ids.userId, ids.clubId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -269,6 +258,7 @@ export class AppController {
   updatePlayer(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: PlayerEntity) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.cache.bust('patch', 'p', ids.clubId);
       return this.playerManager.patch(ids.userId, ids.clubId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -281,7 +271,7 @@ export class AppController {
   deletePlayer(@Request() req: any, @Param() params: { clubId: string; playerId: string }) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.bustCache();
+      this.cache.bust('del', 'p', ids.clubId);
       this.playerManager.delete(params.playerId, ids.clubId);
     } catch (e) {
       this.handleErrors(e);
@@ -298,7 +288,7 @@ export class AppController {
   addBoardGame(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: BoardGameEntity) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.bustCache();
+      this.cache.bust('put', 'bg', ids.clubId);
       return this.boardGameManager.put(ids.userId, ids.clubId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -311,6 +301,7 @@ export class AppController {
   updateBoardGame(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: BoardGameEntity) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.cache.bust('patch', 'bg', ids.clubId);
       return this.boardGameManager.patch(ids.userId, ids.clubId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -323,7 +314,7 @@ export class AppController {
   deleteBoardGame(@Request() req: any, @Param() params: { clubId: string; boardGameId: string }) {
     try {
       const ids = this.getClubAccess(req, params);
-      this.bustCache();
+      this.cache.bust('del', 'bg', ids.clubId);
       this.boardGameManager.delete(params.boardGameId, ids.clubId);
     } catch (e) {
       this.handleErrors(e);
@@ -340,6 +331,7 @@ export class AppController {
   addTag(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: TagEntity) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.cache.bust('put', 't', ids.clubId);
       return this.tagManager.put(ids.userId, ids.clubId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -352,6 +344,7 @@ export class AppController {
   updateTag(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: TagEntity) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.cache.bust('patch', 't', ids.clubId);
       return this.tagManager.patch(ids.userId, ids.clubId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -364,6 +357,7 @@ export class AppController {
   deleteTag(@Request() req: any, @Param() params: { clubId: string; tagId: string }) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.cache.bust('del', 't', ids.clubId);
       this.tagManager.delete(params.tagId, ids.clubId);
     } catch (e) {
       this.handleErrors(e);
@@ -380,6 +374,7 @@ export class AppController {
   addEvent(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: EventEntity) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.cache.bust('put', 'e', ids.clubId);
       return this.eventManager.put(ids.userId, ids.clubId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -392,6 +387,7 @@ export class AppController {
   updateEvent(@Request() req: any, @Param() params: { clubId: string }, @Body() entity: EventEntity) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.cache.bust('patch', 'e', ids.clubId);
       return this.eventManager.patch(ids.userId, ids.clubId, entity);
     } catch (e) {
       this.handleErrors(e);
@@ -404,6 +400,7 @@ export class AppController {
   deleteEvent(@Request() req: any, @Param() params: { clubId: string; eventId: string }) {
     try {
       const ids = this.getClubAccess(req, params);
+      this.cache.bust('del', 'e', ids.clubId);
       this.eventManager.delete(params.eventId, ids.clubId);
     } catch (e) {
       this.handleErrors(e);
