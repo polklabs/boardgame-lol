@@ -22,7 +22,8 @@ import { TagsComponent } from '../../shared/components/form-components/tags/tags
 import { Observable, of, Subscription } from 'rxjs';
 import { HideDirective } from '../../shared/directives/hide.directive';
 import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
-import { DialogComponent } from "../../shared/components/dialog/dialog.component";
+import { DialogComponent } from '../../shared/components/dialog/dialog.component';
+import { uniqueValidator } from '../../shared/validators/unique.validator';
 
 type EntityType = PlayerEntity;
 
@@ -37,8 +38,8 @@ type EntityType = PlayerEntity;
     TagsComponent,
     DropdownComponent,
     HideDirective,
-    DialogComponent
-],
+    DialogComponent,
+  ],
   templateUrl: './editor-player.component.html',
   styleUrl: './editor-player.component.scss',
 })
@@ -97,6 +98,7 @@ export class EditorPlayerComponent implements OnChanges, OnDestroy {
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new PlayerEntity());
+      this.getControl('Name')?.addValidators(uniqueValidator(this.apiService.players, this.formGroup));
       const instance = new PlayerEntity(this.player);
       instance.Tags = [...this.player.Tags];
       this.formGroup.patchValue(instance);

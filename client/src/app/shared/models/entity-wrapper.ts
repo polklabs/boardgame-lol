@@ -52,6 +52,10 @@ export class EntityWrapper<T extends BaseEntity> {
     return this;
   }
 
+  getId(obj: T): string {
+    return this.keyFunc(obj);
+  } 
+
   getOne(...ids: string[]): T | null {
     const key = ids.join(';');
     return this._dict.get(key) ?? null;

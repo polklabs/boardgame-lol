@@ -17,6 +17,7 @@ import { DropdownComponent } from '../../shared/components/form-components/dropd
 import { Subscription } from 'rxjs';
 import { HideDirective } from "../../shared/directives/hide.directive";
 import { DialogComponent } from "../../shared/components/dialog/dialog.component";
+import { uniqueValidator } from '../../shared/validators/unique.validator';
 
 type EntityType = TagEntity;
 
@@ -140,6 +141,7 @@ export class EditorTagsComponent implements OnInit, OnDestroy {
 
     this.hideFields = new Set();
     this.formGroup = buildForm(this.fb, this.entityType, new TagEntity());
+    this.getControl('Text')?.addValidators(uniqueValidator(this.apiService.tags, this.formGroup));
 
     const instance = new TagEntity(this.tag);
     this.formGroup.patchValue(instance);

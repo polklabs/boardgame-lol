@@ -12,6 +12,7 @@ import { TextInputComponent } from '../../shared/components/form-components/text
 import { CalendarComponent } from '../../shared/components/form-components/calendar/calendar.component';
 import { HideDirective } from '../../shared/directives/hide.directive';
 import { DialogComponent } from '../../shared/components/dialog/dialog.component';
+import { uniqueValidator } from '../../shared/validators/unique.validator';
 
 type EntityType = EventEntity;
 
@@ -86,6 +87,7 @@ export class EditorEventComponent implements OnInit {
 
     this.hideFields = new Set();
     this.formGroup = buildForm(this.fb, this.entityType, new EventEntity());
+    this.getControl('Name')?.addValidators(uniqueValidator(this.apiService.events, this.formGroup));
 
     const instance = new EventEntity(this.event);
     this.formGroup.patchValue(instance);

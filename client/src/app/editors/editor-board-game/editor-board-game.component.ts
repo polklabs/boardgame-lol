@@ -31,6 +31,7 @@ import { format } from 'date-fns';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 import { HideDirective } from '../../shared/directives/hide.directive';
 import { DialogComponent } from "../../shared/components/dialog/dialog.component";
+import { uniqueValidator } from '../../shared/validators/unique.validator';
 
 type EntityType = BoardGameEntity;
 
@@ -108,6 +109,7 @@ export class EditorBoardGameComponent implements OnChanges, OnDestroy {
 
       this.hideFields = new Set();
       this.formGroup = buildForm(this.fb, this.entityType, new BoardGameEntity());
+      this.getControl('Name')?.addValidators(uniqueValidator(this.apiService.boardGames, this.formGroup));
       const instance = new BoardGameEntity(this.boardGame);
       instance.Tags = [...this.boardGame.Tags];
       this.formGroup.patchValue(instance);

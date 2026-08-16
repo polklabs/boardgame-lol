@@ -98,6 +98,8 @@ export class ControlWrapperComponent {
         return 'Field is required';
       } else if (control.errors?.['email']) {
         return 'Enter an email address';
+      } else if (control.errors?.['unique']) {
+        return 'Value must be unique';
       } else {
         return '';
       }
