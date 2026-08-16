@@ -26,7 +26,7 @@ export class ClubManager extends BaseManager<ClubEntity> {
 
   loadManyWithoutAuth(): ClubEntity[] {
     return this.db.AllRaw<ClubEntity>(
-      `SELECT ${TP(ClubEntity, '*')},
+      `SELECT ${this.getSelectAll()},
             0 as CanEdit,
             0 as Admin,
             (SELECT COUNT(*) FROM ${TP(PlayerEntity)} WHERE ${TP(PlayerEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')}) AS PlayerCount,
@@ -35,14 +35,14 @@ export class ClubManager extends BaseManager<ClubEntity> {
             ${TP(UserEntity, 'Username')} as CreatedBy
           FROM ${TP(ClubEntity)}
           INNER JOIN ${TP(UserEntity)} ON ${TP(UserEntity, 'UserId')} = ${TP(ClubEntity, 'CreatedBy')}
-          WHERE ${TP(ClubEntity, 'Public')} = ?`,
+          WHERE ${TP(ClubEntity, 'Public', 'where')}`,
       ['1'],
     );
   }
 
   loadManyWithAuth(userId: string): ClubEntity[] {
     return this.db.AllRaw<ClubEntity>(
-      `SELECT ${TP(ClubEntity, '*')},
+      `SELECT ${this.getSelectAll()},
             CASE WHEN ${TP(ClubUserEntity, 'UserId')} IS NOT NULL THEN 1 ELSE 0 END as CanEdit,
             CASE WHEN ${TP(ClubUserEntity, 'UserId')} IS NOT NULL THEN ${TP(ClubUserEntity, 'Admin')} ELSE 0 END as Admin,
             (SELECT COUNT(*) FROM ${TP(PlayerEntity)} WHERE ${TP(PlayerEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')}) AS PlayerCount,
@@ -50,7 +50,7 @@ export class ClubManager extends BaseManager<ClubEntity> {
             (SELECT COUNT(*) FROM ${TP(BoardGameEntity)} WHERE ${TP(BoardGameEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')}) AS BoardGameCount,
             ${TP(UserEntity, 'Username')} as CreatedBy
           FROM ${TP(ClubEntity)}
-          LEFT JOIN ${TP(ClubUserEntity)} ON ${TP(ClubUserEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')} AND ${TP(ClubUserEntity, 'UserId')} = ?
+          LEFT JOIN ${TP(ClubUserEntity)} ON ${TP(ClubUserEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')} AND ${TP(ClubUserEntity, 'UserId', 'where')}
           INNER JOIN ${TP(UserEntity)} ON ${TP(UserEntity, 'UserId')} = ${TP(ClubEntity, 'CreatedBy')}
           WHERE ${TP(ClubUserEntity, 'UserId')} IS NOT NULL`,
       [userId ?? ''],
@@ -59,12 +59,12 @@ export class ClubManager extends BaseManager<ClubEntity> {
 
   loadOneWithAuth(clubId: string, userId?: string): ClubEntity | undefined {
     return this.db.GetRaw<ClubEntity>(
-      `SELECT ${TP(ClubEntity, '*')},
+      `SELECT ${this.getSelectAll()},
             CASE WHEN ${TP(ClubUserEntity, 'UserId')} IS NOT NULL THEN 1 ELSE 0 END as CanEdit,
             CASE WHEN ${TP(ClubUserEntity, 'UserId')} IS NOT NULL THEN ${TP(ClubUserEntity, 'Admin')} ELSE 0 END as Admin
           FROM ${TP(ClubEntity)}
-          LEFT JOIN ${TP(ClubUserEntity)} ON ${TP(ClubUserEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')} AND ${TP(ClubUserEntity, 'UserId')} = ?
-          WHERE ${TP(ClubEntity, 'ClubId')} = ? LIMIT 1`,
+          LEFT JOIN ${TP(ClubUserEntity)} ON ${TP(ClubUserEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')} AND ${TP(ClubUserEntity, 'UserId', 'where')}
+          WHERE ${TP(ClubEntity, 'ClubId', 'where')} LIMIT 1`,
       [userId ?? '', clubId],
     );
   }

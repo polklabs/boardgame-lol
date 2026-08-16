@@ -13,12 +13,15 @@ import { SanitizeTags, getSanitize } from 'libs/decorators/sanitize.decorator';
 import sanitizeHtml from 'sanitize-html';
 import { getIgnore } from 'libs/decorators/ignore.decorator';
 import { BadRequestException } from '@nestjs/common';
+import { TP, TPRaw } from 'libs/index';
 
 export abstract class BaseManager<T extends BaseEntity> {
   protected abstract db: DbService;
 
+  public readonly entityType: new (partial: Partial<T>) => T;
   public readonly new: (data: Partial<T>) => T;
 
+  protected dbProps: (keyof T)[];
   protected primaryKeys: (keyof T)[];
   protected secondaryKey: keyof T | undefined;
   protected tableName: string;
@@ -40,6 +43,7 @@ export abstract class BaseManager<T extends BaseEntity> {
     this.enums = getEnum(entityType) as EnumValue;
     this.sanitize = getSanitize(entityType) as SanitizeTags;
 
+    this.entityType = entityType;
     this.new = (data: Partial<T>) => {
       const e = new entityType(data);
       this.ignore.forEach((i) => {
@@ -47,12 +51,17 @@ export abstract class BaseManager<T extends BaseEntity> {
       });
       return e;
     };
+    this.dbProps = Object.keys(this.new({})) as (keyof T)[];
+  }
+
+  protected getSelectAll() {
+    return this.dbProps.map(k => TP(this.entityType, k as keyof T, 'select')).join(', ');
   }
 
   private getBaseSelect() {
     return `
       SELECT 
-        ${this.tableName}.*,
+        ${this.getSelectAll()},
         User1.Username AS CreatedBy,
         User2.Username AS LastModifiedBy
       FROM ${this.tableName}
@@ -94,11 +103,11 @@ export abstract class BaseManager<T extends BaseEntity> {
     let targetPKs: string;
     let expectedPkCount = 0;
     if (typeof target === 'string') {
-      targetPKs = `${this.tableName}.${target} = ?`;
+      targetPKs = TP(this.entityType, target as keyof T, 'where');
       expectedPkCount = 1;
     } else {
       const pks = getPrimaryKeys(target);
-      targetPKs = pks.map((p) => `${this.tableName}.${p} = ?`).join(' AND ');
+      targetPKs = pks.map((p) => TP(this.entityType, p as keyof T, 'where')).join(' AND ');
       expectedPkCount = pks.length;
     }
 
@@ -113,10 +122,10 @@ export abstract class BaseManager<T extends BaseEntity> {
 
     if (secondaryTarget && (secondaryTargetIds?.length ?? 0) > 0 && secondaryTargetIds?.every((x) => x !== null)) {
       if (typeof secondaryTarget === 'string') {
-        query += ` AND ${this.tableName}.${secondaryTarget} = ?`;
+        query += ` AND ${TP(this.entityType, secondaryTarget as keyof T, 'where')}`;
       } else {
         const spks = getPrimaryKeys(secondaryTarget);
-        query += spks.map((p) => ` AND ${this.tableName}.${p} = ?`).join('');
+        query += spks.map((p) => ` AND ${TP(this.entityType, p as keyof T, 'where')}`).join('');
       }
 
       vars.push(...secondaryTargetIds);
@@ -150,7 +159,7 @@ export abstract class BaseManager<T extends BaseEntity> {
     if (ids.includes(null)) {
       return undefined;
     } else {
-      const query = this.primaryKeys.map((p) => `${this.tableName}.${String(p)} = ?`).join(' AND ');
+      const query = this.primaryKeys.map((p) => TP(this.entityType, String(p) as keyof T, 'where')).join(' AND ');
       return this.db.Get(
         `${this.getBaseSelect()}
       ${this.getBaseJoin()}
@@ -266,7 +275,7 @@ export abstract class BaseManager<T extends BaseEntity> {
 
         if (fk?.tableName && fk.primaryKeys.length > 0 && fk.secondaryKey) {
           const result = this.db.GetRaw(
-            `SELECT ${fk.primaryKeys[0]}, ${fk.secondaryKey} FROM ${fk.tableName} WHERE ${fk.primaryKeys[0]} = ?`,
+            `SELECT ${TPRaw(fk.tableName, fk.primaryKeys[0], 'select')}, ${TPRaw(fk.tableName, fk.secondaryKey, 'select')} FROM ${fk.tableName} WHERE ${TPRaw(fk.tableName, fk.primaryKeys[0], 'where')}`,
             [fkValue],
           ) as any;
           if (result === undefined) {

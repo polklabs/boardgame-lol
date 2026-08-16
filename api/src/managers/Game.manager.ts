@@ -63,7 +63,7 @@ export class GameManager extends BaseManager<GameEntity> {
       TagGames: this.tagManager.tagGame.loadMany('GameId', entity.GameId),
       TagPlayerGames: this.tagManager.tagPlayerGame.loadManyCustom(
         `INNER JOIN ${TP(PlayerGameEntity)} ON ${TP(PlayerGameEntity, 'PlayerGameId')} = ${TP(TagPlayerGameEntity, 'PlayerGameId')}`,
-        `WHERE ${TP(PlayerGameEntity, 'GameId')} = ?`,
+        `WHERE ${TP(PlayerGameEntity, 'GameId', 'where')}`,
         [entity.GameId],
       ),
     };
@@ -141,7 +141,7 @@ export class GameManager extends BaseManager<GameEntity> {
       TagGames: this.tagManager.tagGame.loadMany('GameId', entity.GameId),
       TagPlayerGames: this.tagManager.tagPlayerGame.loadManyCustom(
         `INNER JOIN ${TP(PlayerGameEntity)} ON ${TP(PlayerGameEntity, 'PlayerGameId')} = ${TP(TagPlayerGameEntity, 'PlayerGameId')}`,
-        `WHERE ${TP(PlayerGameEntity, 'GameId')} = ?`,
+        `WHERE ${TP(PlayerGameEntity, 'GameId', 'where')}`,
         [entity.GameId],
       ),
     };

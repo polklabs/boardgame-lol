@@ -26,7 +26,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     if (isGuid(userId) && isGuid(clubId)) {
       const data = this.loadManyCustom(
         '',
-        `WHERE ${TP(ClubUserEntity, 'UserId')} = ? AND ${TP(ClubUserEntity, 'ClubId')} = ? LIMIT 1`,
+        `WHERE ${TP(ClubUserEntity, 'UserId', 'where')} AND ${TP(ClubUserEntity, 'ClubId', 'where')} LIMIT 1`,
         [userId, clubId],
       );
       if (data.length <= 0) {
@@ -43,7 +43,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     if (isGuid(userId) && isGuid(clubId)) {
       const data = this.loadManyCustom(
         '',
-        `WHERE ${TP(ClubUserEntity, 'UserId')} = ? AND ${TP(ClubUserEntity, 'ClubId')} = ? AND ${TP(ClubUserEntity, 'Admin')} = ? LIMIT 1`,
+        `WHERE ${TP(ClubUserEntity, 'UserId', 'where')} AND ${TP(ClubUserEntity, 'ClubId', 'where')} AND ${TP(ClubUserEntity, 'Admin', 'where')} LIMIT 1`,
         [userId, clubId!, '1'],
       );
       if (data.length <= 0) {
@@ -59,11 +59,11 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
   loadManyWithUsername(clubId: string) {
     return this.db
       .AllRaw<ClubUserEntity>(
-        `SELECT ${TP(ClubUserEntity, '*')},
+        `SELECT ${this.getSelectAll()},
             ${TP(UserEntity, 'Username')} as usernameEmail
           FROM ${TP(ClubUserEntity)}
           INNER JOIN ${TP(UserEntity)} ON ${TP(UserEntity, 'UserId')} = ${TP(ClubUserEntity, 'UserId')}
-          WHERE ${TP(ClubUserEntity, 'ClubId')} = ?`,
+          WHERE ${TP(ClubUserEntity, 'ClubId', 'where')}`,
         [clubId],
       )
       .map((x) => new ClubUserEntity(x));

@@ -11,10 +11,6 @@ import { Exclude } from 'class-transformer';
 
 @TableName('PlayerGamePlayer')
 export class PlayerGamePlayerEntity extends BaseEntity {
-  @SecondaryKey
-  @Exclude()
-  ClubId: string = '';
-
   @PrimaryKey()
   @ForeignKey(GameEntity)
   GameId: string = '';
@@ -26,6 +22,10 @@ export class PlayerGamePlayerEntity extends BaseEntity {
   @PrimaryKey()
   @ForeignKey(PlayerEntity)
   PlayerId: string = '';
+
+  @SecondaryKey
+  @Exclude()
+  ClubId: string = '';
 
   @Ignore()
   calculated = false;

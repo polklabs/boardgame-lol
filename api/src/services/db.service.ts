@@ -1,6 +1,6 @@
 import { Database } from 'better-sqlite3';
 import { BadRequestException, Injectable, OnApplicationShutdown } from '@nestjs/common';
-import { BaseEntity } from 'libs/index';
+import { BaseEntity, TPRaw, VAR } from 'libs/index';
 
 type NullString = string | null;
 export type DbVars = NullString | NullString[] | { [key: string]: NullString };
@@ -20,9 +20,10 @@ export class DbService implements OnApplicationShutdown {
   onApplicationShutdown() {
     try {
       if (this.db) {
+        this.db.pragma('optimize');
         this.db.pragma('wal_checkpoint(TRUNCATE)');
         this.db.close();
-        console.log('SQLite DB checkpointed and closed');
+        console.log('SQLite DB optimized, checkpointed, and closed');
       } else {
         // Nothing to close
       }
@@ -98,27 +99,11 @@ export class DbService implements OnApplicationShutdown {
     }
 
     const { values, keys } = entity.getDbValues();
-    const valuePlaceholder = keys.map(() => `?`);
+    const valuePlaceholder = keys.map(VAR);
 
     const queryString = `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${valuePlaceholder.join(', ')})`;
 
-    const insert = db.prepare(queryString);
-
-    const trans = db.transaction(() => {
-      if (runTransactionsFirst) {
-        transactions.forEach((t) => t());
-        insert.run(values);
-      } else {
-        insert.run(values);
-        transactions.forEach((t) => t());
-      }
-    });
-
-    if (transaction) {
-      return trans;
-    } else {
-      trans();
-    }
+    return this.completeQuery(queryString, values, transaction, transactions, runTransactionsFirst);
   }
 
   Update<T extends BaseEntity>(
@@ -139,37 +124,21 @@ export class DbService implements OnApplicationShutdown {
 
     const PkValues = primaryKeys.map((p) => entity[p] as any);
     const { values, keys } = entity.getDbValues(primaryKeys);
-    const keyValuePlaceholder = keys.map((key) => `${key} = ?`);
+    const keyValuePlaceholder = keys.map((key) => `${key} = ${VAR(key)}`);
 
-    const pkQuery = primaryKeys.map((p) => `${String(p)} = ?`).join(' AND ');
+    const pkQuery = primaryKeys.map((p) => TPRaw(tableName, String(p), 'where')).join(' AND ');
     let queryString = `UPDATE ${tableName} SET ${keyValuePlaceholder.join(', ')} WHERE ${pkQuery}`;
 
     const parameterValues = [...values, ...PkValues];
     if (secondaryKey) {
       const secondaryKeyValue = entity[secondaryKey] as any;
       parameterValues.push(secondaryKeyValue);
-      queryString += ` AND ${String(secondaryKey)} = ?`;
+      queryString += ` AND ${TPRaw(tableName, secondaryKey, 'where')}`;
     } else {
       // continue
     }
 
-    const update = db.prepare(queryString);
-
-    const trans = db.transaction(() => {
-      if (runTransactionsFirst) {
-        transactions.forEach((t) => t());
-        update.run(parameterValues);
-      } else {
-        update.run(parameterValues);
-        transactions.forEach((t) => t());
-      }
-    });
-
-    if (transaction) {
-      return trans;
-    } else {
-      trans();
-    }
+    return this.completeQuery(queryString, parameterValues, transaction, transactions, runTransactionsFirst);
   }
 
   Delete(
@@ -195,34 +164,18 @@ export class DbService implements OnApplicationShutdown {
       // Continue
     }
 
-    const pkString = primaryKeys.map((pk) => `${pk} = ?`).join(' AND ');
+    const pkString = primaryKeys.map((pk) => `${pk} = unhex(?)`).join(' AND ');
     let queryString = `DELETE FROM ${tableName} WHERE ${pkString}`;
 
     const parameterValues: any[] = [...primaryKeyValues];
     if (secondaryKey) {
       parameterValues.push(secondaryKeyValue);
-      queryString += ` AND ${String(secondaryKey)} = ?`;
+      queryString += ` AND ${String(secondaryKey)} = unhex(?)`;
     } else {
       // continue
     }
 
-    const del = db.prepare(queryString);
-
-    const trans = db.transaction(() => {
-      if (runTransactionsFirst) {
-        transactions.forEach((t) => t());
-        del.run(parameterValues);
-      } else {
-        del.run(parameterValues);
-        transactions.forEach((t) => t());
-      }
-    });
-
-    if (transaction) {
-      return trans;
-    } else {
-      trans();
-    }
+    return this.completeQuery(queryString, parameterValues, transaction, transactions, runTransactionsFirst);
   }
 
   /**
@@ -242,5 +195,38 @@ export class DbService implements OnApplicationShutdown {
     });
 
     trans();
+  }
+
+  private completeQuery(
+    queryString: string,
+    parms: any[],
+    transaction: boolean,
+    transactions: any[],
+    runTransactionsFirst: boolean,
+  ) {
+    const db = this.getDb();
+    if (!db) {
+      return;
+    } else {
+      // continue
+    }
+
+    const del = db.prepare(queryString);
+
+    const trans = db.transaction(() => {
+      if (runTransactionsFirst) {
+        transactions.forEach((t) => t());
+        del.run(parms);
+      } else {
+        del.run(parms);
+        transactions.forEach((t) => t());
+      }
+    });
+
+    if (transaction) {
+      return trans;
+    } else {
+      trans();
+    }
   }
 }
