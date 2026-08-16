@@ -19,11 +19,7 @@ export function TPRaw<T>(tableName: string, key?: keyof T, type: 'none' | 'selec
     ) {
       return `hex(${tableName}.${keyString}) AS ${keyString}`;
     } else if (type === 'where') {
-      if (keyString.endsWith('Id') || keyString === 'CreatedBy' || keyString === 'LastModifiedBy') {
-        return `${tableName}.${keyString} = unhex(?)`;
-      } else {
-        return `${tableName}.${keyString} = ?`;
-      }
+      return `${tableName}.${keyString} = ${VAR(keyString)}`;
     } else {
       return `${tableName}.${keyString}`;
     }
