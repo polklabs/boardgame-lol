@@ -65,7 +65,7 @@ export class AppController {
     const userId = this.getUserId(request);
     const clubId = params.clubId ?? params.ClubId;
     if (!clubId) {
-      throw new AuthorizationError('You do not have acced to edit this club');
+      throw new AuthorizationError('You do not have access to edit this club');
     } else if (admin) {
       this.clubUserManager.hasAdminAccess(userId, clubId);
     } else {
