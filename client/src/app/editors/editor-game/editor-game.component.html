@@ -15,6 +15,14 @@
 <app-dialog [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
   <div class="dialog-title dialog-header">
     <span>{{ title }}</span>
+    @if (!isNew) {
+      <p-button
+        icon="pi pi-clone"
+        severity="secondary"
+        [rounded]="true"
+        pTooltip="Clone Play"
+        (click)="cloneEntity()" />
+    }
     <p-button
       icon="pi pi-cog"
       severity="secondary"
@@ -61,9 +69,7 @@
                 }})
               </div>
             } @else {
-              <div class="p-orderlist-title">
-                {{ game?.BoardGame?.scoreTypeText ?? '' }} Scores (0 players)
-              </div>
+              <div class="p-orderlist-title">{{ game?.BoardGame?.scoreTypeText ?? '' }} Scores (0 players)</div>
             }
             <p-button class="add-btn" (onClick)="editPlayerGame()" pTooltip="Add Player" icon="pi pi-plus"></p-button>
           </div>

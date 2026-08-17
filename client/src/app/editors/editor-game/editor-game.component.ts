@@ -12,7 +12,15 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BoardGameEntity, CopyAttrsMapping, CopyAttrType, GameEntity, getMinMax, PlayerGameEntity } from 'libs/index';
+import {
+  BoardGameEntity,
+  CopyAttrs,
+  CopyAttrsMapping,
+  CopyAttrType,
+  GameEntity,
+  getMinMax,
+  PlayerGameEntity,
+} from 'libs/index';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { buildForm } from '../../shared/form.utils';
@@ -41,7 +49,7 @@ import { sortPlayerGames } from '../../shared/helpers/data.helper';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 import { HideDirective } from '../../shared/directives/hide.directive';
 import { WakeLockWrapper } from '../../shared/models/wake-lock.model';
-import { DialogComponent } from "../../shared/components/dialog/dialog.component";
+import { DialogComponent } from '../../shared/components/dialog/dialog.component';
 
 type EntityType = GameEntity;
 
@@ -74,8 +82,8 @@ const POINT_VALUES = [1, 5, 10, 50, 100, 150, 200];
     TagComponent,
     ScorePipe,
     HideDirective,
-    DialogComponent
-],
+    DialogComponent,
+  ],
   templateUrl: './editor-game.component.html',
   styleUrl: './editor-game.component.scss',
 })
@@ -163,11 +171,7 @@ export class EditorGameComponent extends WakeLockWrapper implements OnChanges, O
       this.subscriptions.add(
         this.getControl('BoardGameId')?.valueChanges.subscribe((value) => {
           const previous = this.game!.BoardGame;
-          this.hideFields.clear();
-          this.game!.BoardGameId = value;
-          this.game!.BoardGame = this.apiService.boardGames.getOne(value);
-          this.boardGameSideEffects();
-          this.updateScoring();
+          this.assignBoardGame(value);
           this.tryCopyFromRef(previous !== null);
         }),
       );
@@ -226,6 +230,14 @@ export class EditorGameComponent extends WakeLockWrapper implements OnChanges, O
 
   getValue(key: keyof EntityType) {
     return this.getControl(key)?.value;
+  }
+
+  assignBoardGame(value: string) {
+    this.hideFields.clear();
+    this.game!.BoardGameId = value;
+    this.game!.BoardGame = this.apiService.boardGames.getOne(value);
+    this.boardGameSideEffects();
+    this.updateScoring();
   }
 
   boardGameSideEffects() {
@@ -619,5 +631,19 @@ export class EditorGameComponent extends WakeLockWrapper implements OnChanges, O
         }
       },
     });
+  }
+
+  cloneEntity() {
+    if (this.game) {
+      const id = this.game.GameId;
+      const bgId = this.game.BoardGameId;
+      this.game = new GameEntity({});
+      this.updateEditor();
+      this.getControl('BoardGameId')?.setValue(bgId);
+      this.assignBoardGame(bgId);
+      this.copyFromRef(id, new Set(CopyAttrs));
+    } else {
+      // Continue
+    }
   }
 }
