@@ -6,7 +6,7 @@ import { DISPLAY_FIELDS, getAccessibleBackground, TagCategory, TagCategoryMappin
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { buildForm } from '../../shared/form.utils';
-import { KeyValuePipe } from '@angular/common';
+import { KeyValuePipe, NgStyle } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { TagComponent } from '../../shared/components/tag/tag.component';
@@ -44,7 +44,8 @@ const TAG_KEY_DISPLAY: Record<(typeof DISPLAY_FIELDS)[number], string> = {
     SortPipe,
     DropdownComponent,
     HideDirective,
-    DialogComponent
+    DialogComponent,
+    NgStyle
 ],
   templateUrl: './editor-tags.component.html',
   styleUrl: './editor-tags.component.scss',
@@ -93,16 +94,11 @@ export class EditorTagsComponent implements OnInit, OnDestroy {
     this.apiService.tags.raw$.subscribe((tags) => {
       this.tags = {};
       tags.forEach((tag) => {
-        const keys = DISPLAY_FIELDS.filter((k) => tag[k] === true);
         let key;
         if (tag.Category) {
           key = TagCategoryMapping[tag.Category].text;
-        } else if (keys.length >= 4) {
-          key = 'All';
-        } else if (keys.length > 1) {
-          key = 'Assorted';
         } else {
-          key = keys.map((x) => TAG_KEY_DISPLAY[x]).join(' & ');
+          key = 'Assorted';
         }
         if (key in this.tags) {
           this.tags[key].push(tag);

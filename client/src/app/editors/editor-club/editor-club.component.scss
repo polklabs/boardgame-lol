@@ -1,4 +1,11 @@
 :host ::ng-deep {
+  .p-colorpicker {
+    align-self: center;
+    margin-top: 4px;
+    border: solid 4px white;
+    border-radius: 8px;
+  }
+
   .club-users-wrapper {
     border: solid 1px var(--p-surface-600);
     border-radius: 8px;

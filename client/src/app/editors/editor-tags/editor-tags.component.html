@@ -1,8 +1,8 @@
 <app-dialog [title]="title" [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
-  <div class="flex-column gap-8">
+  <div class="flex-column gap-4">
     @for (kv of tags | keyvalue | sort: 'key'; track kv.key) {
       <p-fieldset [legend]="kv.key">
-        <div class="flex gap-8">
+        <div class="flex gap-4">
           @for (t of kv.value | sort: 'Text'; track t) {
             <app-tag (click)="editTag(t)" [tag]="t" [icon]="isFiltered(t) ? 'pi pi-filter' : undefined"></app-tag>
           }
@@ -40,6 +40,32 @@
           optionValue="value"
           [showClear]="true"></app-dropdown>
 
+        <div class="flex align-center gap-4">
+          <p-colorpicker
+            [ngStyle]="{ 'border-color': bgColor }"
+            [(ngModel)]="formGroup.value.Color"
+            (onChange)="setColor($event.value)"
+            [ngModelOptions]="{ standalone: true }"
+            defaultColor="000000" />
+          <app-textinput formControlName="Color" [entityType]="entityType" [appHide]="hideFields"></app-textinput>
+
+          @for (preset of presetColors; track preset) {
+            <p-button variant="outlined" [severity]="preset.severity" (onClick)="setColor(preset.color)">
+              {{ [preset.text] }}
+            </p-button>
+          }
+        </div>
+
+        <app-dropdown
+          formControlName="DisplayOnBoardGameId"
+          label="Display Only On BoardGame"
+          [entityType]="entityType"
+          [appHide]="hideFields"
+          [options$]="boardGames$"
+          optionLabel="Name"
+          optionValue="BoardGameId"
+          [showClear]="true"></app-dropdown>
+
         <div class="checkbox-column">
           <h3>Display On Editors:</h3>
           <app-checkbox formControlName="DisplayOnBoardGames" label="BoardGames" [appHide]="hideFields"></app-checkbox>
@@ -49,34 +75,6 @@
             formControlName="DisplayOnPlayerGames"
             label="Play Scores"
             [appHide]="hideFields"></app-checkbox>
-        </div>
-
-        <app-dropdown
-          formControlName="DisplayOnBoardGameId"
-          [entityType]="entityType"
-          [appHide]="hideFields"
-          [options$]="boardGames$"
-          optionLabel="Name"
-          optionValue="BoardGameId"
-          [showClear]="true"></app-dropdown>
-
-        <div class="flex-nowrap gap-8">
-          <div class="color-list gap-8">
-            <app-textinput formControlName="Color" [entityType]="entityType" [appHide]="hideFields"></app-textinput>
-            <div class="flex gap-8">
-              @for (preset of presetColors; track preset) {
-                <p-button variant="outlined" [severity]="preset.severity" (onClick)="setColor(preset.color)">
-                  {{ [preset.text] }}
-                </p-button>
-              }
-            </div>
-          </div>
-          <p-colorpicker
-            [(ngModel)]="formGroup.value.Color"
-            (onChange)="setColor($event.value)"
-            [ngModelOptions]="{ standalone: true }"
-            [inline]="true"
-            defaultColor="000000" />
         </div>
       </form>
     </div>

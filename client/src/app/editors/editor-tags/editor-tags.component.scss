@@ -1,6 +1,9 @@
 :host ::ng-deep {
   .p-colorpicker {
-    align-self: flex-end;
+    align-self: center;
+    margin-top: 4px;
+    border: solid 4px white;
+    border-radius: 8px;
   }
 
   .tag-display {
@@ -9,15 +12,6 @@
     height: 60px;
     .p-tag {
       transform: scale(1.75);
-    }
-  }
-
-  .color-list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    app-textinput {
-      flex-grow: 1;
     }
   }
 }

@@ -1,9 +1,5 @@
 <!-- In der clurb we all fam -->
-<app-dialog
-  [title]="title"
-  [visible]="editorVisible"
-  (visibleChange)="closeEditor.emit()"
-  [editor]="true">
+<app-dialog [title]="title" [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
   @if (formGroup && club) {
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
@@ -51,31 +47,28 @@
           </p-table>
         </div>
 
+        <div class="flex align-center gap-4">
+          <p-colorpicker
+            [ngStyle]="{ 'border-color': bgColor }"
+            [(ngModel)]="formGroup.value.Color"
+            (onChange)="setColor($event.value)"
+            [ngModelOptions]="{ standalone: true }"
+            defaultColor="000000" />
+          <app-textinput formControlName="Color" [entityType]="entityType" [appHide]="hideFields"></app-textinput>
+
+          @for (preset of presetColors; track preset) {
+            <p-button variant="outlined" [severity]="preset.severity" (onClick)="setColor(preset.color)">
+              {{ [preset.text] }}
+            </p-button>
+          }
+        </div>
+
         <app-dropdown
           [entityType]="entityType"
           formControlName="Font"
           [options]="presetFonts"
           [showClear]="true"
           label="Font - (Default) Robot, sans-serif"></app-dropdown>
-
-        <div class="flex-nowrap gap-8">
-          <div class="color-list gap-8">
-            <app-textinput formControlName="Color" [entityType]="entityType" [appHide]="hideFields"></app-textinput>
-            <div class="flex gap-8">
-              @for (preset of presetColors; track preset) {
-                <p-button variant="outlined" [severity]="preset.severity" (onClick)="setColor(preset.color)">
-                  {{ [preset.text] }}
-                </p-button>
-              }
-            </div>
-          </div>
-          <p-colorpicker
-            [(ngModel)]="formGroup.value.Color"
-            (onChange)="setColor($event.value)"
-            [ngModelOptions]="{ standalone: true }"
-            [inline]="true"
-            defaultColor="000000" />
-        </div>
       </form>
     </div>
   }
