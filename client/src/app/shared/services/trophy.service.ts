@@ -33,6 +33,7 @@ import { TrophyWinningPair } from '../trophies/trophy-winning-pair';
 import { TrophyPlayerIsCharacter } from '../trophies/trophy-player-is-character';
 import { TrophyPlayerIsRole } from '../trophies/trophy-player-is-role';
 import { TrophyEventChampion } from '../trophies/trophy-event-champion';
+import { TrophyBasic } from '../trophies/trophy-basic-name';
 
 @Injectable({
   providedIn: 'root',
@@ -60,6 +61,7 @@ export class TrophyService {
     MostPlaysOneDay: new TrophyMostPlaysOneDay(1),
     FavXPlayerGame: new TrophyFavXPlayerGame(1),
     LastGroupWin: new TrophyLastGroupWin(1),
+    Basic: new TrophyBasic(1),
 
     // Tag Trophies
     FavCharacter: new TrophyFavoriteCharacter(3),

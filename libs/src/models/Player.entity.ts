@@ -89,9 +89,10 @@ export class PlayerEntity extends BaseEntity {
 
   @Ignore()
   ShortName: string = '';
-
   @Ignore()
   FullName: string = '';
+  @Ignore()
+  FirstName: string = '';
 
   @Ignore()
   hasMostWins: boolean = false;
@@ -175,12 +176,13 @@ export class PlayerEntity extends BaseEntity {
     const nameMap = new Map<string, number>();
     players.forEach((p) => {
       const wordsArray = [...(p.Name.match(/\S+/g) ?? [])];
+      p.FirstName = wordsArray[0];
       if (wordsArray.length <= 1) {
         p.ShortName = p.Name;
       }
       switch (p.PreferredName) {
         case 'first':
-          p.ShortName = wordsArray[0];
+          p.ShortName = p.FirstName;
           break;
         case 'last':
           p.ShortName = wordsArray.at(-1) ?? p.Name;
