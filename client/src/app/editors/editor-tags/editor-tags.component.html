@@ -10,7 +10,9 @@
       </p-fieldset>
     }
 
-    <app-tag (click)="newTag()" [tag]="addTagTag" icon="pi pi-plus"></app-tag>
+    <div class="flex justify-content-end">
+      <p-button label="Add New" [outlined]="true" severity="secondary" (onClick)="newTag()"></p-button>
+    </div>
   </div>
 
   @if (formGroup && tag) {
