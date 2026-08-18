@@ -29,8 +29,10 @@ export function TPRaw<T>(tableName: string, key?: keyof T, type: 'none' | 'selec
 }
 
 export function VAR(key: string) {
-  if ((key.endsWith('Id') || key === 'CreatedBy' || key === 'LastModifiedBy')) {
+  if (key.endsWith('Id') || key === 'CreatedBy' || key === 'LastModifiedBy') {
     return 'unhex(?)';
+  } else if (key === 'CreatedDate' || key === 'LastModifiedDate') {
+    return `unixepoch(?)`;
   } else {
     return '?';
   }

@@ -164,7 +164,7 @@ export class DbService implements OnApplicationShutdown {
       // Continue
     }
 
-    const pkString = primaryKeys.map((pk) => `${pk} = unhex(?)`).join(' AND ');
+    const pkString = primaryKeys.map((pk) => `${pk} = ${VAR(pk)}`).join(' AND ');
     let queryString = `DELETE FROM ${tableName} WHERE ${pkString}`;
 
     const parameterValues: any[] = [...primaryKeyValues];

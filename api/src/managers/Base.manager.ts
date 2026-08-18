@@ -55,7 +55,7 @@ export abstract class BaseManager<T extends BaseEntity> {
   }
 
   protected getSelectAll() {
-    return this.dbProps.map(k => TP(this.entityType, k as keyof T, 'select')).join(', ');
+    return this.dbProps.map((k) => TP(this.entityType, k as keyof T, 'select')).join(', ');
   }
 
   private getBaseSelect() {
@@ -344,7 +344,7 @@ export abstract class BaseManager<T extends BaseEntity> {
 
       // Check that all primary and foreign keys are valid Guids
       if (this.primaryKeys.includes(key) || key === this.secondaryKey || this.foreignKeys.includes(key)) {
-        if (!isGuid(value.toString())) {
+        if (typeof value === 'string' && !isGuid(value)) {
           errors.push(`${keyString}: not a valid guid`);
         } else {
           // continue
