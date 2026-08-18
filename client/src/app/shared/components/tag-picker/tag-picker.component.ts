@@ -12,7 +12,9 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 type TagWrapper = { tag: TagEntity; checked: boolean };
-type TagTree = { label: string; tags: TagWrapper[]; children: TagTree[] };
+type TagTree = { label: string; collapsed: boolean; tags: TagWrapper[]; children: TagTree[] };
+
+const ALL = 'All ';
 
 @Component({
   selector: 'app-tag-picker',
@@ -62,30 +64,14 @@ export class TagPickerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.api.tags.raw$.subscribe((value) => {
-        const tags = this.updateTagOptions(value);
+      this.api.dataUpdate$.subscribe(() => {
+        const tags = this.updateTagOptions();
         this.tags = [];
-        tags.forEach((tag) => {
-          const boardGames = tag.tag.DisplayOnBoardGameId ? [tag.tag.DisplayOnBoardGameId] : ['All '];
-          boardGames.forEach((bg) => {
-            let root = this.searchTagTree(this.tags, bg);
-            if (root) {
-              // Continue
-            } else {
-              root = { label: bg, tags: [], children: [] };
-              this.tags.push(root);
-            }
-            let category = this.searchTagTree([root], tag.tag.Category ?? 'All ');
-            if (category) {
-              // Continue
-            } else {
-              category = { label: tag.tag.Category ?? 'All ', tags: [], children: [] };
-              root.children.push(category);
-            }
-
-            category.tags.push(tag);
-          });
-        });
+        if (this.mode() === 'editor') {
+          this.buildEditorTree(tags);
+        } else {
+          this.buildSelectorTree(tags);
+        }
 
         this.crawlTagTree(undefined, (item) => {
           const bgLabel = this.api.boardGames.getOne(item.label);
@@ -105,11 +91,50 @@ export class TagPickerComponent implements OnInit, OnDestroy {
     );
   }
 
+  buildEditorTree(tags: TagWrapper[]) {
+    tags.forEach((tag) => {
+      const boardGames = [ALL, ...tag.tag.BoardGameFilter];
+      boardGames.forEach((bg) => {
+        let root = this.searchTagTree(this.tags, bg);
+        if (root) {
+          // Continue
+        } else {
+          root = { label: bg, collapsed: bg !== ALL, tags: [], children: [] };
+          this.tags.push(root);
+        }
+        let category = this.searchTagTree([root], tag.tag.Category ?? ALL);
+        if (category) {
+          // Continue
+        } else {
+          category = { label: tag.tag.Category ?? ALL, collapsed: false, tags: [], children: [] };
+          root.children.push(category);
+        }
+
+        category.tags.push(tag);
+      });
+    });
+  }
+
+  buildSelectorTree(tags: TagWrapper[]) {
+    tags.forEach((tag) => {
+      let category = this.searchTagTree(this.tags, tag.tag.Category ?? ALL);
+      if (category) {
+        // Continue
+      } else {
+        category = { label: tag.tag.Category ?? ALL, collapsed: false, tags: [], children: [] };
+        this.tags.push(category);
+      }
+
+      category.tags.push(tag);
+    });
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  updateTagOptions(tags: TagEntity[]): TagWrapper[] {
+  updateTagOptions(): TagWrapper[] {
+    let tags = this.api.tags.raw;
     const tagIds = new Set(this.selectedTags().map((x) => x.TagId));
     if (this.filterBool() === '') {
       // Skip filter
@@ -120,8 +145,8 @@ export class TagPickerComponent implements OnInit, OnDestroy {
     tags = tags.filter(
       (x) =>
         this.filterBoardGame() === undefined ||
-        x.DisplayOnBoardGameId === null ||
-        x.DisplayOnBoardGameId === this.filterBoardGame(),
+        x.BoardGameFilter.length === 0 ||
+        x.BoardGameFilter.some((bg) => bg === this.filterBoardGame()),
     );
 
     this.selectedTags().forEach((t) => {
@@ -154,6 +179,7 @@ export class TagPickerComponent implements OnInit, OnDestroy {
 
   unselectAll() {
     this.crawlTagTree((t) => (t.checked = false));
+    this.updateTitle();
   }
 
   updateTitle() {
@@ -161,7 +187,7 @@ export class TagPickerComponent implements OnInit, OnDestroy {
     if (count > 0) {
       this.title = `Tags: ${count} selected`;
     } else {
-      // Continue
+      this.title = `Tags`;
     }
   }
 
@@ -188,7 +214,7 @@ export class TagPickerComponent implements OnInit, OnDestroy {
   searchTagTree(root: TagTree[], label: string) {
     const toSearch = [...root];
     while (toSearch.length > 0) {
-      const item = toSearch.pop();
+      const item = toSearch.splice(0, 1)[0];
       if (item?.label === label) {
         return item;
       } else {
@@ -200,9 +226,9 @@ export class TagPickerComponent implements OnInit, OnDestroy {
 
   sortSections() {
     const sort = (a: TagTree, b: TagTree) => {
-      if (a.label === 'All ') {
+      if (a.label === ALL) {
         return 1;
-      } else if (b.label === 'All ') {
+      } else if (b.label === ALL) {
         return -1;
       } else {
         return a.label.localeCompare(b.label);

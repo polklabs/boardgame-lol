@@ -32,7 +32,7 @@ export class PlayDetailComponent implements AfterViewInit {
         { title: 'Notes', content: g.Notes ? [g.Notes] : undefined },
         { title: 'Player Count', value: g.PlayerCount },
         { title: 'Tags', content: g.Tags.filter((t) => !t.Category) },
-        ...getTagColumns<GameEntity>('DisplayOnGames').map((x) => ({
+        ...getTagColumns<GameEntity>('OnGames').map((x) => ({
           title: x.name ?? x.id,
           content: (x.fieldFunc?.(g) as unknown[]) ?? [],
         })),
@@ -46,7 +46,7 @@ export class PlayDetailComponent implements AfterViewInit {
     { id: 'DisplayNameFull', name: 'Name', dataType: 'custom' },
     { id: 'Points', dataType: 'score', boardGame: (row) => row.Game?.BoardGame },
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnPlayerGames'),
+    ...getTagColumns('OnPlayerGames'),
   ];
 
   ngAfterViewInit(): void {

@@ -11,36 +11,61 @@ import { Ignore } from '../decorators/ignore.decorator';
 import { getAccessibleBackground } from '../utils/color-utils';
 import { Pattern } from '../decorators/pattern.decorator';
 import { Enum } from '../decorators/enum.decorator';
-import { ForeignKey } from '../decorators/foreign-key.decorator';
-import { BoardGameEntity } from './BoardGame.entity';
 import { Exclude } from 'class-transformer';
+import { TagBoardGameEntity } from './TagBoardGame.entity';
 
-export const TagCategories = ['character', 'faction', 'role', 'victory-method', 'death-cause', 'version', 'event'] as const;
+export type TagReturn = {
+  Tag: TagEntity;
+  TagBoardGames: TagBoardGameEntity[];
+};
+
+export const TagCategories = [
+  // Generic
+  'player',
+  'play',
+  'score',
+  'game',
+
+  // Specific
+  'character',
+  'faction',
+  'role',
+  'victory-method',
+  'death-cause',
+  'version',
+  'event',
+] as const;
 export type TagCategory = (typeof TagCategories)[number];
 export const TagCategoryMapping: Record<
-  TagCategory,
+  TagCategory | '',
   {
     text: string;
-    DisplayOnBoardGames?: boolean;
-    DisplayOnGames?: boolean;
-    DisplayOnPlayerGames?: boolean;
-    DisplayOnPlayers?: boolean;
+    OnBoardGames?: boolean;
+    OnGames?: boolean;
+    OnPlayerGames?: boolean;
+    OnPlayers?: boolean;
   }
 > = {
-  character: { text: 'Character', DisplayOnPlayerGames: true },
-  faction: { text: 'Faction', DisplayOnPlayerGames: true },
-  role: { text: 'Role', DisplayOnPlayerGames: true },
-  'victory-method': { text: 'Victory Method', DisplayOnPlayerGames: true },
-  'death-cause': { text: 'Cause of Death', DisplayOnPlayerGames: true },
-  event: { text: 'Game Events', DisplayOnGames: true },
-  version: { text: 'Version', DisplayOnGames: true },
+  '': { text: '', OnBoardGames: true, OnGames: true, OnPlayerGames: true, OnPlayers: true },
+  player: { text: 'Player', OnPlayers: true },
+  play: { text: 'Play', OnGames: true },
+  score: { text: 'Play Score', OnPlayerGames: true },
+  game: { text: 'Game', OnBoardGames: true },
+
+  character: { text: 'Character', OnPlayerGames: true },
+  faction: { text: 'Faction', OnPlayerGames: true },
+  role: { text: 'Role', OnPlayerGames: true },
+  'victory-method': { text: 'Victory Method', OnPlayerGames: true },
+  'death-cause': { text: 'Cause of Death', OnPlayerGames: true },
+  event: { text: 'Game Events', OnGames: true },
+  version: { text: 'Version', OnGames: true },
 } as const;
 
 export const DISPLAY_FIELDS = [
-  'DisplayOnBoardGames',
-  'DisplayOnGames',
-  'DisplayOnPlayerGames',
-  'DisplayOnPlayers',
+  'OnBoardGames',
+  'OnGames',
+  'OnPlayerGames',
+  'OnPlayers',
 ] as const;
 
 @TableName('Tag')
@@ -64,39 +89,42 @@ export class TagEntity extends BaseEntity implements ITag {
   @Nullable()
   Category: TagCategory | null = null;
 
-  // Tag restrictions
-  DisplayOnBoardGames = true;
-  DisplayOnGames = true;
-  DisplayOnPlayerGames = true;
-  DisplayOnPlayers = true;
-
-  @Nullable()
-  @ForeignKey(BoardGameEntity)
-  DisplayOnBoardGameId: string | null = null;
-
   constructor(partial: Partial<TagEntity> = {}, copyIgnored = false) {
     super();
     this.assign(partial, TagEntity, copyIgnored);
+    this.BoardGameFilter = partial.BoardGameFilter ?? [];
+
+    const mapping = TagCategoryMapping[this.Category ?? ''];
+    this.OnBoardGames = mapping.OnBoardGames ?? false;
+    this.OnGames = mapping.OnGames ?? false;
+    this.OnPlayerGames = mapping.OnPlayerGames ?? false;
+    this.OnPlayers = mapping.OnPlayers ?? false;
   }
 
   @Ignore()
   BackgroundColor: string = '';
 
   @Ignore()
+  BoardGameFilter: string[] = [];
+
+  // Tag restrictions
+  @Ignore()
+  OnBoardGames = true;
+  @Ignore()
+  OnGames = true;
+  @Ignore()
+  OnPlayerGames = true;
+  @Ignore()
+  OnPlayers = true;
+
+  @Ignore()
   calculated = false;
 
   calculate() {
     this.BackgroundColor = getAccessibleBackground(this.Color ?? '');
-    this.calculated = true;
-  }
-
-  updateCategory() {
-    if (this.Category) {
-      DISPLAY_FIELDS.forEach((field) => {
-        this[field] = TagCategoryMapping[this.Category as TagCategory][field] === true;
-      });
-    } else {
-      // Skip
+    if (this.BoardGameFilter.length > 0) {
+      this.OnPlayers = false;
     }
+    this.calculated = true;
   }
 }

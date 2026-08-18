@@ -23,6 +23,9 @@ export class TagBoardGameEntity extends BaseEntity implements ITag {
   @ForeignKey(BoardGameEntity)
   BoardGameId: string = '';
 
+  @PrimaryKey()
+  Filter = false;
+
   @Ignore()
   Tag: TagEntity | null = null;
 

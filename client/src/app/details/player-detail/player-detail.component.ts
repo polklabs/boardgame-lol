@@ -67,7 +67,7 @@ export class PlayerDetailComponent implements AfterViewInit {
           content: [format(p.LastSeen ?? 0, 'yyyy/M/d')],
         },
         { title: 'Tags', content: p.Tags.filter((t) => !t.Category) },
-        ...getTagColumns<PlayerEntity>('DisplayOnPlayers').map((x) => ({
+        ...getTagColumns<PlayerEntity>('OnPlayers').map((x) => ({
           title: x.name ?? x.id,
           content: (x.fieldFunc?.(p) as unknown[]) ?? [],
         })),
@@ -85,7 +85,7 @@ export class PlayerDetailComponent implements AfterViewInit {
     { id: 'Name', name: 'Team Name', dataType: 'text' },
 
     { id: 'Tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnPlayerGames'),
+    ...getTagColumns('OnPlayerGames'),
   ];
 
   ngAfterViewInit(): void {

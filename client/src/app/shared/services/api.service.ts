@@ -17,6 +17,7 @@ import {
   EventEntity,
   ClubUserEntity,
   ClubEditReturn,
+  TagReturn,
 } from 'libs/index';
 import { TagGameEntity } from 'libs/models/TagGame.entity';
 import { TagPlayerEntity } from 'libs/models/TagPlayer.entity';
@@ -211,7 +212,7 @@ export class ApiService {
 
     if (result) {
       this.boardGames.upsert(result.BoardGame);
-      this.tagBoardGames.upsert(result.TagBoardGames, (x) => x.BoardGameId === result.BoardGame.BoardGameId);
+      this.tagBoardGames.upsert(result.TagBoardGames, (x) => x.BoardGameId === result.BoardGame.BoardGameId && !x.Filter);
       this.updateReferences();
       this.dataUpdate$.next();
       return this.boardGames.getOne(result.BoardGame.BoardGameId);
@@ -221,13 +222,14 @@ export class ApiService {
   }
 
   async postTag(isNew: boolean, entity: TagEntity) {
-    const result: TagEntity | null = await this.post(isNew, 'tag', entity);
+    const result: TagReturn | null = await this.post(isNew, 'tag', entity);
 
-    if (result) {
-      this.tags.upsert(result);
+    if (result?.Tag) {
+      this.tags.upsert(result.Tag);
+      this.tagBoardGames.upsert(result.TagBoardGames, (x) => x.TagId === result.Tag.TagId && x.Filter);
       this.updateReferences();
       this.dataUpdate$.next();
-      return this.tags.getOne(result.TagId);
+      return this.tags.getOne(result.Tag.TagId);
     } else {
       return null;
     }
@@ -285,6 +287,7 @@ export class ApiService {
       this.players.deleteOne(playerId);
       const playerIds = this.players.primaryIdSet;
       this.playerGamePlayers.deleteMany((x) => !playerIds.has(x.PlayerId));
+      this.tagPlayers.deleteMany(x => x.PlayerId === playerId);
       this.updateReferences();
       this.dataUpdate$.next();
       return true;
@@ -300,6 +303,7 @@ export class ApiService {
       this.boardGames.deleteOne(boardGameId);
       this.games.deleteMany((x) => x.BoardGameId === boardGameId);
       this.playerGames.deleteMany((x) => x.Game?.BoardGameId === boardGameId);
+      this.tagBoardGames.deleteMany(x => x.BoardGameId === boardGameId);
 
       const playerGameIds = this.playerGames.primaryIdSet;
       this.playerGamePlayers.deleteMany((x) => !playerGameIds.has(x.PlayerGameId));
@@ -399,6 +403,12 @@ export class ApiService {
       // Continue
     }
 
+    this.tags.list.forEach((t) => {
+      t.BoardGameFilter = this.tagBoardGames.list
+        .filter((x) => x.TagId === t.TagId && x.Filter)
+        .map((x) => x.BoardGameId);
+    });
+
     this.tagBoardGames.list.forEach((t) => {
       t.Tag = this.tags.getOne(t.TagId);
     });
@@ -419,7 +429,7 @@ export class ApiService {
     this.boardGames.list.forEach((bg) => {
       bg.Games = this.games.list.filter((x) => x.BoardGameId === bg.BoardGameId);
       bg.Tags = this.tagBoardGames.list
-        .filter((x) => x.BoardGameId === bg.BoardGameId)
+        .filter((x) => x.BoardGameId === bg.BoardGameId && !x.Filter)
         .map((t) => t.Tag)
         .filter((x) => x !== null);
     });

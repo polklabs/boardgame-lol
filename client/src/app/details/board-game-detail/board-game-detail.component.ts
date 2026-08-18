@@ -43,7 +43,7 @@ export class BoardGameDetailComponent implements AfterViewInit {
           value: Math.abs(bg.AverageWinningScore) !== Infinity ? bg.AverageWinningScore : undefined,
         },
         { title: 'Tags', content: bg.Tags.filter((t) => !t.Category) },
-        ...getTagColumns<BoardGameEntity>('DisplayOnBoardGames').map((x) => ({
+        ...getTagColumns<BoardGameEntity>('OnBoardGames').map((x) => ({
           title: x.name ?? x.id,
           content: (x.fieldFunc?.(bg) as unknown[]) ?? [],
         })),
@@ -61,7 +61,7 @@ export class BoardGameDetailComponent implements AfterViewInit {
     { id: 'totalPoints', name: 'Total Points', sort: true, dataType: 'score', boardGame: (row) => row.boardGame },
     { id: 'nonScoreCount', name: 'Non-Scoring', sort: true, dataType: 'number' },
     { id: 'tags', dataType: 'tag', fieldFunc: (x) => x.Tags.filter((t) => !t.Category) },
-    ...getTagColumns('DisplayOnPlayers'),
+    ...getTagColumns('OnPlayers'),
   ];
 
   ngAfterViewInit(): void {

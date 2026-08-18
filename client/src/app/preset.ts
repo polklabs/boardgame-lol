@@ -61,7 +61,7 @@ export const LaraDark = definePreset(Lara, {
         padding: '4px 1rem 0.5rem',
       },
       content: {
-        padding: '0.5rem 1rem',
+        padding: '0 1rem 0.5rem',
       },
     },
     togglebutton: {
@@ -71,7 +71,7 @@ export const LaraDark = definePreset(Lara, {
     },
     fieldset: {
       legend: {
-        padding: '4px',
+        padding: '4px 4px 0',
         borderWidth: '0',
       },
       root: {

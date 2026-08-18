@@ -27,6 +27,7 @@ import { DialogComponent } from '../../shared/components/dialog/dialog.component
 import { uniqueValidator } from '../../shared/validators/unique.validator';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { MultiSelectComponent } from '../../shared/components/form-components/multi-select/multi-select.component';
 
 type EntityType = TagEntity;
 
@@ -45,6 +46,7 @@ type EntityType = TagEntity;
     HideDirective,
     DialogComponent,
     NgStyle,
+    MultiSelectComponent,
   ],
   templateUrl: './editor-tags.component.html',
   styleUrl: './editor-tags.component.scss',
@@ -116,6 +118,7 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
       this.getControl('Text')?.addValidators(uniqueValidator(this.apiService.tags, this.formGroup));
 
       const instance = new TagEntity(this.tag);
+      instance.BoardGameFilter = this.tag.BoardGameFilter;
       this.formGroup.patchValue(instance);
 
       this.subscriptions.add(
@@ -142,17 +145,11 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
   }
 
   updateCategory(category: TagCategory | null) {
-    if (category) {
-      DISPLAY_FIELDS.forEach((field) => {
-        const control = this.getControl(field);
-        control?.disable();
-        control?.setValue(TagCategoryMapping[category][field] === true);
-      });
-    } else {
-      DISPLAY_FIELDS.forEach((field) => {
-        this.getControl(field)?.enable();
-      });
-    }
+    DISPLAY_FIELDS.forEach((field) => {
+      const control = this.getControl(field);
+      control?.setValue(TagCategoryMapping[category ?? ''][field] === true);
+      control?.disable();
+    });
   }
 
   setColor(color: string | object | null) {

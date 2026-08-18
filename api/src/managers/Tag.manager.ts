@@ -2,7 +2,7 @@ import { BaseManager } from './Base.manager';
 import { DbService } from 'src/services/db.service';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
-import { ITag, newGuid, TagBoardGameEntity, TagEntity, TagPlayerGameEntity } from 'libs/index';
+import { ITag, newGuid, TagBoardGameEntity, TagEntity, TagPlayerGameEntity, TagReturn } from 'libs/index';
 import { TagBoardGameManager } from './TagBoardGame.manager';
 import { TagGameManager } from './TagGame.manager';
 import { TagPlayerManager } from './TagPlayer.manager';
@@ -25,19 +25,10 @@ export class TagManager extends BaseManager<TagEntity> {
   }
 
   upsert(tagLink: TagLink, userId: string, clubId: string, tags: TagEntity[], linkId: string, transactions: unknown[]) {
-    const oldTags = new Set(
-      this.getTagLinks(tagLink, linkId)
-        .map((x) => x.TagId)
-        .filter((x) => x !== null),
-    );
+    const oldTags = new Set(this.getTagLinks(tagLink, linkId).map((x) => x.TagId));
     tags.forEach((tag) => {
       tag.ClubId = clubId;
       const TagId = tag.TagId;
-      if (TagId === null) {
-        return;
-      } else {
-        // Continue
-      }
 
       if (oldTags.has(TagId)) {
         // Do nothing
@@ -50,24 +41,30 @@ export class TagManager extends BaseManager<TagEntity> {
       transactions.push(this.getTagLinkDelete(tagLink, clubId, tagId, linkId));
     });
   }
+
   private getTagLinks(tagLink: TagLink, linkId: string): ITag[] {
     switch (tagLink) {
       case 'boardGame':
-        return this.tagBoardGame.loadMany('BoardGameId', [linkId]);
+        return this.tagBoardGame.loadMany('BoardGameId', linkId, 'Filter', '0');
       case 'game':
-        return this.tagGame.loadMany('GameId', [linkId]);
+        return this.tagGame.loadMany('GameId', linkId);
       case 'player':
-        return this.tagPlayer.loadMany('PlayerId', [linkId]);
+        return this.tagPlayer.loadMany('PlayerId', linkId);
       case 'playerGame':
-        return this.tagPlayerGame.loadMany('PlayerGameId', [linkId]);
+        return this.tagPlayerGame.loadMany('PlayerGameId', linkId);
       default:
         throw new NotImplementedException();
     }
   }
+
   private getTagLinkPut(tagLink: TagLink, userId: string, ClubId: string, TagId: string, linkId: string): unknown {
     switch (tagLink) {
       case 'boardGame':
-        return this.tagBoardGame.put(userId, ClubId, new TagBoardGameEntity({ TagId, ClubId, BoardGameId: linkId }));
+        return this.tagBoardGame.put(
+          userId,
+          ClubId,
+          new TagBoardGameEntity({ TagId, ClubId, BoardGameId: linkId, Filter: false }),
+        );
       case 'game':
         return this.tagGame.put(userId, ClubId, new TagGameEntity({ TagId, ClubId, GameId: linkId }));
       case 'player':
@@ -81,7 +78,7 @@ export class TagManager extends BaseManager<TagEntity> {
   private getTagLinkDelete(tagLink: TagLink, clubId: string, tagId: string, linkId: string): unknown {
     switch (tagLink) {
       case 'boardGame':
-        return this.tagBoardGame.delete(tagId, linkId, clubId);
+        return this.tagBoardGame.delete(tagId, linkId, false, clubId);
       case 'game':
         return this.tagGame.delete(tagId, linkId, clubId);
       case 'player':
@@ -93,29 +90,47 @@ export class TagManager extends BaseManager<TagEntity> {
     }
   }
 
-  put(userId: string, ClubId: string, entity: TagEntity) {
+  put(userId: string, ClubId: string, entity: TagEntity): TagReturn {
+    const bgIds = entity.BoardGameFilter;
     entity = this.new({ ...entity, ClubId, TagId: newGuid() });
 
     this.SanitizeInputs(entity);
+
+    const transactions: unknown[] = [];
+
+    this.tagBoardGame.upsertFilter(userId, entity.ClubId!, bgIds, entity.TagId, transactions);
+
     this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
-    this.runInsert(userId, entity, false);
-    return this.loadOne(entity.TagId);
+    this.runInsert(userId, entity, false, transactions);
+    return {
+      Tag: this.loadOne(entity.TagId)!,
+      TagBoardGames: this.tagBoardGame.loadMany('TagId', entity.TagId).filter((x) => x.Filter),
+    };
   }
 
-  patch(userId: string, ClubId: string, entity: TagEntity) {
+  patch(userId: string, ClubId: string, entity: TagEntity): TagReturn {
+    const bgIds = entity.BoardGameFilter;
     entity = this.new({ ...entity, ClubId });
 
     this.SanitizeInputs(entity);
+
+    const transactions: unknown[] = [];
+
+    this.tagBoardGame.upsertFilter(userId, entity.ClubId!, bgIds, entity.TagId, transactions);
+
     this.Validate(userId, entity);
 
     this.CheckForeignKeys(entity);
 
-    this.runUpdate(userId, entity, false);
+    this.runUpdate(userId, entity, false, transactions);
 
-    return this.loadOne(entity.TagId);
+    return {
+      Tag: this.loadOne(entity.TagId)!,
+      TagBoardGames: this.tagBoardGame.loadMany('TagId', entity.TagId).filter((x) => x.Filter),
+    };
   }
 
   delete(tagId: string, clubId: string) {

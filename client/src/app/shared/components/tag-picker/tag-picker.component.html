@@ -34,7 +34,7 @@
 </app-dialog>
 
 <ng-template #tagTree let-item>
-  <p-fieldset [legend]="item.label">
+  <p-fieldset [legend]="item.label" [collapsed]="item.collapsed" [toggleable]="true">
     @if (item.tags.length > 0) {
       <div class="flex gap-4">
         @for (t of item.tags; track t.tag) {

@@ -40,23 +40,33 @@
           }
         </div>
 
-        <app-dropdown
-          formControlName="DisplayOnBoardGameId"
-          label="Display Only On BoardGame"
+        <app-multi-select
+          formControlName="BoardGameFilter"
+          label="Display Only On BoardGames"
           [entityType]="entityType"
           [appHide]="hideFields"
           [options$]="boardGames$"
+          [maxSelectedLabels]="9"
           optionLabel="Name"
           optionValue="BoardGameId"
-          [showClear]="true"></app-dropdown>
+          [showClear]="true"></app-multi-select>
 
         <div class="checkbox-column">
           <h3>Display On Editors:</h3>
-          <app-checkbox formControlName="DisplayOnBoardGames" label="BoardGames" [appHide]="hideFields"></app-checkbox>
-          <app-checkbox formControlName="DisplayOnPlayers" label="Players" [appHide]="hideFields"></app-checkbox>
-          <app-checkbox formControlName="DisplayOnGames" label="Plays" [appHide]="hideFields"></app-checkbox>
           <app-checkbox
-            formControlName="DisplayOnPlayerGames"
+            formControlName="OnBoardGames"
+            label="BoardGames"
+            [appHide]="hideFields"></app-checkbox>
+          <app-checkbox
+            formControlName="OnPlayers"
+            label="Players"
+            [appHide]="hideFields"></app-checkbox>
+          <app-checkbox
+            formControlName="OnGames"
+            label="Plays"
+            [appHide]="hideFields"></app-checkbox>
+          <app-checkbox
+            formControlName="OnPlayerGames"
             label="Play Scores"
             [appHide]="hideFields"></app-checkbox>
         </div>
