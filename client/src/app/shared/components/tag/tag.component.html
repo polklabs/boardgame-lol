@@ -1,1 +1,4 @@
-<p-tag [icon]="icon" severity="contrast" [value]="tag.Text" [style]="{ color: tag.Color, background: tag.BackgroundColor }" />
+<p-tag severity="contrast" [style]="{ color: tag.Color, background: tag.BackgroundColor }">
+  <ng-content></ng-content>
+  <span>{{ tag.Text }}</span>
+</p-tag>

@@ -1,20 +1,4 @@
 <app-dialog [title]="title" [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
-  <div class="flex-column gap-4">
-    @for (kv of tags | keyvalue | sort: 'key'; track kv.key) {
-      <p-fieldset [legend]="kv.key">
-        <div class="flex gap-4">
-          @for (t of kv.value | sort: 'Text'; track t) {
-            <app-tag (click)="editTag(t)" [tag]="t" [icon]="isFiltered(t) ? 'pi pi-filter' : undefined"></app-tag>
-          }
-        </div>
-      </p-fieldset>
-    }
-
-    <div class="flex justify-content-end">
-      <p-button label="Add New" [outlined]="true" severity="secondary" (onClick)="newTag()"></p-button>
-    </div>
-  </div>
-
   @if (formGroup && tag) {
     <div class="tag-display items-center">
       <p-tag
@@ -24,7 +8,7 @@
     </div>
 
     <div class="form">
-      <form [formGroup]="formGroup" (ngSubmit)="submit()">
+      <form [formGroup]="formGroup" (ngSubmit)="submit(false)">
         <app-textinput
           formControlName="Text"
           [entityType]="entityType"
@@ -85,8 +69,11 @@
         <p-button label="Delete" [outlined]="true" severity="danger" (onClick)="toDeleteEntity()"></p-button>
       </div>
       <div>
-        <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="cancelEdit()"></p-button>
-        <p-button label="Save" [outlined]="true" (onClick)="submit()"></p-button>
+        <p-button label="Cancel" [outlined]="true" severity="secondary" (onClick)="closeEditor.emit()"></p-button>
+        @if (standalone) {
+          <p-button label="Save" [outlined]="true" (onClick)="submit(false)"></p-button>
+        }
+        <p-button label="Save & Close" [outlined]="true" (onClick)="submit(true)"></p-button>
       </div>
     }
   </ng-container>

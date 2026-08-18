@@ -8,14 +8,12 @@ import { BoardGameEntity, ClubEntity, GameEntity, PlayerEntity } from 'libs/inde
 import { EditorBoardGameComponent } from '../editors/editor-board-game/editor-board-game.component';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { EditorPlayerComponent } from '../editors/editor-player/editor-player.component';
-import { UserService } from '../shared/services/user.service';
 import { GamesTableComponent } from './games-table/games-table.component';
 import { PlayerTableComponent } from './player-table/player-table.component';
 import { BoardGameTableComponent } from './board-game-table/board-game-table.component';
 import { StatsComponent } from './stats/stats.component';
 import { EditorClubComponent } from '../editors/editor-club/editor-club.component';
 import { TabsModule } from 'primeng/tabs';
-import { EditorTagsComponent } from '../editors/editor-tags/editor-tags.component';
 import { FilterComponent } from './filter/filter.component';
 import { ClubTitleComponent } from '../shared/components/club-title/club-title.component';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -24,6 +22,7 @@ import { BoardGameDetailComponent } from '../details/board-game-detail/board-gam
 import { DetailService } from '../shared/services/detail.service';
 import { PlayDetailComponent } from '../details/play-detail/play-detail.component';
 import { PlayerDetailComponent } from '../details/player-detail/player-detail.component';
+import { TagPickerComponent } from '../shared/components/tag-picker/tag-picker.component';
 
 @Component({
   selector: 'app-club',
@@ -33,7 +32,6 @@ import { PlayerDetailComponent } from '../details/player-detail/player-detail.co
     EditorBoardGameComponent,
     EditorPlayerComponent,
     EditorClubComponent,
-    EditorTagsComponent,
     EditorEventComponent,
     CommonModule,
     TabsModule,
@@ -47,6 +45,7 @@ import { PlayerDetailComponent } from '../details/player-detail/player-detail.co
     BoardGameDetailComponent,
     PlayDetailComponent,
     PlayerDetailComponent,
+    TagPickerComponent,
   ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
@@ -55,7 +54,6 @@ export class ClubComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private apiService = inject(ApiService);
-  private userService = inject(UserService);
   detailService = inject(DetailService);
 
   club?: ClubEntity;
@@ -111,7 +109,7 @@ export class ClubComponent implements OnInit, OnDestroy {
   }
 
   newGame() {
-    this.editGame = new GameEntity({ ClubId: this.apiService.clubId });
+    this.editGame = new GameEntity({});
     this.editorGameVisible = true;
   }
 
@@ -121,7 +119,7 @@ export class ClubComponent implements OnInit, OnDestroy {
   }
 
   newBoardGame() {
-    this.editBoardGame = new BoardGameEntity({ ClubId: this.apiService.clubId });
+    this.editBoardGame = new BoardGameEntity({});
     this.editorBoardGameVisible = true;
   }
   boardGameEdit(boardGame: BoardGameEntity) {
@@ -130,7 +128,7 @@ export class ClubComponent implements OnInit, OnDestroy {
   }
 
   newPlayer() {
-    this.editPlayer = new PlayerEntity({ ClubId: this.apiService.clubId });
+    this.editPlayer = new PlayerEntity({});
     this.editorPlayerVisible = true;
   }
 

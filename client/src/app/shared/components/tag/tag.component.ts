@@ -10,5 +10,4 @@ import { TagModule } from 'primeng/tag';
 })
 export class TagComponent {
   @Input() tag!: TagEntity;
-  @Input() icon?: string;
 }

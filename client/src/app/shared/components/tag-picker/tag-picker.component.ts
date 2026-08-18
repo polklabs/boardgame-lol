@@ -1,0 +1,214 @@
+import { Component, inject, input, OnDestroy, OnInit, output } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { DialogComponent } from '../dialog/dialog.component';
+import { FieldsetModule } from 'primeng/fieldset';
+import { TagComponent } from '../tag/tag.component';
+import { TagCategoryMapping, TagEntity } from 'libs/index';
+import { ApiService } from '../../services/api.service';
+import { NgTemplateOutlet } from '@angular/common';
+import { Subscription } from 'rxjs';
+import { EditorTagsComponent } from '../../../editors/editor-tags/editor-tags.component';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+type TagWrapper = { tag: TagEntity; checked: boolean };
+type TagTree = { label: string; tags: TagWrapper[]; children: TagTree[] };
+
+@Component({
+  selector: 'app-tag-picker',
+  imports: [
+    ButtonModule,
+    DialogComponent,
+    FieldsetModule,
+    TagComponent,
+    EditorTagsComponent,
+    CheckboxModule,
+    ReactiveFormsModule,
+    FormsModule,
+    NgTemplateOutlet,
+  ],
+  templateUrl: './tag-picker.component.html',
+  styleUrl: './tag-picker.component.scss',
+})
+export class TagPickerComponent implements OnInit, OnDestroy {
+  private api = inject(ApiService);
+
+  editorVisible = input(false);
+  mode = input.required<'editor' | 'selector'>();
+  selectedTags = input<TagEntity[]>([]);
+  filterBool = input<keyof TagEntity | ''>('');
+  filterBoardGame = input<string>();
+
+  closeEditor = output<TagEntity[]>();
+
+  title = 'Tags';
+
+  editorTagVisible = false;
+  editTag?: TagEntity;
+
+  tags: TagTree[] = [];
+
+  subscriptions = new Subscription();
+
+  getSelected() {
+    const tags = new Set<TagEntity>();
+    this.crawlTagTree((t) => tags.add(t.tag));
+    return [...tags].toSorted((a, b) => a.Text.localeCompare(b.Text));
+  }
+
+  getSelectedCount() {
+    return this.getSelected().length;
+  }
+
+  ngOnInit(): void {
+    this.subscriptions.add(
+      this.api.tags.raw$.subscribe((value) => {
+        const tags = this.updateTagOptions(value);
+        this.tags = [];
+        tags.forEach((tag) => {
+          const boardGames = tag.tag.DisplayOnBoardGameId ? [tag.tag.DisplayOnBoardGameId] : ['All '];
+          boardGames.forEach((bg) => {
+            let root = this.searchTagTree(this.tags, bg);
+            if (root) {
+              // Continue
+            } else {
+              root = { label: bg, tags: [], children: [] };
+              this.tags.push(root);
+            }
+            let category = this.searchTagTree([root], tag.tag.Category ?? 'All ');
+            if (category) {
+              // Continue
+            } else {
+              category = { label: tag.tag.Category ?? 'All ', tags: [], children: [] };
+              root.children.push(category);
+            }
+
+            category.tags.push(tag);
+          });
+        });
+
+        this.crawlTagTree(undefined, (item) => {
+          const bgLabel = this.api.boardGames.getOne(item.label);
+          if (bgLabel) {
+            item.label = bgLabel?.Name ?? item.label;
+          } else if (item.label in TagCategoryMapping) {
+            item.label = TagCategoryMapping[item.label as keyof typeof TagCategoryMapping].text;
+          } else {
+            // Keep as is
+          }
+        });
+        this.crawlTagTree(undefined, (item) => item.tags.sort((a, b) => a.tag.Text.localeCompare(b.tag.Text)));
+        this.sortSections();
+
+        this.updateTitle();
+      }),
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  updateTagOptions(tags: TagEntity[]): TagWrapper[] {
+    const tagIds = new Set(this.selectedTags().map((x) => x.TagId));
+    if (this.filterBool() === '') {
+      // Skip filter
+    } else {
+      tags = tags.filter((x) => x[this.filterBool() as keyof TagEntity]);
+    }
+
+    tags = tags.filter(
+      (x) =>
+        this.filterBoardGame() === undefined ||
+        x.DisplayOnBoardGameId === null ||
+        x.DisplayOnBoardGameId === this.filterBoardGame(),
+    );
+
+    this.selectedTags().forEach((t) => {
+      if (tags.includes(t)) {
+        // Continue
+      } else {
+        tags.push(t);
+      }
+    });
+
+    tags.sort((a, b) => a.Text.localeCompare(b.Text));
+    return tags.map((tag) => ({ tag, checked: tagIds.has(tag.TagId) }));
+  }
+
+  tagEdit(mouseEvent: MouseEvent, tag: TagWrapper) {
+    if (this.mode() === 'editor') {
+      this.editTag = tag.tag;
+      this.editorTagVisible = true;
+    } else {
+      mouseEvent.preventDefault();
+      tag.checked = !tag.checked;
+      this.updateTitle();
+    }
+  }
+
+  newTag() {
+    this.editTag = new TagEntity({ Text: 'Example' });
+    this.editorTagVisible = true;
+  }
+
+  unselectAll() {
+    this.crawlTagTree((t) => (t.checked = false));
+  }
+
+  updateTitle() {
+    const count = this.getSelectedCount();
+    if (count > 0) {
+      this.title = `Tags: ${count} selected`;
+    } else {
+      // Continue
+    }
+  }
+
+  crawlTagTree(tagAction: (_: TagWrapper) => void = () => {}, sectionAction: (_: TagTree) => void = () => {}) {
+    const toSearch = [...this.tags];
+    while (toSearch.length > 0) {
+      const item = toSearch.pop();
+      if (item) {
+        item.tags.forEach((t) => {
+          if (t.checked) {
+            tagAction(t);
+          } else {
+            // Skip
+          }
+        });
+        toSearch.push(...(item.children ?? []));
+        sectionAction(item);
+      } else {
+        // Skip
+      }
+    }
+  }
+
+  searchTagTree(root: TagTree[], label: string) {
+    const toSearch = [...root];
+    while (toSearch.length > 0) {
+      const item = toSearch.pop();
+      if (item?.label === label) {
+        return item;
+      } else {
+        toSearch.push(...(item?.children ?? []));
+      }
+    }
+    return undefined;
+  }
+
+  sortSections() {
+    const sort = (a: TagTree, b: TagTree) => {
+      if (a.label === 'All ') {
+        return 1;
+      } else if (b.label === 'All ') {
+        return -1;
+      } else {
+        return a.label.localeCompare(b.label);
+      }
+    };
+    this.tags.sort(sort);
+    this.crawlTagTree(undefined, (item) => item.children.sort(sort));
+  }
+}

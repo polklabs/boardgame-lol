@@ -9,17 +9,10 @@
     #dropdown
     inputId="{{ formControlName }}"
     formControlName="{{ formControlName }}"
-    [options]="tagOptions"
-    [group]="true"
-    [showToggleAll]="false"
-    [filter]="tagOptions.length > 0"
+    [options]="(options$ ? (options$ | async) ?? [] : options ?? []) | sort: optionLabel"
     optionLabel="Text"
-    appendTo="body"
     display="chip"
-    (onFocus)="onFocus($event)">
-    <ng-template let-tag #item>
-      <app-tag [tag]="tag"></app-tag>
-    </ng-template>
+    (onPanelShow)="onPanelShow(dropdown)">
     <ng-template let-items #selecteditems>
       @for (tag of items; track tag) {
         <app-tag [tag]="tag"></app-tag>
@@ -28,27 +21,15 @@
     <ng-template #dropdownicon>
       <i class="pi pi-tags"></i>
     </ng-template>
-    <ng-template #footer>
-      <div class="p-3 flex justify-content-space-between">
-        <p-button
-          (onClick)="editorTagsVisible = true"
-          label="Manage Tags"
-          severity="secondary"
-          text
-          size="small"
-          icon="pi pi-th-large" />
-        <p-button
-          (onClick)="dropdown.updateModel([], $event)"
-          label="Remove All"
-          severity="danger"
-          text
-          size="small"
-          icon="pi pi-times" />
-      </div>
-    </ng-template>
   </p-multiselect>
 </app-control-wrapper>
 
 @if (editorTagsVisible) {
-  <app-editor-tags [editorVisible]="editorTagsVisible" (closeEditor)="editorTagsVisible = false"></app-editor-tags>
+  <app-tag-picker
+    [editorVisible]="editorTagsVisible"
+    mode="selector"
+    [selectedTags]="dropdown.modelValue()"
+    [filterBool]="filterBool"
+    [filterBoardGame]="filterBoardGame"
+    (closeEditor)="closePicker(dropdown, $event)"></app-tag-picker>
 }

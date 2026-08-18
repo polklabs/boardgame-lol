@@ -227,9 +227,9 @@ export class ApiService {
       this.tags.upsert(result);
       this.updateReferences();
       this.dataUpdate$.next();
-      return true;
+      return this.tags.getOne(result.TagId);
     } else {
-      return false;
+      return null;
     }
   }
 

@@ -12,6 +12,7 @@ export class DialogComponent {
   readonly visible = input(true);
   readonly editor = input(false);
   readonly closeIcon = input<string>();
+  readonly appendTo = input<string>();
 
   @Output() visibleChange = new EventEmitter<void>();
 }

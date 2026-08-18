@@ -1,0 +1,67 @@
+<app-dialog
+  [title]="title"
+  [visible]="editorVisible()"
+  (visibleChange)="closeEditor.emit(selectedTags())"
+  [editor]="true"
+  appendTo="body">
+  <div class="flex-column gap-4">
+    @for (child of tags; track child.label) {
+      <ng-container [ngTemplateOutlet]="tagTree" [ngTemplateOutletContext]="{ $implicit: child }"></ng-container>
+    }
+    @if (tags.length === 0) {
+        <p class="text-center">No Tags Available</p>
+    }
+  </div>
+
+  <ng-container class="dialog-footer">
+    <div>
+      @if (mode() === 'selector') {
+        <p-button label="Unselect" [outlined]="true" severity="warn" (onClick)="unselectAll()"></p-button>
+      }
+    </div>
+    <div>
+      <p-button label="Add New" [outlined]="true" severity="secondary" (onClick)="newTag()"></p-button>
+      @if (mode() === 'selector') {
+        <p-button
+          label="Cancel"
+          [outlined]="true"
+          severity="secondary"
+          (onClick)="closeEditor.emit(selectedTags())"></p-button>
+        <p-button label="Choose" [outlined]="true" (onClick)="closeEditor.emit(getSelected())"></p-button>
+      }
+    </div>
+  </ng-container>
+</app-dialog>
+
+<ng-template #tagTree let-item>
+  <p-fieldset [legend]="item.label">
+    @if (item.tags.length > 0) {
+      <div class="flex gap-4">
+        @for (t of item.tags; track t.tag) {
+          <app-tag (click)="tagEdit($event, t)" [tag]="t.tag">
+            @if (mode() === 'selector') {
+              <p-checkbox
+                [(ngModel)]="t.checked"
+                inputId="size_small"
+                name="size"
+                value="Small"
+                size="small"
+                [binary]="true" />
+            }
+          </app-tag>
+        }
+      </div>
+    }
+    @for (child of item.children; track child.label) {
+      <ng-container [ngTemplateOutlet]="tagTree" [ngTemplateOutletContext]="{ $implicit: child }"></ng-container>
+    }
+  </p-fieldset>
+</ng-template>
+
+@if (editorTagVisible) {
+  <app-editor-tags
+    [standalone]="mode() === 'editor'"
+    [editorVisible]="editorTagVisible"
+    [tag]="editTag"
+    (closeEditor)="editorTagVisible = false"></app-editor-tags>
+}

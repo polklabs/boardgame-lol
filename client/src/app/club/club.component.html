@@ -39,7 +39,7 @@
     }
 
     @if (editorTagsVisible) {
-      <app-editor-tags [editorVisible]="editorTagsVisible" (closeEditor)="editorTagsVisible = false"></app-editor-tags>
+      <app-tag-picker [editorVisible]="editorTagsVisible" mode="editor" (closeEditor)="editorTagsVisible = false"></app-tag-picker>
     }
 
     @if (editorEventsVisible) {

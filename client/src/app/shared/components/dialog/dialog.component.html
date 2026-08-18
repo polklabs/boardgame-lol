@@ -7,7 +7,8 @@
   [dismissableMask]="!editor()"
   [focusOnShow]="false"
   [closeIcon]="closeIcon()"
-  [position]="editor() ? 'bottom' : 'center'">
+  [position]="editor() ? 'bottom' : 'center'"
+  [appendTo]="appendTo()">
   <ng-template #header>
     <ng-content select=".dialog-title">{{ title() }}</ng-content>
   </ng-template>

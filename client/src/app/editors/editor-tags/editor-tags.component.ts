@@ -1,4 +1,14 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -6,60 +16,52 @@ import { DISPLAY_FIELDS, getAccessibleBackground, TagCategory, TagCategoryMappin
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { buildForm } from '../../shared/form.utils';
-import { KeyValuePipe, NgStyle } from '@angular/common';
+import { NgStyle } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import { TagComponent } from '../../shared/components/tag/tag.component';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 import { FieldsetModule } from 'primeng/fieldset';
-import { SortPipe } from '../../shared/pipes/sort.pipe';
 import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
-import { Subscription } from 'rxjs';
-import { HideDirective } from "../../shared/directives/hide.directive";
-import { DialogComponent } from "../../shared/components/dialog/dialog.component";
+import { HideDirective } from '../../shared/directives/hide.directive';
+import { DialogComponent } from '../../shared/components/dialog/dialog.component';
 import { uniqueValidator } from '../../shared/validators/unique.validator';
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 type EntityType = TagEntity;
-
-const TAG_KEY_DISPLAY: Record<(typeof DISPLAY_FIELDS)[number], string> = {
-  DisplayOnBoardGames: 'BoardGames',
-  DisplayOnGames: 'Plays',
-  DisplayOnPlayerGames: 'Play Scores',
-  DisplayOnPlayers: 'Players',
-};
 
 @Component({
   selector: 'app-editor-tags',
   imports: [
-    KeyValuePipe,
     TagModule,
     ColorPickerModule,
     TextInputComponent,
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    TagComponent,
     CheckboxComponent,
     FieldsetModule,
-    SortPipe,
     DropdownComponent,
     HideDirective,
     DialogComponent,
-    NgStyle
-],
+    NgStyle,
+  ],
   templateUrl: './editor-tags.component.html',
   styleUrl: './editor-tags.component.scss',
 })
-export class EditorTagsComponent implements OnInit, OnDestroy {
+export class EditorTagsComponent implements OnDestroy, OnChanges {
   private fb = inject(FormBuilder);
   private apiService = inject(ApiService);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   @Input() editorVisible = false;
-  @Output() closeEditor = new EventEmitter<void>();
-  @Output() deleteEntity = new EventEmitter<void>();
+  @Input() tag?: TagEntity;
+  @Input() standalone = true;
+  @Output() closeEditor = new EventEmitter<TagEntity>();
+  @Output() deleteEntity = new EventEmitter<TagEntity>();
 
   presetColors: { severity: ButtonSeverity; color: string | null; text: string }[] = [
     { severity: 'contrast', color: null, text: 'Default (White)' },
@@ -78,77 +80,55 @@ export class EditorTagsComponent implements OnInit, OnDestroy {
   categoryTypes = Object.entries(TagCategoryMapping).map(([value, x]) => ({ value, label: x.text }));
   boardGames$ = this.apiService.boardGames.raw$;
 
-  tags: Record<string, TagEntity[]> = {};
-
-  tag?: TagEntity;
   entityType = TagEntity;
 
   formGroup!: FormGroup;
   hideFields: Set<keyof EntityType> = new Set();
 
-  subscription?: Subscription;
-
   bgColor = '';
 
-  ngOnInit(): void {
-    this.apiService.tags.raw$.subscribe((tags) => {
-      this.tags = {};
-      tags.forEach((tag) => {
-        let key;
-        if (tag.Category) {
-          key = TagCategoryMapping[tag.Category].text;
-        } else {
-          key = 'Assorted';
-        }
-        if (key in this.tags) {
-          this.tags[key].push(tag);
-        } else {
-          this.tags[key] = [tag];
-        }
-      });
-    });
+  subscriptions = new Subscription();
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ('tag' in changes) {
+      this.updateEditor();
+    } else {
+      this.closeEditor.emit();
+    }
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 
-  editTag(tag: TagEntity) {
-    this.buildForm(tag);
-  }
+  updateEditor() {
+    if (this.tag) {
+      if (this.tag?.TagId === '') {
+        this.title = 'New Tag';
+        this.isNew = true;
+      } else {
+        this.title = 'Edit Tag';
+        this.isNew = false;
+      }
 
-  newTag() {
-    this.buildForm(new TagEntity({ ClubId: this.apiService.clubId, Text: 'Example' }));
-  }
+      this.hideFields = new Set();
+      this.formGroup = buildForm(this.fb, this.entityType, new TagEntity());
+      this.getControl('Text')?.addValidators(uniqueValidator(this.apiService.tags, this.formGroup));
 
-  isFiltered(tag: TagEntity) {
-    return tag.DisplayOnBoardGameId !== null;
-  }
+      const instance = new TagEntity(this.tag);
+      this.formGroup.patchValue(instance);
 
-  buildForm(tag: TagEntity) {
-    this.tag = tag;
-    if (this.tag?.TagId === '') {
-      this.title = 'New Tag';
-      this.isNew = true;
+      this.subscriptions.add(
+        this.getControl('Category')?.valueChanges.subscribe((value) => {
+          this.updateCategory(value);
+        }),
+      );
+
+      this.updateColor();
+      this.updateCategory(instance.Category);
     } else {
-      this.title = 'Edit Tag';
-      this.isNew = false;
+      // No Changes
     }
-
-    this.hideFields = new Set();
-    this.formGroup = buildForm(this.fb, this.entityType, new TagEntity());
-    this.getControl('Text')?.addValidators(uniqueValidator(this.apiService.tags, this.formGroup));
-
-    const instance = new TagEntity(this.tag);
-    this.formGroup.patchValue(instance);
-
-    this.subscription = this.getControl('Category')?.valueChanges.subscribe((value) => {
-      this.updateCategory(value);
-    });
-
-    this.updateColor();
-    this.updateCategory(instance.Category);
-
     this.cdr.detectChanges();
   }
 
@@ -194,7 +174,7 @@ export class EditorTagsComponent implements OnInit, OnDestroy {
     }
   }
 
-  async submit() {
+  async submit(close: boolean) {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid || !this.tag) {
       return;
@@ -202,8 +182,12 @@ export class EditorTagsComponent implements OnInit, OnDestroy {
       const result = await this.apiService.postTag(this.tag.TagId === '', new TagEntity(this.formGroup.getRawValue()));
       if (result) {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved Tag' });
-        this.tag = undefined;
-        this.title = 'Manage Tags';
+        if (close) {
+          this.closeEditor.emit(result);
+        } else {
+          this.tag = result;
+          this.updateEditor();
+        }
       } else {
         // Do nothing
       }
@@ -222,8 +206,8 @@ export class EditorTagsComponent implements OnInit, OnDestroy {
         const result = await this.apiService.deleteTag(this.tag!.TagId);
         if (result) {
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Tag' });
-          this.tag = undefined;
-          this.title = 'Manage Tags';
+          this.closeEditor.emit();
+          this.router.navigateByUrl(`/club/${this.apiService.club?.ClubId}`);
         } else {
           // Do nothing
         }
