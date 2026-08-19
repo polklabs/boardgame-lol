@@ -134,7 +134,7 @@ export class TagManager extends BaseManager<TagEntity> {
   }
 
   delete(tagId: string, clubId: string) {
-    return this.runDelete(tagId, clubId, true);
+    return this.runDelete(tagId, clubId);
   }
 
   public Validate(userId: string, entity: TagEntity): string[] {
