@@ -14,7 +14,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 type TagWrapper = { tag: TagEntity; checked: boolean };
 type TagTree = { label: string; collapsed: boolean; tags: TagWrapper[]; children: TagTree[] };
 
-const ALL = 'All ';
+const ALL = 'All Remaining ';
 
 @Component({
   selector: 'app-tag-picker',
@@ -93,7 +93,7 @@ export class TagPickerComponent implements OnInit, OnDestroy {
 
   buildEditorTree(tags: TagWrapper[]) {
     tags.forEach((tag) => {
-      const boardGames = [ALL, ...tag.tag.BoardGameFilter];
+      const boardGames = tag.tag.BoardGameFilter.length > 0 ? tag.tag.BoardGameFilter : [ALL];
       boardGames.forEach((bg) => {
         let root = this.searchTagTree(this.tags, bg);
         if (root) {
