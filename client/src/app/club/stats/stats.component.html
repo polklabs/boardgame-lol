@@ -14,10 +14,13 @@
       </h3>
       <div class="flex gap-1 heatmap">
         <div class="flex-column dow">
-          <span>Mon</span>
-          <span>Wed</span>
-          <span>Fri</span>
+          @if (!heatmapStateValue) {
+            <span>Mon</span>
+            <span>Wed</span>
+            <span>Fri</span>
+          }
         </div>
+
         @for (week of heatmap; track week.key) {
           <div class="flex-column gap-1 week">
             <div class="month-text">{{ week.month }}</div>
