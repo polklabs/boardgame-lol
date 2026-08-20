@@ -9,6 +9,10 @@
       @if (p.hasMostWins) {
         <i class="pi pi-crown" style="color: gold"></i>
       }
+      <div class="grow"></div>
+      @if (detailService.hasHistory) {
+        <p-button icon="pi pi-undo" severity="secondary" [rounded]="true" (onClick)="detailService.goBack()" />
+      }
     </div>
 
     <div class="flex-column gap-8">

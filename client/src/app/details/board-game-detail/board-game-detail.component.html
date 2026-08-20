@@ -2,6 +2,10 @@
   <app-dialog (visibleChange)="detailService.hideDetail()" closeIcon="pi pi-window-minimize">
     <div class="dialog-title details-header">
       <span>{{ bg.Name }}</span>
+      <div class="grow"></div>
+      @if (detailService.hasHistory) {
+        <p-button icon="pi pi-undo" severity="secondary" [rounded]="true" (onClick)="detailService.goBack()" />
+      }
     </div>
 
     <div class="flex-column gap-8">

@@ -217,6 +217,18 @@ p-dialog .p-dialog-footer,
   }
 }
 
+.dialog-header {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    > span {
+      font-weight: var(--p-dialog-title-font-weight);
+      font-size: var(--p-dialog-title-font-size);
+      align-content: center;
+      white-space: nowrap;
+    }
+  }
+
 .formula-popover {
   background-color: var(--p-surface-700) !important;
   &::after {
@@ -225,17 +237,26 @@ p-dialog .p-dialog-footer,
 }
 
 .details-header {
-  padding-left: 44px;
-  justify-content: center;
   width: 100%;
+  max-width: calc(100% - 44px);
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  > * {
+    max-width: 100%;
+  }
   span,
   i {
     white-space: nowrap;
     font-size: 1.5rem;
     font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
+  }
+  span.icon {
+    font-size: 1rem;
   }
 }
 

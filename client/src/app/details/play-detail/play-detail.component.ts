@@ -10,10 +10,11 @@ import { DatePipe } from '@angular/common';
 import { DetailService } from '../../shared/services/detail.service';
 import { DetailLinkComponent } from "../../shared/components/detail-link/detail-link.component";
 import { DialogComponent } from "../../shared/components/dialog/dialog.component";
+import { ButtonModule } from "primeng/button";
 
 @Component({
   selector: 'app-play-detail',
-  imports: [StatsTableComponent, TableComponent, TrophyIconComponent, TemplateIdDirective, DatePipe, DetailLinkComponent, DialogComponent],
+  imports: [StatsTableComponent, TableComponent, TrophyIconComponent, TemplateIdDirective, DatePipe, DetailLinkComponent, DialogComponent, ButtonModule],
   templateUrl: './play-detail.component.html',
   styleUrl: './play-detail.component.scss',
 })

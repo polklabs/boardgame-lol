@@ -16,6 +16,11 @@ export class DetailService {
 
   private _detailView$ = new BehaviorSubject<'boardGame' | 'game' | 'player' | 'tag' | null>(null);
   private _detailEntity: EntityOptions = null;
+  private _detailHistory: EntityOptions[] = [];
+
+  get hasHistory() {
+    return this._detailHistory.length > 0;
+  }
 
   get detailView$() {
     return this._detailView$.asObservable();
@@ -83,7 +88,9 @@ export class DetailService {
   }
 
   showDetail(detailEntity: object) {
-    if (detailEntity instanceof BoardGameEntity) {
+    if (detailEntity === this._detailEntity) {
+      return;
+    } else if (detailEntity instanceof BoardGameEntity) {
       this._detailView$.next('boardGame');
       this.setParams(detailEntity.BoardGameId);
     } else if (detailEntity instanceof GameEntity) {
@@ -104,13 +111,28 @@ export class DetailService {
       console.warn('Unknown entity', detailEntity);
       return false;
     }
+    if (this._detailEntity) {
+      this._detailHistory.push(this._detailEntity);
+    } else {
+      // Nothing to store
+    }
     this._detailEntity = detailEntity as EntityOptions;
     return true;
+  }
+
+  goBack() {
+    if (this._detailHistory.length > 0) {
+      this._detailEntity = null;
+      this.showDetail(this._detailHistory.pop()!);
+    } else {
+      // Skip
+    }
   }
 
   hideDetail() {
     this._detailView$.next(null);
     this._detailEntity = null;
+    this._detailHistory = [];
     this.clearParams();
   }
 

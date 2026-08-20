@@ -2,6 +2,10 @@
   <app-dialog closeIcon="pi pi-window-minimize" (visibleChange)="detailService.hideDetail()">
     <div class="dialog-title details-header">
       <app-tag [tag]="t"></app-tag>
+      <div class="grow"></div>
+      @if (detailService.hasHistory) {
+        <p-button icon="pi pi-undo" severity="secondary" [rounded]="true" (onClick)="detailService.goBack()" />
+      }
     </div>
 
     <div class="flex-column gap-8">

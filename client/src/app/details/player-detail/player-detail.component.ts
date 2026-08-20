@@ -10,10 +10,11 @@ import { TrophyListComponent } from '../../club/trophy-list/trophy-list.componen
 import { format } from 'date-fns';
 import { DetailService } from '../../shared/services/detail.service';
 import { DialogComponent } from "../../shared/components/dialog/dialog.component";
+import { ButtonModule } from "primeng/button";
 
 @Component({
   selector: 'app-player-detail',
-  imports: [TableComponent, TrophyIconComponent, TemplateIdDirective, StatsTableComponent, TrophyListComponent, DialogComponent],
+  imports: [TableComponent, TrophyIconComponent, TemplateIdDirective, StatsTableComponent, TrophyListComponent, DialogComponent, ButtonModule],
   templateUrl: './player-detail.component.html',
   styleUrl: './player-detail.component.scss',
 })

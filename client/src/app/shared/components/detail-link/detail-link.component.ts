@@ -20,7 +20,6 @@ export class DetailLinkComponent {
   }
 
   linkClick(object: unknown, event: MouseEvent) {
-    console.log('linkClick');
     if (this.detailService.showDetail(object as object)) {
       event.stopImmediatePropagation();
     } else {

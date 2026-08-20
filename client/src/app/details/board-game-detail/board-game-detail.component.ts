@@ -8,10 +8,11 @@ import { getTagColumns } from '../../shared/helpers/data.helper';
 import { DetailService } from '../../shared/services/detail.service';
 import { ApiService } from '../../shared/services/api.service';
 import { DialogComponent } from '../../shared/components/dialog/dialog.component';
+import { ButtonModule } from "primeng/button";
 
 @Component({
   selector: 'app-board-game-detail',
-  imports: [StatsTableComponent, TableComponent, TrophyListComponent, DialogComponent],
+  imports: [StatsTableComponent, TableComponent, TrophyListComponent, DialogComponent, ButtonModule],
   templateUrl: './board-game-detail.component.html',
   styleUrl: './board-game-detail.component.scss',
 })
@@ -30,16 +31,16 @@ export class BoardGameDetailComponent implements AfterViewInit {
         { title: 'Play Count', value: bg.PlayCount },
         { title: 'Champion', value: bg.ChampionWins, content: bg.Champions },
         {
-          title: 'Players - Average',
+          title: 'Players - Avg',
           content: bg.PlayCount > 0 ? [`${bg.MinPlayers} - ${bg.MaxPlayers}`] : undefined,
           value: bg.AveragePlayers,
         },
         { title: 'Players - Unique', value: bg.UniquePlayers },
         { title: 'High Score', value: Math.abs(bg.MaxScore) !== Infinity ? bg.MaxScore : undefined },
         { title: 'Low Score', value: Math.abs(bg.MinScore) !== Infinity ? bg.MinScore : undefined },
-        { title: 'Average Score', value: Math.abs(bg.AverageScore) !== Infinity ? bg.AverageScore : undefined },
+        { title: 'Avg Score', value: Math.abs(bg.AverageScore) !== Infinity ? bg.AverageScore : undefined },
         {
-          title: 'Average Winning Score',
+          title: 'Avg Win Score',
           value: Math.abs(bg.AverageWinningScore) !== Infinity ? bg.AverageWinningScore : undefined,
         },
         { title: 'Tags', content: bg.Tags.filter((t) => !t.Category) },

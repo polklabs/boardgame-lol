@@ -14,6 +14,7 @@ import { DialogComponent } from '../../shared/components/dialog/dialog.component
 import { TableComponent } from '../../shared/components/table/table.component';
 import { ApiService } from '../../shared/services/api.service';
 import { TagComponent } from '../../shared/components/tag/tag.component';
+import { ButtonModule } from "primeng/button";
 
 type TagTypes = GameEntity | PlayerGameEntity | PlayerEntity | BoardGameEntity;
 
@@ -26,7 +27,7 @@ type TagRow = {
 
 @Component({
   selector: 'app-tag-detail',
-  imports: [DialogComponent, TableComponent, TagComponent],
+  imports: [DialogComponent, TableComponent, TagComponent, ButtonModule],
   templateUrl: './tag-detail.component.html',
   styleUrl: './tag-detail.component.scss',
 })
