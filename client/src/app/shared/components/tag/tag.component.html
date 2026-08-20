@@ -1,4 +1,4 @@
-<p-tag severity="contrast" [style]="{ color: tag.Color, background: tag.BackgroundColor }">
+<p-tag severity="contrast" [style]="{ color: tag().Color, background: tag().BackgroundColor }" (click)="tagClick($event)">
   <ng-content></ng-content>
-  <span>{{ tag.Text }}</span>
+  <span>{{ tag().Text }}</span>
 </p-tag>

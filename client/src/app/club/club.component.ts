@@ -23,6 +23,7 @@ import { DetailService } from '../shared/services/detail.service';
 import { PlayDetailComponent } from '../details/play-detail/play-detail.component';
 import { PlayerDetailComponent } from '../details/player-detail/player-detail.component';
 import { TagPickerComponent } from '../shared/components/tag-picker/tag-picker.component';
+import { TagDetailComponent } from "../details/tag-detail/tag-detail.component";
 
 @Component({
   selector: 'app-club',
@@ -46,7 +47,8 @@ import { TagPickerComponent } from '../shared/components/tag-picker/tag-picker.c
     PlayDetailComponent,
     PlayerDetailComponent,
     TagPickerComponent,
-  ],
+    TagDetailComponent
+],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })

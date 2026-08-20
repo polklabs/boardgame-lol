@@ -1,0 +1,20 @@
+@if (tag(); as t) {
+  <app-dialog closeIcon="pi pi-window-minimize" (visibleChange)="detailService.hideDetail()">
+    <div class="dialog-title details-header">
+      <app-tag [tag]="t"></app-tag>
+    </div>
+
+    <div class="flex-column gap-8">
+      <app-table
+        [columns]="columns"
+        [rows]="rows()"
+        [canEdit]="false"
+        [showExpansion]="false"
+        [tiny]="true"
+        [canClick]="true"
+        rowSpanBy="Category"
+        [isRowSpan]="isRowSpan"
+        (rowClicked)="rowClicked($event)"></app-table>
+    </div>
+  </app-dialog>
+}

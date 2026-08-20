@@ -39,7 +39,10 @@
     }
 
     @if (editorTagsVisible) {
-      <app-tag-picker [editorVisible]="editorTagsVisible" mode="editor" (closeEditor)="editorTagsVisible = false"></app-tag-picker>
+      <app-tag-picker
+        [editorVisible]="editorTagsVisible"
+        mode="editor"
+        (closeEditor)="editorTagsVisible = false"></app-tag-picker>
     }
 
     @if (editorEventsVisible) {
@@ -108,5 +111,8 @@
   }
   @case ('player') {
     <app-player-detail [player]="detailService.detailPlayer"></app-player-detail>
+  }
+  @case ('tag') {
+    <app-tag-detail [tag]="detailService.detailTag"></app-tag-detail>
   }
 }

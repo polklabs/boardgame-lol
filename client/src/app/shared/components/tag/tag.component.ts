@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { TagEntity } from 'libs/index';
 import { TagModule } from 'primeng/tag';
+import { DetailService } from '../../services/detail.service';
 
 @Component({
   selector: 'app-tag',
@@ -9,5 +10,16 @@ import { TagModule } from 'primeng/tag';
   styleUrl: './tag.component.scss',
 })
 export class TagComponent {
-  @Input() tag!: TagEntity;
+  detailService = inject(DetailService);
+
+  tag = input.required<TagEntity>();
+  detail = input(true);
+
+  tagClick(event: MouseEvent) {
+    if (this.detail() && this.detailService.showDetail(this.tag())) {
+      event.stopImmediatePropagation();
+    } else {
+      // Continue
+    }
+  }
 }

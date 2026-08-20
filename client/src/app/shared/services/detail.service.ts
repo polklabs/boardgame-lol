@@ -1,10 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BoardGameEntity, GameEntity, PlayerEntity, PlayerGameEntity } from 'libs/index';
+import { BoardGameEntity, GameEntity, PlayerEntity, PlayerGameEntity, TagEntity } from 'libs/index';
 import { BehaviorSubject, take } from 'rxjs';
 import { ApiService } from './api.service';
 
-type EntityOptions = BoardGameEntity | GameEntity | PlayerEntity | null;
+type EntityOptions = BoardGameEntity | GameEntity | PlayerEntity | TagEntity | null;
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +14,7 @@ export class DetailService {
   private router = inject(Router);
   private api = inject(ApiService);
 
-  private _detailView$ = new BehaviorSubject<'boardGame' | 'game' | 'player' | null>(null);
+  private _detailView$ = new BehaviorSubject<'boardGame' | 'game' | 'player' | 'tag' | null>(null);
   private _detailEntity: EntityOptions = null;
 
   get detailView$() {
@@ -33,6 +33,9 @@ export class DetailService {
   }
   get detailPlayer() {
     return this._detailEntity as PlayerEntity;
+  }
+  get detailTag() {
+    return this._detailEntity as TagEntity;
   }
 
   constructor() {
@@ -74,6 +77,7 @@ export class DetailService {
       detailEntity instanceof BoardGameEntity ||
       detailEntity instanceof GameEntity ||
       detailEntity instanceof PlayerEntity ||
+      detailEntity instanceof TagEntity ||
       (detailEntity instanceof PlayerGameEntity && detailEntity.Players.length === 1)
     );
   }
@@ -92,6 +96,9 @@ export class DetailService {
       this._detailView$.next('player');
       this.setParams(detailEntity.Players[0].PlayerId);
       detailEntity = detailEntity.Players[0];
+    } else if (detailEntity instanceof TagEntity) {
+      this._detailView$.next('tag');
+      this.setParams(detailEntity.TagId);
     } else {
       this.clearParams();
       console.warn('Unknown entity', detailEntity);
