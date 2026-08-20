@@ -17,6 +17,13 @@ export class TrophyFavoriteGameVersion extends ITrophy {
       });
     }
 
+    for (const bg of api.boardGames.list) {
+      tagFilter(bg.Tags, 'version').forEach((t) => {
+        const id = `${bg.BoardGameId};${t.TagId}`;
+        versionTags.set(id, (versionTags.get(id) ?? 0) + 1);
+      });
+    }
+
     this.applyValues(versionTags, 1);
 
     this.array = this.array.flatMap((k) => {
