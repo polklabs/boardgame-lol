@@ -12,9 +12,10 @@
   (closeEditor)="savePlayerGame($event)"
   (deleteEntity)="deletePlayerGame($event)"></app-editor-player-game>
 
-<app-dialog [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
+<app-dialog [visible]="editorVisible" [form]="formGroup" (closeDialog)="closeEditor.emit()">
   <div class="dialog-title dialog-header">
     <span>{{ title }}</span>
+    <div class="grow"></div>
     @if (!isNew) {
       <p-button
         icon="pi pi-clone"

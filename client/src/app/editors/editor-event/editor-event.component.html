@@ -1,8 +1,4 @@
-<app-dialog
-  [title]="title"
-  [visible]="editorVisible"
-  (visibleChange)="closeEditor.emit()"
-  [editor]="true">
+<app-dialog [title]="title" [visible]="editorVisible" [form]="formGroup" (closeDialog)="closeEditor.emit()">
   <div class="flex-column gap-8">
     @if (events.length > 0) {
       <app-table

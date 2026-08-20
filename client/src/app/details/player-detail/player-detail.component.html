@@ -1,5 +1,5 @@
 @if (player(); as p) {
-  <app-dialog closeIcon="pi pi-window-minimize" (visibleChange)="detailService.hideDetail()">
+  <app-dialog closeIcon="pi pi-window-minimize" (closeDialog)="detailService.hideDetail()">
     <div class="dialog-title details-header">
       @if (p.Nickname) {
         <span>{{ p.Nickname }} - {{ p.Name }}</span>

@@ -1,13 +1,13 @@
 <p-dialog
   [visible]="visible()"
-  (visibleChange)="visibleChange.emit()"
+  (visibleChange)="tryCloseEditor()"
   [modal]="true"
   [style]="{ width: '650px', 'min-width': '300px' }"
   [draggable]="false"
-  [dismissableMask]="!editor()"
+  [dismissableMask]="true"
   [focusOnShow]="false"
   [closeIcon]="closeIcon()"
-  [position]="editor() ? 'bottom' : 'center'"
+  [position]="isEditor() ? 'bottom' : 'center'"
   [appendTo]="appendTo()">
   <ng-template #header>
     <ng-content select=".dialog-title">{{ title() }}</ng-content>

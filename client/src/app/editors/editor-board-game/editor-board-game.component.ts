@@ -30,7 +30,7 @@ import { NameValue } from '../../shared/models/name-value.model';
 import { format } from 'date-fns';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
 import { HideDirective } from '../../shared/directives/hide.directive';
-import { DialogComponent } from "../../shared/components/dialog/dialog.component";
+import { DialogComponent } from '../../shared/components/dialog/dialog.component';
 import { uniqueValidator } from '../../shared/validators/unique.validator';
 
 type EntityType = BoardGameEntity;
@@ -51,8 +51,8 @@ type EntityType = BoardGameEntity;
     NumberInputComponent,
     CheckboxComponent,
     HideDirective,
-    DialogComponent
-],
+    DialogComponent,
+  ],
   templateUrl: './editor-board-game.component.html',
   styleUrl: './editor-board-game.component.scss',
 })

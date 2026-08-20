@@ -27,7 +27,7 @@ import { UserService } from '../../shared/services/user.service';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
-import { DialogComponent } from "../../shared/components/dialog/dialog.component";
+import { DialogComponent } from '../../shared/components/dialog/dialog.component';
 
 type EntityType = ClubEntity;
 
@@ -48,8 +48,8 @@ type EntityType = ClubEntity;
     TableModule,
     InputTextModule,
     CheckboxModule,
-    DialogComponent
-],
+    DialogComponent,
+  ],
   templateUrl: './editor-club.component.html',
   styleUrl: './editor-club.component.scss',
 })
@@ -162,7 +162,7 @@ export class EditorClubComponent implements OnChanges {
       return;
     } else {
       const club = new ClubEntity(this.formGroup.getRawValue());
-      club.Users = this.users.map((x) => new ClubUserEntity(x)).filter(x => !x.toDelete && !x.UserId);
+      club.Users = this.users.map((x) => new ClubUserEntity(x)).filter((x) => !x.toDelete && !x.UserId);
 
       const result = await this.apiService.postClub(this.club.ClubId === '', club);
       if (result) {
@@ -182,7 +182,8 @@ export class EditorClubComponent implements OnChanges {
 
   toDeleteEntity() {
     this.confirmationService.confirm({
-      message: 'This will delete everything related to this club and cannot be undone. Are you sure that you want to proceed?',
+      message:
+        'This will delete everything related to this club and cannot be undone. Are you sure that you want to proceed?',
       header: 'Deleting Club',
       icon: 'pi pi-exclamation-triangle',
       acceptIcon: 'none',

@@ -1,5 +1,5 @@
 @if (game(); as g) {
-  <app-dialog (visibleChange)="detailService.hideDetail()" closeIcon="pi pi-window-minimize">
+  <app-dialog (closeDialog)="detailService.hideDetail()" closeIcon="pi pi-window-minimize">
     <div class="dialog-title details-header">
       <app-detail-link [objects]="[g.BoardGame]" keys="Name" [hasLinks]="true"></app-detail-link>
       <div class="grow"></div>

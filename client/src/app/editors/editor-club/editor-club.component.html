@@ -1,5 +1,5 @@
 <!-- In der clurb we all fam -->
-<app-dialog [title]="title" [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
+<app-dialog [title]="title" [visible]="editorVisible" [form]="formGroup" (closeDialog)="closeEditor.emit()">
   @if (formGroup && club) {
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit(false)">

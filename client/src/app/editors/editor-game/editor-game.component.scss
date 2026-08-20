@@ -1,16 +1,4 @@
 :host ::ng-deep {
-  .dialog-header {
-    display: flex;
-    flex-grow: 1;
-    justify-content: space-between;
-    > span {
-      font-weight: var(--p-dialog-title-font-weight);
-      font-size: var(--p-dialog-title-font-size);
-      align-content: center;
-      white-space: nowrap;
-    }
-  }
-
   .p-select {
     width: 100%;
     max-width: 100%;

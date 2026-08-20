@@ -1,5 +1,5 @@
 @if (boardGame(); as bg) {
-  <app-dialog (visibleChange)="detailService.hideDetail()" closeIcon="pi pi-window-minimize">
+  <app-dialog (closeDialog)="detailService.hideDetail()" closeIcon="pi pi-window-minimize">
     <div class="dialog-title details-header">
       <span>{{ bg.Name }}</span>
       <div class="grow"></div>

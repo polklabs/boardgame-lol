@@ -1,7 +1,7 @@
 <app-dialog
   [title]="title"
   [visible]="editorVisible()"
-  (visibleChange)="closeEditor.emit(selectedTags())"
+  (closeDialog)="closeEditor.emit(selectedTags())"
   [editor]="true"
   appendTo="body">
   <div class="flex-column gap-4">

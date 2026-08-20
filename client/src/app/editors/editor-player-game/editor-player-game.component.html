@@ -4,7 +4,7 @@
   [standalone]="false"
   (closeEditor)="closePlayerEditor($event)"></app-editor-player>
 
-<app-dialog [title]="title" [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
+<app-dialog [title]="title" [visible]="editorVisible" [form]="formGroup" (closeDialog)="closeEditor.emit()">
   @if (formGroup && playerGame) {
     <div class="form">
       <form [formGroup]="formGroup" (ngSubmit)="submit()">

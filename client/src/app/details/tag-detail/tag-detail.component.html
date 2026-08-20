@@ -1,5 +1,5 @@
 @if (tag(); as t) {
-  <app-dialog closeIcon="pi pi-window-minimize" (visibleChange)="detailService.hideDetail()">
+  <app-dialog closeIcon="pi pi-window-minimize" (closeDialog)="detailService.hideDetail()">
     <div class="dialog-title details-header">
       <app-tag [tag]="t"></app-tag>
       <div class="grow"></div>
@@ -9,6 +9,8 @@
     </div>
 
     <div class="flex-column gap-8">
+      <app-trophy-list [filter]="t" [smallHeader]="true"></app-trophy-list>
+
       <app-table
         [columns]="columns"
         [rows]="rows()"

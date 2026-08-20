@@ -15,6 +15,7 @@ import { TableComponent } from '../../shared/components/table/table.component';
 import { ApiService } from '../../shared/services/api.service';
 import { TagComponent } from '../../shared/components/tag/tag.component';
 import { ButtonModule } from "primeng/button";
+import { TrophyListComponent } from "../../club/trophy-list/trophy-list.component";
 
 type TagTypes = GameEntity | PlayerGameEntity | PlayerEntity | BoardGameEntity;
 
@@ -27,7 +28,7 @@ type TagRow = {
 
 @Component({
   selector: 'app-tag-detail',
-  imports: [DialogComponent, TableComponent, TagComponent, ButtonModule],
+  imports: [DialogComponent, TableComponent, TagComponent, ButtonModule, TrophyListComponent],
   templateUrl: './tag-detail.component.html',
   styleUrl: './tag-detail.component.scss',
 })
