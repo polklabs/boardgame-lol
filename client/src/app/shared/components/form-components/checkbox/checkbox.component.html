@@ -5,7 +5,8 @@
       [ngModel]="value"
       [binary]="true"
       (onChange)="onModelChange($event.checked)"
-      [disabled]="disabled"></p-checkbox>
+      [disabled]="disabled"
+      [readonly]="readOnly()"/>
     <label [for]="inputId">{{ getFieldLabel() }}</label>
   </div>
 }

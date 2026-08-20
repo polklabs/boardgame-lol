@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, input } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 
@@ -13,6 +13,7 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   @Input() label?: string;
   @Input() hiddenFields = new Set<string>();
+  readonly readOnly = input(false);
   @Output() changed = new EventEmitter<boolean>();
 
   value = false;
