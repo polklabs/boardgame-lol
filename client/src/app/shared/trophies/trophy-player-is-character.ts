@@ -18,7 +18,7 @@ export class TrophyPlayerIsCharacter extends ITrophy {
 
     for (const game of api.games.list) {
       for (const pg of game.Scores) {
-        pg.Tags.filter((t) => t.Category === 'character').forEach((t) =>
+        pg.Tags.filter((t) => t.Category === 'meta-character').forEach((t) =>
           characters.set(t, (characters.get(t) ?? 0) + 1),
         );
       }
