@@ -52,7 +52,7 @@ type Buttons =
   styleUrl: './menu-bar.component.scss',
 })
 export class MenuBarComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('header', { static: true }) header!: ElementRef;
+  @ViewChild('header', { static: true }) header!: ElementRef<HTMLDivElement>;
 
   private router = inject(Router);
   private apiService = inject(ApiService);
@@ -172,24 +172,24 @@ export class MenuBarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   calculateView() {
-    const width = this.header.nativeElement.clientWidth;
-    const scrollWidth = this.header.nativeElement.scrollWidth;
-    if (width < scrollWidth) {
-      this.collapseView = true;
-      this.fullViewWidth = width;
-    } else if (width < this.fullViewWidth) {
-      if (this.collapseView || width < scrollWidth) {
-        this.collapseView = true;
+    let newWidth = 0;
+    let items = 0;
+    for (const child of Array.from(this.header.nativeElement.childNodes)) {
+      if (child.nodeName !== '#comment') {
+        newWidth += (child as Element).clientWidth;
+        items++;
       } else {
-        // Leave as is
+        // Skip
       }
-      this.fullViewWidth = width;
-    } else if (width > this.fullViewWidth) {
-      this.collapseView = false;
-      this.fullViewWidth = width;
-      setTimeout(() => this.calculateView(), 0);
+    }
+    newWidth += (items - 1) * 8;
+    this.fullViewWidth = Math.max(this.fullViewWidth, newWidth);
+
+    const width = this.header.nativeElement.clientWidth;
+    if (this.fullViewWidth > width) {
+      this.collapseView = true;
     } else {
-      // Keep
+      this.collapseView = false;
     }
     this.cdr.detectChanges();
   }
