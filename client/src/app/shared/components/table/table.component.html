@@ -12,9 +12,6 @@
   [virtualScrollItemSize]="37">
   <ng-template #header>
     <tr>
-      @if (showExpansion !== false) {
-        <th id="expansion" style="width: 0"></th>
-      }
       @for (column of cols; track column) {
         <th
           id="{{ column.id }}"
@@ -34,30 +31,17 @@
     </tr>
   </ng-template>
   <ng-template #body let-row let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
-    @let expansion = canShowExpansion(row);
     @if (isRowSpan(row)) {
       <tr class="group-row">
-        <td [attr.colspan]="rowSpanColumn() + (expansion?1:0)"></td>
+        @if (rowSpanColumn() > 0; as firstSpan) {
+          <td [attr.colspan]="firstSpan"></td>
+        }
         <td [attr.colspan]="cols.length - rowSpanColumn() + (canEdit ? 1 : 0)">
           {{ row[rowSpanBy] }}
         </td>
       </tr>
     } @else {
       <tr [ngClass]="{ 'row-expansion': showClickable(row) }">
-        @if (showExpansion !== false) {
-          <td class="button-cell">
-            @if (expansion) {
-              <p-button
-                type="button"
-                pRipple
-                [text]="true"
-                [rounded]="true"
-                [plain]="true"
-                icon="pi pi-window-maximize"
-                (onClick)="rowClick(row)" />
-            }
-          </td>
-        }
         @for (column of cols; track column) {
           @let rowGroupLen = rowGroup(row, rowIndex, column);
           @if (rowGroupLen > 0) {
