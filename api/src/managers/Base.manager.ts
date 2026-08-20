@@ -13,7 +13,7 @@ import { SanitizeTags, getSanitize } from 'libs/decorators/sanitize.decorator';
 import sanitizeHtml from 'sanitize-html';
 import { getIgnore } from 'libs/decorators/ignore.decorator';
 import { BadRequestException } from '@nestjs/common';
-import { TP, TPRaw } from 'libs/index';
+import { TP, TPRaw, TS, TSRaw, TW, TWRaw } from 'libs/index';
 
 export abstract class BaseManager<T extends BaseEntity> {
   protected abstract db: DbService;
@@ -55,7 +55,7 @@ export abstract class BaseManager<T extends BaseEntity> {
   }
 
   protected getSelectAll() {
-    return this.dbProps.map((k) => TP(this.entityType, k as keyof T, 'select')).join(', ');
+    return this.dbProps.map((k) => TS(this.entityType, k as keyof T)).join(', ');
   }
 
   private getBaseSelect() {
@@ -103,11 +103,11 @@ export abstract class BaseManager<T extends BaseEntity> {
     let targetPKs: string;
     let expectedPkCount = 0;
     if (typeof target === 'string') {
-      targetPKs = TP(this.entityType, target as keyof T, 'where');
+      targetPKs = TW(this.entityType, target as keyof T);
       expectedPkCount = 1;
     } else {
       const pks = getPrimaryKeys(target);
-      targetPKs = pks.map((p) => TP(this.entityType, p as keyof T, 'where')).join(' AND ');
+      targetPKs = pks.map((p) => TW(this.entityType, p as keyof T)).join(' AND ');
       expectedPkCount = pks.length;
     }
 
@@ -122,10 +122,10 @@ export abstract class BaseManager<T extends BaseEntity> {
 
     if (secondaryTarget && (secondaryTargetIds?.length ?? 0) > 0 && secondaryTargetIds?.every((x) => x !== null)) {
       if (typeof secondaryTarget === 'string') {
-        query += ` AND ${TP(this.entityType, secondaryTarget as keyof T, 'where')}`;
+        query += ` AND ${TW(this.entityType, secondaryTarget as keyof T)}`;
       } else {
         const spks = getPrimaryKeys(secondaryTarget);
-        query += spks.map((p) => ` AND ${TP(this.entityType, p as keyof T, 'where')}`).join('');
+        query += spks.map((p) => ` AND ${TW(this.entityType, p as keyof T)}`).join('');
       }
 
       vars.push(...secondaryTargetIds);
@@ -159,7 +159,7 @@ export abstract class BaseManager<T extends BaseEntity> {
     if (ids.includes(null)) {
       return undefined;
     } else {
-      const query = this.primaryKeys.map((p) => TP(this.entityType, String(p) as keyof T, 'where')).join(' AND ');
+      const query = this.primaryKeys.map((p) => TW(this.entityType, String(p) as keyof T)).join(' AND ');
       return this.db.Get(
         `${this.getBaseSelect()}
       ${this.getBaseJoin()}
@@ -275,7 +275,7 @@ export abstract class BaseManager<T extends BaseEntity> {
 
         if (fk?.tableName && fk.primaryKeys.length > 0 && fk.secondaryKey) {
           const result = this.db.GetRaw(
-            `SELECT ${TPRaw(fk.tableName, fk.primaryKeys[0], 'select')}, ${TPRaw(fk.tableName, fk.secondaryKey, 'select')} FROM ${fk.tableName} WHERE ${TPRaw(fk.tableName, fk.primaryKeys[0], 'where')}`,
+            `SELECT ${TSRaw(fk.tableName, fk.primaryKeys[0])}, ${TSRaw(fk.tableName, fk.secondaryKey)} FROM ${fk.tableName} WHERE ${TWRaw(fk.tableName, fk.primaryKeys[0])}`,
             [fkValue],
           ) as any;
           if (result === undefined) {

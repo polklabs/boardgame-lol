@@ -3,7 +3,7 @@ import { BaseManager } from './Base.manager';
 import { Injectable } from '@nestjs/common';
 import { newGuid } from 'libs/utils/guid-utils';
 import { ValidationError } from 'src/errors/validation.error';
-import { GameEntity, GameReturn, PlayerGameEntity, TagPlayerGameEntity, TP } from 'libs/index';
+import { GameEntity, GameReturn, PlayerGameEntity, TagPlayerGameEntity, TP, TW } from 'libs/index';
 import { PlayerGameManager } from './PlayerGame.manager';
 import { TagManager } from './Tag.manager';
 import { PlayerGamePlayerManager } from './PlayerGamePlayer.manager';
@@ -63,7 +63,7 @@ export class GameManager extends BaseManager<GameEntity> {
       TagGames: this.tagManager.tagGame.loadMany('GameId', entity.GameId),
       TagPlayerGames: this.tagManager.tagPlayerGame.loadManyCustom(
         `INNER JOIN ${TP(PlayerGameEntity)} ON ${TP(PlayerGameEntity, 'PlayerGameId')} = ${TP(TagPlayerGameEntity, 'PlayerGameId')}`,
-        `WHERE ${TP(PlayerGameEntity, 'GameId', 'where')}`,
+        `WHERE ${TW(PlayerGameEntity, 'GameId')}`,
         [entity.GameId],
       ),
     };
@@ -141,7 +141,7 @@ export class GameManager extends BaseManager<GameEntity> {
       TagGames: this.tagManager.tagGame.loadMany('GameId', entity.GameId),
       TagPlayerGames: this.tagManager.tagPlayerGame.loadManyCustom(
         `INNER JOIN ${TP(PlayerGameEntity)} ON ${TP(PlayerGameEntity, 'PlayerGameId')} = ${TP(TagPlayerGameEntity, 'PlayerGameId')}`,
-        `WHERE ${TP(PlayerGameEntity, 'GameId', 'where')}`,
+        `WHERE ${TW(PlayerGameEntity, 'GameId')}`,
         [entity.GameId],
       ),
     };

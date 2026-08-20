@@ -3,7 +3,7 @@ import { BaseManager } from './Base.manager';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from 'src/errors/validation.error';
 import { UserEntity } from 'libs/models/User.entity';
-import { newGuid, TP } from 'libs/index';
+import { newGuid, TP, TW } from 'libs/index';
 
 const usernameRegex = /^(?=.{4,32}$)(?![_.-])(?!.*[_.]{2})[a-z0-9._-]+(?<![_.-])$/;
 
@@ -44,7 +44,7 @@ export class UserManager extends BaseManager<UserEntity> {
 
   public getUser(userId: string) {
     return this.db.Get(
-      `SELECT ${this.getSelectAll()} FROM ${TP(UserEntity)} WHERE ${TP(UserEntity, 'UserId', 'where')} LIMIT 1`,
+      `SELECT ${this.getSelectAll()} FROM ${TP(UserEntity)} WHERE ${TW(UserEntity, 'UserId')} LIMIT 1`,
       [userId],
       this.new,
     );
@@ -53,7 +53,7 @@ export class UserManager extends BaseManager<UserEntity> {
   public findUser(username: string) {
     username = username.toLowerCase().trim();
     return this.db.Get(
-      `SELECT ${this.getSelectAll()} FROM  ${TP(UserEntity)} WHERE ${TP(UserEntity, 'Email', 'where')} OR ${TP(UserEntity, 'Username', 'where')} LIMIT 1`,
+      `SELECT ${this.getSelectAll()} FROM  ${TP(UserEntity)} WHERE ${TW(UserEntity, 'Email')} OR ${TW(UserEntity, 'Username')} LIMIT 1`,
       [username, username],
       this.new,
     );
@@ -63,7 +63,7 @@ export class UserManager extends BaseManager<UserEntity> {
     email = email.toLowerCase().trim();
     return (
       this.db.GetRaw<{ count: number }>(
-        `SELECT COUNT(*) AS count FROM ${TP(UserEntity)} WHERE ${TP(UserEntity, 'Email', 'where')} LIMIT 1`,
+        `SELECT COUNT(*) AS count FROM ${TP(UserEntity)} WHERE ${TW(UserEntity, 'Email')} LIMIT 1`,
         email,
       )?.count === 0
     );
@@ -73,7 +73,7 @@ export class UserManager extends BaseManager<UserEntity> {
     username = username.trim();
     return (
       this.db.GetRaw<{ count: number }>(
-        `SELECT COUNT(*) AS count FROM ${TP(UserEntity)} WHERE ${TP(UserEntity, 'Username', 'where')} LIMIT 1`,
+        `SELECT COUNT(*) AS count FROM ${TP(UserEntity)} WHERE ${TW(UserEntity, 'Username')} LIMIT 1`,
         username,
       )?.count === 0
     );

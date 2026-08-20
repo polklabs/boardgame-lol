@@ -11,6 +11,7 @@ import {
   GameEntity,
   PlayerEntity,
   TP,
+  TW,
   UserEntity,
 } from 'libs/index';
 import { ClubUserManager } from './ClubUser.manager';
@@ -35,7 +36,7 @@ export class ClubManager extends BaseManager<ClubEntity> {
             ${TP(UserEntity, 'Username')} as CreatedBy
           FROM ${TP(ClubEntity)}
           INNER JOIN ${TP(UserEntity)} ON ${TP(UserEntity, 'UserId')} = ${TP(ClubEntity, 'CreatedBy')}
-          WHERE ${TP(ClubEntity, 'Public', 'where')}`,
+          WHERE ${TW(ClubEntity, 'Public')}`,
       ['1'],
     );
   }
@@ -50,7 +51,7 @@ export class ClubManager extends BaseManager<ClubEntity> {
             (SELECT COUNT(*) FROM ${TP(BoardGameEntity)} WHERE ${TP(BoardGameEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')}) AS BoardGameCount,
             ${TP(UserEntity, 'Username')} as CreatedBy
           FROM ${TP(ClubEntity)}
-          LEFT JOIN ${TP(ClubUserEntity)} ON ${TP(ClubUserEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')} AND ${TP(ClubUserEntity, 'UserId', 'where')}
+          LEFT JOIN ${TP(ClubUserEntity)} ON ${TP(ClubUserEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')} AND ${TW(ClubUserEntity, 'UserId')}
           INNER JOIN ${TP(UserEntity)} ON ${TP(UserEntity, 'UserId')} = ${TP(ClubEntity, 'CreatedBy')}
           WHERE ${TP(ClubUserEntity, 'UserId')} IS NOT NULL`,
       [userId ?? ''],
@@ -63,8 +64,8 @@ export class ClubManager extends BaseManager<ClubEntity> {
             CASE WHEN ${TP(ClubUserEntity, 'UserId')} IS NOT NULL THEN 1 ELSE 0 END as CanEdit,
             CASE WHEN ${TP(ClubUserEntity, 'UserId')} IS NOT NULL THEN ${TP(ClubUserEntity, 'Admin')} ELSE 0 END as Admin
           FROM ${TP(ClubEntity)}
-          LEFT JOIN ${TP(ClubUserEntity)} ON ${TP(ClubUserEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')} AND ${TP(ClubUserEntity, 'UserId', 'where')}
-          WHERE ${TP(ClubEntity, 'ClubId', 'where')} LIMIT 1`,
+          LEFT JOIN ${TP(ClubUserEntity)} ON ${TP(ClubUserEntity, 'ClubId')} = ${TP(ClubEntity, 'ClubId')} AND ${TW(ClubUserEntity, 'UserId')}
+          WHERE ${TW(ClubEntity, 'ClubId')} LIMIT 1`,
       [userId ?? '', clubId],
     );
   }

@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { isGuid } from 'libs/utils/guid-utils';
 import { ValidationError } from 'src/errors/validation.error';
 import { AuthorizationError } from 'src/errors/authorization.error';
-import { ClubUserEntity, TP, UserEntity } from 'libs/index';
+import { ClubUserEntity, TP, TW, UserEntity } from 'libs/index';
 import { UserManager } from './User.manager';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     if (isGuid(userId) && isGuid(clubId)) {
       const data = this.loadManyCustom(
         '',
-        `WHERE ${TP(ClubUserEntity, 'UserId', 'where')} AND ${TP(ClubUserEntity, 'ClubId', 'where')} LIMIT 1`,
+        `WHERE ${TW(ClubUserEntity, 'UserId')} AND ${TW(ClubUserEntity, 'ClubId')} LIMIT 1`,
         [userId, clubId],
       );
       if (data.length <= 0) {
@@ -43,7 +43,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
     if (isGuid(userId) && isGuid(clubId)) {
       const data = this.loadManyCustom(
         '',
-        `WHERE ${TP(ClubUserEntity, 'UserId', 'where')} AND ${TP(ClubUserEntity, 'ClubId', 'where')} AND ${TP(ClubUserEntity, 'Admin', 'where')} LIMIT 1`,
+        `WHERE ${TW(ClubUserEntity, 'UserId')} AND ${TW(ClubUserEntity, 'ClubId')} AND ${TW(ClubUserEntity, 'Admin')} LIMIT 1`,
         [userId, clubId!, '1'],
       );
       if (data.length <= 0) {
@@ -63,7 +63,7 @@ export class ClubUserManager extends BaseManager<ClubUserEntity> {
             ${TP(UserEntity, 'Username')} as usernameEmail
           FROM ${TP(ClubUserEntity)}
           INNER JOIN ${TP(UserEntity)} ON ${TP(UserEntity, 'UserId')} = ${TP(ClubUserEntity, 'UserId')}
-          WHERE ${TP(ClubUserEntity, 'ClubId', 'where')}`,
+          WHERE ${TW(ClubUserEntity, 'ClubId')}`,
         [clubId],
       )
       .map((x) => new ClubUserEntity(x));

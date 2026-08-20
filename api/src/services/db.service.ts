@@ -1,6 +1,6 @@
 import { Database } from 'better-sqlite3';
 import { BadRequestException, Injectable, OnApplicationShutdown } from '@nestjs/common';
-import { BaseEntity, TPRaw, VAR } from 'libs/index';
+import { BaseEntity, TPRaw, TWRaw, VAR } from 'libs/index';
 
 type NullString = string | null;
 export type DbVars = NullString | NullString[] | { [key: string]: NullString };
@@ -126,14 +126,14 @@ export class DbService implements OnApplicationShutdown {
     const { values, keys } = entity.getDbValues(primaryKeys);
     const keyValuePlaceholder = keys.map((key) => `${key} = ${VAR(key)}`);
 
-    const pkQuery = primaryKeys.map((p) => TPRaw(tableName, String(p), 'where')).join(' AND ');
+    const pkQuery = primaryKeys.map((p) => TWRaw(tableName, p)).join(' AND ');
     let queryString = `UPDATE ${tableName} SET ${keyValuePlaceholder.join(', ')} WHERE ${pkQuery}`;
 
     const parameterValues = [...values, ...PkValues];
     if (secondaryKey) {
       const secondaryKeyValue = entity[secondaryKey] as any;
       parameterValues.push(secondaryKeyValue);
-      queryString += ` AND ${TPRaw(tableName, secondaryKey, 'where')}`;
+      queryString += ` AND ${TWRaw(tableName, secondaryKey)}`;
     } else {
       // continue
     }
@@ -164,13 +164,13 @@ export class DbService implements OnApplicationShutdown {
       // Continue
     }
 
-    const pkString = primaryKeys.map((pk) => `${pk} = ${VAR(pk)}`).join(' AND ');
+    const pkString = primaryKeys.map((pk) => TWRaw(tableName, pk)).join(' AND ');
     let queryString = `DELETE FROM ${tableName} WHERE ${pkString}`;
 
     const parameterValues: any[] = [...primaryKeyValues];
     if (secondaryKey) {
       parameterValues.push(secondaryKeyValue);
-      queryString += ` AND ${String(secondaryKey)} = unhex(?)`;
+      queryString += ` AND ${TWRaw(tableName, secondaryKey)}`;
     } else {
       // continue
     }

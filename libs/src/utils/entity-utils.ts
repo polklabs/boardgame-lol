@@ -1,30 +1,40 @@
 import { getTableName } from '../decorators/table-name.decorator';
 
 /** TableName.Property */
-export function TP<T>(
-  entityType: new (partial: Partial<T>) => T,
-  key?: keyof T,
-  type: 'none' | 'select' | 'where' = 'none',
-) {
-  return TPRaw(getTableName(entityType)!, key, type);
+export function TP<T>(entityType: new (partial: Partial<T>) => T, key?: keyof T) {
+  return TPRaw(getTableName(entityType)!, key);
 }
 
 /** TableName.Property */
-export function TPRaw<T>(tableName: string, key?: keyof T, type: 'none' | 'select' | 'where' = 'none') {
+export function TPRaw<T>(tableName: string, key?: keyof T) {
   if (key) {
     const keyString = String(key);
-    if (
-      type === 'select' &&
-      (keyString.endsWith('Id') || keyString === 'CreatedBy' || keyString === 'LastModifiedBy')
-    ) {
-      return `hex(${tableName}.${keyString}) AS ${keyString}`;
-    } else if (type === 'where') {
-      return `${tableName}.${keyString} = ${VAR(keyString)}`;
-    } else {
-      return `${tableName}.${keyString}`;
-    }
+    return `${tableName}.${keyString}`;
   } else {
     return `${tableName}`;
+  }
+}
+
+export function TW<T>(entityType: new (partial: Partial<T>) => T, key: keyof T) {
+  return TWRaw(getTableName(entityType)!, key);
+}
+
+/** TableName.Property */
+export function TWRaw<T>(tableName: string, key: keyof T) {
+  const keyString = String(key);
+  return `${tableName}.${keyString} = ${VAR(keyString)}`;
+}
+
+export function TS<T>(entityType: new (partial: Partial<T>) => T, key: keyof T) {
+  return TSRaw(getTableName(entityType)!, key);
+}
+
+export function TSRaw<T>(tableName: string, key: keyof T) {
+  const keyString = String(key);
+  if (keyString.endsWith('Id') || keyString === 'CreatedBy' || keyString === 'LastModifiedBy') {
+    return `hex(${tableName}.${keyString}) AS ${keyString}`;
+  } else {
+    return `${tableName}.${keyString}`;
   }
 }
 
