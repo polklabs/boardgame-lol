@@ -14,4 +14,17 @@
       transform: scale(1.75);
     }
   }
+
+  .tag-display-table {
+    border-collapse: collapse;
+    th,
+    td {
+      border: solid 1px var(--p-surface-600);
+      padding: 4px;
+      .checkbox-wrapper {
+        justify-content: center;
+        margin: 0;
+      }
+    }
+  }
 }

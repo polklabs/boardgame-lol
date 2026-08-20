@@ -21,6 +21,7 @@ export type TagReturn = {
 
 export const TagCategories = [
   // Generic
+  'generic',
   'player',
   'play',
   'score',
@@ -28,45 +29,58 @@ export const TagCategories = [
 
   // Specific
   'character',
+  'meta-character',
   'faction',
   'role',
   'victory-method',
   'death-cause',
+  'loss-cause',
   'version',
   'event',
+  'theme',
 ] as const;
 export type TagCategory = (typeof TagCategories)[number];
 export const TagCategoryMapping: Record<
-  TagCategory | '',
+  TagCategory,
   {
     text: string;
+    info: string;
     OnBoardGames?: boolean;
     OnGames?: boolean;
     OnPlayerGames?: boolean;
     OnPlayers?: boolean;
   }
 > = {
-  '': { text: '', OnBoardGames: true, OnGames: true, OnPlayerGames: true, OnPlayers: true },
-  player: { text: 'Player', OnPlayers: true },
-  play: { text: 'Play', OnGames: true },
-  score: { text: 'Play Score', OnPlayerGames: true },
-  game: { text: 'Game', OnBoardGames: true },
+  generic: {
+    text: 'General',
+    info: 'Display on all editors',
+    OnBoardGames: true,
+    OnGames: true,
+    OnPlayerGames: true,
+    OnPlayers: true,
+  },
+  player: { text: 'Player', info: 'Only display on player editor', OnPlayers: true },
+  play: { text: 'Play', info: 'Only display on play editor', OnGames: true },
+  score: { text: 'Play Score', info: 'Only display on score editor', OnPlayerGames: true },
+  game: { text: 'Game', info: 'Only display on game editor', OnBoardGames: true },
 
-  character: { text: 'Character', OnPlayerGames: true },
-  faction: { text: 'Faction', OnPlayerGames: true },
-  role: { text: 'Role', OnPlayerGames: true },
-  'victory-method': { text: 'Victory Method', OnPlayerGames: true },
-  'death-cause': { text: 'Cause of Death', OnPlayerGames: true },
-  event: { text: 'Game Events', OnGames: true },
-  version: { text: 'Version', OnGames: true },
+  character: { text: 'Character', info: 'Ex: Werewolf, Prof. Plum, Tophat', OnPlayerGames: true },
+  'meta-character': {
+    text: 'Meta Character',
+    info: "When you're a dude playing a dude disguised as another dude",
+    OnPlayerGames: true,
+  },
+  faction: { text: 'Faction', info: 'Ex: Villagers', OnPlayerGames: true },
+  role: { text: 'Role', info: 'Ex: Host, Game Master, Bank, Score keeper', OnPlayerGames: true },
+  'victory-method': { text: 'Victory Method', info: 'Ex: Longest Road', OnPlayerGames: true, OnGames: true },
+  'death-cause': { text: 'Cause of Death', info: 'Ex: Suffocation, Alien Queen', OnPlayerGames: true, OnGames: true },
+  'loss-cause': { text: 'Cause of Loss', info: 'Ex: No Money, Voted Out', OnPlayerGames: true, OnGames: true },
+  event: { text: 'Game Events', info: '', OnGames: true },
+  version: { text: 'Version', info: 'Non-vanilla expansion/edition', OnGames: true, OnBoardGames: true },
+  theme: { text: 'Theme', info: 'Ex: Halloween, Christmas, Horror', OnGames: true, OnBoardGames: true },
 } as const;
 
-export const DISPLAY_FIELDS = [
-  'OnBoardGames',
-  'OnGames',
-  'OnPlayerGames',
-  'OnPlayers',
-] as const;
+export const DISPLAY_FIELDS = ['OnBoardGames', 'OnGames', 'OnPlayerGames', 'OnPlayers'] as const;
 
 @TableName('Tag')
 export class TagEntity extends BaseEntity implements ITag {
@@ -86,8 +100,7 @@ export class TagEntity extends BaseEntity implements ITag {
   Text: string = '';
 
   @Enum(TagCategories)
-  @Nullable()
-  Category: TagCategory | null = null;
+  Category: TagCategory = 'generic';
 
   constructor(partial: Partial<TagEntity> = {}, copyIgnored = false) {
     super();

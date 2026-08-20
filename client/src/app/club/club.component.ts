@@ -23,7 +23,7 @@ import { DetailService } from '../shared/services/detail.service';
 import { PlayDetailComponent } from '../details/play-detail/play-detail.component';
 import { PlayerDetailComponent } from '../details/player-detail/player-detail.component';
 import { TagPickerComponent } from '../shared/components/tag-picker/tag-picker.component';
-import { TagDetailComponent } from "../details/tag-detail/tag-detail.component";
+import { TagDetailComponent } from '../details/tag-detail/tag-detail.component';
 
 @Component({
   selector: 'app-club',
@@ -47,8 +47,8 @@ import { TagDetailComponent } from "../details/tag-detail/tag-detail.component";
     PlayDetailComponent,
     PlayerDetailComponent,
     TagPickerComponent,
-    TagDetailComponent
-],
+    TagDetailComponent,
+  ],
   templateUrl: './club.component.html',
   styleUrl: './club.component.scss',
 })
@@ -107,6 +107,7 @@ export class ClubComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.detailService.hideDetail();
     this.subscriptions.unsubscribe();
   }
 

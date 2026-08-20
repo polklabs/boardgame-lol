@@ -1,4 +1,18 @@
-<app-dialog [title]="title" [visible]="editorVisible" (visibleChange)="closeEditor.emit()" [editor]="true">
+<app-dialog [title]="title" [visible]="editorVisible" [form]="formGroup" (closeDialog)="closeEditor.emit()">
+  <div class="dialog-title dialog-header">
+    <span>{{ title }}</span>
+    <div class="grow"></div>
+    @if (usageCount > 0) {
+      <p-button
+        icon="pi pi-list"
+        severity="secondary"
+        [rounded]="true"
+        pTooltip="Show Usage"
+        badge="{{ usageCount }}"
+        (click)="showTagUsage()" />
+    }
+  </div>
+
   @if (formGroup && tag) {
     <div class="tag-display items-center">
       <p-tag
@@ -14,15 +28,6 @@
           [entityType]="entityType"
           [autoFocus]="true"
           [appHide]="hideFields"></app-textinput>
-
-        <app-dropdown
-          formControlName="Category"
-          [entityType]="entityType"
-          [appHide]="hideFields"
-          [options]="categoryTypes"
-          optionLabel="label"
-          optionValue="value"
-          [showClear]="true"></app-dropdown>
 
         <div class="flex align-center gap-4">
           <p-colorpicker
@@ -40,6 +45,15 @@
           }
         </div>
 
+        <app-dropdown
+          formControlName="Category"
+          [entityType]="entityType"
+          [appHide]="hideFields"
+          [options]="categoryTypes"
+          optionLabel="label"
+          optionValue="value"
+          [showClear]="true"></app-dropdown>
+
         <app-multi-select
           formControlName="BoardGameFilter"
           label="Display Only On BoardGames"
@@ -51,25 +65,41 @@
           optionValue="BoardGameId"
           [showClear]="true"></app-multi-select>
 
-        <div class="checkbox-column">
-          <h3>Display On Editors:</h3>
-          <app-checkbox
-            formControlName="OnBoardGames"
-            label="BoardGames"
-            [appHide]="hideFields"></app-checkbox>
-          <app-checkbox
-            formControlName="OnPlayers"
-            label="Players"
-            [appHide]="hideFields"></app-checkbox>
-          <app-checkbox
-            formControlName="OnGames"
-            label="Plays"
-            [appHide]="hideFields"></app-checkbox>
-          <app-checkbox
-            formControlName="OnPlayerGames"
-            label="Play Scores"
-            [appHide]="hideFields"></app-checkbox>
-        </div>
+        <table class="tag-display-table">
+          <tr>
+            <th rowspan="2">Editor Display</th>
+            <th>Board Games</th>
+            <th>Players</th>
+            <th>Plays</th>
+            <th>Play Scores</th>
+          </tr>
+          <tr>
+            <td>
+              <app-checkbox
+                formControlName="OnBoardGames"
+                label=""
+                [appHide]="hideFields"
+                [readOnly]="true"></app-checkbox>
+            </td>
+            <td>
+              <app-checkbox
+                formControlName="OnPlayers"
+                label=""
+                [appHide]="hideFields"
+                [readOnly]="true"></app-checkbox>
+            </td>
+            <td>
+              <app-checkbox formControlName="OnGames" label="" [appHide]="hideFields" [readOnly]="true"></app-checkbox>
+            </td>
+            <td>
+              <app-checkbox
+                formControlName="OnPlayerGames"
+                label=""
+                [appHide]="hideFields"
+                [readOnly]="true"></app-checkbox>
+            </td>
+          </tr>
+        </table>
       </form>
     </div>
   }

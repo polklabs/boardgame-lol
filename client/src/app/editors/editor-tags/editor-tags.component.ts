@@ -28,6 +28,8 @@ import { uniqueValidator } from '../../shared/validators/unique.validator';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MultiSelectComponent } from '../../shared/components/form-components/multi-select/multi-select.component';
+import { TooltipModule } from 'primeng/tooltip';
+import { DetailService } from '../../shared/services/detail.service';
 
 type EntityType = TagEntity;
 
@@ -47,6 +49,7 @@ type EntityType = TagEntity;
     DialogComponent,
     NgStyle,
     MultiSelectComponent,
+    TooltipModule,
   ],
   templateUrl: './editor-tags.component.html',
   styleUrl: './editor-tags.component.scss',
@@ -58,6 +61,7 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
   private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
+  private detail = inject(DetailService);
 
   @Input() editorVisible = false;
   @Input() tag?: TagEntity;
@@ -79,7 +83,7 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
   isNew = false;
   addTagTag = new TagEntity({ Text: 'Add New', Color: '#334155', BackgroundColor: '#ffffff' });
 
-  categoryTypes = Object.entries(TagCategoryMapping).map(([value, x]) => ({ value, label: x.text }));
+  categoryTypes = Object.entries(TagCategoryMapping).map(([value, x]) => ({ value, label: `${x.text} - ${x.info}` }));
   boardGames$ = this.apiService.boardGames.raw$;
 
   entityType = TagEntity;
@@ -88,6 +92,7 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
   hideFields: Set<keyof EntityType> = new Set();
 
   bgColor = '';
+  usageCount = 0;
 
   subscriptions = new Subscription();
 
@@ -105,12 +110,18 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
 
   updateEditor() {
     if (this.tag) {
-      if (this.tag?.TagId === '') {
+      if (this.tag.TagId === '') {
         this.title = 'New Tag';
         this.isNew = true;
       } else {
         this.title = 'Edit Tag';
         this.isNew = false;
+        this.usageCount = [
+          ...this.apiService.tagBoardGames.list.filter((x) => !x.Filter),
+          ...this.apiService.tagGames.list,
+          ...this.apiService.tagPlayerGames.list,
+          ...this.apiService.tagPlayers.list,
+        ].filter((x) => x.TagId === this.tag!.TagId).length;
       }
 
       this.hideFields = new Set();
@@ -144,12 +155,16 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
     return this.formGroup.get(key);
   }
 
-  updateCategory(category: TagCategory | null) {
+  updateCategory(category: TagCategory) {
     DISPLAY_FIELDS.forEach((field) => {
       const control = this.getControl(field);
-      control?.setValue(TagCategoryMapping[category ?? ''][field] === true);
-      control?.disable();
+      control?.setValue(TagCategoryMapping[category][field] === true);
     });
+    if ((this.getControl('BoardGameFilter')?.value.length ?? 0) > 0) {
+      this.getControl('OnPlayers')?.setValue(false);
+    } else {
+      // Leave as is
+    }
   }
 
   setColor(color: string | object | null) {
@@ -168,6 +183,14 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
       this.bgColor = getAccessibleBackground(control?.value);
     } else {
       this.bgColor = '';
+    }
+  }
+
+  showTagUsage() {
+    if (this.tag) {
+      this.detail.showDetail(this.tag);
+    } else {
+      // Skip
     }
   }
 
