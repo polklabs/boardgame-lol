@@ -35,7 +35,8 @@ export const TagCategories = [
   'victory-method',
   'death-cause',
   'loss-cause',
-  'version',
+  'mode',
+  'expansion',
   'event',
   'theme',
 ] as const;
@@ -76,7 +77,8 @@ export const TagCategoryMapping: Record<
   'death-cause': { text: 'Cause of Death', info: 'Ex: Suffocation, Alien Queen', OnPlayerGames: true, OnGames: true },
   'loss-cause': { text: 'Cause of Loss', info: 'Ex: No Money, Voted Out', OnPlayerGames: true, OnGames: true },
   event: { text: 'Game Events', info: '', OnGames: true },
-  version: { text: 'Version', info: 'Non-vanilla expansion/edition', OnGames: true, OnBoardGames: true },
+  mode: { text: 'Mode', info: 'Game Mode: co-op, story', OnGames: true, OnBoardGames: true },
+  expansion: { text: 'Expansion', info: 'Non-vanilla game', OnGames: true },
   theme: { text: 'Theme', info: 'Ex: Halloween, Christmas, Horror', OnGames: true, OnBoardGames: true },
 } as const;
 
@@ -108,10 +110,14 @@ export class TagEntity extends BaseEntity implements ITag {
     this.BoardGameFilter = partial.BoardGameFilter ?? [];
 
     const mapping = TagCategoryMapping[this.Category ?? ''];
-    this.OnBoardGames = mapping.OnBoardGames ?? false;
-    this.OnGames = mapping.OnGames ?? false;
-    this.OnPlayerGames = mapping.OnPlayerGames ?? false;
-    this.OnPlayers = mapping.OnPlayers ?? false;
+    if (mapping) {
+      this.OnBoardGames = mapping.OnBoardGames ?? false;
+      this.OnGames = mapping.OnGames ?? false;
+      this.OnPlayerGames = mapping.OnPlayerGames ?? false;
+      this.OnPlayers = mapping.OnPlayers ?? false;
+    } else {
+      // Skip
+    }
   }
 
   @Ignore()

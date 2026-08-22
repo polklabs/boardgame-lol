@@ -85,6 +85,9 @@ export class TagPickerComponent implements OnInit, OnDestroy {
         });
         this.crawlTagTree(undefined, (item) => item.tags.sort((a, b) => a.tag.Text.localeCompare(b.tag.Text)));
         this.sortSections();
+        this.crawlTagTree(undefined, (item) => {
+          item.label += ` (${this.getCount(item)})`;
+        });
 
         this.updateTitle();
       }),
@@ -189,6 +192,10 @@ export class TagPickerComponent implements OnInit, OnDestroy {
     } else {
       this.title = `Tags`;
     }
+  }
+
+  getCount(tree: TagTree): number {
+    return tree.tags.length + tree.children.reduce((prev, curr) => prev + this.getCount(curr), 0);
   }
 
   crawlTagTree(tagAction: (_: TagWrapper) => void = () => {}, sectionAction: (_: TagTree) => void = () => {}) {

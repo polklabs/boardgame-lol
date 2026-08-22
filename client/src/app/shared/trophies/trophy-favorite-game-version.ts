@@ -4,21 +4,21 @@ import { tagFilter } from '../helpers/data.helper';
 
 export class TrophyFavoriteGameVersion extends ITrophy {
   constructor(sortOrder: number | null = null) {
-    super(sortOrder, ['📚'], 'The Expansion', ['Not So Vanilla'], 'Most played non vanilla game version');
+    super(sortOrder, ['📚'], 'The Expansion', ['Not So Vanilla'], 'Most played non vanilla game expansion');
   }
 
   calculate(api: ApiService) {
     const versionTags = new Map<string, number>();
 
     for (const game of api.games.list) {
-      tagFilter(game.Tags, 'version').forEach((t) => {
+      tagFilter(game.Tags, 'expansion').forEach((t) => {
         const id = `${game.BoardGameId};${t.TagId}`;
         versionTags.set(id, (versionTags.get(id) ?? 0) + 1);
       });
     }
 
     for (const bg of api.boardGames.list) {
-      tagFilter(bg.Tags, 'version').forEach((t) => {
+      tagFilter(bg.Tags, 'expansion').forEach((t) => {
         const id = `${bg.BoardGameId};${t.TagId}`;
         versionTags.set(id, (versionTags.get(id) ?? 0) + 1);
       });

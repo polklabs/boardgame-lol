@@ -12,7 +12,11 @@ export class TrophyGrimReaper extends ITrophy {
 
     for (const game of api.games.list) {
       for (const pg of game.Scores) {
-        pg.Tags.filter((t) => t.Category === 'death-cause').forEach((t) => object.set(t, (object.get(t) ?? 0) + 1));
+        if (!pg.Won) {
+          pg.Tags.filter((t) => t.Category === 'death-cause').forEach((t) => object.set(t, (object.get(t) ?? 0) + 1));
+        } else {
+          // Skip
+        }
       }
     }
 

@@ -11,12 +11,16 @@ export class TrophyWinningPair extends ITrophy {
     const characterTags = new Map<string, number>();
 
     for (const pg of api.playerGames.list) {
-      tagFilter(pg.Tags, 'character').forEach((tc) => {
-        tagFilter(pg.Tags, 'victory-method').forEach((td) => {
-          const id = `${tc.TagId};${td.TagId}`;
-          characterTags.set(id, (characterTags.get(id) ?? 0) + 1);
+      if (pg.Won) {
+        tagFilter(pg.Tags, 'character').forEach((tc) => {
+          tagFilter(pg.Tags, 'victory-method').forEach((td) => {
+            const id = `${tc.TagId};${td.TagId}`;
+            characterTags.set(id, (characterTags.get(id) ?? 0) + 1);
+          });
         });
-      });
+      } else {
+        // Skip
+      }
     }
 
     this.applyValues(characterTags, 1);
