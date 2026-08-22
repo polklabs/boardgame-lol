@@ -1,0 +1,19 @@
+@if (formGroup(); as fg) {
+  <form [formGroup]="fg">
+    <div class="flex align-center gap-4">
+      <p-colorpicker
+        [ngStyle]="{ 'border-color': bgColor() }"
+        [(ngModel)]="fg.value.Color"
+        (onChange)="setColor($event.value)"
+        [ngModelOptions]="{ standalone: true }"
+        defaultColor="000000" />
+      <app-textinput formControlName="Color" [entityType]="entityType()" [appHide]="hideFields()"></app-textinput>
+
+      @for (preset of presetColors; track preset) {
+        <p-button variant="outlined" [severity]="preset.severity" (onClick)="setColor(preset.color)">
+          {{ [preset.text] }}
+        </p-button>
+      }
+    </div>
+  </form>
+}

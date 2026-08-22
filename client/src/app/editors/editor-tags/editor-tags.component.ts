@@ -12,15 +12,12 @@ import {
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { DISPLAY_FIELDS, getAccessibleBackground, TagCategory, TagCategoryMapping, TagEntity } from 'libs/index';
+import { DISPLAY_FIELDS, TagCategory, TagCategoryMapping, TagEntity } from 'libs/index';
 import { TextInputComponent } from '../../shared/components/form-components/textinput/textinput.component';
-import { ButtonModule, ButtonSeverity } from 'primeng/button';
+import { ButtonModule } from 'primeng/button';
 import { buildForm } from '../../shared/form.utils';
-import { NgStyle } from '@angular/common';
 import { TagModule } from 'primeng/tag';
-import { ColorPickerModule } from 'primeng/colorpicker';
 import { CheckboxComponent } from '../../shared/components/form-components/checkbox/checkbox.component';
-import { FieldsetModule } from 'primeng/fieldset';
 import { DropdownComponent } from '../../shared/components/form-components/dropdown/dropdown.component';
 import { HideDirective } from '../../shared/directives/hide.directive';
 import { DialogComponent } from '../../shared/components/dialog/dialog.component';
@@ -30,6 +27,7 @@ import { Router } from '@angular/router';
 import { MultiSelectComponent } from '../../shared/components/form-components/multi-select/multi-select.component';
 import { TooltipModule } from 'primeng/tooltip';
 import { DetailService } from '../../shared/services/detail.service';
+import { ColorSelectComponent } from "../../shared/components/form-components/color-select/color-select.component";
 
 type EntityType = TagEntity;
 
@@ -37,20 +35,18 @@ type EntityType = TagEntity;
   selector: 'app-editor-tags',
   imports: [
     TagModule,
-    ColorPickerModule,
     TextInputComponent,
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
     CheckboxComponent,
-    FieldsetModule,
     DropdownComponent,
     HideDirective,
     DialogComponent,
-    NgStyle,
     MultiSelectComponent,
     TooltipModule,
-  ],
+    ColorSelectComponent
+],
   templateUrl: './editor-tags.component.html',
   styleUrl: './editor-tags.component.scss',
 })
@@ -68,16 +64,6 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
   @Input() standalone = true;
   @Output() closeEditor = new EventEmitter<TagEntity>();
   @Output() deleteEntity = new EventEmitter<TagEntity>();
-
-  presetColors: { severity: ButtonSeverity; color: string | null; text: string }[] = [
-    { severity: 'contrast', color: null, text: 'Default (White)' },
-    { severity: 'secondary', color: '#ffffff', text: 'Black' },
-    { severity: 'success', color: '#156934', text: 'Green' },
-    { severity: 'info', color: '#0e5780', text: 'Blue' },
-    { severity: 'warn', color: '#C2410C', text: 'Orange' },
-    { severity: 'help', color: '#380b61', text: 'Purple' },
-    { severity: 'danger', color: '#B91C1C', text: 'Red' },
-  ];
 
   title = 'Manage Tags';
   isNew = false;
@@ -138,7 +124,6 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
         }),
       );
 
-      this.updateColor();
       this.updateCategory(instance.Category);
     } else {
       // No Changes
@@ -164,25 +149,6 @@ export class EditorTagsComponent implements OnDestroy, OnChanges {
       this.getControl('OnPlayers')?.setValue(false);
     } else {
       // Leave as is
-    }
-  }
-
-  setColor(color: string | object | null) {
-    console.log('setColor', color);
-    const control = this.getControl('Color');
-    control?.setValue(color);
-    control?.markAsTouched();
-    control?.markAsDirty();
-    control?.updateValueAndValidity();
-    this.updateColor();
-  }
-
-  updateColor() {
-    const control = this.getControl('Color');
-    if (control?.valid) {
-      this.bgColor = getAccessibleBackground(control?.value);
-    } else {
-      this.bgColor = '';
     }
   }
 
